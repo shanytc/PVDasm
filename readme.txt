@@ -1,22 +1,20 @@
 
-          	   ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ²
-          	   Û°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°Û²
-          	   Û°ÛÛÛÛÛÛÛÛ²°°ÛÛÛÛÛÛÛ²°°°ÛÛÛÛÛÛÛ²°°ÛÛÛÛ²°°°ÛÛÛ²ÛÛÛ²°°ÛÛÛÛÛÛ²ÛÛÛ²°°°°°ÛÛÛ²Û²
-          	   Û°ÛÛÛ²°°ÛÛÛÛ²ÛÛÛÛÛÛÛÛ²°ÛÛÛÛ²°°ÛÛ²°ÛÛÛÛ²°°ÛÛÛÛ²ÛÛÛ²°ÛÛÛ²°°°°ÛÛÛ²°°°°°ÛÛÛ²Û²
-          	   Û°ÛÛÛ²°°ÛÛÛÛ²ÛÛ²°°ÛÛÛ²°ÛÛÛÛ²°°°ÛÛ°ÛÛÛÛ²°ÛÛÛÛ²°ÛÛÛ²°ÛÛÛÛÛÛÛ²ÛÛÛ²°ÛÛ²°ÛÛÛ²Û²
-        	   Û°ÛÛÛÛÛÛÛÛÛ²²ÛÛÛÛÛÛÛ²°°ÛÛÛÛÛ²°°ÛÛ°ÛÛÛÛ²ÛÛÛÛ²°°ÛÛÛ²°ÛÛÛÛÛÛÛ²ÛÛÛ²ÛÛÛÛ²ÛÛÛ²Û²
-         	   Û°ÛÛÛÛ²²²²²²°ÛÛ²ÛÛÛ²°°°°ÛÛÛÛÛÛÛÛ²°ÛÛÛÛÛÛÛ²°°°ÛÛÛÛ²°ÛÛÛ²°°°°ÛÛÛÛÛÛÛÛÛÛÛÛ²Û²
-        	   Û°ÛÛÛÛ²°°°°°°ÛÛ²°ÛÛÛÛ²°°°ÛÛÛÛÛÛ²°°ÛÛÛÛÛ²°°°°°ÛÛÛÛ²°°ÛÛÛÛÛÛ²ÛÛÛÛÛ²°ÛÛÛÛÛ²Û²
-        	   Û°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°Û²
-        	   ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ²°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ²
-                	         ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ²[Bengaly 2011]
+          	   8888888b.                  888     888 d8b
+     		   888   Y88b                 888     888 Y8P
+    		   888    888                 888     888
+   		   888   d88P 888d888  .d88b. Y88b   d88P 888  .d88b.  888  888  888
+  		   8888888P"  888P"   d88""88b Y88b d88P  888 d8P  Y8b 888  888  888
+ 	           888        888     888  888  Y88o88P   888 88888888 888  888  888
+    		   888        888     Y88..88P   Y888P    888 Y8b.     Y88b 888 d88P
+    		   888        888      "Y88P"     Y8P     888  "Y8888   "Y8888888P"
+                   ===============================================[Shany Golan 2015]
 
 
                   	??????????????????????????????????????????????????????????????
                    	?                                                            ?
                    	?  ProView is : 32Bit Multi Disassembler / PE|PE+ Editor     ?
                    	?  Build Version: v1.7d                                      ?
-                   	?  Copyrights by Bengaly (R) 2003-2011                       ?
+                   	?  Copyrights by Shany Golan (R) 2003-2015                   ?
                    	?                                                            ?
                    	??????????????????????????????????????????????????????????????
 
@@ -25,11 +23,11 @@
 
 PVDasm project is a fully written from scratch disassembler. The disassembly engine has been coded by me (Ben) and it is free for usage by anyone.
 Proview (PVDasm) is my attempt to make my own disassembler as a part for university final project and for basic cpu architecture knowledge.
-PVDasm is coded fully in C (IDE: VC++ 6,2005,2010), C++, and STL Templates for memory managment.
+PVDasm is coded fully in C (IDE: VC++ 6,2005,2010), C++, and STL Templates for memory management.
 Proview also includes a simplified versions of a pe/pe+ editor,process manager,Plugin SDK, Masm Source code wizard, and many more features.
 thank you all for supporting the PVDasm.
 
-                                                [History & Changelog]
+                                                [History & Change Log]
 
 -> 01.04.2015:  * PVDasm is now open sourced!
 -> 14.08.2011:	* Fixed the ToolBar in PVDasm 64Bit ;)
