@@ -1,0 +1,179 @@
+
+
+The Portable Executable file format, the format used for executables in such enviroments as OS/2 and Win32, is fairly well documented by Microsoft, but what isn't well documented is what the operating system does with the contents of the file when actually loading an executable. In this text I will refer to the part of the operating system that loads the executable as the PE loader or just simply the loader. PE files are not limited to .exe files, VxDs and DLLs are other types of PE files, but in this text I will be focusing on .exe files and .DLL files, which don't necessarily have to have those file extensions. The actual structures that apear in the files are defined in winnt.h and are used throughout this text. It is assumed that the reader is already familiar with the general structure of PE files.
+
+When an executable (this includes DLLs) is loaded into memory, it is not simply copied into memory and executed, there are a number of steps the operating system takes to load the image correctly and set up things in that memory image before it jumps to the code in that image. After the individual sections in the PE file are copied to their approrpiate virtual memory locations, the loader uses the DataDirectory array in the IMAGE_OPTIONAL_HEADER of the executable to find the parts of the executable that need to be fixed before execution. The DataDirectory array is an array of 16 IMAGE_DATA_DIRECTORY's, each of which has a predefined meaning:
+
+// Directory Entries
+
+#define IMAGE_DIRECTORY_ENTRY_EXPORT          0   // Export Directory
+#define IMAGE_DIRECTORY_ENTRY_IMPORT          1   // Import Directory
+#define IMAGE_DIRECTORY_ENTRY_RESOURCE        2   // Resource Directory
+#define IMAGE_DIRECTORY_ENTRY_EXCEPTION       3   // Exception Directory
+#define IMAGE_DIRECTORY_ENTRY_SECURITY        4   // Security Directory
+#define IMAGE_DIRECTORY_ENTRY_BASERELOC       5   // Base Relocation Table
+#define IMAGE_DIRECTORY_ENTRY_DEBUG           6   // Debug Directory
+#define IMAGE_DIRECTORY_ENTRY_ARCHITECTURE    7   // Architecture Specific Data
+#define IMAGE_DIRECTORY_ENTRY_GLOBALPTR       8   // RVA of GP
+#define IMAGE_DIRECTORY_ENTRY_TLS             9   // TLS Directory
+#define IMAGE_DIRECTORY_ENTRY_LOAD_CONFIG    10   // Load Configuration Directory
+#define IMAGE_DIRECTORY_ENTRY_BOUND_IMPORT   11   // Bound Import Directory in headers
+#define IMAGE_DIRECTORY_ENTRY_IAT            12   // Import Address Table
+#define IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT   13   // Delay Load Import Descriptors
+#define IMAGE_DIRECTORY_ENTRY_COM_DESCRIPTOR 14   // COM Runtime descriptor
+Although all of these entries are optional, most executables will contain one or more of them. For the entries that exist for a given executable, the system must perform operations to ensure that the memory will be in the expected state for the program to be able to function. Each entry requires different handling, not all of which I have figured out yet.
+Import Directory
+The import directory contains the names of the DLLs that the executable is implicitly linked to, and the names or ordinals of the functions that are imported from those DLLs. The loader loads each DLL into the memory space for the new process and fills in the structures in the import directory of the executable (in memory) and fails to load the executable if it is unable to locate any DLL or function imported by the exe. If you wanted to handle the loading of these DLLs yourself, the code might look something like:
+
+HINSTANCE hInstance = GetModuleHandle(NULL);
+PIMAGE_DOS_HEADER pdosheader = (PIMAGE_DOS_HEADER)hInstance;
+PIMAGE_NT_HEADERS pntheaders = (PIMAGE_NT_HEADERS)((DWORD)hInstance + pdosheader->e_lfanew);
+PIMAGE_SECTION_HEADER psectionheader = (PIMAGE_SECTION_HEADER)(pntheaders + 1);
+PIMAGE_IMPORT_DESCRIPTOR pimportdescriptor = (PIMAGE_IMPORT_DESCRIPTOR)((DWORD)hInstance + pntheaders->OptionalHeader.DataDirectory[15].VirtualAddress);
+PIMAGE_THUNK_DATA pthunkdatain, pthunkdataout;
+PIMAGE_IMPORT_BY_NAME pimportbyname;
+DWORD dw;
+PCHAR ptr;
+TCHAR buff[1024];
+HANDLE handle;
+
+
+while ( pimportdescriptor->TimeDateStamp != 0 ||pimportdescriptor->Name != 0)
+{
+	ptr = (PCHAR)((DWORD)hInstance+ pimportdescriptor->Name);
+	handle = GetModuleHandle(ptr);
+	if (handle == NULL)
+		handle = LoadLibrary(ptr);
+	if (handle == NULL)
+        {
+		wsprintf(buff, "A required .DLL file, %hs, was not found.", ptr);
+		MessageBox(HWND_DESKTOP, buff, "Error Starting Program", MB_OK|MB_ICONEXCLAMATION);
+		ExitProcess(0);
+	}
+
+	if (pimportdescriptor->TimeDateStamp != -1)
+	{
+		pimportdescriptor->ForwarderChain  = (DWORD)handle;
+		pimportdescriptor->TimeDateStamp = 0xCDC31337;
+
+		pthunkdataout = (PIMAGE_THUNK_DATA)((DWORD)hInstance + (DWORD)pimportdescriptor->FirstThunk);
+		if (pimportdescriptor->Characteristics == 0)
+			pthunkdatain = pthunkdataout;
+		else 
+			pthunkdatain = (PIMAGE_THUNK_DATA)((DWORD)hInstance + (DWORD)pimportdescriptor->Characteristics);
+
+		while ( pthunkdatain->u1.AddressOfData != NULL)
+		{
+			if ((DWORD)pthunkdatain->u1.Ordinal & IMAGE_ORDINAL_FLAG) // no name, just ordinal
+			{
+				dw = (DWORD)GetProcAddress(handle, MAKEINTRESOURCE(LOWORD(pthunkdatain->u1.Ordinal)));
+			} else {
+				pimportbyname = (PIMAGE_IMPORT_BY_NAME)((DWORD)pthunkdatain->u1.AddressOfData + (DWORD)hInstance);
+				dw = (DWORD)GetProcAddress(handle, pimportbyname->Name);
+			}
+			if (dw == 0)
+			{
+				if ((DWORD)pthunkdatain->u1.AddressOfData & IMAGE_ORDINAL_FLAG)
+				{
+					wsprintf(buff, "The %hs file is \nlinked to missing export %hs:0x%04x.", exename, ptr, LOWORD(pthunkdatain->u1.AddressOfData));
+				} else {
+					wsprintf(buff, "The %hs file is \nlinked to missing export %hs:%hs.", exename, ptr, pimportbyname->Name);
+				}
+				MessageBox(HWND_DESKTOP, buff, "Error Starting Program", MB_OK|MB_ICONEXCLAMATION);
+				ExitProcess(0);
+                                      
+			}
+
+			pthunkdataout->u1.Function = (PDWORD)dw;
+        
+			pthunkdatain++;
+			pthunkdataout++;
+		}
+               
+	} else { // -1 = new style bound import
+		// don't know how to handle these yet...
+		dw = 0;
+		wsprintf(buff, "New style bound import: %hs", ptr);
+		MessageBox(HWND_DESKTOP, buff, "Error:", MB_OK );
+	}
+	pimportdescriptor++;                
+}
+
+Base Relocation Table
+Relocations, often called 'fixups', is an interesting issue. When an executable is linked, it contains imbedded in the code the addresses of where it expects it variables and functions to be. In Win32, the default base address that an executable (in this case, NOT including DLLs) is loaded to is 0x400000. DLLs load at a base address of 0x1000, so there is an issue when you try to load a second DLL into a process, the DLL will not be able to load at the address it expects. The loader adds the difference between where the executable expected to be loaded to and where it actually was loaded to to each address in the executable's memory so that they will again point to the correct area in memory. However, why would an executable need a fixup table, since only one executable can be loaded into a process space, it is loaded first, and the default base address should always be available. If this default base address were to change in the future (as it did between Win 3.x and Win32), then there might be cases when an executable couldn't be loaded to it's prefered address, but as of MS Visual C 5 and later linkers, they no longer produce relocation tables in executables. I guess Microsoft has decided they will never need to change the default base address. To do the fixups for an executable yourself, the code might look like:
+
+HINSTANCE hInstance = GetModuleHandle(NULL);
+PIMAGE_DOS_HEADER pdosheader = (PIMAGE_DOS_HEADER)hInstance;
+PIMAGE_NT_HEADERS pntheaders = (PIMAGE_NT_HEADERS)((DWORD)hInstance + pdosheader->e_lfanew);
+PIMAGE_SECTION_HEADER psectionheader = (PIMAGE_SECTION_HEADER)(pntheaders + 1);
+PIMAGE_BASE_RELOCATION pbaserelocation;
+DWORD dw;
+PWORD pw;
+PDWORD pdw;
+TCHAR buff[1024];
+HANDLE handle;
+
+
+if ((DWORD)hInstance != pntheaders->OptionalHeader.ImageBase && pntheaders->OptionalHeader.DataDirectory[15].Size)
+{
+	pbaserelocation = (PIMAGE_BASE_RELOCATION)((DWORD)hInstance + pntheaders->OptionalHeader.DataDirectory[15].Size);
+	while (pbaserelocation->VirtualAddress != 0)
+	{
+		pw = (PWORD)((DWORD)pbaserelocation + sizeof(IMAGE_BASE_RELOCATION));
+		for (x = 0; x < (pbaserelocation->SizeOfBlock-sizeof(IMAGE_BASE_RELOCATION))/2; x++)
+		{
+			pdw = (PDWORD)(pbaserelocation->VirtualAddress + (DWORD)hInstance + (*pw & 0xFFF));
+			switch(*pw >> 12)
+			{
+				case IMAGE_REL_BASED_ABSOLUTE:
+				break;
+				case IMAGE_REL_BASED_HIGHLOW:
+					dw = *pdw;
+					dw = dw - pntheaders->OptionalHeader.ImageBase + (DWORD)hInstance;
+					if (dw < (DWORD)hInstance || dw > (DWORD)hInstance + pntheaders->OptionalHeader.SizeOfImage)
+					{
+						wsprintf(buff, "*pdw = 0x%08x", *pdw);
+						MessageBox(HWND_DESKTOP, buff, "Bad pointer:", MB_OK );
+					} else {
+						*pdw = dw;
+					}
+				break;
+				default:
+				case IMAGE_REL_BASED_HIGH:
+				case IMAGE_REL_BASED_LOW:
+						// these are not used in Win32 exe's
+					wsprintf(buff, "*pw = 0x%04x  *pdw = 0x%08x", *pw, *pdw);
+					MessageBox(HWND_DESKTOP, buff, "Unexpected relocation type:", MB_OK);
+				break;
+			}
+
+			pw++;
+		}
+		pbaserelocation = (PIMAGE_BASE_RELOCATION)((DWORD)pbaserelocation + pbaserelocation->SizeOfBlock);
+	}                
+}
+
+The above steps are enough for a basic executable created with the old style linkers. However, if an executable contains other directory entries, like resources for instance, other fixups may be necessary. Executables created with MSVC 5 and later need additional fixups that I have not identified. If you have any knowledge in this area, please share!
+
+The above information is enough to create a 'PE wrapper', a program which modifies an executable so that it changes the directories in the original file, inserts it's own 'startup' code and handles all the loading normally handled by the operating system. Why would we want to do this? Because we can modify the data in the original sections of the executable, for instance compressing them to make a smaller executable or encrypting them to hide the contents of the original executable. The reasons for compressing an exe are obvious, but why would we want to encrypt the contents of an executable? There are several reasons, some with good intentions and many with bad. By encrypting an executable, the average user, even the average developer, can no longer identify the contents of an executable. The strings that are normally stored in plain text will be hidden, as well well as the dissasmblable code, will be hidden. The DLLs and functions implicitly imported by the exe will be hidden, all that will be visible are the functions imported by your startup loader code, probably user32.dll and kernel32.dll.
+
+A side effect of changing the contents of the original executable is that any signatures in that executable will be hidden. Signature scanning is the standard method of anti-virus protection offered today. Every time an executable is about to be executed, the virus scanner scans the FILE image for the signatures of 'bad code' that you don't want to run on your system. However, once the process has begun execution, it can load anything it wants into memory and execute it, including executable code that contains signatures of 'bad code' that you do not want to run on your system. So simply by compressing or encrypting an exe, you can make even a program as well known as Back Orifice invisible to virus scanners. There are already commercially availabe executable compressors which could serve this purpose, as well as free source programs which encrypt the contents of an executable with a simple bit rotation. Even that is enough to prevent signature scanners from detecting bad code.
+
+Get the program
+
+There are two parts to PE Crunch: the compresser and the loader stub that gets inserted into the new executable.
+
+NOTE: For this program to work correctly, assumptions are made about the format of the loader stub executable, specifically that the sections will be: Code, constants/data (unused), import data, relocations. I used Watcom 11 to create this project. Also note that the loader stub has no WinMain entry point, you should point the entry point to wstart_ function. You must also enable 'inline intrinsic functions' so that no calls to the clib are made. See my file on creating small executables for more on linking without the standard c library.
+
+NOTE: This exe compressor only works on older style executables. It will NOT correctly compress executables created with the linker that comes with MSVC 5 or later. I am still trying to figure out what it is that they are doing differently. If you have any info that might help me, feel free to share.
+
+pecrunch.c - Main executable code
+peloader.c - Loader stub code
+lzhclib.c - Compression code, link with pecrunch.c
+lzhxlib.c - Decompression code, link with peloader.c
+lzh.h - Include file to use compression and decompression routines
+pecrunch.exe - The compiled program
+pecrunch.dat - The compiled stub, renamed from peloader.exe
+This program uses the lzh compression algorithm, but any other algorithm could be used just by changing the calls to lzh_freeze and lzh_melt to some outher routines. It also produces the same executable every time, but the data could be scrambled by adding just a few more lines of code.
+
+More to come...

@@ -1,0 +1,163 @@
+Proview Official FAQ (15.12.2003)
+=================================
+
+Q. When & Why PVDasm has been create?
+A. it was create at the beginning of 2003,
+   The actual disasm engine has been finished around September-October/03.
+   and the rest are still w.i.p (work in progress) untill now (December/2003)
+   looks like allot of time indeed, but i was also in school, so i had other projects.
+   Why it was created, mostly for School Project and some knowledge & fun.
+
+Q. can PVDasm compete/replace the well known w32dasm?
+A. hehe, well the answer is no!, at least not for now.
+   the problem with creating a disassembler is not only by 
+   coding an disasm engine, but it is a disassembler who can 
+   able to determine & analyze between Code & Data.
+   PVDasm is in its early stages of it's FirstPass analyze.
+
+Q. How about IDA?
+A. yeah right.. :)
+
+Q. How PVDasm works internally?
+A. the process it self is pretty straight forward:
+   1. Determine if file is PE (Valid Win Image executable) and Load the CPU process.
+      If not, you can choose other CPUs.
+   2. Run FirstPass analyzer and build Data segments.
+      (You can build Functions EntryPoints & Xref, but its not very accurate,
+      How About Anti-Disasm? :) )
+   3. Decode Code section and use the data Segments to differ between Code&Data
+      Visually, decode Xref,Imports on the way.
+
+   * Note i removed all the Visual-GUI & User define Stuff.
+
+Q. Why PVDasm acts slow when Disassembling Big Files (3MB+)
+A. Ok, this is how Proview works differnt than Other Disassemblers,
+   For the well known Win32dasm you notice it disassemble very slow (load big file)
+   This is because W32dasm creates a 'tmp' file at the 'windows\temp' directory
+   with the size of, e.g: 70mb.
+   This gives the impression that w32dasm uses low memory usage.
+   On the other hand, 
+   Proview uses memory only access, this gives the effect of fast decode & access.
+   There for, if you have 256MB of mem (default today) it will use the swap file
+   when memory is needed by PVDasm, e.g: used more than 200mb of mem.
+   Why O Why you say?
+   think of that, future Computers will have huge amount of memory (e.g: 1GB-10GB)
+   there for 256 is very low and PVDasm will work flawlessly ;)
+   Thus HDD speed will increase too, but you can't even compare MEM access to HDD access.
+   i don't really sure about IDA or ollydbg, could be they uses 'tmp' files as well.
+
+Q. This is weird, i disassemble a file, Where is the [Program Entry Point]?
+A. aha, you stumbled upon the hardest things a disassembler is facing at.
+   the problem is that when doing a linear disassembly, you can't recognize between
+   'Data' and 'Code'.
+   if for example you disassemble with FirstPass analyzer, you get:
+
+   00401000 >/$ B8 00000000    MOV EAX,0
+   00401005  |. 33D2           XOR EDX,EDX
+   00401007  |. EB 03          JMP SHORT test.0040100C ; good jump
+   00401009  |. 68 69 00       ASCII "hi",0            ; here is the data.
+   0040100C  |> 6A 00          PUSH 0                  ; perfect align
+ 
+   How would linear disassembly will do? ... very bad.
+   it will look like this:
+
+   00401000 B8 00000000    MOV EAX,0
+   00401005 33D2           XOR EDX,EDX
+   00401007 EB 03          JMP SHORT test.0040100C   ; jump to where??
+   00401009 68 69006A00    PUSH 006A0069             ; our address align has been destroyed
+   0040100E 68 00304000    PUSH 00403000             ; ...
+
+   hmm..now you understand where the EntryPoint went to? :P ..
+   Yeah, so the problem is to find what is 'Code' and what is 'Data'
+   in order to know how to 'align' your addresses.
+   i hope you understand why sometimes we get bad disassembly.
+
+Q. So PVDasm support FirstPass?
+A. well, it has a very basic FirstPass analyzer, which does not contain
+   Any heuriestic code to seperate data from bad opcodes..etc.
+   
+Q. how The FirstPass works in PVDasm?
+A. ok, well, the basic idea for FirstPass is and will remina:
+   "Code Flow Simulation" (CFS) - hench 'FirstPass'.
+   When a disassembler supports FirstPass it is called SecondPass disassembler.
+   ok so how it works in pvdasm:
+   Always Start in EntryPoint, Decode any Instruction,
+   Upon Jump Instruction (Jxx) or Call Instruction, we follow to that Address.
+   if call/jmp redirect to an Import Entry (i.e: Call MessageBox) ignore this branch.
+   The Simulation works just like the CPU:
+   Upon Call: Follow Call and Save Return Address (Next Instruction's Address)
+   in your simulated call stack.
+   Upon Direct Jump (JMP XXXXXXX) follow immidiatelly (here i saved the next instruction's
+   Address 'assuming' it is data).
+   Upon Conditional or UnCoditional (JNZ,JZ,JG,JGE..etc) we MUST somehow take all paths.
+   You can take any path but you need to return to it in the end.
+   Upon Ret/Ret XXXX instruction we mark the end of a 'function/procedure' and we return
+   to the Caller (CALL)
+   we also mark good code rangers e.g: 00401000-00401051
+   this way we can check if we jump/call to an address we always marked.
+   by this simulation we mark start-enf of functions, xref,and data locations.
+
+Q. Does Proview supports Plugin SDK?
+A. yes, you can create Plugins to Proview.
+   PVDasm ships with a command line Disassembler plugin as an example + source code.
+   there is UnComplete messages which the plugins can send to proview.
+   i will add more in time.
+   Plugin will refuse to load if file is not loaded first.
+
+Q. What Programming language Pvdasm is programed in:
+A. C & Win32API,C++ & STL and ASM (some algorithms)
+
+Q. Can i save/load disassembled file as project?
+A. yes, it will create around 7-8 files per project (so be aware)
+
+Q. what is the 'Data Segments' button at the disassembly main Dialog?
+A. even if FirstPass has been analyzed, it is at best to allow the user to define
+   His OWN Data Segments to make disassembly align better.
+
+Q. Is PVDasm Multi-CPU Disassembler?
+A. Yes. Proview supports for now 2 CPUs:
+   INTEL 80x86 CPU.
+   Chip-8 CPU (games running under this are: SpaceInvaders, Pong).
+
+Q. weird, i can't see all of the CPUs when loading some images, why?
+A. the other CPUs will be enabled for non-pe Image.
+   for example, if you load an GameBoy rom, or any other Non-PE.
+   80x86 will be disabled and will show all current supported CPUs.
+
+Q. What else PVDasm supports:
+A. it has an integrated Hex-Editor coded by KetilO for RadASM and ported by me
+   to VC++, an PE Editor,Process Manager.
+   It also supports for xRef, comments, CodePatcher,Call/Jxx Tracing & BackTracing
+   Import Anlyzer and String References for disassembly.
+
+Q. What more features we will see implemented?
+A. well, it is upto the people who uses it.
+   They can ask for any kind of suggestions to be added
+   but since pvdasm supports Plugin SDK, they can code thier own
+   plugins.
+   thus, if a plugin requires special Message to be handled by PVDasm,
+   they need to contact me and i will add this message.
+   it could be i will add 'Flirt' alike system to make disassembly more easier.
+
+Q. Why when i press on CodePatcher at some address inOrder to patch the bytes i get diff bytes?
+A. Yes i know, this problem depends on disasm align problem as explained above.
+
+
+A Word from the author:
+======================
+
+first of all thank you all for supporting PVDasm.
+i want you all to know that PVDasm is still w.i.p and it is at best to
+combine other tools to gain maximum disassembly out of pvdasm.
+as you can see, you can 'teach' pvdasm what to do (e.g: data segments),
+in order to give more effective disassembly rather to provice an automatic 
+assumption.
+it is at best to work with several tools than depending on a single tool.
+
+you can discuss about pvdasm at: http://pcwin042.win.tue.nl/~cage/bengi/phpBB2/
+
+and download it from: http://pvdasm.anticrack.de
+
+-Bengaly 2003-2004
+
+   

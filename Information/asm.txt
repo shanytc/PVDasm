@@ -1,0 +1,167 @@
+    //DWORD AsmDwordNum=(DWORD)Text;	
+    DWORD DwordNum=0;
+	char table[80]={
+	 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	 0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x00,0x00,0x00,0x00,0x00,0x00,
+	 0x00,0x0A,0x0B,0x0C,0x0D,0x0D,0x0E,0x0F,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00												
+					};
+	
+	_asm{
+		    PUSH ECX            //
+			PUSH EAX            // Save registers
+			PUSH EDI            //
+			PUSH ESI            //
+			XOR EAX,EAX         // Clear Register
+			MOV EDI,8H          // Times to decode: 8 - dword			
+			MOV ESI,Text // ESI Points to the string
+     align 4
+     _start:
+			MOVZX ECX,[ESI] // CL has the ascii value
+			CMP ECX,30H   // CL<'0' ? 
+			JL _lower    // yes
+			CMP ECX,39H   // no, CL>'9' ?
+			JG _upper    // yes
+			SUB ECX,30H   // CL-='0'   Strip chars from 0-9
+			JMP _lower    // jump over
+    _upper:
+			SUB ECX,37H   // CL-='7' Strip chars from A-F
+	_lower:
+            ADD EAX,ECX  // EAX+=ECX
+			CMP EDI,1    // First time?
+			JZ _out      // yes, do not shift.			
+			LEA EAX,[EAX*8]  //
+			ADD EAX,EAX      // SHL EAX,04h
+			
+	_out:
+			ADD ESI,1        // Next char
+			SUB EDI,1        // index++
+			JNZ _start       // finished ?
+			MOV DwordNum,EAX // yes, return the value
+			POP ESI
+			POP EDI
+			POP EAX
+			POP ECX
+	 }
+
+
+/////////////////////////////////////////////////////////////
+DWORD StringToDword(char *Text)
+{
+	/***************************************************************************
+
+	Fcuntion Name:
+	-------------
+	"StringToDword"
+
+	Parameters: 
+	-----------
+	1. Pointer to a char/string
+
+	Return values: 
+	--------------
+	1. DWORD number
+
+	Usage:
+	------
+	this function will convert,
+	an Hexadecimel String into a,
+	DWORD hex number using assembly inline directive.
+
+	???º??? ?? ???? ?º?? ?????
+	?????? ?º????????? ????? ?º??????? ?????
+	!???? ???? ?????
+
+    ***************************************************************************/
+	
+    
+    DWORD DwordNum=0;
+	char table[80]={
+	 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	 0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x00,0x00,0x00,0x00,0x00,0x00,
+	 0x00,0x0A,0x0B,0x0C,0x0D,0x0D,0x0E,0x0F,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00												
+	};
+
+	//DWORD AsmTable=(DWORD)table;	
+
+	_asm{
+		    PUSH ECX            //
+			PUSH EAX            // Save registers
+			PUSH EDI            //
+			PUSH ESI            //
+			PUSH EDI
+			PUSH EBX
+			PUSH EDX
+			XOR EAX,EAX         // Clear Register
+			MOV EDI,2*4H          // Times to decode: 8 - dword			
+			MOV ESI,Text // ESI Points to the string
+			LEA EBX,[table]
+
+     _start:
+			MOVZX ECX,[ESI] // CL has the ascii value
+			MOVZX EDX,[EBX+ECX]
+            ADD EAX,EDX  // EAX+=ECX
+			CMP EDI,1    // First time?
+			JZ _out      // yes, do not shift.			
+			LEA EAX,[EAX*8]  //
+			SHL EAX,1
+			//ADD EAX,EAX      // SHL EAX,04h	
+	_out:
+			ADD ESI,1        // Next char
+			SUB EDI,1        // index++
+			JNZ _start       // finished ?
+			MOV DwordNum,EAX // yes, return the value
+			POP EDX
+			POP EBX
+			POP EDI
+			POP ESI
+			POP EDI
+			POP EAX
+			POP ECX
+	 }
+
+	return DwordNum;
+}
+
+////////////////////////
+////////////////////////
+    DWORD AsmDwordNum=(DWORD)Text;
+    WORD  DwordNum=0;
+	
+	_asm{
+			PUSHAD
+			PUSHF
+			XOR ECX,ECX
+			XOR EAX,EAX
+			XOR EDI,EDI
+			// 4 times loop
+			MOV EDI,4H
+			MOV ESI,AsmDwordNum
+     _start:
+			MOV CL,[ESI]
+			CMP CL,30H
+			JL _lower
+			CMP CL,39H
+			JG _upper
+			SUB CL,30H
+			JMP _lower
+     _upper:
+			SUB CL,37H			
+	 _lower:
+            ADD EAX,ECX
+			CMP EDI,1
+			JZ _out
+			SHL EAX,4H
+	   _out:
+			INC ESI
+			DEC EDI
+			JNZ _start
+			MOV DwordNum,AX
+			POPF
+			POPAD
+	 }
+
+	return DwordNum;

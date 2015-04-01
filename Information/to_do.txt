@@ -1,0 +1,62 @@
+
+
+7.8.2004
+: check other sections that contains CODE flag (exclude ep section)
+
+6.8.2004
+; map file should add functions in the code flow (still unknown)
+
+15.11.2004
+1. add code to view strings (in a dialog) when user type in an address.
+this is to ease the user if the disassembly is not complete,
+
+4.12.2004 (by homersux)
+1) file lock on open, i understand some people may even prefer this but
+I'd really like to see an option to make this either lock or non-lock so,
+ that a snapshot of a build can be viewed and compared with another build. As it is, this locking is a major inconvenience for me.
+
+2) on the tool bar, I'd really prefer to have 2 more buttons to open/close files
+more quickly rather than go through the mouse clicks
+
+3) move the docking asm window out of the way, at least it should not hide the view of subsequent instructions after call/jmp etc.
+
+6.11.2004
+1. add bookmarks (by index, shows the text)
+
+01.02.2005:
+: add map export in pvdasm
+
+12.02.2005:
+- try to add an 'invoke,xxx,xxx' option in MASM Wizard.
+- Add A dynamic data Shifting (DDS) when adding/removing a function
+- add an option for adding a 'label', using DDS
+
+26.02.2005:
+-	00441D34 65:7244 JB 00441D7B 
+	I think, must be something like 
+	65 gs: 
+	7244 jb ... 
+
+-	Bytes 52 61 67 67 65 64 52 69 67 68 74 00 10 40 
+	00441DF0 52 PUSH EDX 
+	00441DF1 61 POPAD 
+	00441DF2 67: Prefix AddrSize: 
+	00441DF3 65: Prefix GS: 
+	00441DF4 64:52 PUSH EDX 
+	00441DF6 696768 74001040 IMUL ESP, DWORD PTR DS:[EDI+68H],40100074H 
+	(one prefix 67 lost, all RVAs after 00441DF2 are invalid)
+
+07.03.2005:
+-exe packed with FSG 2.0 crashes PVDasm.
+
+22.06.2005:
+if error found (invalid section), add a select section screen to disassemble. (packed files, e.g: FSG)
+
+24.06.2005:
+add project save db size prediction information.
+
+27.08.2005:
+when changing the size of a column header and mouse is moving over a jmp/call
+instruction, the mouse calculation is not currect when the mouse is over the instrucion,
+once moved it will trigger the pop up window on a blank right x-pixels when mouse is over.
+

@@ -1,0 +1,16 @@
+1. Signature: (vc6)
+
+4D6963726F736F667420432F432B2B20 ;"Microsoft C/C++ "
+70726F6772616D206461746162617365 ;"program database"
+20322E30300D0A1A                 ;" 2.00\r\n"
+
+;1A - end of PDB signature struct
+
+2. Signature Type: "JG" + 2 bytes of NULL padding (DWORD Align)
+
+3. DWORD: value 0x400,0x800,0x1000 - (page size) data block size, pdb file is divided into blocks of 400h bytes
+4. WORD: 0x09,0x05,0x02 - start page
+5. WORD: file Size - file_size*page_size = file size in bytes.
+6. DWORD: StreamSize - 00000B52
+7. WORD Pointer - array of page numbers: 0x0EE0,0x0032,0x0476,0x0477,0x0478,NULL
+

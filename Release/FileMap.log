@@ -1,0 +1,43 @@
+﻿Build started 9/18/2011 10:49:53 PM.
+     1>Project "C:\Work\FileMap\FileMap.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating ".\Release\PVDasm.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /Zi /nologo /W0 /WX- /O2 /Ob1 /Oy- /D WIN32 /D NDEBUG /D _WINDOWS /D _VC80_UPGRADE=0x0600 /D _MBCS /GF /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo".\Release\\" /Fd".\Release\vc100.pdb" /FR".\Release\\" /Gd /TP /analyze- /errorReport:prompt Disasm.cpp
+         Disasm.cpp
+       ResourceCompile:
+         All outputs are up-to-date.
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"Release/PVDasm.exe" /INCREMENTAL:NO /NOLOGO odbc32.lib odbccp32.lib comctl32.lib psapi.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:".\Release\PVDasm.exe.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /PDB:"C:\Work\FileMap\Release\PVDasm.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\Release\PVDasm.lib" /MACHINE:X86 Release/PVDasm.rsrc.res
+         .\Release\AnchorResizing.obj
+         .\Release\Functions.obj
+         .\Release\PE_Editor.obj
+         .\Release\Sections.obj
+         .\Release\FileMap.obj
+         .\Release\Process.obj
+         .\Release\CDisasmColor.obj
+         .\Release\CDisasmData.obj
+         .\Release\Chip8.obj
+         .\Release\Disasm.obj
+         .\Release\Disasm_Options.obj
+         .\Release\Dsasm_Functions.obj
+         .\Release\loadpic.obj
+         .\Release\HexEditor.obj
+         .\Release\Patcher.obj
+         .\Release\Project.obj
+         .\Release\Wizard.obj
+         .\Release\SDK.obj
+         .\Release\pvscript.obj
+         FileMap.vcxproj -> C:\Work\FileMap\.\Release\PVDasm.exe
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /out:".\Release\PVDasm.exe.manifest.res" /manifest resource\PVDasm.exe.manifest .\Release\PVDasm.exe.manifest
+       BscMake:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\bscmake.exe /nologo /o"Release/PVDasm.bsc" .\Release\AnchorResizing.sbr .\Release\Functions.sbr .\Release\PE_Editor.sbr .\Release\Sections.sbr .\Release\FileMap.sbr .\Release\Process.sbr .\Release\CDisasmColor.sbr .\Release\CDisasmData.sbr .\Release\Chip8.sbr .\Release\Disasm.sbr .\Release\Disasm_Options.sbr .\Release\Dsasm_Functions.sbr .\Release\loadpic.sbr .\Release\HexEditor.sbr .\Release\Patcher.sbr .\Release\Project.sbr .\Release\Wizard.sbr .\Release\SDK.sbr .\Release\pvscript.sbr
+       FinalizeBuildStatus:
+         Deleting file ".\Release\PVDasm.unsuccessfulbuild".
+         Touching ".\Release\PVDasm.lastbuildstate".
+     1>Done Building Project "C:\Work\FileMap\FileMap.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:03.92

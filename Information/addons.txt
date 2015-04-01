@@ -1,0 +1,200 @@
+Hey man,
+
+Was great to talk to ya again! I was playing around with Proview, I
+found some difficulties and have some idea to improve your program.
+-------------------------------------------------------------------------------------
+First, when I open the file winscard.dll (supplied by windows in
+c:\windows\system32), and lookup for example the export SCardCancel, I
+will get a report from your PE-Editor that it starts on 0x723D650B.
+But if I look in Proview then, I will see this:
+
+723D6509    90        NOP
+723D650A    56        PUSH ESI
+723D650B    E8 00000000   CALL 723D6510
+723D6510    5E        POP ESI
+
+this looks more that it starts in 0x723D650A. Furthermore if I compare
+it with W32Dasm
+
+:723D650A 90                      nop
+Exported fn(): SCardCancel - Ord:0009h
+:723D650B 56                      push esi
+:723D650C E800000000              call 723D6511
+
+you will see that it was disassembled differently, everything is 1 byte
+earlier in Proview:
+0x723D650B => 0x723D650A
+
+This is probably not how it should, so maybe you could fix.
+-------------------------------------------------------------------------------------
+Is it also possible you could add in the "References" column a side-note
+that address is a start for a DLL export?
+like W32Dasm has (see above)?
+-------------------------------------------------------------------------------------
+I was wondering if you could extend the plugin messages the same as you
+handle the Strings:
+9.   PI_GETNUMOFSTRINGREF
+10. PI_GETSTRINGREFERENCE
+
+But then for export functions, so it should look like:
+PI_GET_NUMBER_OF_EXPORTS
+PI_GET_EXPORT_LINE_INDEX or called PI_GET_EXPORT_INSTRUCTION_INDEX
+
+Just find out what you think is better, but I like splitted up CONSTANTS
+better than long concatenated constants.
+FILEALREADYEXISTINTHISSEROUNDING is not that readable, while
+FILE_ALREADY_EXIST_IN_THIS_SEROUNDING is way better.
+-------------------------------------------------------------------------------------
+The message that is called PI_GETASMFROMINDEX should be called
+different. This is because you will
+get Disassembled Information and not Assembled information. This could
+cause intuitive problems by using them.
+I suggest : PI_GET_DASM_FROM_INDEX
+-------------------------------------------------------------------------------------
+The struct Code_Flow should be different:
+
+typedef struct Code_Flow{
+
+   bool Jump;       // Instruction is a Jcc / jmp
+   bool Call;       // Instruction is a Call
+   bool BranchSize; // Short / Near
+   bool Ret;        // Instruction is Ret
+
+} CODE_FLOW;
+
+it should be more like this:
+
+typedef enum tagCodeFlow {
+   BI_NONE,
+   BI_JUMP_FAR,
+   BI_JUMP_NEAR,
+   BI_CALL,
+   BI_RET,
+} CodeFlow;
+
+It is way easier this way to program a
+switch(CodeFlow)
+{
+ case BI_NONE:
+ case BI_JUMP_FAR:
+ etc
+}
+-------------------------------------------------------------------------------------
+The information about the plugin messages / structs should be in a
+different .h file.
+This way it will not get mixed up in the code of a plugin (and updates
+of messages / structs could be easier applied).
+Call this file PVsdk.h or something.
+-------------------------------------------------------------------------------------
+Could you define default buttons in Proview screens. Like in the dialog
+CTRL+A (Goto Address), the button "GOTO" should be default. This way you
+can quickly type in the address you want to go to and Press enter in
+stead of having to click on the button with the mouse. Also it would be
+very handy if you add the base address in that editbox before focusing
+(so it will become selected), this way you do not have to think about that.
+A history in goto address would also be very useful, since you want to
+check lot's of info and sometimes want to go back.
+-------------------------------------------------------------------------------------
+The ESC (escape) button is not working on much screens (Goto Address /
+Hex Editor / like PE-Editor / view Directories / Exports / Patching /
+Script / Etc), if you want to go back again, it would be very handy you
+can go quickly with the escape button.
+-------------------------------------------------------------------------------------
+In the Exports overview of the PE-Editor you can view the Entrypoints of
+the functions, but it is not very handy they are showed without the
+image base. I know lot's of editors do it this way, but myself I found
+it little confusing to work with addresses containing image bases and
+addressed that do not. It becomes messy if you have a weird image base,
+and a large file (need to calculate the offset you have to go in proview
+by hand).
+And maybe a link to proview would help. If you select a export, the
+first instruction could be selected.
+
+Or what would be better is a same view of the exports as you have made
+for the imports!
+-------------------------------------------------------------------------------------
+The popup window with the information for a call is nice, but little
+annoying. Could ya make it disappear when you leave it with the mouse
+pointer?
+
+Whey you are above a call/jump and you press alt-tab, then change back
+again to proview you will get a color error (repainting is not done
+correctly).
+-------------------------------------------------------------------------------------
+The function Entry manager is hard to find. Could you make a toolbar
+button / Top menu link (Working Esc button ;)). Is it possible to sort
+the listview by clicking on the columns? (I have example code for that
+if ya need it). Or at least let is be sorted somehow (Start address
+preffered, but procname could be used also). This helps for scrolling
+through them. Of course the DLL Exports actually could also be shown in
+the list... but well if you make a screen for that like for the
+imports... it could be overkill to add them (they will exist twice then).
+
+Clicking on them does not make a difference while in the dialog that
+results in a following in proview. I think it would be best to create
+one sort of handling, so consistency is preserved. (double click could
+be updating).
+
+Function with the same name are allowed?? And can you let the editboxes
+update everytime you click on a different procedure. Since now you can
+click on 10 different ones and press update everytime, they will all end
+up in the same procedure.
+-----------------------------------------------------------------------------------
+can you change the colors of the instruction. Like calls could be bold
+and red, and branches could be bold and green, stuff like that would
+make Proview way more Elite!.
+
+Also for viewing the call to another procedure / functions, it would be
+good to change the background of the lines a little so you can see they
+are a group together (parameters / preparing instructions and call itself).
+-------------------------------------------------------------------------------------
+If you look at the next example you will see that sometimes after the ,
+(comma) there is a space and sometimes there is not. A small update
+which makes it more consistent.
+01002C49    A3 9CA60001   MOV DWORD PTR DS:[0100A69CH], EAX
+01002C4E    A1 90900001   MOV EAX, DWORD PTR DS:[01009090H]
+01002C53    A3 B0A60001   MOV DWORD PTR DS:[0100A6B0H], EAX
+01002C58    C705B4A60001 66888800    MOV DWORD PTR
+DS:[0100A6B4H],00888866H
+-------------------------------------------------------------------------------------
+Procedures are started with:
+       ; ====== Proc_01007147 Proc ======
+but ended this way
+01007259    C3        RET    ; Proc_01007147 endp
+
+Maybe you should also add a ======= ... ======= Line for the end of a
+procedure
+
+Are there often procedures WithIN procedures? If not, then I would
+suggest that you give the whole procedure a little different background
+color again, this way you can see fast where a procedure ends.
+-------------------------------------------------------------------------------------
+Can you make the procedures also show the parameters, even when they are
+note known by the SIG file?
+I mean like the following way:
+
+01007502    6A0A      PUSH 0AH
+01007504    58        POP EAX
+01007505    50        PUSH EAX        ; Param4
+01007506    56        PUSH ESI          ; Param3
+01007507    53        PUSH EBX        ; Param2
+01007508    53        PUSH EBX        ; Param1
+01007509    FFD7      CALL EDI
+0100750B    50        PUSH EAX        ; Param1
+0100750C    E8 25B4FFFF   CALL 01002936
+
+Something differen is that the last instruction is CALLING to the next
+instruction, though in the References column it is said: ";Referenced by
+a (Un)conditional Jump(s)" This kind of confusing information, since it
+was not by a JUMP but by a CALL.
+01002936    8BFF      MOV EDI, EDI
+-------------------------------------------------------------------------------------
+
+Sorry I made so big list for you. I hope you have time / energy to fix /
+add all this. Your proview really will become way more leet if this
+stuff will be added.
+
+Thanks in advance man, if you need any help on this, let me know.
+
+Greetings, we will talk soon!
+

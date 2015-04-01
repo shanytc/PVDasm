@@ -1,0 +1,2260 @@
+##v##00.4.50
+EditHelpFileTitle.Text=Proview Disassembler &  Plugin SDK Reference
+form2.STextForeHeadline.Color=0
+form2.STextForeText.Color=0
+form2.STextBackHeadline.Color=16777215
+form2.STextBackText.Color=16777215
+form2.STextHeadlineFont.Caption=Arial
+form2.STextTextFont.Caption=Arial
+form2.sTextFontSizeForHeadline.Caption=14
+form2.sTextFontSizeForText.Caption=9
+form2.CBoxBold.Checked=1
+form2.CBoxNoForeColor.Checked=0
+form2.CBoxLanguageID.ItemIndex=1
+form2.CBoxCharSet.ItemIndex=0
+form2.EditContents.Text=Contents
+form2.EditFrontpageName.Text=Front page with index
+form2.CBoxDontMakeFrontpage.Checked=1
+form2.EditLogoPath.Text=
+form2.EditFrontpageButtonCaption.Text=Front page
+form2.RGroupHorizontalAlignment.ItemIndex=0
+form2.RGroupVerticalAlignment.ItemIndex=0
+form2.CBoxBlankLineBeforeEachHeading.Checked=1
+form2.CBoxMakeFrontPageButton.Checked=0
+form2.SpinEditFrontpageIDnumber.Value=9999
+form2.CBoxAddAboutMenu.Checked=0
+form2.EditAboutMenuCaption.Text=&About this help file...
+form2.CBoxPopupPagesForAboutMenu.Tag=-1
+form2.EditConstantNameFilePrefix.Text=pageConstants_
+form2.EditConstantNameFileExt.Text=txt
+form5.sTextColor1=0
+form5.sTextColor2=9743070
+form5.sTextColor3=12386403
+form5.sTextColor4=255
+form5.sTextColor5=8421376
+form5.sTextColor6=8650752
+form5.sTextColor7=33280
+form5.sTextColor8=32896
+form5.sTextColor9=13026246
+form5.sTextColor10=16711680
+form5.sTextColor11=65280
+form5.sTextColor12=8651007
+form5.sTextColor13=16777215
+form5.sTextColor14=16757429
+form5.sTextColor15=9764863
+form5.sTextColor16=8421504
+form5.sTextComment1=
+form5.sTextComment2=
+form5.sTextComment3=
+form5.sTextComment4=
+form5.sTextComment5=
+form5.sTextComment6=
+form5.sTextComment7=
+form5.sTextComment8=
+form5.sTextComment9=
+form5.sTextComment10=
+form5.sTextComment11=
+form5.sTextComment12=
+form5.sTextComment13=
+form5.sTextComment14=
+form5.sTextComment15=
+form5.sTextComment16=
+NumOfPages=26
+------------ end of project settings / page settings follow ------------
+pageC.pages[0].ImageIndex=-1
+pageTitle(0).Text=Proview 1.6d
+getPageConstantLabel(0).Caption=
+getPageContentHeaderLabel(0).Caption=
+pageKeywords(0).Text=Proview;PVDasm;Bengaly;Ben;bengaly;ben;pvdasm
+pageC.pages[1].ImageIndex=-1
+pageTitle(1).Text=PI_GETASM 
+getPageConstantLabel(1).Caption=
+getPageContentHeaderLabel(1).Caption=
+pageKeywords(1).Text=PI_GETASM 
+pageC.pages[2].ImageIndex=-1
+pageTitle(2).Text=DISASSEMBLY
+getPageConstantLabel(2).Caption=
+getPageContentHeaderLabel(2).Caption=
+pageKeywords(2).Text=DISASSEMBLY
+pageC.pages[3].ImageIndex=-1
+pageTitle(3).Text=CODE_FLOW
+getPageConstantLabel(3).Caption=
+getPageContentHeaderLabel(3).Caption=
+pageKeywords(3).Text=CODE_FLOW;flow;code
+pageC.pages[4].ImageIndex=-1
+pageTitle(4).Text=PI_FLUSHDISASM
+getPageConstantLabel(4).Caption=
+getPageContentHeaderLabel(4).Caption=
+pageKeywords(4).Text=PI_FLUSHDISASM;flush
+pageC.pages[5].ImageIndex=-1
+pageTitle(5).Text=PI_GETASMFROMINDEX
+getPageConstantLabel(5).Caption=
+getPageContentHeaderLabel(5).Caption=
+pageKeywords(5).Text=PI_GETASMFROMINDEX
+pageC.pages[6].ImageIndex=-1
+pageTitle(6).Text=PI_GETFUNCTIONEPFROMINDEX
+getPageConstantLabel(6).Caption=
+getPageContentHeaderLabel(6).Caption=
+pageKeywords(6).Text=PI_GETFUNCTIONEPFROMINDEX
+pageC.pages[7].ImageIndex=-1
+pageTitle(7).Text=What's New In Version 1.6d
+getPageConstantLabel(7).Caption=
+getPageContentHeaderLabel(7).Caption=
+pageKeywords(7).Text=ReadMe;Read Me;History;Read;new
+pageC.pages[8].ImageIndex=-1
+pageTitle(8).Text=What Is Proview? (A.K.A: PVDasm)
+getPageConstantLabel(8).Caption=
+getPageContentHeaderLabel(8).Caption=
+pageKeywords(8).Text=Proview;PVDasm;pvdasm;proview
+pageC.pages[9].ImageIndex=-1
+pageTitle(9).Text=Legal Information
+getPageConstantLabel(9).Caption=
+getPageContentHeaderLabel(9).Caption=
+pageKeywords(9).Text=EULA;Legal;Legality;information;info;eula;legal;copyrights
+pageC.pages[10].ImageIndex=-1
+pageTitle(10).Text=Plugin Messages
+getPageConstantLabel(10).Caption=
+getPageContentHeaderLabel(10).Caption=
+pageKeywords(10).Text=SDK;Plugin;Messages;sdk;plugin;addon
+pageC.pages[11].ImageIndex=-1
+pageTitle(11).Text=Features
+getPageConstantLabel(11).Caption=
+getPageContentHeaderLabel(11).Caption=
+pageKeywords(11).Text=Features;PE;Process;API;Patch;FirstPass;Data;Source;features
+pageC.pages[12].ImageIndex=-1
+pageTitle(12).Text=FAQ
+getPageConstantLabel(12).Caption=
+getPageContentHeaderLabel(12).Caption=
+pageKeywords(12).Text=faq;FAQ
+pageC.pages[13].ImageIndex=-1
+pageTitle(13).Text=Masm Code Generation Tutorial
+getPageConstantLabel(13).Caption=
+getPageContentHeaderLabel(13).Caption=
+pageKeywords(13).Text=masm;Masm;MASM;Tutorial;tutorial;Code;Generate;Generation;assembler
+pageC.pages[14].ImageIndex=-1
+pageTitle(14).Text=PI_GETENTRYPOINT
+getPageConstantLabel(14).Caption=
+getPageContentHeaderLabel(14).Caption=
+pageKeywords(14).Text=PI_GETENTRYPOINT
+pageC.pages[15].ImageIndex=-1
+pageTitle(15).Text=PI_PRINTDBGTEXT
+getPageConstantLabel(15).Caption=
+getPageContentHeaderLabel(15).Caption=
+pageKeywords(15).Text=PI_PRINTDBGTEXT
+pageC.pages[16].ImageIndex=-1
+pageTitle(16).Text=PI_GETBYTEFROMADDRESS
+getPageConstantLabel(16).Caption=
+getPageContentHeaderLabel(16).Caption=
+pageKeywords(16).Text=PI_GETBYTEFROMADDRESS
+pageC.pages[17].ImageIndex=-1
+pageTitle(17).Text=PI_RVATOFFSET
+getPageConstantLabel(17).Caption=
+getPageContentHeaderLabel(17).Caption=
+pageKeywords(17).Text=PI_RVATOFFSET
+pageC.pages[18].ImageIndex=-1
+pageTitle(18).Text=PI_GETNUMOFSTRINGREF
+getPageConstantLabel(18).Caption=
+getPageContentHeaderLabel(18).Caption=
+pageKeywords(18).Text=PI_GETNUMOFSTRINGREF
+pageC.pages[19].ImageIndex=-1
+pageTitle(19).Text=PI_GETSTRINGREFERENCE
+getPageConstantLabel(19).Caption=
+getPageContentHeaderLabel(19).Caption=
+pageKeywords(19).Text=PI_GETSTRINGREFERENCE
+pageC.pages[20].ImageIndex=-1
+pageTitle(20).Text=PI_SETCOMMENT
+getPageConstantLabel(20).Caption=
+getPageContentHeaderLabel(20).Caption=
+pageKeywords(20).Text=PI_SETCOMMENT
+pageC.pages[21].ImageIndex=-1
+pageTitle(21).Text=PI_ADDCOMMENT
+getPageConstantLabel(21).Caption=
+getPageContentHeaderLabel(21).Caption=
+pageKeywords(21).Text=PI_ADDCOMMENT
+pageC.pages[22].ImageIndex=-1
+pageTitle(22).Text=MAP File
+getPageConstantLabel(22).Caption=
+getPageContentHeaderLabel(22).Caption=
+pageKeywords(22).Text=map;ida;pvmap
+pageC.pages[23].ImageIndex=-1
+pageTitle(23).Text=PI_ADDFUNCTIONNAME
+getPageConstantLabel(23).Caption=
+getPageContentHeaderLabel(23).Caption=
+pageKeywords(23).Text=PI_ADDFUNCTIONNAME
+pageC.pages[24].ImageIndex=-1
+pageTitle(24).Text=FUNCTION_INFORMATION
+getPageConstantLabel(24).Caption=
+getPageContentHeaderLabel(24).Caption=
+pageKeywords(24).Text=FUNCTION_INFORMATION
+pageC.pages[25].ImageIndex=-1
+pageTitle(25).Text=PI_GETFUNCTIONNAME
+getPageConstantLabel(25).Caption=
+getPageContentHeaderLabel(25).Caption=
+pageKeywords(25).Text=PI_GETFUNCTIONNAME
+pageC.pages[26].ImageIndex=-1
+pageTitle(26).Text=PI_GETCODESEGMENTSTARTEND
+getPageConstantLabel(26).Caption=
+getPageContentHeaderLabel(26).Caption=
+pageKeywords(26).Text=PI_GETCODESEGMENTSTARTEND;segment
+------------ end of page titles / full text of pages follow ------------
+----- SHM ---- page 0 ---- 
+\par\qc\{bmc logo.bmp\}\par\ql
+
+<b>PVDasm Information:</b>
+
+<jump=SHM_contents0009>PVDasm, what is it?</jump>
+<jump=SHM_contents0008>What's New in PVDasm 1.6d</jump>
+<jump=SHM_contents0010>Legal Information</jump>
+<jump=SHM_contents0012>Features</jump>
+<jump=SHM_contents0013>FAQ</jump>
+
+<b>Plugin System:</b>
+
+<jump=SHM_contents0011>Plugin Messages</jump>
+
+<b>Tutorials</b>
+
+<jump=SHM_contents0014>1. Masm Source Code Generation Using PVdasm (Updated)</jump>
+<jump=SHM_contents0023>2. Creating Detailed Disassembly using MAP Files (NEW)</jump>
+----- SHM ---- page 1 ---- 
+<color=1><b>PI_GETASM </b></color>
+
+An Plugin sends an PI_GETASM message to disassemble a vector of opcodes and place result at DISASSEMBLY struct pointed by lParam 
+
+<color=8>//
+// DEFINED AS:
+//</color>
+<color=10>#define </color><color=6>PI_GETASM                 WM_USER+PI_BASE_MSG</color>
+
+<b><color=4>PI_GETASM </color></b>
+<color=10>wParam </color>= (<color=6>WPARAM</color>) (LPCH)         lpOpVector;  <color=7>// address of Opcode Vector to disassemble </color>
+<color=10>lParam </color>= (<color=6>LPARAM</color>) (<color=10>DISASSEMBLY<b>*</b></color>) lpDisasm;    <color=7>// address of Disassembly struct to fill</color>
+ 
+
+<b>Parameters:</b>
+
+<color=6><b><i>lpOpVector</i></b></color>
+
+Value of wParam. Points to the Opcode vector to disassemble by the disassembelr engine
+
+<b><color=6><i>lpDisasm</i></color></b>
+
+Value of lParam. Pointer to a DISASSEMBLY structure that receives the disassembled data sent by lpOpVector.
+
+<b>Return Values:</b>
+
+(None)
+when lpDisasm is filled, message is over and control back to the Plugin.
+----- SHM ---- page 2 ---- 
+<b>DISASSEMBLY</b>
+
+The DISASSEMBLY struct contains information about a decoded Instruction.
+
+<color=10>typedef struct </color><b> Decoded</b>{
+
+<color=6>DWORD</color>     Address;      <color=7> // Current address of decoded instruction</color>
+<color=6>CODE_FLOW</color> CodeFlow;      <color=7>// Instructions: Jump or Call </color>
+<color=6>BYTE</color>      OpcodeSize;    /<color=7>/ Opcode Size</color>
+<color=6>BYTE</color>      PrefixSize;    <color=7>// Size of all prefixes used</color>
+<color=6>char</color>      Assembly[128]; <color=7>// Menemonics</color>
+<color=6>char</color>      Remarks[256];  <color=7>// Menemonic addons</color>
+<color=6>char</color>      Opcode[25];    <color=7>// Opcode Byte forms</color>
+
+}<color=10>DISASSEMBLY</color> ;
+
+<i><u><b>Memebers:</b></u></i>
+
+<color=6><b>Address</b></color>
+Specifies the Address of Current decoded Instruction.
+This member does not get Flushed by PI_FLUSHDISASM Message.
+
+<i><color=6><b>CodeFlow</b></color></i>
+<jump=SHM_contents0004><CODE_FLOW></jump>
+
+<i><color=6><b>OpcodeSize</b></color></i>
+Size of Decoded Opcode (without PreFix Size).
+
+<i><color=6><b>PrefixSize</b></color></i>
+Size of Prefix (if used on the instruction).
+
+<i><color=6><b>Assembly</b></color></i>
+The Decoded Opcode's Assembly Syntax.
+
+<i><color=6><b>Remarks</b></color></i>
+Remarks Inserted by the disasm engine.
+
+<i><color=6><b>Opcode</b></color></i>
+String repersentation of the Opcode we decoded.
+----- SHM ---- page 3 ---- 
+<b>CODE_FLOW</b>
+
+The Code_Flow struct contains information about branch Instruction such as: Call/Jxx/Ret
+and thier Size: SHORT / NEAR
+
+The Code_Flow struct is a part of the <color=10>DISASSEMBLY</color> struct.
+
+<color=3>typedef struct</color> <b>Code_Flow</b>{
+
+    <color=6>bool</color> Jump;       <color=7>// Instruction is a Jcc / jmp</color>
+    <color=6>bool</color> Call;      <color=7> // Instruction is a Call</color>
+    <color=6>bool</color> BranchSize; <color=7>// Short / Near</color>
+    <color=6>bool</color> Ret;        <color=7>// Instruction is Ret</color>
+
+}<color=10>CODE_FLOW</color>;
+
+
+<u><i><b>Members:</b></i></u>
+
+<i><color=6><b>Jump</b></color></i>
+If Instruction is a Jump Instruction family (JNZ,JMP,JZ..etc), this member is TRUE, otherwise FALSE.
+
+<i><color=6><b>Call</b></color></i>
+If Instruction is a CALL Instruction, this member is TRUE, otherwise FALSE.
+
+<i><color=6><b>BranchSize</b></color></i>
+Specifies the Size of Jump:
+
+<color=10> #define</color> NEAR_JUMP  0
+<color=10> #define</color> SHORT_JUMP 1
+
+<i><color=6><b>Ret</b></color></i>
+If Instruction is a Return Instruction, this member is TRUE, otherwise FALSE.
+----- SHM ---- page 4 ---- 
+<b>PI_FLUSHDISASM</b>
+
+An Plugin sends an PI_FLUSHDISASM Message in order to clear the DISASSEMBLY struct Member
+
+<color=8>//
+// DEFINED AS:
+//</color>
+<color=10>#define</color> <color=6>PI_FLUSHDISASM  WM_USER+PI_BASE_MSG</color>+2
+
+<b><color=4>PI_FLUSHDISASM</color></b>
+<color=10>wParam</color> = None <color=7>//Not in use</color>
+<color=10>lParam</color> = (<color=6>LPARAM</color>) (<color=10>DISASSEMBLY<b>*</b></color>) lpDisasm;    <color=7>// address of Disassembly struct to flush</color>
+
+<u><i><b>Parameters:</b></i></u>
+
+<color=6><b><i>lpDisasm</i></b></color>
+
+Value of lParam. Pointer to a DISASSEMBLY structure that receives the disassembled data sent by lpOpVector.
+
+<b>Return Values:</b>
+(None)
+when lpDisasm is filled, message is over and control is back to the Plugin
+----- SHM ---- page 5 ---- 
+<b>PI_GETASMFROMINDEX</b>
+
+An Plugin sends an PI_GETASMFROMINDEX message to retreive the disassembled data from an Index specifies the current selected line in disassembly view.
+
+<color=8>//
+// DEFINED AS:
+//</color>
+<color=10>#define</color> <color=6>PI_GETASMFROMINDEX  WM_USER+PI_BASE_MSG</color>+1
+
+<b><color=4>PI_GETASMFROMINDEX </color></b>
+<color=10>wParam</color> =  (<color=6>WPARAM</color>) (<color=10>int</color>)           iIndex;   
+<color=10>lParam</color>  = (<color=6>LPARAM</color>) (<color=10>DISASSEMBLY</color> <b>*</b>) lpDisasm; <color=7>// address of Disassembly struct to fill</color>
+ 
+
+<u><i><b>Parameters:</b></i></u>
+
+<b><color=6><i>iIndex</i></color></b>
+
+Index of the item to get disassembled information from
+
+<b><color=6><i>lpDisasm</i></color></b>
+
+Pointer to a DISASSEMBLY structure that will be filled accourding to iIndex
+
+
+<b>Return Values:</b>
+
+(None)
+when lpDisasm is filled, message is over and control is back to the Plugin
+----- SHM ---- page 6 ---- 
+<b>PI_GETFUNCTIONEPFROMINDEX</b>
+
+An Plugin sends an PI_GETFUNCTIONEPFROMINDEX message to retreive the Current Function Bountries,
+Accourding to the Current Address at Disassembly Widnow.
+
+<color=8>//
+// DEFINED AS:
+//</color>
+<color=10>#define</color> <color=6>PI_GETFUNCTIONEPFROMINDEX WM_USER+PI_BASE_MSG</color>+3
+
+<b><color=4>PI_GETFUNCTIONEPFROMINDEX</color></b>
+<color=10>wParam</color> = Selected Index in Disassembly Window / &StartAddr <color=7>// Pointer</color>
+<color=10>lParam</color> = &EndAddr <color=7>// Pointer</color>
+
+<u><i><b>Parameters:</b></i></u>
+
+<color=6><i><b>StartAddr</b></i></color>
+Fill StartAddr with the current selected Index in Disassembly Window, and pass StartAddr by Address.
+
+<i><b><color=6>EndAddr</color></b></i>
+Fill with NULL and Pass EndAddr by Address
+
+<i><b>Return Values:</b></i>
+(None)
+StartAddr / EndAddr gets filled with the function Boundries.
+
+<b>Example:</b>
+
+<color=7>// Inside the Plugin's Code</color>
+
+StartAddr = GetDisasmIndex(...); <color=7>// retrive Current Selected Index (<b>Bogus Fucntion</b>)</color>
+
+SendMessage(
+	*PlgData.Parent_hWnd,
+	<color=6>PI_GETFUNCTIONEPFROMINDEX</color>,
+	(<color=10>WPARAM</color>)&StartAddr,
+	(<color=10>LPARAM</color>)&EndAddr
+);
+
+<color=7>
+// After the Message:
+// StartAddr Holds Function's Start Address
+// EndAddr Holds Fucnrion's End Address</color>
+----- SHM ---- page 7 ---- 
+                                               <b> [History]</b>
+
+
+
+<b>-> 08.04.2005:	</b>
+		* Some bugs fixed in the function EntryPoint editor,
+		  Which allowed address with addresses like '4010'
+		  to be inserted/updated in a function.
+		  PVDasm will now accept only Dword length strings, i.e: '00401000'
+
+
+<b>-> 24.03.2005: </b>
+		 * <u>PVDasm Long Name Debug Vulnerability</u>,
+		  yes that is correct, the problem was at 2 places where i did not
+		  used the MAX_PATH in 3 buffers, which caused pvdasm to crash.
+		  this version should fix this problem.
+
+
+<b>-> 12.02.2005:	</b>
+		* Added File Map Export (File->Produce->Map File).
+		* Updating a Function's Name, will now,
+		  Be changed in PVDasm without ReDisassembly.
+		* updated <b>IDA2PV.idc</b>.
+
+<b>-> 01.02.2005:</b>
+		* updated IDA2PV.idc file to export the function's Names.
+		  With the proper functions names.
+		* MAP Importing now supports reading the Function name from the .map file.
+
+
+<b>-> 29.01.2005:</b>
+		* Updated The MASM Wizard tool,
+		  Lines which points to a string data,
+		  Defined in the .DATA Section by PVDasm,
+		  Will now be fixed from: e.g:
+		  'PUSH 12345678'
+		  TO:
+		  'PUSH OFFSET <MY_STR_NAME>'
+		* Added some Exception Handlers for various code places.
+		* Added a missing code in the MASM Wizard.
+		* Added Duplicate .DATA Lines Remover, created by the MASM Wizard.
+		* Added more default Libs/Incs created by the MASM Wizard.
+		* Fixed a bug when Wizard sees 0x0A, the output is a new line.
+		* Fixed a bug when loading a Project and,
+		  Saving the project back again.
+
+
+<b>-> 25.01.2005:</b>
+		* Added A fix for latest reported Buffer Overflow,
+	 	  when reading the Imports.
+		* Added more Plugin Messages (By Special Request)
+		* Save/Load project now support function names.
+
+<b>-> 22.01.2005:	</b>
+		* Fixed more general Bugs
+		* Functions can now be renamed.
+		* Masm Wizard now supports Functions with names.
+		  This means, the source create will now have:
+		  Call "MyFunc" insted of Call XXXXXXXX.
+		  Note: function will be shown only if a function,
+		  has a name, else it will remain Call XXXXXXXX
+
+<b>-> 13.01.2005: </b>
+		* Fixed Reported Disasm bugs by 'mcoder'
+		  To the Disasm Engine Core - thanks mcoder.
+		  Thanks for the bugs.
+		* Missing not handled Opcodes,
+		  in the Disasm engine core added.
+
+
+<b>-> 27.11.2004:</b>
+               2 major bugs has been discovered,
+                and i had to release this as a new version,
+                to keep confuse our of users.
+
+               * Fixed a nasty error,
+                 an invalid entrypoint pointer was defined,
+                 and caused a nasty crash.
+                 Note: it has nothing related with the 1.5e new code,
+                 it's regarding the FirstPass anaylzer.
+
+               * nasty freez has been fixed,
+                 it has been told to me by various members [thanks elfz!],
+                 it seems that when the mouse is leaving the disasm client,
+                 window and using the drag bar for the listview,
+                 pvdasm freezes and die.
+                 this is because the tooltip code is based on the,
+                 mouse_movie event, and leaving the client still,
+                 trigger the event and the calculation just freezes PVDasm.
+                 so i set a restrictive border between the bar and the mouse.
+                 It should work fine now.
+
+<b>-> 23.11.2004:</b>
+               <b>* </b>Added 2 more Plugin Messages.
+
+               <b>* </b><b>GUI Fixes </b>for User's comfrot (As reported by '<color=4>elfZ</color>'):
+                 <color=10>1</color>. "Decode new file dialog's tab order is quite messed up" - *Corrected*
+
+                 <color=10>2.</color> "Ctrl-Space (references) opens a window,  
+                     but I can't navigate to any of address using keyboard,
+                     (dblclick is req-d). Also, the "esc" doesn't close xref window" - *Added*
+
+                 <color=10>3.</color> "Ctrl-C as a shortcut to 'go to start of code' isn't really the best choice,
+                     I'd expect it to be 'copy selected text to clipboard'. - *Corrected + More Fixes*
+ 
+                  <color=10>4</color>. Tab Order fixes in all dialogs.
+                
+                  <color=10>5</color>. More ShurtCuts has been added to support the keyboard users.
+                      Note: the 'Plugin' menu is dynamicly created by pvdasm, 
+                      so it can't be associated with 'Alt+P' shurtcut.
+               
+                  <color=10>6</color>. Fixed some typos, added 'Add Coment' to menu and shortcut key.
+                  <color=10>7.</color> Added a 'Show String' for instructions like: LEA ESI,DWORD PTR [00403012]
+                      It will be shows as, e.g: LEA ESI,DWORD PTR [00403012] ASCIIZ "My String",0
+
+               <b>*</b> <b>ToolTip Helper:</b> When Hovering over address of instructions like: (<color=3>CALL</color> XXXXXXXX / <color=3>Jxx</color> XXXXXXXX),
+                 a window will pop up and will show the 'target' jump code. (tooltip alike help).
+                 <u>Note</u>: 'ESC' key to close the window.  
+
+                 * <b>MAP Reader</b> :
+                   PVDasm can load a <b>Specific</b> MAP file generated by IDA from the script: "Map/pvmap.idc",
+                   This will create a much more analyzed disassembly code that is correct and readable. 
+                   <u>Note</u>: See tutorial Section on how to work with MAP files.
+             
+
+<b>-> 24.08.2004: </b>
+                 <b>*</b> Added 6 more Plugin Messages.
+
+                 <b>*</b> End of a function is now marked in the last
+                   Instruction of the function boundry as a part of a remark.
+                  <u>Example</u>: <color=10>RET</color> <color=8>; proc_XXXXXXXX endp</color>
+
+                  <b>*</b> Loaded File can be released via Menu ('Close File')
+
+                 <b>*</b> Added some bug fixes (after file is closed).
+
+                 <b>*</b> Fixed decoding of the Opcode sequence: '8C3F', 
+                  "Old Display: <color=6>MOV WORD PTR DS:[EDI],+</color>", <color=8>// pointer passed the segment array onto the next one</color>
+                  "New Display: <color=6>MOV WORD PTR DS:[EDI],SEG?</color>",
+
+<b>-> 25.07.2004: </b>
+                <b>*</b> Fixed is a nasty out of range pointer,
+                  Exception in the latest built (1.5b) on big files, 
+                  Regarding the visual xreferences.
+                  In the latest build the disasm will be currupted 
+                  When loading big files (>300k+-) and trying,
+                  To access the data which is invalid.
+                  Visual xrefferences will now be added,
+                  After the disasm process, so while disasm will,
+                  Be visible, xref will be added afterward.
+                  There will be times where there wont be any xref
+                  Due to an internal exception caught by pvdasm,
+                  Mostly accur on big file with bad disassembly and
+                  Mis-aligned code.
+
+                  <u>Note</u>: the addresses references to the address will not
+                  Be shown since 'Ctrl+Space' will display them all,
+                  Or via the tool-bar button.
+
+                <b>*</b> Disassembly Bug fixed, an register was added where it shouldn't.
+                  Corrected "<color=10>[ESP+ESP+0Xh]</color>" -> "<color=10>[ESP+0Xh]</color>",
+                  Thanks to 'CoDe_InSide' for the bug report.
+		
+                  Optimized code: <color=4><b>MMX</b></color> version of StringHex->Hex convertion algorithm.
+                  Optimized code: <color=4><b>MMX</b></color> version of lstrlen(); function
+                  
+                  <u>Note</u>: if there are users with non <color=4>MMX</color> CPU enabled (support),
+                  Please tell me so i will release pvdasm,
+                  Version with a backward compability.
+
+                <b>*</b> 2 Bug fixes in the MASM Wizard, when deleting,
+                  An Data string member, the string pointer got mixed up.
+                  It will now show the good pointers so after deleting,
+                  Everything will be shown properly.
+                  And another bug when creating a new,
+                  Function entry point than the data pointer got lost,
+                  For each new 'disassembly' listing the,
+                  Data pointerwill be recalculated.
+
+                <b>*</b> Export / Import Function Database added to the subroutine,
+                  Maker dialog in the Masm Wizard.
+                  This is because for any disassembly action,
+                  The dataBase is deleted.
+                  Exporting the database could save allot of ahnd redefining.
+                  
+                  <u>Note</u>: if dataBase exported and afterward,
+                  A new function is defined within pvdasm, it does not exist,
+                  In the exported database, there for either add the new addition,
+                  To the dataBase or redefine all from beginning.
+                  Exported information is in this format:
+		
+                  <color=3>[Export File Begin .xpr]</color>
+<color=8>                  ; each seperated line must contain "\r\n"
+                  number of functions  
+                  function_1 proc...
+                  function_1 proto...
+                  function_1 endp
+                  function_1 Start address
+                  function_1 End address
+                  function_1 index  ; this means the index in the comboBox (starting from 0)</color>
+                  <color=3>[ EOF ]</color>
+ 
+                <b>*</b> Added a 'Auto Search' button to the MASM code builder,
+                  If the selected fucntion is an entrypoint and the caller,
+                  Is a 'CALL' instruction, than the auto search will find the number,
+                  Of parameters sent to the function and will automatically insert the,
+                  PROC / PROTO lines in the edit boxes.
+
+                  <u>Note</u>: it does not 'create' the function, only defines it,
+                  User will have to press the 'Create' button,
+                  To enable it in the source output.
+
+                <b>*</b> Crash fixed on disassembly view save operation when,
+                  User canceled the operation.
+
+<b>-> 02.07.2004: </b>
+          * <u>Masm Wizard tool Functionality Enhanced!!</u>
+
+            Here's what new:
+                  <b>1</b>. It will now clean: <color=3>LEAVE</color> instructions in procs.
+                  <b>2.</b> it will fix <color=3>RET</color> XXXX -> <color=3>RET</color> instructions in procs.
+                  <b>3</b>. Jumps and Calls are now automaticly refers to their lables!
+                     e.g: 
+                          <color=8>'jnz 12345678' </color>-> <color=8>'jnz ref_12345678'</color>
+                          ..code here..
+                          <color=4>ref_12345678:</color>
+                          <color=8>'call 87654321'</color> -> <color=8>'call proc_87654321'</color>
+
+                     Note: Call to an api imports stays the same! i.e: 'Call MessageBoxA'
+
+                  <b>4</b>. Procedure StackFrame clean-up, wizard will remove,
+                     The preceding "PUSH EBP" / "MOV EBP,ESP" signatures from a proc.
+                     e.g:
+		 before: 
+                                 <color=4>proc_12345678 proc</color> ...
+<color=3>                                 push ebp     ; setup,
+                                 mov ebp,esp  ;<color=1> procedure stack frame,</color>
+                                 add esp,xxh  ;<color=1> for local variables.</color></color>
+                                 <color=7>; uneffected code like more 'push ebp' </color>
+                                 <color=7>; or 'mov ebp,esp' repeated instructions.</color>
+	                 <color=3>ret</color>			
+                     
+                                 after:
+                                 <color=4>proc_12345678 proc</color> ...
+                                 <color=3>add esp,xxh </color> <color=7>; leave room for local variables.</color>
+		<color=3> ret</color>
+
+                  This gives us a compilable source code (in most cases),
+                  but not executable image! since we need to make hand modifications,
+                  for stuff like 'global' vars..etc.
+
+          * Added a preceding zero (0) for a decoded instruction,
+          e.g: '<color=3>add esp,FFFFFFFFh</color>' -> '<color=3>add esp,0FFFFFFFFh</color>'
+          note: i haven't covered all the possibilities, so it will take a while.
+
+
+<b>-> 01.07.2004:  </b>
+                * Added a small bug fix in the Disassembly engine.
+                * Save/Load project supports 'Data In Code' & 'Functions EntryPoint' information,
+                  next time loading a project it will automaticly relocate your analyzed work.
+                * Bug Fixes in the Masm wizard.	
+                * Conditional or Unconditional jumps as references are,
+                  shown in a new column in the disassembly view.
+
+<b>-> 08.05.2004: </b>
+                * Corrected an Disassembly bug (hopefully,
+                  Won't damage other decodings), this is the change:
+                  'PUSH DWORD PTR SS:[EBP+00]' -> 'PUSH DWORD PTR SS:[EBP+EAX+00]'
+                  Thanks to _Seven_ for the bug report.
+                * Added a MASM Source Code Wizard Creator (win32 asm exe's only),
+                  Check Tutorial Section in order to see how to use it.
+                * Added a Produce asm option, usually to dump the disasm window.
+
+<b>-> 14.02.2004: </b>
+                * While DblClick on an CALL<API> Instruction,
+                  PVDasm will jump to it's "JMP<API>" jump table.
+                * Api Recognition (engine) Added.
+                  PVDasm will attempt to add API Parameters,
+                  In order to make disassembly more easy to read.
+                  Recognition DataBase is saved in the \sig\msapi.sig file.
+                  It can be altered anytime for your own need anytime.
+                  the file can be renamed to any name.
+                  only 1 (main) sig file is supported at this moment.
+                * Few add-ons here and there.
+                * You can now transform/Define address range to Data/Function EntryPoint by
+                  Selecting the addresses (in the disassembly view) and
+                  press either: 
+                  Ctrl+Insert: #Define Data blocks.
+                  Alt+Insert: #Define a Function(s) EntryPoint(s).
+                  or using the contex menu for both missions.
+                * Data/Function EntryPoint Managers can be accesses using,
+                  Contex Menu (right click).
+
+<b>-> 10.02.2004: </b> 
+                * Added a New Plugin Message for Developers.
+                * Updated Help File.
+                * Added an Option to Edit/Add/Remove Function's
+                  Start/End Addresses Analyzed by the FirstPass.
+                  This Gives Flexibility for the users to modify 
+                  The Bad Analisis created by the Incomplete FirstPass.
+ 
+
+<b>-> 26.01.2004:</b>  
+                * Api <color=6>Calls/Jmps</color> , <color=4>Jmps</color>,<color=12>Calls</color> Highlighting Added,
+                  Use the Appearance Dialog to select your colors.
+                * Right Click On Disasm window pops up a Menu. (For faster access)
+                * Copy to File/Clipboard added, found in the right click popup menu.
+                * Some Visual Fixes here and there (e.g: Imports/exports has new icons).
+                * Added a new Plugin to the Pvdasm site (Chip8 Emulator)
+
+
+<b>-> 15.12.2003:</b>  
+                * 2 new SDK Messages has been added, see the pvdasm.hlp file
+                  at the PluginSDK.zip to review them.
+                * FAQ added.
+                * Some Bug Fixes.
+
+<b>-> 13.12.2003: </b> 
+                 * Simple! FirstPass analyzer has been added.
+                  if program uses FirstPass, you will be able
+                  to modify/add/delete Bad/Good data addresses found,
+                  by the analyzer when perssing 'data segments' for the next disasm process. 
+                  No Herueistics in the analyzer yet.
+
+<b>-> 12.12.2003:</b>  
+                 * Chip8 CPU Added to the CPU Category.
+                  You can disassemble with added/New CPUs only 
+                  if they are not Win32 Images (MZ/PE).
+                  if Image Loaded is Binary, Select The CPU and press on 'Set',
+                  finally press ok.
+                  No need to set CPU for loaded Win32 images, they are automaticly
+                  slects x86 CPU.
+
+
+<b>-> 02.12.2003: </b>
+                * CodePatcher bug currected, where instructions,
+                  With Prefixes were missing the last bytes (prefix size was not added).
+	
+                * Added ability to create a custom data sections (segments),
+                  if you want to treat code as data, add rva start and rva end.
+                  
+
+<b>-> 11.11.2003: </b> 
+                  * Load/Save Project Options Added.
+	              There are 7 files for each saved project.
+                  (yeah i know kidna allot, but it's easier to handle rather than 1 bif file.)
+
+                * Plugin SDK Added!:
+                  you can code your own plugins for PVDasm now.
+                  Put your plugin at the \Plugin\ dir and ur done.
+                  note: plugin will be executed only if a file has loaded into Pvdasm,
+                  (no disassemble process require to execute the plugin).
+
+                  PVDasm for now ships with this dll(s) list:
+                  -------------------------------------------
+                  <b>1</b>. <color=4>"Command Line Disassembler"</color>
+                     CLD.Dll - Plugin coded by me, the plugin gives you option to preview disassemble
+                     Opcode Vector from a command line alike mini-tool.
+                     Source for plugin included.
+
+
+<b>-> 01.11.2003:</b>  
+                * Debug Window is now Dock-able (Via ToolBar or Menu).
+                * Searching Withing the Disassembled code is no availble (be sure to check 'Match Case').
+                * XReferences is not supported, if an address is being Refferences from another,
+                  ToolBar Control will be availble, or a message will be writetn in the DebugWindow.
+                  Press Ctrl+Space, ToolBar Control  or double click the Address to view XReferences to selected line,
+                  The Window of xreferences will be opened accouring to your Mouse Pointer Position!,
+                  idea came from the intellicase window, I kinda like it ;).
+                * HexEditor - AddIn Created for RadASM (By KetilO) Has Been 'Converted' By Me to,
+                  be Used Inside VisualC++ (For VC Example Check: http://radasm.visualassembler.com/projects/CustDemo.zip).
+                  If AddIn Dll is not found in the AddIns\ Directory, you will not be able to access it via Proview (Run-Time).
+                * String Refferences & Import Refferences Dialogs has been Changed, now you can perform,
+                  Better Search Within Them, and view 'more' Information rather than using a simple ListBox ;).
+                * Disasm Bugs Fixes (Those who has been reported.) 
+                * Added Few More Seh Frames to avoid Crashes.
+                * CodePatcher - Added Inline code patcher with Assembly Preview (After Patch) in same window.
+                  After Patch has been complete you can or not ReDisassemble your Project in order to see,
+                  Changes, iv done it beccause i want to avoid MisData information when patching new bytes,
+                  So better keep stuff linear insted of curved ;) (PV is pretty fast to do ReDisassemble anyway hehe).
+                  Access it by Double Click on Opcodes Culumn, ToolBar or Menu.
+                * Gui Fixes/Edits (also fixed the bug in the disassembly appearance for the background color)
+                 
+
+<b>-> 12.10.2003:</b>  
+                 * Branch Tracing/Back Tracing has been added Using <- or -> Arrow Keys, opr trace in by,
+                  Double Click Jxx instruction in disassembly Widnow (Column).
+                  You can trace jxx/calls and return from them the same Way u traced them (No Metter how deep u traced!).
+                  Fast Tracing / Ret from tracing with left/right arrow keys, tool bar or from the menu.
+                * Tool Bar Has been upgraded, more option added
+
+
+<b>-> 01.10.2003:</b> 
+                * 100% Disassembly Speed!, you will notice a *huge!*,
+                  Speed difference from the last build.
+                  I think PVDasm can compete with the big boys now ;) (disasm speed)
+                  Although there might be still false disasm (still in testing mode)
+                * Added Colors Schmes (softice/ida/ollydbg/w32asm/custom) to the disasm window.
+                * Goto.. (address/entrypoint/code start) options added.
+                * x8 Speed optimizations to the disasm engine core.
+                * Known Bug: if file is over 5mb PV might be not responding for a while
+                  Because PV uses memory to store the information insted of a temp File (e.g: w32dasm).
+                  but it doesn't mean it doesn't work, after a while u will get result,
+                  so if you have more than 256mb mem, u will be fine during big files :) .
+                * WinXP Theme (Manifest) Added to PV'S Gui (when XP theme shell is being used only).
+                * Added String References with search dialog.     
+                * Added a custom dialog About =) just to play with skinnble dialogs.           
+                  
+
+<b>-> 27.08.2003: </b> 
+                * Import resolving added.
+                * Imports dialog with searching added.
+                * PV Now Uses Virtual ListView to hold big amount of data.
+                * PV Will Auto Allocate memory based on the disassembled code data.
+                * Double Click a disassembled line will allow to Add/Edit comments.
+
+<b>-> 15.08.2003: </b> 
+                * Disasm Engine Complete!! (except bugs i will find later :) )
+                  it isn't the fastest engine, but it suites me fine now (as a student :))
+                * Here we go.. Full support for 0F Set.
+                  Meaning: MMX / 3DNow! / SSE / SSE2 instructions + prefixes support
+                * Bug Fixes in disasm engine.
+                * Disasm from EP option added.
+
+<b>-> 10.08.2003:</b> 
+                * added Options to the disassembler menu 
+                * progress bar /percent added
+                * force disasm's bytes from ep is now user defined (0-50 bytes).
+                  Note: Smaller number of byte can cause few instructions to be not well decoded.
+
+<b>-> 09.08.2003:</b>  
+                * added 1/4 support for 0F Instruction set (JXX & 1 byte opcodes set)
+                * added another opcode support (forgot to add it).
+
+<b>-> 08.08.2003: </b> 
+                * Fixed some problems, add a forgotten opcode :D
+                * Added option to force disassembly before EP (lenght not yet user defined)
+                * Auto jump to EP, code start, address added.
+                * added option to restart disassembly
+
+<b>-> 07.08.2003: </b> 
+                * Opcode 0x0F remains to complete the Disasm engine.
+                  So you will get from time to time some gaps if your
+                  Exe is using its Set of instructions.
+                * Process Viewer/Dumper supports 9x/2k/XP  
+
+
+<b>-> 18.05.2003: </b> * Disasembler implemented.
+
+<b>-> 10.02.2003:  </b>* Added Expotrs Viewer
+
+<b>-> 05.02.2003:</b> 
+                  * Added Import viewer at the
+                  Pe editor/Directory viewer
+
+<b>-> 03.02.2003:</b> 
+                * Added a pe rebuilder
+		  fix the algiment and headers size,
+                  as well as the sections [vsize=rsize / vaddr=raddr]
+                  i cannot say it will rebuild it successfuly,
+                  notpad did worked though =)
+                  and i am opened to suggestions.
+
+		* Added a partial process dumper
+                  you can choose how maby bytes to dump
+                  and what address to start from.
+	     notes: full/partial dump does not work under
+                  win9x, due to: i dont have this OS installed :).
+
+<c>	<color=4>PVDasm.exe (v1.6c) </color>MD5 Hash: <b><color=10>E94F1008119F5E2D3D09315AD1CC0A32</color></b></c>
+<c><b> If This is not the Hash you get, the exe has been altered!</b></c>
+----- SHM ---- page 8 ---- 
+<b>PVDasm</b> is a fully written from scratch, the disassembly engine has been coded by me and its free for useage.
+Proview is my attempt to make my own disassembler as a part for school final project and for basic knowledge.
+Pv is coded fully in C (VC.6), a bit of C++ , and some STL Templates for memory managment.
+It would be nice if someone will try it out and give some response.
+Proview also includes a simplified version of a pe editor and a process manager (if you wish to dump from mem).
+i hope to add a basic gui debugger in the future as well - hopefully :)
+
+<b>Requirements</b>: Works under Windows 9x, NT/2000, XP, PVdasm require over 256mb of memory when
+Disassembling Large binaries, Take it for your attention.
+
+<b>Supported processors</b>:
+1. Intel (C) 80x86 CPU,MMX, 3DNow!,SSEx Instructions.
+2. Chip8 CPU.
+Planned For Future: z80,Morotola 68k and some more.
+
+<b>Analysis</b>. Analyzer recognizes procedures, strings embedded in code, calls to API functions,  and The PE Format.
+
+<b>Plugins</b>. You can add features to PVDasm by writing your own plugins (Check the SDK Functions).
+
+
+<c><color=3><b>thank you all for your support.</b></color></c>
+----- SHM ---- page 9 ---- 
+<b>TM</b>
+
+PVDasm is owned by Bengaly, and it is a Copyright (c) 2005.
+You can use this software freely without any form of registration, Time Limit and such restricting rules applying on this software.
+
+<b>License Agreement</b>
+
+You are not allowed to modify, decompile, disassemble or reverse engineer the Software except and only to the extent that such activity is expressly permitted by applicable law. You are not allowed to distribute or use any parts of the Software separately. You may make and distribute copies of this Software provided that a) the copy contains all files from the original distribution and these files remain unchanged; b) if you distribute any other files (for example, plugins) together with the Software, they must be clearly marked as such and the conditions of their use cannot be more restrictive than conditions of this Agreement; and c) you collect no fee (except for transport media, like CD or diskette), even if your distribution contains additional files.
+
+You are allowed to develop and distribute your own plugins for pvdasm which are  Dynamic Link Libraries (DLL) that connect to the Software and make use of the functions implemented in the Software, free of charge provided that a) your plugins contain no features that persuade or force user to register them, or limit functionality of unregistered plugins; b) you allow free distribution of your plugins on the conditions similar to that of the Software, If you want to develop commercial plugin, please contact Author for a special Agreement.
+The distribution includes files PSAPI.DLL which is a Microsoft (R) Redistributable file.
+
+<b>Some Words:</b>
+
+Pvdasm is allowed to be used on legal binaries, hench your own source code for binary decompilation and source reconstruction.
+Please do ot use this Software (PVDasm) over signed, copyright or shareware binaries for your own illegal source retrieving and reversing .
+
+
+- <color=3>Bengaly/2005</color>
+----- SHM ---- page 10 ---- 
+<b>PVDasm Plugin Messages:</b>
+
+Each Plugin is derived from a Base plugin and WM_USER: 
+
+<color=8>// PLUGIN BASE MESSAGES</color>
+<color=10>#define</color> <color=6>PI_BASE_MSG</color> 200
+
+1.  <jump=SHM_contents0002> PI_GETASM </jump>
+2.  <jump=SHM_contents0005> PI_FLUSHDISASM</jump>
+3   <jump=SHM_contents0006> PI_GETASMFROMINDEX</jump>
+4.  <jump=SHM_contents0007> PI_GETFUNCTIONEPFROMINDEX</jump>
+5.  <jump=SHM_contents0015> PI_GETENTRYPOINT</jump>
+6.  <jump=SHM_contents0016> PI_PRINTDBGTEXT</jump>
+7.  <jump=SHM_contents0017> PI_GETBYTEFROMADDRESS</jump>
+8.  <jump=SHM_contents0018> PI_RVATOFFSET</jump>
+9.  <jump=SHM_contents0019> PI_GETNUMOFSTRINGREF</jump>
+10. <jump=SHM_contents0020>PI_GETSTRINGREFERENCE</jump>
+11. <jump=SHM_contents0021>PI_SETCOMMENT</jump>
+12. <jump=SHM_contents0022>PI_ADDCOMMENT</jump>
+13. <jump=SHM_contents0024>PI_ADDFUNCTIONNAME	</jump>
+14. <jump=SHM_contents0026>PI_GETFUNCTIONNAME	</jump>
+15. <jump=SHM_contents0027>PI_GETCODESEGMENTSTARTEND</jump>
+
+<b>Related Structs:</b>
+
+1. <jump=SHM_contents0003>DISASSEMBLY</jump>
+2. <jump=SHM_contents0004>CODE_FLOW</jump>
+3. <jump=SHM_contents0025>FUNCTION_INFORMATION</jump>
+----- SHM ---- page 11 ---- 
+<b><u>PVDasm's Features</u>:</b>
+
+- Multi CPU Disassembler. (<color=4>x86</color> , <color=10>Chip8</color>)
+- PE Editor.
+- Hex Editor (Addin Coded by KetilO, Part of the RadASM Project, Custom Control).
+- Process Manager/Dumper.
+
+<b><u>InSide Features</u>:</b>
+
+- Display API Imports.
+- Display String References.
+- Display & Navigate XReferences.
+- Built-In Code Patcher.
+- Project: Save/Load.
+- SDK Plugin System.
+- FirstPass Anlyzer (Simple One At The Moment).
+- Function's EntryPoint editor.
+- Data EntryPoints editor.
+- Color Highlights (per <color=3>jmps</color>/<color=4>calls</color>/<color=8>apis</color>/<color=10>opcodes</color>/<color=4>mnemonics</color>/<color=3>remakrs</color>)
+- Branch Tracing / BackTracing.
+- Source Code Generation Wizard for Masm Target Compiler.
+- Show Target <color=3>Call</color> / <color=4>Jmps</color> within a Scrollable ToolTip window, enchanced with style coloring.
+----- SHM ---- page 12 ---- 
+<b>Proview Official FAQ (01.07.2004)</b>
+===========================
+
+<color=4><b>Quick Question Navigation</b>:</color>
+
+<jump=q1><b>1. When & Why PVDasm has been create?</b></jump>
+<jump=q2><b>2. can PVDasm compete/replace the well known w32dasm?</b></jump>
+<jump=q3><b>3. How about IDA?</b></jump>
+<jump=q4><b>4. How PVDasm works internally?</b></jump>
+<jump=q5><b>5. Why PVDasm acts slow when Disassembling Big Files (3MB+)</b></jump>
+<jump=q6><b>6. This is weird, i disassemble a file, Where is the [Program Entry Point]?</b></jump>
+<jump=q7><b>7. So PVDasm support FirstPass?</b></jump>
+<jump=q8><b>8. How The FirstPass works in PVDasm?</b></jump>
+<jump=q9><b>9. Does Proview supports Plugin SDK?</b></jump>
+<jump=q10><b>10. What Programming language Pvdasm is programed in:</b></jump>
+<jump=q11><b>11. Can i save/load disassembled file as project?</b></jump>
+<jump=q12><b>12. what is the 'Data Segments' button at the disassembly main Dialog?</b></jump>
+<jump=q13><b>13. Is PVDasm Multi-CPU Disassembler?</b></jump>
+<jump=q14><b>14. weird, i can't see all of the CPUs when loading some images, why?</b></jump>
+<jump=q15><b>15. What else PVDasm supports:</b></jump>
+<jump=q16><b>16. What more features we will see implemented?</b></jump>
+<jump=q17><b>17. Why when i press on CodePatcher at some address inOrder to patch the bytes i get diff bytes?</b></jump>
+<jump=q18><b>18. Can PVDasm create source code from the disassembled executable?</b></jump>
+<jump=q19><b>19. The source created is not complete (not compilable), where are all the stuff?</b></jump>
+
+<target>Q1</target>
+<color=4>Q</color>.<b> When & Why PVDasm has been create?</b>
+<color=3>A</color>. it was create at the beginning of 2003,
+   The actual disasm engine has been finished around September-October/03.
+   and the rest are still w.i.p (work in progress) untill now (December/2003)
+   looks like allot of time indeed, but i was also in school, so i had other projects.
+   Why it was created, mostly for School Project and some knowledge & fun.
+
+<target>Q2</target>
+<color=4>Q</color>. <b>can PVDasm compete/replace the well known w32dasm?</b>
+<color=3>A</color>. hehe, well the answer is no!, at least not for now.
+   the problem with creating a disassembler is not only by 
+   coding an disasm engine, but it is a disassembler who can 
+   able to determine & analyze between Code & Data.
+   PVDasm is in its early stages of it's FirstPass analyze.
+
+<target>Q3</target>
+<color=4>Q</color>. <b>How about IDA?</b>
+<color=3>A</color>. IDA is a professional tool,  way more advanced & supported, also has a great team behind it.
+
+<target>Q4</target>
+<color=4>Q</color>. <b>How PVDasm works internally?</b>
+<color=3>A</color>. the process it self is pretty straight forward:
+   1. Determine if file is PE (Valid Win Image executable) and Load the CPU process.
+      If not, you can choose other CPUs.
+   2. Run FirstPass analyzer and build Data segments.
+      (You can build Functions EntryPoints & Xref, but its not very accurate,
+      How About Anti-Disasm? :) )
+   3. Decode Code section and use the data Segments to differ between Code&Data
+      Visually, decode Xref,Imports on the way.
+
+   * Note i removed all the Visual-GUI & User define Stuff.
+
+<target>Q5</target>
+<color=4>Q</color>. <b>Why PVDasm acts slow when Disassembling Big Files (3MB+)</b>
+<color=3>A</color>. Ok, this is how Proview works differnt than Other Disassemblers,
+   For the well known Win32dasm you notice it disassemble very slow (load big file)
+   This is because W32dasm creates a 'tmp' file at the 'windows\temp' directory
+   with the size of, e.g: 70mb.
+   This gives the impression that w32dasm uses low memory usage.
+   On the other hand, 
+   Proview uses memory only access, this gives the effect of fast decode & access.
+   There for, if you have 256MB of mem (default today) it will use the swap file
+   when memory is needed by PVDasm, e.g: used more than 200mb of mem.
+   Why O Why you say?
+   think of that, future Computers will have huge amount of memory (e.g: 1GB-10GB)
+   there for 256 is very low and PVDasm will work flawlessly ;)
+   Thus HDD speed will increase too, but you can't even compare MEM access to HDD access.
+   i don't really sure about IDA or ollydbg, could be they uses 'tmp' files as well.
+
+<target>Q6</target>
+<color=4>Q</color>. <b>This is weird, i disassemble a file, Where is the [Program Entry Point]?</b>
+<color=3>A</color>. aha, you stumbled upon the hardest things a disassembler is facing at.
+   the problem is that when doing a linear disassembly, you can't recognize between
+   'Data' and 'Code'.
+   if for example you disassemble with FirstPass analyzer, you get:
+
+   <color=10>00401000</color><b> B8 00000000</b>    <color=4>MOV</color> EAX,0
+   <color=10>00401005</color> <b>33D2 </b>          <color=4>XOR</color> EDX,EDX
+   <color=10>00401007</color>  <b>EB 03 </b>         <color=4>JMP</color> SHORT test.0040100C ; good jump
+   <color=10>00401009</color>  <b>68 69 00 </b>      <color=7>ASCII "hi",0 </color>           ; here is the data.
+   <color=10>0040100C</color>  <b>6A 00</b>          <color=4>PUSH</color> 0                  ; perfect align
+ 
+   How would linear disassembly will do? ... very bad.
+   it will look like this:
+
+   <color=10>00401000</color> <b>B8 00000000</b>    <color=4>MOV</color> EAX,0
+   <color=10>00401005</color> <b>33D2</b>           <color=4>XOR</color> EDX,EDX
+   <color=10>00401007</color> <b>EB 03</b>          <color=4>JMP</color> SHORT test.0040100C   ; jump to where??
+   <color=10>00401009</color> <b>68 69006A00</b>    <color=4>PUSH</color> 006A0069             ; our address align has been destroyed
+   <color=10>0040100E</color> <b>68 00304000</b>    <color=4>PUSH</color> 00403000             ; ...
+
+   hmm..now you understand where the EntryPoint went to? :P ..
+   Yeah, so the problem is to find what is 'Code' and what is 'Data'
+   in order to know how to 'align' your addresses.
+   i hope you understand why sometimes we get bad disassembly.
+
+<target>Q7</target>
+<color=4>Q</color>. <b>So PVDasm support FirstPass?</b>
+<color=3>A</color>. well yes, it has a very basic FirstPass analyzer, which does not contain
+   Any heuriestic code to seperate data from bad opcodes..etc.
+   
+<target>Q8</target>
+<color=4>Q</color>. <b>How The FirstPass works in PVDasm?</b>
+<color=3>A</color>. ok, well, the basic idea for FirstPass is and will remain:
+   "Code Flow Simulation" (CFS) - hench 'FirstPass'.
+   When a disassembler supports FirstPass it is called SecondPass disassembler.
+   ok so how it works in pvdasm:
+   Always Start in EntryPoint, Decode any Instruction,
+   Upon Jump Instruction (Jxx) or Call Instruction, we follow to that Address.
+   if call/jmp redirect to an Import Entry (i.e: Call MessageBox) ignore this branch.
+   The Simulation works just like the CPU:
+   Upon Call: Follow Call and Save Return Address (Next Instruction's Address)
+   in your simulated call stack.
+   Upon Direct Jump (JMP XXXXXXX) follow immidiatelly (here i saved the next instruction's
+   Address 'assuming' it is data).
+   Upon Conditional or UnCoditional (JNZ,JZ,JG,JGE..etc) we MUST somehow take all paths.
+   You can take any path but you need to return to it in the end.
+   Upon Ret/Ret XXXX instruction we mark the end of a 'function/procedure' and we return
+   to the Caller (CALL)
+   we also mark good code rangers e.g: 00401000-00401051
+   this way we can check if we jump/call to an address we always marked.
+   by this simulation we mark start-enf of functions, xref,and data locations.
+
+<target>Q9</target>
+<color=4>Q</color>. <b>Does Proview supports Plugin SDK?</b>
+<color=3>A.</color> yes, you can create Plugins to Proview.
+   PVDasm ships with a command line Disassembler plugin as an example + source code.
+   there is UnComplete messages which the plugins can send to proview.
+   i will add more in time.
+   Plugin will refuse to load if file is not loaded first.
+
+<target>Q10</target>
+<color=4>Q</color>. <b>What Programming language Pvdasm is programed in:</b>
+<color=3>A</color>. C & Win32API,C++ & STL and ASM (some algorithms)
+
+<target>Q11</target>
+<color=4>Q</color>. <b>Can i save/load disassembled file as project?</b>
+<color=3>A</color>. yes, it will create around 7-8 files per project (so be aware)
+
+<target>Q12</target>
+<color=4>Q</color>. <b>what is the 'Data Segments' button at the disassembly main Dialog?</b>
+<color=3>A</color>. even if FirstPass has been analyzed, it is at best to allow the user to define
+   His OWN Data Segments to make disassembly align better.
+
+<target>Q13</target>
+<color=4>Q</color>. <b>Is PVDasm Multi-CPU Disassembler?</b>
+<color=3>A</color>. Yes, Proview supports for now 2 CPUs:
+   INTEL 80x86 CPU.
+   Chip-8 CPU (games running under this are: SpaceInvaders, Pong).
+
+<target>Q14</target>
+<color=4>Q</color>. <b>weird, i can't see all of the CPUs when loading some images, why?</b>
+<color=3>A</color>. the other CPUs will be enabled for non-pe Image.
+   for example, if you load an GameBoy rom, or any other Non-PE.
+   80x86 will be disabled and will show all current supported CPUs.
+
+<target>Q15</target>
+<color=4>Q</color>. <b>What else PVDasm supports:</b>
+<color=3>A</color>. it has an integrated Hex-Editor coded by KetilO for RadASM and ported by me
+   to VC++, an PE Editor,Process Manager.
+   It also supports for xRef, comments, CodePatcher,Call/Jxx Tracing & BackTracing
+   Import Anlyzer, String References for disassembly, masm source code generating wizard.
+
+<target>Q16</target>
+<color=4>Q</color>. <b>What more features we will see implemented?</b>
+<color=3>A</color>. well, it is upto the people who uses it.
+   They can ask for any kind of suggestions to be added
+   but since pvdasm supports Plugin SDK, they can code thier own
+   plugins.
+   thus, if a plugin requires special Message to be handled by PVDasm,
+   they need to contact me and i will add this message.
+   it could be i will add 'Flirt' alike system to make disassembly more easier.
+
+<target>Q17</target>
+<color=4>Q</color>. <b>Why when i press on CodePatcher at some address inOrder to patch the bytes i get diff bytes?</b>
+<color=3>A</color>. Yes i know, this problem depends on disasm align problem as explained above.
+
+<target>Q18</target>
+<color=4>Q</color>. <b>Can PVDasm create source code from the disassembled executable?</b>
+<color=3>A</color>. Yes it can! but only for win32 assembly executables, and the target for now is for Masm only!
+
+<target>Q19</target>
+<color=4>Q</color>. <b>The source created is not complete (not compilable), where are all the stuff?</b>
+<color=3>A</color>. Well, as you can see, we must 'program' PVDasm that it must gather all the needed infromation
+    in order to create the most of the source code we can get.
+    we must specify a correct Function Entrypoints addresses, as well as aligning,
+    the disassembly by configuring data in code segments if available.
+   once this has been done, we use the Masm wizard and build the source code,
+   With the right parameters.
+   * see tutorials in this help file.
+
+
+<color=6><b>A Word from the author:</b></color>
+====================
+
+first of all thank you all for supporting PVDasm.
+i want you all to know that PVDasm is still w.i.p and it is at best to
+combine other tools to gain maximum disassembly out of pvdasm.
+as you can see, you can 'teach' pvdasm what to do (e.g: data segments),
+in order to give more effective disassembly rather to provice an automatic 
+assumption.
+it is at best to work with several tools than depending on a single tool.
+
+you can discuss about pvdasm at: <color=4><b>http://board.anticrack.de/viewforum.php?f=50</b></color>
+
+and download it from: <color=10><b>http://pvdasm.anticrack.de</b></color>
+
+-<b><color=4>Bengaly</color></b> 2003-2004
+
+   
+----- SHM ---- page 13 ---- 
+<b><u>Source Code Rebuilding Using PVDasm</u></b>
+
+Note: Creating Masm Source Code (*.asm) from Win32ASM Executables only!
+
+<u>Example: COMCTL.EXE \\masm32\\ICZTUTES\\TUTE18\\</u>
+
+<jump=readycode><color=8>See Compilble Result</color></jump>
+
+load comctl.exe into pvdasm, and be sure the default options are set and disassemble the file.
+we should see something like that:
+
+======================================================================================================
+...Snip...
+<color=10>        ; ===========[ Program Entry Point ]===========    </color>    
+00401000    6A00	  PUSH 00H    ; lpModuleName    
+00401002    E8 E3020000   CALL KERNEL32!GetModuleHandleA        
+00401007    A3 4C304000   MOV DWORD PTR DS:[0040304CH], EAX        
+0040100C    6A0A	  PUSH 0AH        
+0040100E    6A00	  PUSH 00H        
+00401010    6A00	  PUSH 00H        
+00401012    FF354C304000  PUSH DWORD PTR DS:[0040304CH]        
+00401018    E8 0B000000   CALL 00401028        
+0040101D    50		PUSH EAX    ; uExitCode    
+0040101E    E8 C1020000   CALL KERNEL32!ExitProcess        
+00401023    E8 68020000   CALL COMCTL32!Ordinal: 17        
+<color=10>        ; ===========[ Subroutine ]===========  </color>      
+00401028    55		PUSH EBP        
+00401029    8BEC	  MOV EBP, ESP        
+0040102B    83C4B0	ADD ESP, -50H        
+0040102E    C745D0 30000000    MOV DWORD PTR SS:[EBP-30H],00000030H        
+00401035    C745D4 03000000    MOV DWORD PTR SS:[EBP-2CH],00000003H        
+0040103C    C745D8 FD104000    MOV DWORD PTR SS:[EBP-28H],004010FDH        
+00401043    C745DC 00000000    MOV DWORD PTR SS:[EBP-24H],00000000H        
+0040104A    C745E0 00000000    MOV DWORD PTR SS:[EBP-20H],00000000H        
+00401051    FF7508	PUSH DWORD PTR SS:[EBP+08H]        
+00401054    8F45E4	POP DWORD PTR SS:[EBP-1CH]        
+00401057    C745F0 0C000000    MOV DWORD PTR SS:[EBP-10H],0000000CH        
+0040105E    C745F4 00000000    MOV DWORD PTR SS:[EBP-0CH],00000000H        
+00401065    C745F8 00304000    MOV DWORD PTR SS:[EBP-08H],00403000H  ;ASCIIZ: "CommonControlWinClass",0    
+0040106C    68 007F0000   PUSH 00007F00H    ; lpIconName    
+00401071    6A00	  PUSH 00H    ; hInstance    
+00401073    E8 42020000   CALL USER32!LoadIconA
+
+..Snip..
+======================================================================================================
+
+nothing fancy i know .. :)
+let see what Functions EntryPoint the Simple FirstPass analyzer has Marked:
+press Ctrl+Alt+E to show the FEP Manager.
+we see 2 functions Marked, although if we browes the file, we can cleary see that there is 
+another function/subroutine unmarked.
+lets select the range of addresses to convert to FEP (Function EntryPoint), or from the FEP manager
+to enter the start/end address of the function, i'll use the marking approach,
+
+so lets mark address:
+
+<color=10>004010FE    8BEC	  MOV EBP, ESP 
+<color=1>and scroll till (while selecting lines):  </color>
+00401286    C2 1000    RET 0010H</color>
+
+and press Alt+Insert .
+output window will show us this message: <color=10><b>Address Range 004010FE : 00401286 Transformed to Function EntryPoint</b>.</color>
+you can see it added in the FEP Manager [Alt+Ctrl+E]
+
+now, to make some visual changes, lets ReDisassemble: Alt+R
+and there is it:
+
+... Snip ...
+       <color=10> ; ===========[ Subroutine ]===========   </color>     
+004010FE    8BEC	  MOV EBP, ESP        
+00401100    837D0C01    CMP DWORD PTR SS:[EBP+0CH],01H        
+00401104    0F85 95000000    JNZ 0040119F        
+0040110A    6A00	  PUSH 00H    ; lpParam    
+0040110C    FF354C304000  PUSH DWORD PTR DS:[0040304CH]    ; hInstance
+... Snip ...
+
+ok, there are only 3 functions.. no more, lets now build the Source.
+PVDasm comes with a small and easy to use Source Builder Wizard for MASM Output.
+
+<b><color=3>   Creating Source File:
+   =====================</color></b>
+
+File->Produce->Masm Project...
+
+<b>1. Setting up Path(s)
+   ==================</b>
+   
+we need here to setup the output filename (*.asm)
+and the MASM patch, (e.g: c:\masm32)
+when done, clicking Next for next Window.
+
+<b>2. Setting up Intialized Variables
+   ===============================</b>
+
+Mostly here the intialized strings will be created,
+no other globals will be defined by pvdasm.
+
+in this dialog we are presented with the name of the string, and the 
+string preview it self.
+i have restricted the var name to 25 chars, and includes only A-Z/a-z
+characters as a filter.
+
+1. to Redefine an var, simply dbl-click it's name and it will be loaded to the,
+EditBox.
+
+e,g: msctls_progress___
+
+changing it to: msctls_progress
+and click the Redefine button.
+
+2. we can also Delete duplicated strings, select your string and hit Delete Button.
+
+<u>click Next</u>
+
+<b>3. Setting up the Functions:
+   =========================</b>
+   
+here on the 'Select Range' combobox we are presented with the
+Function ranges that we and the FirstPass analyzer has marked.
+usually i think hand-marking is better than automatic feature.
+to define the functions, we must move from the top->down as we see
+from the dropdown comboBox, creating in that order will give us the same
+order on the output asm!!.
+
+<b>[The EntryPoint Subroutine]</b>
+selecting range:00401000 :: 0040101E
+Corresponding Assembly Function Block will be shown alongside the remarks.
+if this function is your entry point, Delete the 2 auto defined proto/proc text and create
+an empty skeleton.
+or press the Empty Button to automaticlly delete the proc info.
+messgaebox will tell us the function has an empry skeleton .. OK.
+
+<b>[The Subroutines]</b>
+now lets select the next Range: 00401028 :: 004010FA
+the code will be showen to us.
+notice the the main pvdasm is still selectable, so we can scroll and still use the disassembler
+in the background.
+since this range is not an entrypoint startup code, we need or not, to create parameters for the function.
+
+1.lets goto address 00401028 in the pvdasm (using goto option, or just scroll), selecing the address will tell us that
+the address has an XReference to it. right-click -> XReferences -> dbl-click the adress and we jump back to the caller.
+we will see this:
+
+============================================================
+0040100C    6A0A	  PUSH 0AH        
+0040100E    6A00	  PUSH 00H        
+00401010    6A00	  PUSH 00H        
+00401012    FF354C304000  PUSH DWORD PTR DS:[0040304CH]        
+00401018    E8 0B000000   CALL 00401028        
+============================================================
+
+this function requires 4 parameters to be sent on the stack.
+so, select the params you want to be declaire from the drop down combobox.
+usually i use DWORD, but its ur call to change what ever you want, or use a custom param and add.
+
+2. we can use the Auto Search feature here to search for us the number of parameters,
+that he function needs, once clicked and found, it will automatically define the subroutine for us.
+default param type is DWORD.
+
+all we need to do is to press Create button to define the Function.
+note: no remove button for now, manual edit your editbox and click Create to make changes.
+
+selecting the last Function range from the list: 004010FD :: 00401286
+trying to find an xref for 004010FD won't work, since there is no call to this address using any branch
+instruction located in the code section, rather, this function is being reffered by a memory access.
+see this code snippet:
+
+====================================================================
+... Snip ...       
+00401028    55		PUSH EBP        
+00401029    8BEC	  MOV EBP, ESP        
+0040102B    83C4B0	ADD ESP, -50H        
+0040102E    C745D0 30000000    MOV DWORD PTR SS:[EBP-30H],00000030H        
+00401035    C745D4 03000000    MOV DWORD PTR SS:[EBP-2CH],00000003H        
+0040103C    C745D8 FD104000    MOV DWORD PTR SS:[EBP-28H],<b>004010FDH</b>; <color=10><== LOOK HERE</color>
+00401043    C745DC 00000000    MOV DWORD PTR SS:[EBP-24H],00000000H        
+0040104A    C745E0 00000000    MOV DWORD PTR SS:[EBP-20H],00000000H        
+... Snip ...
+====================================================================
+
+well, if we check several Win32ASM sources, we might see that this code reffers to
+the WNDCLASSEXA struct using the RegisterClass api, so this function is the actuall Event Handler Function,
+you may know it as the 'WndProc' function where we handle the 'WM_INITDIALOG / WM_PAINT' messages...etc
+ok, we got it..
+this function also require 4 params (hwnd/msg/wparam/lparam).
+same thing as above, i added 4 DWORDS to the skeleton of the function and defined it.
+
+Click Next to continue.
+
+<color=10>The MASM Compiler Options:
+==========================</color>
+this is a nice little dialog where we can change the most used options for the compiler. (MASM32)
+such as the machine type, entrypoint name, calling convertion type, adding directives..etc
+
+click next and see final result of the assembly file.
+you can always go back and change your settings.
+
+
+now since PVDasm created for us most of the stuff, we need to make <u>hand modifications</u>,
+untill i will add some stuff to ease this process.
+what do we need to change:
+
+1. add the defined strings to our code insted of push xxxxxxxx change into push offset_myString
+2. when need, add 'offset proc_xxxxxxxx' into some code parts [example: WndProc caller].
+
+lets see created code by PVDasm:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+<color=3>; ##############################################################
+; # This File is generated by Proview Disassembler (PVDasm)    #
+; # Copyright (c) 2004 by Bengaly, <pvdasm.anticrack.de>       #
+; ##############################################################</color>
+<color=4>.386   ; create 32 bit code
+.model flat, stdcall ; 32 bit memory model
+option casemap:none  ; case sensitive</color>
+
+<color=4>include C:\masm32\include\windows.inc
+include C:\masm32\include\kernel32.inc
+include C:\masm32\include\user32.inc
+include C:\masm32\include\gdi32.inc
+includelib C:\masm32\lib\user32.lib
+includelib C:\masm32\lib\kernel32.lib
+includelib C:\masm32\lib\gdi32.lib</color>
+<color=3>; ##############################################################</color>
+
+<color=6>proc_00401028 proto :DWORD,:DWORD,:DWORD,:DWORD
+proc_004010FD proto :DWORD,:DWORD,:DWORD,:DWORD</color>
+
+<color=4>.data</color>
+CommonControlWinClass db <color=8>"CommonControlWinClass"</color>,0
+Common_Control_Demo_ db <color=8>"Common Control Demo"</color>,0 
+msctls_progress db <color=8>"msctls_progress32"</color>,0 
+Finished db <color=8>"Finished!"</color>,0 
+
+<color=4>.data?</color>
+
+<color=4>.code</color>
+start:
+PUSH 00H ; lpModuleName
+CALL GetModuleHandleA 
+MOV DWORD PTR DS:[0040304CH], EAX 
+PUSH 0AH 
+PUSH 00H 
+PUSH 00H 
+PUSH DWORD PTR DS:[0040304CH] 
+CALL proc_00401028
+PUSH EAX ; uExitCode
+CALL ExitProcess 
+
+<b>proc_00401028</b> proc Var1:<color=10>DWORD</color>,Var2:<color=10>DWORD</color>,Var3:<color=10>DWORD</color>,Var4:<color=10>DWORD</color>
+ADD ESP, -50H 
+MOV DWORD PTR SS:[EBP-30H],00000030H 
+MOV DWORD PTR SS:[EBP-2CH],00000003H 
+MOV DWORD PTR SS:[EBP-28H],004010FDH 
+MOV DWORD PTR SS:[EBP-24H],00000000H 
+MOV DWORD PTR SS:[EBP-20H],00000000H 
+PUSH DWORD PTR SS:[EBP+08H] 
+POP DWORD PTR SS:[EBP-1CH] 
+MOV DWORD PTR SS:[EBP-10H],0000000CH 
+MOV DWORD PTR SS:[EBP-0CH],00000000H 
+MOV DWORD PTR SS:[EBP-08H],00403000H ;ASCIIZ: "CommonControlWinClass",0
+PUSH 00007F00H ; lpIconName
+PUSH 00H ; hInstance
+CALL LoadIconA
+MOV DWORD PTR SS:[EBP-18H],EAX 
+MOV DWORD PTR SS:[EBP-04H],EAX 
+PUSH 00007F00H ; lpCursorName
+PUSH 00H ; hInstance
+CALL LoadCursorA
+MOV DWORD PTR SS:[EBP-14H],EAX 
+LEA EAX,DWORD PTR SS:[EBP-30H] 
+PUSH EAX ; pcWndClassEx
+CALL RegisterClassExA
+PUSH 00H ; lpParam
+PUSH DWORD PTR SS:[EBP+08H] ; hInstance
+PUSH 00H ; hMenu
+PUSH 00H ; hWndParent
+PUSH 80000000H ; nHeight
+PUSH 80000000H ; nWidth
+PUSH 80000000H ; y
+PUSH 80000000H ; x
+PUSH 10CB0000H ; dwStyle
+PUSH 00403016H ; lpWindowName [ ;ASCIIZ: "Common Control Demo",0 ]
+PUSH 00403000H ; lpClassName [ ;ASCIIZ: "CommonControlWinClass",0 ]
+PUSH 00000200H ; dwExStyle
+CALL CreateWindowExA
+MOV DWORD PTR SS:[EBP-50H],EAX 
+ref_004010CF:
+PUSH 00H 
+PUSH 00H ; wMsgFilterMax
+PUSH 00H ; wMsgFilterMin
+LEA EAX,DWORD PTR SS:[EBP-4CH] ; hwnd
+PUSH EAX ; lpMsg
+CALL GetMessageA
+OR EAX, EAX 
+JZ ref_004010F6
+LEA EAX,DWORD PTR SS:[EBP-4CH] 
+PUSH EAX ; lpMsg
+CALL TranslateMessage
+LEA EAX,DWORD PTR SS:[EBP-4CH] 
+PUSH EAX ; lpMsg
+CALL DispatchMessageA
+JMP ref_004010CF
+ref_004010F6:
+MOV EAX,DWORD PTR SS:[EBP-44H] 
+RET ; proc_00401028 endp
+<b>proc_00401028</b>  <b>endp</b>
+
+<b>proc_004010FD</b> proc Var1:<color=10>DWORD</color>,Var2:<color=10>DWORD</color>,Var3:<color=10>DWORD</color>,Var4:<color=10>DWORD</color>
+CMP DWORD PTR SS:[EBP+0CH],01H 
+JNZ ref_0040119F
+PUSH 00H ; lpParam
+PUSH DWORD PTR DS:[0040304CH] ; hInstance
+PUSH 01H ; hMenu
+PUSH DWORD PTR SS:[EBP+08H] ; hWndParent
+PUSH 14H ; nHeight
+PUSH 0000012CH ; nWidth
+PUSH 000000C8H ; y
+PUSH 64H ; x
+PUSH 50000000H ; dwStyle
+PUSH 00H ; lpWindowName
+PUSH 0040302AH ; lpClassName [ ;ASCIIZ: "msctls_progress32",0 ]
+PUSH 00H ; dwExStyle
+CALL CreateWindowExA
+MOV DWORD PTR DS:[00403050H], EAX 
+MOV EAX, 000003E8H 
+MOV DWORD PTR DS:[00403058H], EAX 
+SHL EAX, 10H 
+PUSH EAX ; lParam
+PUSH 00H ; wParam
+PUSH 00000401H ; wMsg
+PUSH DWORD PTR DS:[00403050H] ; hwnd
+CALL SendMessageA
+PUSH 00H ; lParam
+PUSH 0AH ; wParam
+PUSH 00000404H ; wMsg
+PUSH DWORD PTR DS:[00403050H] ; hwnd
+CALL SendMessageA
+PUSH 02H 
+PUSH DWORD PTR SS:[EBP+08H] 
+PUSH 00H 
+PUSH 50000000H 
+CALL Ordinal: 6
+MOV DWORD PTR DS:[00403054H], EAX 
+PUSH 00H ; lpTimerFunc
+PUSH 64H ; uElapse
+PUSH 03H ; nIDEvent
+PUSH DWORD PTR SS:[EBP+08H] ; hWnd
+CALL SetTimer
+MOV DWORD PTR DS:[00403046H], EAX 
+JMP ref_00401283
+ref_0040119F:
+CMP DWORD PTR SS:[EBP+0CH],02H 
+JNZ ref_004011CC
+PUSH 00H ; nExitCode
+CALL PostQuitMessage
+CMP DWORD PTR DS:[00403046H],00H 
+JZ ref_00401283
+PUSH DWORD PTR DS:[00403046H] ; nIDEvent
+PUSH DWORD PTR SS:[EBP+08H] ; hwnd
+CALL KillTimer
+JMP ref_00401283
+ref_004011CC:
+CMP DWORD PTR SS:[EBP+0CH],00000113H 
+JNZ ref_0040126E
+PUSH 00H ; lParam
+PUSH 00H ; wParam
+PUSH 00000405H ; wMsg
+PUSH DWORD PTR DS:[00403050H] ; hwnd
+CALL SendMessageA
+SUB DWORD PTR DS:[00403058H],0AH 
+CMP DWORD PTR DS:[00403058H],00H 
+JNZ ref_00401283
+PUSH DWORD PTR DS:[00403046H] ; nIDEvent
+PUSH DWORD PTR SS:[EBP+08H] ; hwnd
+CALL KillTimer
+MOV DWORD PTR DS:[00403046H],00000000H 
+PUSH 0040303CH ; lParam [ ;ASCIIZ: "Finished!",0 ]
+PUSH 00H ; wParam
+PUSH 00000401H ; wMsg
+PUSH DWORD PTR DS:[00403054H] ; hwnd
+CALL SendMessageA
+PUSH 40H ; wType
+PUSH 00403016H ; lpCaption [ ;ASCIIZ: "Common Control Demo",0 ]
+PUSH 0040303CH ; lpText [ ;ASCIIZ: "Finished!",0 ]
+PUSH DWORD PTR SS:[EBP+08H] ; hwnd
+CALL MessageBoxA
+PUSH 00H ; lParam
+PUSH 00H ; wParam
+PUSH 00000401H ; wMsg
+PUSH DWORD PTR DS:[00403054H] ; hwnd
+CALL SendMessageA
+PUSH 00H ; lParam
+PUSH 00H ; wParam
+PUSH 00000402H ; wMsg
+PUSH DWORD PTR DS:[00403050H] ; hwnd
+CALL SendMessageA
+JMP ref_00401283
+ref_0040126E:
+PUSH DWORD PTR SS:[EBP+14H] ; lParam
+PUSH DWORD PTR SS:[EBP+10H] ; wParam
+PUSH DWORD PTR SS:[EBP+0CH] ; wMsg
+PUSH DWORD PTR SS:[EBP+08H] ; hwnd
+CALL DefWindowProcA
+RET 
+ref_00401283:
+XOR EAX, EAX 
+RET ; proc_004010FD endp
+<b>proc_004010FD  endp</b>
+
+end start
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+<b><color=4>Hand Modfications - full compilble Source:
+==========================================</color></b>
+<target>ReadyCode</target>
+<color=10>; ###########################################################
+; # This File is generated by Proview Disassembler (PVDasm) #
+; # Copyright (c) 2004 by Bengaly, <pvdasm.anticrack.de>      #
+; ###########################################################</color>
+<color=4>.386   ; create 32 bit code
+.model flat, stdcall ; 32 bit memory model
+option casemap:none  ; case sensitive</color>
+
+<color=3>include</color> C:\\masm32\\include\\windows.inc
+<color=3>include</color> C:\\masm32\\include\\kernel32.inc
+<color=3>include</color> C:\\masm32\\include\\user32.inc
+<color=3>include</color> C:\\masm32\\include\\comctl32.inc
+
+<color=3>includelib</color> C:\\masm32\\lib\\user32.lib
+<color=3>includelib</color> C:\\masm32\\lib\\kernel32.lib
+<color=3>includelib</color> C:\\masm32\\lib\\comctl32.lib
+; ###########################################
+
+<color=4>proc_004010FD proto :DWORD,:DWORD,:DWORD,:DWORD
+proc_00401028 proto :DWORD,:DWORD,:DWORD,:DWORD</color>
+
+<color=6>.data</color>
+CommonControlWinClass db "<color=8>CommonControlWinClass</color>",0
+Common_Control_Demo db "<color=8>Common Control Demo</color>",0 
+msctls_progress db "<color=8>msctls_progress32</color>",0 
+Finished db "<color=8>Finished!</color>",0 
+
+<color=6>.data?</color>
+
+hInstance dd ? 
+g_hwnd dd ?
+g_param dd ?
+g_param2 dd ?
+g_param3 dd ?
+g_param4 dd ?
+
+<color=6>.code
+start:</color>
+PUSH 00H ; lpModuleName
+CALL GetModuleHandleA 
+MOV hInstance , EAX ; changed
+PUSH 0AH 
+PUSH 00H 
+PUSH 00H 
+PUSH hInstance ; changed
+CALL proc_00401028 ; changed
+PUSH EAX ; uExitCode
+CALL ExitProcess 
+
+
+<b>proc_00401028</b> proc Var1:<color=10>DWORD</color>,Var2:<color=10>DWORD</color>,Var3:<color=10>DWORD</color>,Var4:<color=10>DWORD</color>
+PUSH EBP 
+MOV EBP, ESP 
+ADD ESP, -50H 
+MOV DWORD PTR SS:[EBP-30H],00000030H 
+MOV DWORD PTR SS:[EBP-2CH],00000003H 
+MOV DWORD PTR SS:[EBP-28H],offset proc_004010FD ; changed
+MOV DWORD PTR SS:[EBP-24H],00000000H 
+MOV DWORD PTR SS:[EBP-20H],00000000H 
+PUSH DWORD PTR SS:[EBP+08H] 
+POP DWORD PTR SS:[EBP-1CH] 
+MOV DWORD PTR SS:[EBP-10H],0000000CH 
+MOV DWORD PTR SS:[EBP-0CH],00000000H 
+MOV DWORD PTR SS:[EBP-08H],offset CommonControlWinClass ;ASCIIZ: "CommonControlWinClass",0 - changed
+PUSH 00007F00H ; lpIconName
+PUSH 00H ; hInstance
+CALL LoadIconA
+MOV DWORD PTR SS:[EBP-18H],EAX 
+MOV DWORD PTR SS:[EBP-04H],EAX 
+PUSH 00007F00H ; lpCursorName
+PUSH 00H ; hInstance
+CALL LoadCursorA
+MOV DWORD PTR SS:[EBP-14H],EAX 
+LEA EAX,DWORD PTR SS:[EBP-30H] 
+PUSH EAX ; pcWndClassEx
+CALL RegisterClassExA
+PUSH 00H ; lpParam
+PUSH DWORD PTR SS:[EBP+08H] ; hInstance
+PUSH 00H ; hMenu
+PUSH 00H ; hWndParent
+PUSH 80000000H ; nHeight
+PUSH 80000000H ; nWidth
+PUSH 80000000H ; y
+PUSH 80000000H ; x
+PUSH 10CB0000H ; dwStyle
+PUSH offset Common_Control_Demo ; lpWindowName [ ;ASCIIZ: "Common Control Demo",0 ] - changed
+PUSH offset CommonControlWinClass ; lpClassName [ ;ASCIIZ: "CommonControlWinClass",0 ] - changed
+PUSH 00000200H ; dwExStyle
+CALL CreateWindowExA
+MOV DWORD PTR SS:[EBP-50H],EAX 
+ref_004010CF:
+PUSH 00H 
+PUSH 00H ; wMsgFilterMax
+PUSH 00H ; wMsgFilterMin
+LEA EAX,DWORD PTR SS:[EBP-4CH] ; hwnd
+PUSH EAX ; lpMsg
+CALL GetMessageA
+OR EAX, EAX 
+JZ ref_004010F6  ; changed
+LEA EAX,DWORD PTR SS:[EBP-4CH] 
+PUSH EAX ; lpMsg
+CALL TranslateMessage
+LEA EAX,DWORD PTR SS:[EBP-4CH] 
+PUSH EAX ; lpMsg
+CALL DispatchMessageA
+JMP ref_004010CF  ; changed
+ref_004010F6:
+MOV EAX,DWORD PTR SS:[EBP-44H] 
+;LEAVE ;Releases the local variables - ; changed
+RET ; changed
+<b>proc_00401028  endp</b>
+
+; this is our WndProc
+<b>proc_004010FD</b> proc Var1:<color=10>DWORD</color>,Var2:<color=10>DWORD</color>,Var3:<color=10>DWORD</color>,Var4:<color=10>DWORD</color>
+;PUSH EBP      ; masm creates stack frame
+;MOV EBP, ESP  ; for us, so no need to make twice
+CMP DWORD PTR SS:[EBP+0CH],01H 
+JNZ ref_0040119F  ; changed
+PUSH 00H ; lpParam
+PUSH 
+hInstance ; hInstance - changed
+PUSH 01H ; hMenu
+PUSH DWORD PTR SS:[EBP+08H] ; hWndParent
+PUSH 14H ; nHeight
+PUSH 0000012CH ; nWidth
+PUSH 000000C8H ; y
+PUSH 64H ; x
+PUSH 50000000H ; dwStyle
+PUSH 00H ; lpWindowName
+PUSH offset msctls_progress ; lpClassName [ ;ASCIIZ: "msctls_progress32",0 ] - changed
+PUSH 00H ; dwExStyle
+CALL CreateWindowExA
+MOV g_hwnd, EAX ; changed
+MOV EAX, 000003E8H 
+MOV 
+g_param, EAX  ; changed
+SHL EAX, 10H 
+PUSH EAX ; lParam
+PUSH 00H ; wParam
+PUSH 00000401H ; wMsg
+PUSH g_hwnd ; hwnd - changed
+CALL SendMessageA
+PUSH 00H ; lParam
+PUSH 0AH ; wParam
+PUSH 00000404H ; wMsg
+PUSH g_hwnd ; hwnd - changed
+CALL SendMessageA
+PUSH 02H 
+PUSH DWORD PTR SS:[EBP+08H] 
+PUSH 00H 
+PUSH 50000000H 
+CALL CreateStatusWindow ; Added
+MOV g_param4, EAX 
+PUSH 00H ; lpTimerFunc
+PUSH 64H ; uElapse
+PUSH 03H ; nIDEvent
+PUSH DWORD PTR SS:[EBP+08H] ; hWnd
+CALL SetTimer
+MOV g_param3, EAX 
+JMP ref_00401283 ; changed
+ref_0040119F:
+CMP DWORD PTR SS:[EBP+0CH],02H 
+JNZ ref_004011CC 
+PUSH 00H ; nExitCode
+CALL PostQuitMessage
+CMP g_param3,00H 
+JZ ref_00401283 ; changed
+PUSH g_param3 ; nIDEvent
+PUSH DWORD PTR SS:[EBP+08H] ; hwnd
+CALL KillTimer
+JMP ref_00401283 ; changed
+ref_004011CC:
+CMP DWORD PTR SS:[EBP+0CH],00000113H 
+JNZ ref_0040126E ; changed
+PUSH 00H ; lParam
+PUSH 00H ; wParam
+PUSH 00000405H ; wMsg
+PUSH g_hwnd ; hwnd
+CALL SendMessageA
+SUB g_param,0AH 
+CMP g_param,00H 
+JNZ ref_00401283 ; changed
+PUSH g_param3 ; nIDEvent
+PUSH DWORD PTR SS:[EBP+08H] ; hwnd
+CALL KillTimer
+MOV g_param3,00000000H 
+PUSH offset Finished ; lParam [ ;ASCIIZ: "Finished!",0 ]
+PUSH 00H ; wParam
+PUSH 00000401H ; wMsg
+PUSH g_param4 ; hwnd
+CALL SendMessageA
+PUSH 40H ; wType
+PUSH offset Common_Control_Demo ; lpCaption [ ;ASCIIZ: "Common Control Demo",0 ]
+PUSH offset Finished ; lpText [ ;ASCIIZ: "Finished!",0 ]
+PUSH DWORD PTR SS:[EBP+08H] ; hwnd
+CALL MessageBoxA
+PUSH 00H ; lParam
+PUSH 00H ; wParam
+PUSH 00000401H ; wMsg
+PUSH g_param4 ; hwnd
+CALL SendMessageA
+PUSH 00H ; lParam
+PUSH 00H ; wParam
+PUSH 00000402H ; wMsg
+PUSH g_hwnd ; hwnd
+CALL SendMessageA
+JMP ref_00401283 ; changed
+ref_0040126E:
+PUSH DWORD PTR SS:[EBP+14H] ; lParam
+PUSH DWORD PTR SS:[EBP+10H] ; wParam
+PUSH DWORD PTR SS:[EBP+0CH] ; wMsg
+PUSH DWORD PTR SS:[EBP+08H] ; hwnd
+CALL DefWindowProcA
+;LEAVE ;Releases the local variables
+RET ; changed
+ref_00401283:
+XOR EAX, EAX 
+;LEAVE ;Releases the local variables
+RET ; changed
+<b>proc_004010FD  endp</b>
+
+<color=6>end start</color>
+----- SHM ---- page 14 ---- 
+<b>PI_GETENTRYPOINT</b>
+
+A Plugin sends PI_GETENTRYPOINT message to retreive the EntryPoint Address of the current disassembled
+
+<color=8>//
+// DEFINED AS:
+//</color>
+<color=10>#define </color> <color=6>PI_GETENTRYPOINT  WM_USER+PI_BASE_MSG</color>+4 <color=8>// 23.8.04</color>
+
+<b><color=4>PI_GETENTRYPOINT</color></b>
+<color=10>wParam</color>=(<color=6>WPARAM</color>) (<color=10>DWORD</color>*)lpEntryPoint;  <color=8>// Pointer to member to fill with EntryPoint</color>
+<color=10>lParam</color>=<color=6>NULL</color>
+
+<b>Parameters:</b>
+
+<b><color=6>lpEntryPoint</color></b>
+value of wParam. Points to DWORD variable to be filled.
+
+<b>Return Values:</b>
+
+(None)
+Address of EntryPoint filled in the member lpEntryPoint.
+
+<b>Source Code:</b>
+
+<color=7>//</color>
+<color=7>// Source Code Example ( as a part of PVDasm SDK Plugin code )</color>
+<color=7>//</color>
+
+<color=10>DWORD</color> EntryPoint;
+
+<color=7>// Get Entry Point</color>
+SendMessage(*PlgData.Parent_hWnd,<color=6>PI_GETENTRYPOINT</color>,(<color=10>WPARAM</color>)&EntryPoint,<color=10>NULL</color>);
+----- SHM ---- page 15 ---- 
+<b>PI_PRINTDBGTEXT</b>
+
+A Plugin sends PI_PRINTDBGTEXT message to output (send) a string onto the Proview Output Debug Window.
+
+<color=8>//
+// DEFINED AS:
+//</color>
+<color=10>#define</color> <color=6>PI_PRINTDBGTEXT  WM_USER+PI_BASE_MSG</color>+5 <color=8>// 23.8.04</color>
+
+<b><color=4>PI_PRINTDBGTEXT</color></b>
+<color=10>wParam</color>=(<color=6>WPARAM</color>) (<color=10>char</color>*)lpString;  <color=8>// String pointer to be output in dbg window</color>
+<color=10>lParam</color>=<color=6>NULL</color>
+
+<b>Parameters:</b>
+
+<b><color=6>lpString</color></b>
+value of wParam. Points to String text to be sent to the output debug window.
+
+<b>Return Values:</b>
+
+(None)
+
+<b>Source Code:</b>
+
+<color=7>//</color>
+<color=7>// Source Code Example ( as a part of PVDasm SDK Plugin code )</color>
+<color=7>//</color>
+<color=7>// print console message ni pvdasm</color>
+SendMessage(*PlgData.Parent_hWnd,<color=6>PI_PRINTDBGTEXT</color>,(<color=10>WPARAM</color>)"Example String",<color=10>NULL</color>);
+----- SHM ---- page 16 ---- 
+<b>PI_GETBYTEFROMADDRESS</b>
+
+A Plugin sends PI_GETENTRYPOINT message in order to retrieve a byte from a specific Address.
+
+<color=8>//
+// DEFINED AS:
+//</color>
+<color=10>#define</color> <color=6>PI_GETBYTEFROMADDRESS WM_USER+PI_BASE_MSG</color>+6 <color=8>// 23.8.04</color>
+
+<b><color=4>PI_GETBYTEFROMADDRESS</color></b>
+<color=10>wParam</color>=(<color=6>WPARAM</color>) (<color=10>DWORD</color>)dwAddress;  <color=8>// Value of Address to get byte from</color>
+<color=10>lParam</color>=(<color=6>LPARAM</color>) (<color=10>BYTE</color>*)lpByte;  <color=8>// Points to a member to fill with byte</color>
+
+<b>Parameters:</b>
+
+<b><color=6>dwAddress</color></b>
+value of wParam. holds an address of the byte to retrieve.
+
+<b><color=6>lpByte</color></b>
+value of lParam. member to be filled with a byte. (as specified by address member - dwAddress)
+
+<b>Return Values:</b>
+
+(None)
+
+<b>Source Code:</b>
+
+<color=7>//</color>
+<color=7>// Source Code Example ( as a part of PVDasm SDK Plugin code )</color>
+<color=7>//</color>
+<color=10> BYTE</color> data;
+<color=7>// get byte from address</color>
+ SendMessage(*PlgData.Parent_hWnd,<color=6>PI_GETBYTEFROMADDRESS</color>,(<color=10>WPARAM</color>)Address,(<color=10>LPARAM</color>)&data);
+----- SHM ---- page 17 ---- 
+<b>PI_RVATOFFSET</b>
+
+A Plugin sends PI_RVATOFFSET message in order to retrieve the aclculated Offset from a specific Address (RVA).
+
+<color=8>//
+// DEFINED AS:
+//</color>
+<color=10>#define</color> <color=6>PI_RVATOFFSET WM_USER+PI_BASE_MSG</color>+7 <color=8>// 26.8.04</color>
+
+<b><color=4>PI_RVATOFFSET</color></b>
+<color=10>wParam</color>=(<color=6>WPARAM</color>) (<color=10>DWORD</color>)dwRVA;  <color=8>// Value of Address to get the offset of</color>
+<color=10>lParam</color>=(<color=6>LPARAM</color>) (<color=10>DWORD</color>*)lpOffset;  <color=8>// Points to a member to fill with calculated offset</color>
+
+<b>Parameters:</b>
+
+<b><color=6>dwRVA</color></b>
+value of wParam. holds an address to calculated offset from.
+
+<b><color=6>lpOffset</color></b>
+value of lParam. member to be filled with the calculated offset.
+
+<b>Return Values:</b>
+
+(None)
+
+<b>Source Code:</b>
+
+<color=7>//</color>
+<color=7>// Source Code Example ( as a part of PVDasm SDK Plugin code )</color>
+<color=7>//</color>
+<color=10>DWORD</color> Offset;
+<color=10>DWORD</color>  EntryPoint=00401000;
+<color=8>// get byte from address</color>
+SendMessage(*PlgData.Parent_hWnd,<color=6>PI_RVATOFFSET</color>,(<color=10>WPARAM</color>)EntryPoint,(<color=10>LPARAM</color>)&Offset);
+----- SHM ---- page 18 ---- 
+<b>PI_GETNUMOFSTRINGREF</b>
+
+A Plugin sends PI_GETNUMOFSTRINGREF message in order to retrieve the number of analyzed string references.
+
+
+<color=8>//
+// DEFINED AS:
+//</color>
+<color=10>#define</color> <color=6>PI_GETNUMOFSTRINGREF WM_USER+PI_BASE_MSG</color>+8 <color=8>// 26.8.04</color>
+
+<b><color=4>PI_GETNUMOFSTRINGREF</color></b>
+<color=10>wParam</color>=(<color=6>WPARAM</color>) (<color=10>DWORD</color>*)lpNumberOfStrRef;  <color=8>// Pointer to fill with number of string refs</color>
+<color=10>lParam</color>=<color=6>NULL</color>
+
+<b>Parameters:</b>
+
+<b><color=6>lpNumberOfStrRef</color></b>
+value of wParam. Pointer to fill with number of string refs
+
+<b>Return Values:</b>
+
+(None)
+
+<b>Source Code:</b>
+
+<color=7>//</color>
+<color=7>// Source Code Example ( as a part of PVDasm SDK Plugin code )</color>
+<color=7>//</color>
+<color=10>DWORD</color> NumOfStrRef=0;
+SendMessage(*PlgData.Parent_hWnd,<color=6>PI_GETNUMOFSTRINGREF</color>,(<color=10>WPARAM</color>)&NumOfStrRef,(<color=10>LPARAM</color>)NULL);
+----- SHM ---- page 19 ---- 
+<b>PI_GETSTRINGREFERENCE</b>
+
+A Plugin sends PI_GETSTRINGREFERENCE message in order to retrieve a analyzed String reference.
+
+<color=8>//
+// DEFINED AS:
+//</color>
+<color=10>#define</color> <color=6>PI_GETSTRINGREFERENCE WM_USER+PI_BASE_MSG</color>+9 <color=8>// 26.8.04</color>
+
+<b><color=4>PI_GETSTRINGREFERENCE</color></b>
+<color=10>wParam</color>=(<color=6>WPARAM</color>) (<color=10>DWORD</color>)dwIndex;  <color=8>// Index of String Reference</color>
+<color=10>lParam</color>=(<color=6>LPARAM</color>) (<color=10>CHAR</color>*)lpStrRef;  <color=8>// Points to string member to fill with the reference</color>
+
+<b>Parameters:</b>
+
+<b><color=6>dwIndex</color></b>
+value of wParam. holds the index for the string reference.
+
+<b><color=6>lpStrRef</color></b>
+value of lParam. member to be filled with the returned string reference.
+
+<b>Return Values:</b>
+
+(None)
+
+<b>Source Code:</b>
+
+<color=7>//</color>
+<color=7>// Source Code Example ( as a part of PVDasm SDK Plugin code )</color>
+<color=7>//</color>
+<color=10>DWORD</color> NumOfStrRef=0;
+<color=10>char</color> str[128];
+SendMessage(*PlgData.Parent_hWnd,<color=6>PI_GETNUMOFSTRINGREF</color>,(<color=10>WPARAM</color>)&NumOfStrRef,(<color=10>LPARAM</color>)<color=6>NULL</color>);
+            
+<color=10>for</color>(<color=10>int</color> i=0;i<NumOfStrRef;i++)(            
+    SendMessage(*PlgData.Parent_hWnd,<color=6>PI_GETSTRINGREFERENCE</color>,(<color=10>WPARAM</color>)i,(<color=10>LPARAM</color>)str);
+    SendMessage(*PlgData.Parent_hWnd,<color=6>PI_PRINTDBGTEXT</color>,(<color=10>WPARAM</color>)str,<color=6>NULL</color>);
+)
+----- SHM ---- page 20 ---- 
+<b>PI_SETCOMMENT</b>
+
+A Plugin sends PI_SETCOMMENT message in order to <b>Set</b> a new comment for a specific line in PVDasm.
+
+
+<color=8>//
+// DEFINED AS:
+//</color>
+<color=10>#define</color> <color=6>PI_SETCOMMENT WM_USER+PI_BASE_MSG</color>+10 <color=8>// NEW 16.9.04</color>
+
+<b><color=4>PI_SETCOMMENT</color></b>
+<color=10>wParam</color>=(<color=6>WPARAM</color>) (<color=10>DWORD</color>)dwIndex;  <color=8>// Index of Item to set comment to</color>
+<color=10>lParam</color>=(<color=6>LPARAM</color>) (<color=10>CHAR</color>*)lpComment;  <color=8>// Points to string comment to fill to the index</color>
+
+<b>Parameters:</b>
+
+<b><color=6>dwIndex</color></b>
+value of wParam. holds the index to the item to set comment into.
+
+<b><color=6>lpComment</color></b>
+value of lParam. NULL Terminated String member to fill with the index supplied by dwIndex.
+
+<b>Return Values:</b>
+
+(None)
+
+<b>Source Code:</b>
+<color=7>//</color>
+<color=7>// Source Code Example ( as a part of PVDasm SDK Plugin code )</color>
+<color=7>//</color>
+SendMessage(*PlgData.Parent_hWnd,<color=6>PI_SETCOMMENT</color>,(<color=10>WPARAM</color>)2,(<color=10>LPARAM</color>)"Test Comment...");
+----- SHM ---- page 21 ---- 
+<b>PI_ADDCOMMENT</b>
+
+A Plugin sends PI_ADDCOMMENT message in order to <b>Add</b> a comment for a specific line in PVDasm.
+
+
+<color=8>//
+// DEFINED AS:
+//</color>
+<color=10>#define</color> <color=6>PI_ADDCOMMENT WM_USER+PI_BASE_MSG</color>+11 <color=8>// NEW 16.9.04</color>
+
+<b><color=4>PI_ADDCOMMENT</color></b>
+<color=10>wParam</color>=(<color=6>WPARAM</color>) (<color=10>DWORD</color>)dwIndex;  <color=8>// Index of Item to set comment to</color>
+<color=10>lParam</color>=(<color=6>LPARAM</color>) (<color=10>CHAR</color>*)lpComment;  <color=8>// Points to string comment to fill to the index</color>
+
+<b>Parameters:</b>
+
+<b><color=6>dwIndex</color></b>
+value of wParam. holds the index to the item to set comment into.
+
+<b><color=6>lpComment</color></b>
+value of lParam. NULL Terminated String member to fill with the index supplied by dwIndex.
+
+<b>Return Values:</b>
+
+(None)
+
+<b>Source Code:</b>
+<color=7>//</color>
+<color=7>// Source Code Example ( as a part of PVDasm SDK Plugin code )</color>
+<color=7>//</color>
+SendMessage(*PlgData.Parent_hWnd,<color=6>PI_ADDCOMMENT</color>,(<color=10>WPARAM</color>)2,(<color=10>LPARAM</color>)"Test Comment...");
+----- SHM ---- page 22 ---- 
+<b>Creating Detailed Disassembly using a MAP file</b>
+
+PVDasm can use a <u>specific</u> MAP file, not the generic one that IDA Exports to us,
+this is because PVDasm is designed to keep functions/data seperated internally.
+the default exported map does not bring pvdasm enough info to make it seperate those data.
+there for pvdasm comes with a small script to make a new specific MAP file.
+
+<color=10><b>IDA</b></color>:
+1. Load target in IDA
+2. let IDA Analyze the file completely.
+3. Run the Script: "/Map/pvmap.idc" <color=4>(may be slow for big files! with allot of info)</color>
+4. Upon finishing, a new fille will be saved in c:/pvmap.map
+
+<color=4><b>PVDasm</b></color>:
+1. Load target in PVDasm
+2. upon "Decode New File" dialog screen, Click "Import MAP File" Button.
+3. Select c:/pvmap.map - IDA will load the information into it.
+4. Disable/Uncheck "First Pass Analyzer" - IDA already did that for us!
+5. Press ok to disassemble and view the output.
+
+Note: upon successfull MAP importing, we can see all the data imported via,
+Function Editor and Data Editor (Alt+Ctrl+D / Alt+Ctrl+E)
+----- SHM ---- page 23 ---- 
+<b>PI_ADDFUNCTIONNAME</b>
+
+A Plugin sends PI_ADDFUNCTIONNAME message in order to add a new Function (with information) to Pvdasm internal function manager.
+
+<color=8>//
+// DEFINED AS:
+//</color>
+<color=10>#define</color> <color=6>PI_ADDFUNCTIONNAME</color>			<color=6>WM_USER+PI_BASE_MSG</color>+12
+
+<b><color=4>PI_ADDFUNCTIONNAME</color></b>
+<color=10>lParam</color>=(<color=10>LPARAM</color>) <color=10>FUNCTION_INFORMATION</color> *lpFuncInfo;
+<color=10>wParam</color> = NULL;
+
+Parameters:
+
+<b><color=3>*lpFuncInfo</color></b>
+Pointer of Struct type <jump=SHM_contents0025>FUNCTION_INFORMATION</jump>.
+
+<b>Return Values:</b>
+
+(None)
+
+<b>Source Code:</b>
+
+<color=8>//
+// Source Code Example ( as a part of PVDasm SDK Plugin code )
+//</color>
+
+<color=10>FUNCTION_INFORMATION</color> myFunc;
+
+<color=9>myFunc</color>.FunctionStart=0x00401000;
+<color=9>myFunc</color>.FunctionEnd=0x00402000;
+lstrcpy(<color=9>myFunc</color>.FunctionName,"<color=5>_myFuncName</color>");
+SendMessage(*PlgData.Parent_hWnd,<color=6>PI_ADDFUNCTIONNAME</color>,(<color=10>WPARAM</color>)&<color=9>myFunc</color>,(<color=10>LPARAM</color>)NULL);
+----- SHM ---- page 24 ---- 
+<b>FUNCTION_INFORMATION</b>
+
+The FUNCTION_INFORMATION struct contains information about a function.
+
+<color=10>typedef struct</color> FunctioInformation
+	
+	<color=8>// Define a Function Name, start and end.</color>
+	<color=10>DWORD</color>	<color=5>FunctionStart</color>,<color=5>FunctionEnd</color>;
+	<color=10>char</color>	<color=5>FunctionName</color>[50];
+
+ <color=10>FUNCTION_INFORMATION</color>;
+
+<b>Memebers:</b>
+
+<color=5>FunctionStart</color>
+Specified the Function's Start Address.
+
+<color=5>FunctionEnd;</color>
+Specified the Function's End Address
+
+<color=5>FunctionName</color>
+Contains the Function's Name, can be no more than 50 characters.
+----- SHM ---- page 25 ---- 
+<b>PI_GETFUNCTIONNAME</b>
+
+A Plugin sends PI_GETFUNCTIONNAME message in order to retrieve a function's name from an address.
+
+<color=8>//
+// DEFINED AS:
+//</color>
+<color=10>#define</color> <color=6>PI_GETFUNCTIONNAME</color>	<color=3>WM_USER</color>+<color=3>PI_BASE_MSG</color>+13
+
+<b><color=4>PI_GETFUNCTIONNAME</color></b>
+<color=10>lParam</color>=(<color=10>LPARAM</color>) <color=10>DWORD</color> <color=5>dwSearchAddress</color>;
+<color=10>wParam</color> =(<color=10>WPARAM</color>) (<color=10>CHAR</color>*)<color=5>cpFunctionName</color>;
+
+<b>Parameters:</b>
+
+<color=5>dwSearchAddress</color>
+Address of which function to get from.
+e.g: if an address 0x00401000 is loacted in "_MyFunc" 's range, than the function name will be returned.
+
+<color=5>cpFunctionName</color>
+Pointer of string of which the function name will be filled (returned).
+
+<b>Return Values:</b>
+
+(None)
+
+<b>Source Code:</b>
+
+<color=8>//
+// Source Code Example ( as a part of PVDasm SDK Plugin code )
+//</color>
+
+<color=10>char</color> <color=5>Name</color>[50];
+SendMessage(*PlgData.Parent_hWnd,<color=3>PI_GETFUNCTIONNAME</color>,(<color=10>WPARAM</color>)<color=5>Name</color>,(<color=10>LPARAM</color>)<color=4>0x00401000</color>);
+----- SHM ---- page 26 ---- 
+<b>PI_GETCODESEGMENTSTARTEND</b>
+
+A Plugin sends PI_GETCODESEGMENTSTARTEND message in order to retrieve the current Code segment start and end RVAs.
+
+<color=8>//
+// DEFINED AS:
+//</color>
+<color=10>#define</color> <color=6>PI_GETCODESEGMENTSTARTEND</color>	<color=3>WM_USER</color>+<color=3>PI_BASE_MSG</color>+<color=4>14</color>
+
+<b><color=4>PI_GETCODESEGMENTSTARTEND</color></b>
+<color=10>lParam</color>=(<color=10>LPARAM</color>) (<color=10>DWORD*</color>)<color=5>dwpEndAddress</color>;
+<color=10>wParam</color> =(<color=10>WPARAM</color>) (<color=10>DWORD*</color>)<color=5>dwpStartAddress</color>;
+
+<b>Parameters:</b>
+
+<color=5>dwEndAddress</color>
+Pointer to fill with the Code Segment End Address
+
+<color=5>dwStartAddress</color>
+Pointer to fill with the Code Segment Start Address
+
+<b>Return Values:</b>
+
+(None)
+
+<b>Source Code:</b>
+
+<color=8>//
+// Source Code Example ( as a part of PVDasm SDK Plugin code )
+//</color>
+
+<color=10>DWORD</color> <color=5>Start,End</color>;
+SendMessage(*PlgData.Parent_hWnd,<color=6>PI_GETCODESEGMENTSTARTEND</color>,(<color=10>WPARAM</color>)&<color=5>Start</color>,(<color=10>LPARAM</color>)&<color=5>End</color>);

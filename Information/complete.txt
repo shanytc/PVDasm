@@ -1,0 +1,175 @@
+-----------------------------------------
+Completed Dissasembly Opcodes By ProView:
+-----------------------------------------
+
+32bit opcodes:
+==============
+0x00 (add al....dh) - hard 
+0x01 (add eax..edi) - hard 
+0x04 (add al ,00)
+0x05 (add eax, 00000000)
+
+0x06 (push es)
+0x07 (pop  es)
+
+0x08 (or al....dh) - hard 
+0x09 (or eax..edi) - hard 
+0x0C (or al, 00)
+0x0D (or eax, 00000000)
+
+0x0E (push cs)
+
+0x10 (adc al....dh) - hard 
+0x11 (adc eax..edi) - hard
+0x14 (adc al, 00)
+0x15 (adc eax, 00000000)
+
+0x16 (push ss)
+0x17 (pop  ss)
+
+0x18 (sbb al....dh) - hard 
+0x19 (sbb eax..edi) - hard 
+0x1C (sbb al, 00)
+0x1D (sbb eax, 00000000)
+
+0x1E (push ds)
+0x1F (pop  ds)
+
+0x20 (and al....dh) - hard 
+0x21 (and eax..edi) - hard 
+0x24 (and al, 00)
+0x25 (and eax, 00000000)
+
+0x27 (daa)
+
+0x28 (sub al....dh) - hard 
+0x29 (sub eax..edi) - hard 
+0x2C (sub al, 00)
+0x2D (sub eax, 00000000)
+0x2E - prefix
+0x2F (das)
+
+0x30 (xor al....dh) - hard 
+0x31 (xor eax..edi) - hard 
+0x34 (xor al, 00)
+0x35 (xor eax, 00000000)
+0x36 - prefix
+0x37 (aaa)
+
+0x38 (cmp al....dh) - hard 
+0x39 (cmp eax..edi) - hard 
+0x3A (cmp al, 00)
+0x3B (cmp eax, 00000000)
+0x3C (cmp al, 00)
+0x3D (cmp eax, 00000000)
+
+0x3E - prefix
+0x3F (aas)
+0x40 - 0x4F ( 0-7 inc  <register> | 8-F dec <register> )
+0x50 - 0x5F ( 0-7 push <register> | 8-F pop <register> )
+0x60 (pushad)
+0x61 (popad)
+
+0x62 (bound) - hard
+0x63 (arpl eax..edi) - hard 
+0x64 - prefix (fs)
+0x65 - prefix (gs)
+0x66 - prefix (size)
+0x67 - prefix (addr)
+0x68 (push 00000000)
+0x6A (push 00000000)
+0x6C (insb)
+0x6D (insd)
+0x6E (outsb)
+0x6F (outsd)
+0x70 - 0x7F (Jxx)
+
+;0x80 (<reg>) - hard
+;0x81 (<reg>) - hard
+;0x82 (<reg>) - hard
+;0x83 (<reg>) - hard
+
+0x84 (test al....dh) - hard 
+0x85 (test eax..edi) - hard 
+0x86 (xchg al....dh) - hard 
+0x87 (xchg eax..edi) - hard 
+0x88 (mov) - hard 
+0x89 (mov) - hard 
+0x8A (mov) - hard 
+0x8B (mov) - hard 
+
+;0x8C
+;0x8D
+;0x8E
+;0x8F
+
+0x90 (nop)
+0x91-0x97 ( xchg <register><register> )
+0x98 (cdwe)
+0x99 (cdq)
+0x9A (call 0000:00000000)
+0x9B (wait)
+0x9C (pushfd)
+0x9D (popfd)
+0x9E (sahf)
+0x9F (lahf)
+0xA0 ( mov al, [00000000]  )
+0xA1 ( mov eax, [00000000] )
+0xA2 ( mov [00000000], al  )
+0xA3 ( mov [00000000], eax )
+0xA4 (movsb)
+0xA5 (movsd)
+0xA6 (cmpsb)
+0xA7 (cmpsd)
+0xA8 ( test al, 00 )
+0xA9 ( test eax, 00000000 )
+0xAA (stosb)
+0xAB (stosd)
+0xAC (lodsb)
+0xAD (lodsd)
+0xAE (scasb)
+0xAF (scasd)
+0xB0 - 0xBF (mov al - mov edi)
+0xC2 (ret 0000)
+0xC3 (ret)
+0xC8 (enter)
+0xC9 (leave)
+0xCA (retf 0000)
+0xCB (retf)
+0xCC (int 3)
+0xCD (int 00 - int FF)
+0xCE (into)
+0xCF (iretd)
+0xD4 (aam - base xxx)
+0xD5 (aad)
+0xD6 (salc)
+0xD7 (xlat)
+0xE0 (loopnz)
+0xE1 (loopz)
+0xE2 (loop)
+0xE3 (Jecxz)
+0xE4 (in al, 00)
+0xE5 (in ax, 00)
+0xE6 (out 00, al)
+0xEE (out 00, dx)
+0xE8 (call 00000000)
+0xE9 (jmp  00000000)
+0xEA (jmo  0000:00000000)
+0xEB (jmp  00000000)
+0xEC (in al, dx)
+0xED (in ax, dx)
+0xEE (out dx, al)
+0xEF (out dx, ax)
+0xF0 (lock)
+0xF1 (icebp)
+0xF2 (repnz)
+0xF3 (repz)
+0xF4 (hlt)
+0xF5 (cmc)
+0xF8 (clc)
+0xF9 (stc)
+0xFA (cli)
+0xFB (sti)
+0xFC (cld)
+0xFD (std)
+

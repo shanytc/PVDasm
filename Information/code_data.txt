@@ -1,0 +1,40 @@
+Another one is that the very simple disassemblers trundle on through
+the instructions one by one sequentially...and if some data or padding
+is inserted into the code stream then the disassembler has no idea of
+this and tries to decode the "instructions" it believes this data
+is...unfortunately, though, when it returns to actual code
+instructions, the data has put the disassembler "out of synch"...and,
+therefore, all the remaining instructions thereafter are all decoded
+incorrectly (well, it can fall back into synch coincidentally...say, a
+lot of single byte instructions in a row would allow it to re-synch
+;)...
+
+That's why I'd suggest - though it's quite a bit more complicated -
+that a disassembler should start at the entry point (specified in the
+headers, of course)...and then follow the _code stream_ itself...that
+is, if it hits a "jmp SomeAddress" then the disassembler should jump
+to disassembling from that address...for conditional jumps, split off
+the disassembly process to both take and not take the conditional jump
+(remember, though this is slightly like an emulator, we're NOT
+emulating...we're trying to intelligently diassemble so we can take
+_both_ branches of any conditional jumps :)...if you like, you're
+tracing down all the possible execution paths and disassembling all of
+them...you, of course, don't need to re-disassemble any instructions
+you've already disassembled so, nope, you won't get caught inside any
+"loops" or anything...have it recognise all the possible termination
+sequences ("mov ah, 4ch; int 21h", "ret", "call ExitProcess", etc.)
+and then you know where to finish...
+
+Even better is that doing it this way means that you can look at the
+operands of instructions and the sizes of the operands and then
+compile a "data table" too...that is, if all the code in the program
+is accessing location 0x00125000 as a DWORD then you know the data
+there is DWORD sized...putting that altogether for every bit of data
+(and, even better, if data is sent to any API then you can reverse
+engineer the data types often...for instance, if a DWORD address is
+passed to "strlen" then the parameter is a zero-terminated string and,
+thus, the DWORD is actually a "char *" string :)...
+
+The only really tricky issue here is an instruction like "jmp
+[eax]"...oh dear...that's an effective conditional branch to one of
+2^32 possibilities...a way to ease the burden there is to make your

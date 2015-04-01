@@ -1,0 +1,4 @@
+:TITLE Microsoft Programmer's Guide to Windows 95
+:INDEX Microsoft Programmer's Guide to Windows 95 = 95guide.hlp
+:INCLUDE WIN32SDK.CFG
+:INCLUDE 95guide.toc

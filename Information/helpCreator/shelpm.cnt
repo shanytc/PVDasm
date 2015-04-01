@@ -1,0 +1,62 @@
+:Base shelpm.hlp
+:Title Shalom Help Maker v0.5.2
+:Index dummy=dummy.hlp ;(This is necessary when using KLinks - because of a bug in the help
+:Link dummy.hlp        ; compiler. Without this only the first keyword would be looked up!)
+1 Front page with index=SHM_contents9999@shelpm.hlp
+1 Introduction
+2 How to report problems=SHM_contents0002@shelpm.hlp
+2 What's the idea?=SHM_contents0003@shelpm.hlp
+2 Quick start (please read this)=SHM_contents0004@shelpm.hlp
+2 Functions and limitations=SHM_contents0005@shelpm.hlp
+1 File menu
+2 File menu=SHM_contents0006@shelpm.hlp
+1 Editing, toolbar, keywords
+2 Toolbar and status bar=SHM_contents0007@shelpm.hlp
+2 Keywords and Keyword Editor=SHM_contents0008@shelpm.hlp
+2 Formatting text=SHM_contents0009@shelpm.hlp
+2 Text color=SHM_contents0010@shelpm.hlp
+1 Finding things
+2 Find and replace, Bookmark, Recent projects=SHM_contents0011@shelpm.hlp
+2 Show Links To This Page=SHM_contents0012@shelpm.hlp
+2 List Occurrences Of=SHM_contents0013@shelpm.hlp
+2 Show Links To This Target=SHM_contents0014@shelpm.hlp
+1 Hiding things
+2 Insert Comment=SHM_contents0015@shelpm.hlp
+1 Links, jumps, targets and macros
+2 Tools menu: Make ALink/KLink=SHM_contents0016@shelpm.hlp
+2 Tools menu: Insert Popup Link=SHM_contents0017@shelpm.hlp
+2 Tools menu: Insert Target=SHM_contents0018@shelpm.hlp
+2 Tools menu: Insert Jump To A Target=SHM_contents0019@shelpm.hlp
+2 Tools menu: Insert Jump To Another Page=SHM_contents0020@shelpm.hlp
+2 Tools menu: Insert URL link (web or E-mail address)=SHM_contents0021@shelpm.hlp
+2 Tools menu: Insert Execute Macro=SHM_contents0022@shelpm.hlp
+1 Putting boxes around paragraphs
+2 Tools menu: Insert Box=SHM_contents0023@shelpm.hlp
+1 Working with images
+2 Tools menu: Insert Image=SHM_contents0024@shelpm.hlp
+2 Tools menu: Insert Bullet=SHM_contents0025@shelpm.hlp
+1 Working with pages
+2 Page Jumper=SHM_contents0026@shelpm.hlp
+2 Tools menu: Page Organizer=SHM_contents0027@shelpm.hlp
+2 Tools menu: Header Editor=SHM_contents0028@shelpm.hlp
+2 Tools menu: Preview Page=SHM_contents0029@shelpm.hlp
+2 Popup pages=SHM_contents0030@shelpm.hlp
+1 Options
+2 Options menu=SHM_contents0031@shelpm.hlp
+2 Project options=SHM_contents0032@shelpm.hlp
+2 Program options=SHM_contents0033@shelpm.hlp
+2 Configure Snippets=SHM_contents0034@shelpm.hlp
+1 Making a help file (compiling)
+2 Compression levels, file size and compile time=SHM_contents0035@shelpm.hlp
+2 The help compiler=SHM_contents0036@shelpm.hlp
+2 How does it all work?=SHM_contents0037@shelpm.hlp
+1 Miscellaneous
+2 Keyboard and mouse shortcuts=SHM_contents0038@shelpm.hlp
+2 How to use the help file in Delphi=SHM_contents0039@shelpm.hlp
+2 Home page, E-mail, license etc.=SHM_contents0040@shelpm.hlp
+2 WinHelp related web links=SHM_contents0041@shelpm.hlp
+2 What's new?=SHM_contents0042@shelpm.hlp
+2 What was new 1=SHM_contents0043@shelpm.hlp
+2 What was new 2=SHM_contents0044@shelpm.hlp
+2 Changing of topic ID numbers=SHM_contents0045@shelpm.hlp
+2 Hex values of special characters=SHM_contents0046@shelpm.hlp

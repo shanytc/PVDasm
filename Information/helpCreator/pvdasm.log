@@ -1,0 +1,83 @@
+Microsoft (R) Help Compiler
+HCRTF 4.03.0002
+Copyright (c) Microsoft Corp 1990 - 1995. All rights reserved.
+pvdasm.hpj
+    HC1001: Note: topic #2 of C:\Work\FileMap\Information\helpCreator\pvdasm.rtf : 
+	The keyword "PI_GETASM" is already defined in this topic.
+    HC1001: Note: topic #3 of C:\Work\FileMap\Information\helpCreator\pvdasm.rtf : 
+	The keyword "DISASSEMBLY" is already defined in this topic.
+    HC1001: Note: topic #4 of C:\Work\FileMap\Information\helpCreator\pvdasm.rtf : 
+	The keyword "CODE_FLOW" is already defined in this topic.
+    HC1001: Note: topic #5 of C:\Work\FileMap\Information\helpCreator\pvdasm.rtf : 
+	The keyword "PI_FLUSHDISASM" is already defined in this topic.
+    HC1001: Note: topic #6 of C:\Work\FileMap\Information\helpCreator\pvdasm.rtf : 
+	The keyword "PI_GETASMFROMINDEX" is already defined in this topic.
+    HC1001: Note: topic #7 of C:\Work\FileMap\Information\helpCreator\pvdasm.rtf : 
+	The keyword "PI_GETFUNCTIONEPFROMINDEX" is already defined in this topic.
+    HC1001: Note: topic #13 of C:\Work\FileMap\Information\helpCreator\pvdasm.rtf : 
+	The keyword "FAQ" is already defined in this topic.
+    HC1001: Note: topic #15 of C:\Work\FileMap\Information\helpCreator\pvdasm.rtf : 
+	The keyword "PI_GETENTRYPOINT" is already defined in this topic.
+    HC1001: Note: topic #16 of C:\Work\FileMap\Information\helpCreator\pvdasm.rtf : 
+	The keyword "PI_PRINTDBGTEXT" is already defined in this topic.
+    HC1001: Note: topic #17 of C:\Work\FileMap\Information\helpCreator\pvdasm.rtf : 
+	The keyword "PI_GETBYTEFROMADDRESS" is already defined in this topic.
+    HC1001: Note: topic #18 of C:\Work\FileMap\Information\helpCreator\pvdasm.rtf : 
+	The keyword "PI_RVATOFFSET" is already defined in this topic.
+    HC1001: Note: topic #19 of C:\Work\FileMap\Information\helpCreator\pvdasm.rtf : 
+	The keyword "PI_GETNUMOFSTRINGREF" is already defined in this topic.
+    HC1001: Note: topic #20 of C:\Work\FileMap\Information\helpCreator\pvdasm.rtf : 
+	The keyword "PI_GETSTRINGREFERENCE" is already defined in this topic.
+    HC1001: Note: topic #21 of C:\Work\FileMap\Information\helpCreator\pvdasm.rtf : 
+	The keyword "PI_SETCOMMENT" is already defined in this topic.
+    HC1001: Note: topic #22 of C:\Work\FileMap\Information\helpCreator\pvdasm.rtf : 
+	The keyword "PI_ADDCOMMENT" is already defined in this topic.
+    HC1001: Note: topic #24 of C:\Work\FileMap\Information\helpCreator\pvdasm.rtf : 
+	The keyword "PI_ADDFUNCTIONNAME" is already defined in this topic.
+    HC1001: Note: topic #25 of C:\Work\FileMap\Information\helpCreator\pvdasm.rtf : 
+	The keyword "FUNCTION_INFORMATION" is already defined in this topic.
+    HC1001: Note: topic #26 of C:\Work\FileMap\Information\helpCreator\pvdasm.rtf : 
+	The keyword "PI_GETFUNCTIONNAME" is already defined in this topic.
+    HC1001: Note: topic #27 of C:\Work\FileMap\Information\helpCreator\pvdasm.rtf : 
+	The keyword "PI_GETCODESEGMENTSTARTEND" is already defined in this topic.
+    HC2002: Note: 
+	The keywords "ben" and "Ben" are identical except for case. Help Workshop has modified one keyword to match the other.
+    HC2002: Note: 
+	The keywords "bengaly" and "Bengaly" are identical except for case. Help Workshop has modified one keyword to match the other.
+    HC2002: Note: 
+	The keywords "code" and "Code" are identical except for case. Help Workshop has modified one keyword to match the other.
+    HC2002: Note: 
+	The keywords "eula" and "EULA" are identical except for case. Help Workshop has modified one keyword to match the other.
+    HC2002: Note: 
+	The keywords "faq" and "FAQ" are identical except for case. Help Workshop has modified one keyword to match the other.
+    HC2002: Note: 
+	The keywords "features" and "Features" are identical except for case. Help Workshop has modified one keyword to match the other.
+    HC2002: Note: 
+	The keywords "legal" and "Legal" are identical except for case. Help Workshop has modified one keyword to match the other.
+    HC2002: Note: 
+	The keywords "Masm" and "masm" are identical except for case. Help Workshop has modified one keyword to match the other.
+    HC2002: Note: 
+	The keywords "Masm" and "MASM" are identical except for case. Help Workshop has modified one keyword to match the other.
+    HC2002: Note: 
+	The keywords "plugin" and "Plugin" are identical except for case. Help Workshop has modified one keyword to match the other.
+    HC2002: Note: 
+	The keywords "Proview" and "proview" are identical except for case. Help Workshop has modified one keyword to match the other.
+    HC2002: Note: 
+	The keywords "pvdasm" and "PVDasm" are identical except for case. Help Workshop has modified one keyword to match the other.
+    HC2002: Note: 
+	The keywords "pvdasm" and "PVDasm" are identical except for case. Help Workshop has modified one keyword to match the other.
+    HC2002: Note: 
+	The keywords "sdk" and "SDK" are identical except for case. Help Workshop has modified one keyword to match the other.
+    HC2002: Note: 
+	The keywords "tutorial" and "Tutorial" are identical except for case. Help Workshop has modified one keyword to match the other.
+47	Topics
+48	Jumps
+103	Keywords
+1	Bitmap
+
+
+Created c:\work\filemap\information\helpcreator\pvdasm.hlp, 54,640 bytes
+Bitmaps: 1,552 bytes
+Phrase+Zeck compression decreased help file by 42,365 bytes.
+Compile time: 0 minutes, 0 seconds
+34 notes, 0 warnings

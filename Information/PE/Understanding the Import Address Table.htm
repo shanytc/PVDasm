@@ -1,0 +1,244 @@
+
+<!-- saved from url=(0058)http://sandsprite.com/CodeStuff/Understanding_imports.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-8">
+<meta name="GENERATOR" content="Microsoft Visual Studio 6.0">
+<title>Understanding the Import Address Table</title>
+</head>
+<body>
+<table width="700">
+<tbody><tr><td>
+<font face="verdana" size="3">
+<h2>
+<center>
+Understanding the Import Address Table
+</center>
+</h2>
+<br><br>
+
+Import Libraries are dlls that an executable image are bound to.
+Much of windows core functionailty is found in Dlls that MS provides
+and is how applications interact with the base windows services.
+<br><br>
+
+Function addresses in the binary file of a dll are not static, as
+new versions come out they are destined to change, so applications
+cannot be built using a hardcoded function address.
+<br><br>
+
+When an executable is first loaded, the Windows loader is responsible for
+reading in the files PE structure and loading the executable image into
+memory. One of the other steps it takes is to load all of the dlls that
+the application uses and map them into the process address space. 
+<br><br>
+
+The executable also lists all of the functions it will require from 
+each dll. Because the function addresses are not static a mechanism had
+to be developed that allowed for the these variables to be changed without
+needing to alter all of the compiled code at runtime. 
+<br><br>
+
+This was accomplished through the use of an import address table. This is a
+table of function pointers filled in by the windows loader as the dlls are
+loaded. 
+<br><br>
+
+When the application was first compiled, it was designed so that all API
+calls will not use direct hardcoded addresses but rather work through a function pointer.
+Conventially this pointer table can be accessed in several ways. Either directly by a call[pointer address]
+or via a jmp thunk table. Below are examples of each
+<br><br>
+
+<pre>Jmp Thunk Table:
+<blockquote>
+<font color="blue">...inline app code...</font>
+00401002  |. E8 7B0D0000    CALL 00401D82               ; \GetModuleHandleA
+<font color="blue">...thunk table...</font>
+00401D82   $-FF25 4C204000 , JMP DWORD PTR DS:[40204C]  ;  KERNEL32.GetModuleHandleA
+<font color="blue">...memory address value of pointer...</font>
+40204C &gt; FC 3D 57 7C   ;little endian pointer value
+</blockquote>
+
+JMP DWORD PTR DS:[40204C] is the same as jmp 7C573DFC which is GetModuleHandleA fx address.
+that was filled into this address by the windows loader.
+
+The pointer values can also be used directly in the compiled code without the use of a thunk 
+table:
+<blockquote>
+0040103A  |. FF15 7A204000  CALL DWORD PTR DS:[40207A]               ; \MessageBoxA
+</blockquote>
+</pre>
+
+By using the pointer table, the loader does not need to fixup all of the places in the code
+that want to use the api call, all it has to do is add the pointer to a single place in
+a table and its work is done.
+<br><br>
+
+When it comes to packed executables, they almost invariably mess with the processes
+import table in order to make the executable smaller and make it harder for people to 
+unpack and get running again. 
+<br><br>
+
+
+Packed programs were still generated with standard compilers, and of course they were
+still designed to work this fixed mechanism (which is a very efficient way to handle the
+problem anyway)
+<br><br>
+
+If a packer has destroyed the default import table mechanism, that simply means that it
+has agreed to take it upon themselves to figure out which dlls and functions to load 
+and where to place the pointers so that the original program still operates as normal after
+it has done its decompression and restoration routines.
+<br><br>
+
+In order to understand how to restore a missing import table we will first have to start
+by understanding how the Import table is laid out and what work the Windows loader must
+do to parse it in the first place. 
+<br><br>
+
+To understand this, the first thing you need to digest is the PE file format and how Import
+table information is held in the binary. I have created the following jpg image of the 
+nested structures with annotations to help visualize it. It is a very complex structure
+and there is allot of stuff going on. I have only included the base information needed for
+understanding the import table in it. Structure definitions are in VB with a C style nesting
+for clarity. 
+</font>
+</td></tr>
+</tbody></table>
+
+<br><br>
+<img src="./Understanding the Import Address Table_files/pe_imptbl_headers.jpg">
+<br><br>
+
+<table width="700">
+<tbody><tr><td>
+<font face="verdana" size="3">
+
+That graphic should explain the structure and nesting adequetly. If you need more of a reference
+search the msdn site for the full PE specification. They have a very comprehensive pdf on it although it
+is quite dry.
+<br><br>
+
+If you are to write any kind of import restoration tool you will have to understand it fully. To drill it into
+your mind, I would recommend finding a small target exe and opening it up in LordPE and a hexeditor at
+the same time. Use the hexeditor to navigate the structures and LordPE as reference on field values. 
+<br><br>
+Even after all of that and writing a PE editor utility myself i still felt like i had to create that graphic in order
+to get a full sense of the nesting and layout. Dont worry it just takes time.
+<br><br>
+
+So, Lets say we have a packed executable... (with a packer that does not use API redirection for simplicity sake)
+<br><br>
+
+What information do we need to restore the import table of the app? To answer just this question i have put together 
+a small download package consisting a very simple exe with only two imports. This file was compiled with fasm and 
+simply displays a messagebox and then exits. 
+<br><br>
+First thing we do is load it up in olly and search for all intermodular calls, we come up with the following:
+
+<pre>0040103A   CALL DWORD PTR DS:[40207A]                USER32.MessageBoxA
+00401042   CALL DWORD PTR DS:[40205C]                KERNEL32.ExitProcess
+</pre>
+
+From this we really have everything that we need to build the import table from scratch. We know that the
+pointer for USER32.MessageBoxA must sit at offset 40207A and the one for  KERNEL32.ExitProcess must be 
+found at 40205C for this app to work properly. This seems simple enough, the only trick being that it is a rather
+complex structure to create to get the Windows loader to find all of the strings and load the dlls properly.
+<br><br>
+
+Lets now look at a packed version of this same app to see what the packer changed. The packer we used for
+this example was telock without using the API redirection option. The easiest way in, is to let the telocked sample
+run until it shows the messagebox and then attach to it. By this time, all debugger checks have already run
+and you know that it is paused in the main applications code. Once inside, you will be paused in ntdll, press ctrl-g
+and enter 401000 to jump to the main applications code. Now you can search for intermodular calls again and see
+all of the apis and how they are called:
+<br><br>
+
+<pre>0040103A   CALL DWORD PTR DS:[40207A]                user32.MessageBoxA
+00401042   CALL DWORD PTR DS:[40205C]                kernel32.ExitProcess
+</pre>
+
+This is exactly as it was in the original exe. If you open up the raw dump file provided in LordPE and list
+the Import table you will find that telock wiped the structure andit is not present. What we need now is
+a way to reconstruct the complex structure of the import table in the binary so that these dlls are loaded
+by the windows loader and the pointer values to the functions appear at the right offsets the linker was
+originally expecting. 
+<br><br>
+
+Of course the best way to do this is to use that graphic i created and the PE specification from MS and
+manually recreate the structures in your trusty hex editor. Even for such a simple exe it is a lengthy process
+but trust me it is worth it and this is one of the simplest exes you will find as a trainer so give it a shot.
+<br><br>
+
+Seeing how manually rebuilding the tables in a hexeditor is to lengthy of a process to do manually it is time
+to seek out some automation to help you rebuild the import table. For this I create a simple tool that allows 
+you to build an import table from scratch and control all aspects of it. There are some other automated tools
+out there for this task but I wanted to try to design my own. As a bonus, I am also releasing it open source
+so that you can see how it was done and modify it to suit your needs.
+<br><br>
+
+In the download package linked below you will find all exes mentioned throughout this paper as well as
+the impreb tool and source. The readme in the package will take you through the steps on how to use
+the tool to rewrite the import table of the sample dumped exe. This tool should also come in handy
+if you wanted to hack new functionality into a compiled exe. It should be able to be used similar to iidKing
+in this respect to add new dlls to the import table. Note this is a very bare bones first shot implementation
+of a tool for this purpose. There is probably more stuff to come as i get time. 
+<br><br>
+
+A couple last notes i should probably throw in just for reference. This paper is primarily about understanding
+the import table layout and rewriting it from scratch. I did not highlight all of the steps necessary to take
+a memory dump and fix it up, that just provided a nice example for something that needed its import table
+rebuilt.
+<br><br>
+The last thing worth mentioning is that some packers use what is termed api redirection techniques. From
+the mechanism outlined above you now know that the linker only cared that a Call[ptr] value eventually
+leads to the right api. If the packer wants to hide the actual apis from you...all it has to replace that pointer
+so that the call leads execution into its own little messed up thunk which after some junk operations and math
+will usally decode the real pointer and jump there. This is an interesting topic so I will include a sample of telock
+api redirection mechanism below:
+
+<pre>00740016  -FF20             JMP DWORD PTR DS:[EAX]                   ; user32.MessageBoxA
+00740018   90               NOP
+
+0040103A   FF15 7A204000    CALL DWORD PTR DS:[40207A]  ;40207A used to hold normal
+                                                        ; pointer to Messageboxa
+                                                        ;now jumps to 740000
+00740000   EB 02            JMP SHORT 00740004
+00740002   CD 20            INT 20
+00740004   EB 02            JMP SHORT 00740008
+00740006                    db B8                   ;anti-disasm junk
+00740008   3D 8500FF20      CMP EAX,20FF0085        ;\
+0074000D   B8 735ECF00      MOV EAX,0CF5E73         ; \__anti-heuristic junk ?
+00740012   98               CWDE                    ; / 
+00740013   8BC5             MOV EAX,EBP             ;/
+00740015   B8 21007400      MOV EAX,740025          ;address real pointer was moved to 
+0074001A   FF20             JMP DWORD PTR DS:[EAX]  ;DS:[00740025]=77E36544 (user32.MessageBoxA)
+0074001C   90               NOP                         ; \
+0074001D   B8 20000000      MOV EAX,20                  ; /--- junk
+00740022   0000             ADD BYTE PTR DS:[EAX],AL    ;-
+00740024   004465 E3        ADD BYTE PTR SS:[EBP-1D],AL ;\_ actual pointer val not opcodes 
+00740028   77 00            JA SHORT 00740026           ;/    cant disasm
+
+</pre>
+
+
+Anyway...it will probably some time to wrap your brain around it all..but its fun stuff so just play with it :P
+<br><br>
+
+<a href="http://sandsprite.com/CodeStuff/impreb.zip">Downloads</a>
+
+
+<br><br>
+-dzzie  [dzzie@yahoo.com]
+
+</font></td></tr>
+</tbody></table>
+
+
+
+
+
+
+
+
+
+</body></html>

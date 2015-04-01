@@ -1,0 +1,4 @@
+:TITLE Microsoft Windows Setup API Programmer's Reference
+:INDEX Microsoft Windows Setup API Programmer's Reference = setupapi.hlp
+:INCLUDE WIN32SDK.CFG
+:INCLUDE SETUPAPI.TOC

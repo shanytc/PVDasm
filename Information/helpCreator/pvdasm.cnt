@@ -1,0 +1,27 @@
+:Base pvdasm.hlp
+:Title Proview Disassembler &  Plugin SDK Reference
+:Index dummy=dummy.hlp ;(This is necessary when using KLinks - because of a bug in the help
+:Link dummy.hlp        ; compiler. Without this only the first keyword would be looked up!)
+1 Proview 1.7=SHM_contents0001@pvdasm.hlp
+1 PI_GETASM =SHM_contents0002@pvdasm.hlp
+1 DISASSEMBLY=SHM_contents0003@pvdasm.hlp
+1 CODE_FLOW=SHM_contents0004@pvdasm.hlp
+1 PI_FLUSHDISASM=SHM_contents0005@pvdasm.hlp
+1 PI_GETASMFROMINDEX=SHM_contents0006@pvdasm.hlp
+1 PI_GETFUNCTIONEPFROMINDEX=SHM_contents0007@pvdasm.hlp
+1 What's New In Version 1.7=SHM_contents0008@pvdasm.hlp
+1 What Is Proview? (A.K.A: PVDasm)=SHM_contents0009@pvdasm.hlp
+1 Legal Information=SHM_contents0010@pvdasm.hlp
+1 Plugin Messages=SHM_contents0011@pvdasm.hlp
+1 PVDasm's Features=SHM_contents0012@pvdasm.hlp
+1 FAQ=SHM_contents0013@pvdasm.hlp
+1 Masm Code Generation Tutorial=SHM_contents0014@pvdasm.hlp
+1 PI_GETENTRYPOINT=SHM_contents0015@pvdasm.hlp
+1 PI_PRINTDBGTEXT=SHM_contents0016@pvdasm.hlp
+1 PI_GETBYTEFROMADDRESS=SHM_contents0017@pvdasm.hlp
+1 PI_RVATOFFSET=SHM_contents0018@pvdasm.hlp
+1 PI_GETNUMOFSTRINGREF=SHM_contents0019@pvdasm.hlp
+1 PI_GETSTRINGREFERENCE=SHM_contents0020@pvdasm.hlp
+1 PI_SETCOMMENT=SHM_contents0021@pvdasm.hlp
+1 PI_ADDCOMMENT=SHM_contents0022@pvdasm.hlp
+1 MAP File=SHM_contents0023@pvdasm.hlp

@@ -1,0 +1,458 @@
+=======================================================================
+Understanding How Disasm Engines Reads and finds Imports as references
+=======================================================================
+
+----------------------------------------
+example win.exe (icezelion's example 3):
+----------------------------------------
+
+
+===========================
+Method1: Guessing Approach
+===========================
+
+lets find out, how GetCommandLineA is being the reference of Call 0040118E
+e.g:
+-----------------------------------------------------------------------------------------
+* Reference To: KERNEL32.GetCommandLineA, Ord:00B6h
+                                  |
+:0040100C E87D010000              Call 0040118E +----+
+                                                     |
+                                                     |
+* Reference To: KERNEL32.GetCommandLineA, Ord:00B6h  |
+                                  |                 \./
+:0040118E FF2504204000            Jmp dword ptr [00402004]
+-----------------------------------------------------------------------------------------
+
+0x00402004 -> pointer to Import Address Table (IAT)
+usualy the imports are at the .rdata (but not neccery)
+what we need to do is to find the offset at the pe header,
+we do this by scanning each section and locate where 0x00002004 located in.
+
+RVA->OFFSET:
+~~~~~~~~~~~~
+-----------------------------------------------------------------------------------------
+for(i=0;i<nt_header->FileHeader.NumberOfSections;i++)
+{
+   // check if the RVA is located at the section we search in
+   
+   if ( (RVA >= section_header->VirtualAddress) && 
+   (RVA < (section_header->VirtualAddress + section_header->Misc.VirtualSize)))
+		return section_header; // return the section where imports at (offset)
+	  
+    <read next section here>
+}
+-----------------------------------------------------------------------------------------
+
+We get 0x00000600 from the above example (Raw Offset)
+than we calculate:
+
+(((Pointer-ImageBase)-Virtual Address)+RawOffset)
+
+Offset=(((0x00402004-0x00400000)-0x00002000)+0x00000600)
+so we get offset = 0x0000604
+
+going to offset 0x604 and we get:
+--------------------------------------------------------------------------
+ Offset  |  0   1   2   3   4   5   6   7    8   9   A   B   C   D   E   F
+---------+----------------------------------------------------------------
+00000600 | A0  21  00  00  8E  21  00  00   80  21  00  00  00  00  00  00 
+00000610 | 10  21  00  00  1C  21  00  00   F4  20  00  00  E0  20  00  00 
+00000620 | 50  21  00  00  64  21  00  00   02  21  00  00  CE  20  00  00 
+00000630 | BC  20  00  00  2E  21  00  00   42  21  00  00  00  00  00  00 
+00000640 | 8C  20  00  00  00  00  00  00   00  00  00  00  74  21  00  00 
+00000650 | 10  20  00  00  7C  20  00  00   00  00  00  00  00  00  00  00 
+00000660 | B4  21  00  00  00  20  00  00   00  00  00  00  00  00  00  00 
+00000670 | 00  00  00  00  00  00  00  00   00  00  00  00  A0  21  00  00 
+00000680 | 8E  21  00  00  80  21  00  00   00  00  00  00  10  21  00  00 
+00000690 | 1C  21  00  00  F4  20  00  00   E0  20  00  00  50  21  00  00 
+000006A0 | 64  21  00  00  02  21  00  00   CE  20  00  00  BC  20  00  00 
+000006B0 | 2E  21  00  00  42  21  00  00   00  00  00  00  58  00  43  72 
+--------------------------------------------------------------------------
+
+look at 0x00000604, we have the pointer (WORD) 0x00008E21 -> 0x0000218E
+((Pointer - Vistual Address) + RawOffset) => Import
+
+(0x0000218E-0x0002000)+0x0000600 => 0x000078E
+
+lets dump:
+----------------------------------------------------------------------------------------------
+ Offset  |  0   1   2   3   4   5   6   7    8   9   A   B   C   D   E   F |
+---------+-----------------------------------------------------------------+------------------
+00000780 | 75  00  45  78  69  74  50  72   6F  63  65  73  73  00  B6  00 | u.ExitProcess.¶.
+00000790 | 47  65  74  43  6F  6D  6D  61   6E  64  4C  69  6E  65  41  00 | GetCommandLineA.
+----------------------------------------------------------------------------------------------
+
+as you can see, at address 0x0000078E we have: 0x0000B600 -> 0x000000B6 (182 dec)
+this is the Ordinal.
+2 bytes forward, we get the ASCIIZ import function: "GetCommandLineA",0
+
+as for the DLL, see that 00402000 is the FirtThunk of the DLL "Kernel32.DLL"
+find it by scanning the import table.
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Method 2: Using The Import Table (IDT)
+======================================
+
+This method will use the Import table insted of 'guessing' approach :)
+
+same as above lets find out, how GetCommandLineA is being the reference of Call 0040118E
+e.g:
+-----------------------------------------------------------------------------------------
+* Reference To: KERNEL32.GetCommandLineA, Ord:00B6h
+                                  |
+:0040100C E87D010000              Call 0040118E +----+
+                                                     |
+                                                     |
+* Reference To: KERNEL32.GetCommandLineA, Ord:00B6h  |
+                                  |                 \./
+:0040118E FF2504204000            Jmp dword ptr [00402004]
+-----------------------------------------------------------------------------------------
+
+IAT:
+----
+0x00402004 -> pointer to Import Descriptor (Adress) Table (IAT)
+usualy the imports are at the .rdata (but not neccery)
+First we need to save this pointer so we can match with the iat scanner,
+Pointer-ImageBase -> (0x00402004-0x0040000)= 0x00002004
+
+Offset:
+-------
+now that we have the pointer, we need the actuall offset in the executble file
+where the pointer points too;
+
+Offset = ( (Address-ImageBase) - VirtualAddress) + PointerToRawData ; (beginning of current section)
+Offset = ( (0x00402004-0x0040000) - 0x0002000  ) + 600              ; Offset = 604
+
+Import Table RVA:
+-----------------
+We need the Relative Address of the Import table as stored in the executble File
+ImportStartRVA: 00002040
+
+to get the Import Table RVA using code, we need a pointer to the NT header.
+Example:
+importsStartRVA=NTheader->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress; // Get RVA
+
+Note: RVA is the distance from the Virtual Address! (Relative to the virtual Address)
+
+Import Table Offset:
+--------------------
+Now we need to know in WHAT section the Import Table is located and get the actual Start Offset,
+in our executble File.
+Using same code as in method 1:
+
+RVA->OFFSET:
+~~~~~~~~~~~~
+-----------------------------------------------------------------------------------------
+for(i=0;i<nt_header->FileHeader.NumberOfSections;i++)
+{
+   // check if the RVA is located at the section we search in
+   
+   if ( (RVA >= section_header->VirtualAddress) && 
+   (RVA < (section_header->VirtualAddress + section_header->Misc.VirtualSize)))
+		return section_header; // return the section where imports at (offset)
+	  
+    <read next section here>
+}
+-----------------------------------------------------------------------------------------
+
+this code will return us a pointer to the section where the RVA is located in!.
+
+Example:
+Sec_Header=RVAToOffset(NTheader,Sec_Header,importsStartRVA);
+we get the ".rdata" section pointer.
+
+and fetching the Offset will be like this:
+1.
+offset = ( importsStartRVA - (VirtualAddress-PointerToRawData) )
+Offset = ( 0x0002040 - (0x0002000 - 0x00000600) ) ; Offset=0x0000640
+
+or
+
+2. 
+Offset = (ImportsStartRva - VirtualAddress) + PointerToRawData
+Offset = (0x0002040 - 0x0002000) + 0x0000600 ; Offset=0x0000640
+
+
+going to offset 0x640 and we get:
+-------------------------------------------------------------------------------------------
+ Offset  |  0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F
+---------+---------------------------------------------------------------------------------
+00000640    8C  20 00  00  00  00  00  00  00  00  00  00  74  21  00  00  Œ ..........t!..
+00000650    10  20 00  00  7C  20  00  00  00  00  00  00  00  00  00  00   ..| ..........
+00000660    B4  21 00  00  00  20  00  00  00  00  00  00  00  00  00  00  ´!... ..........
+00000670    00  00 00  00  00  00  00  00  00  00  00  00  A0  21  00  00  ............ !..
+00000680    8E  21 00  00  80  21  00  00  00  00  00  00  
+-------------------------------------------------------------------------------------------
+
+Thats the Import Descriptor Table,
+Using Code we get:
+PIMAGE_IMPORT_DESCRIPTOR importDesc = (PIMAGE_IMPORT_DESCRIPTOR) (Offset + (DWORD)FilePtr); // FilePtr Points to the "MZ" (start of executble)
+
+Lets examin a Descriptor,
+Descriptor has 5 Properties, each Property has the DATA Size of a DWORD meaning: 5*(4 bytes) = 20 bytes!
+An Descriptor is build with this properties:
+
+-----------------------------------    
+Characteristics:    0x00000000
+OriginalFirstChunk: Characteristics
+TimeDateStamp:      0x00000000
+ForwarderChain:     0x00000000
+Name:               0x00000000
+FirstChunk:         0x00000000
+-----------------------------------
+Total: 20bytes
+
+the Import Descriptor Table ends when the Name property points to NULL (0x0000000) And the Characteristics.
+
+From our offset 0x640 lets strip the descriptor:
+8C 20 00  00,  00  00  00  00,  00  00  00  00,  74  21  00  00, 10  20  00  00
+
+this turns into:
+------------------------------
+Characteristics:    0x0000208C
+OriginalFirstChunk: 0x0000208C ; Pointer to fucntion table
+TimeDateStamp:      0x00000000
+ForwarderChain:     0x00000000
+Name:               0x00002174 ; Pointer to the DLL Name!
+FirstChunk:         0x00002010 ; Pointer to the Thunk Table (Pointers to the Fucntions)
+------------------------------
+This is the First DLL located in the IDT.
+it doesn't mean out function is locate in this DLL
+
+Printing The DLL Name:
+1.
+DLL Name= ( DLL Name- (VirtualAddress-PointerToRawData) )
+DLL Name= ( 0x00002174 - (0x0002000 - 0x00000600) ) ; Offset = 0x0000774
+
+or
+
+2. 
+DLL Name= DLL Name- VirtualAddress) + PointerToRawData
+DLL Name= (0x00002174 - 0x0002000) + 0x0000600 ; Offset  = 0x0000774
+
+The Dll Name Finishes with a '\0' Null Terminator.
+
+Dumping Offset 0x0000774:
+---------------------------------------------------------------------------
+ Offset | 0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F
+--------+------------------------------------------------------------------
+00000770  6F 77 00 00 55 53 45 52 33 32 2E 64 6C 6C 00 00  ow..USER32.dll..
+--------+------------------------------------------------------------------
+TaDam!! :)
+
+
+ok so Now we have:
+------------------
+OriginalFirstChunk
+FirstChunk
+
+if OriginalFirstChunk is not availble (0x00000000) we set it to the FirstThunk.
+
+if(OriginalFirstChunk==0)
+    OriginalFirstChunk=FirstThunk;
+
+Now we need to calculate the Offset of FirstThunk and OriginalFirstChunk.
+1.
+FirstThunk/OriginalFirstChunk = ( FirstThunk/OriginalFirstChunk - (VirtualAddress-PointerToRawData) )
+FirstThunk/OriginalFirstChunk = ( 0x00002010/0x000208C - (0x0002000 - 0x00000600) ) ; Offset = 0x0000610/0x000068C
+
+or
+
+2. 
+FirstThunk/OriginalFirstChunk = (FirstThunk/OriginalFirstChunk - VirtualAddress) + PointerToRawData
+FirstThunk/OriginalFirstChunk = (0x00002010/0x000208C - 0x0002000) + 0x0000600 ; Offset= 0x0000610/0x000068C
+
+
+OriginalFirstThunk Address 0x68C:
+---------------------------------------------------------------------------
+ Offset | 0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F
+--------+------------------------------------------------------------------
+00000680                                      10 21 00 00              !..
+00000690  1C 21 00 00 F4 20 00 00 E0 20 00 00 50 21 00 00  !..ô ..à ..P!..
+000006A0  64 21 00 00 02 21 00 00 CE 20 00 00 BC 20 00 00  d!..!..Î ..¼ ..
+000006B0  2E 21 00 00 42 21 00 00 00 00 00 00              .!..B!....
+--------+------------------------------------------------------------------
+Number of Imported Functions = ((0x6B7 - 0x68C)/4) -> 11 Imported Functions (0-A) (12 with NULL)
+
+FirstThunk Address 0x610:
+---------------------------------------------------------------------------
+ Offset | 0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F
+--------+------------------------------------------------------------------
+00000610  10 21 00 00 1C 21 00 00 F4 20 00 00 E0 20 00 00  !..!..ô ..à ..
+00000620  50 21 00 00 64 21 00 00 02 21 00 00 CE 20 00 00  P!..d!..!..Î ..
+00000630  BC 20 00 00 2E 21 00 00 42 21 00 00 00 00 00 00  ¼ ...!..B!...... ; Address Of Data 0x63A - 0x63F
+--------+------------------------------------------------------------------
+
+Each DWORD is a pointer to a Function, For example if we take:  E0 20 00 00 (offset 0x698, 4th Pointer (0-3) )
+Pointer=0x000020E0
+
+Offset = Pointer-(VirtualAddress-PointerToRawData)
+or
+Offset = (Pointer - VirtualAddress) + PointerToRawData 
+
+No Metter what we choose we get the Offset: 0x6E0
+Offset Dump:
+
+---------------------------------------------------------------------------
+ Offset | 0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F
+--------+------------------------------------------------------------------
+000006E0  94 00 44 69 73 70 61 74 63 68 4D 65 73 73 61 67  ”.DispatchMessag
+000006F0  65 41 00 00                                      eA..
+--------+------------------------------------------------------------------
+First WORD is the Ordinal, and Followed by the function name terminated with NULL.
+
+
+=========================================
+Get our Function From Pointer 0x00002004:
+=========================================
+the Above example will not work for our specific function pointer (2004),
+because the function is not located in the USER32.DLL,
+However it was an example on how to retrieve information from the import table.
+all we have to do is to now is to Scan Both Descriptor Table And the OriginalFirstThunk Table!.
+we Loop the Descriptor Table (used DLLs in our application) until Name && Characteristics Points to NULL (0x00000000). 
+and Scan the OriginalFirstThunk table to find our Pointer (0x00002004) (if not availble we scan the FirstThunk Table).
+OriginalFirstThunk Table finishes when AddressOfData Points to NULL (0x00000000) (Last Pointer in the table).
+
+
+if we search for the Pointer 0x00002004 we finds out that it is located in the Second dll.
+beacuse 0x00002004 is > FirstThunk (0x00002000) meaning that the function is located from now on.
+and FirstThunk==0x00002000 is located at KERNEL32.DLL.
+and you can see that if we substract Position=(Pointer-FirstThunk) we know that the function is the second one.
+Positon=(2004-2000) = 4, 
+Position/=4 = 1
+this means the Function we search for "GetCommandLineA" is located second (0,1,2...) in the IAT.
+all we ned to do is to set a counter=2000 (First Thunk )and increase it with 4 if its not == 2004. 
+once they are matches all we have to do is to print the Function/dll name.
+the Position will take us to the Pointer where the Function name starts (Ordinal/FunctionName)
+
+So by Scanning the IDT we find the pointer located at ( Pointer>FirstThunk )
+
+------------------------------
+Characteristics:    0x0000207C
+OriginalFirstChunk: 0x0000207C ; Pointer to fucntion table (IAT)
+TimeDateStamp:      0x00000000
+ForwarderChain:     0x00000000
+Name:               0x000021B4 ; Pointer to the DLL Name!
+FirstChunk:         0x00002000 ; Pointer to the Thunk Table (Pointers to the Fucntions)
+------------------------------
+
+IAT = ( OriginalFirstChunk (RVA) - VirtualAddress) + PointerToRawData 
+IAT = (0x0000207C-0x00002000)+0x00000600 = 0x0000067C
+or the other meothod as explained above
+
+OriginalFirstThunk Points to (IAT) :
+---------------------------------------------------------------------------
+ Offset | 0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F
+--------+------------------------------------------------------------------
+00000670                                      A0 21 00 00               !..
+00000680  8E 21 00 00 80 21 00 00 00 00 00 00 10 21 00 00  Ž!..€!......!..
+00000690  1C 21 00 00 F4 20 00 00 E0 20 00 00 50 21 00 00  !..ô ..à ..P!..
+000006A0  64 21 00 00 02 21 00 00 CE 20 00 00 BC 20 00 00  d!..!..Î ..¼ ..
+000006B0  2E 21 00 00 42 21 00 00 00 00 00 00              .!..B!......
+--------+------------------------------------------------------------------
+
+Second Pointer -> 8E 21 00 00 (position 1) (FirstThunk==0x00002004)
+Pointer= 0x0000218E
+
+Offset = Pointer-(VirtualAddress-PointerToRawData)
+or
+Offset = (Pointer - VirtualAddress) + PointerToRawData 
+
+
+Function = (0x0000218E - 0x00002000) + 0x00000600
+No Metter what we choose we get the Offset: 0x78E
+
+---------------------------------------------------------------------------
+ Offset | 0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F
+--------+------------------------------------------------------------------
+00000780                                            B6 00                ¶.
+00000790  47 65 74 43 6F 6D 6D 61 6E 64 4C 69 6E 65 41 00  GetCommandLineA.
+--------+------------------------------------------------------------------
+
+Ordinal = 00B6
+Fcuntion = "GetCommandLineA"\0 (+2 bytes from befinning)
+DLL Name: KERNEL32.DLL
+
+thats it :)
+
+//==================================================================================================================//
+                                               Example
+//==================================================================================================================//
+for Each dll, we must have this loop above, if no function is resolved during the above scan,
+we move onto the next imported dll, read the pointers of firstThunk/orginalFirstThunk and ReScanning the tables.
+
+importDesc = (PIMAGE_IMPORT_DESCRIPTOR) (importsStartRVA - Offset + (DWORD)FilePtr); // points to IDT
+// Scanning the imported DLLs
+while(1)
+{
+  // finished with the dlls ?
+  if ((importDesc->TimeDateStamp==0) && (importDesc->Name==0))
+        break;
+           
+  // read thunks (pointers to the functions)
+  OriginalFirstThunk = (PIMAGE_THUNK_DATA)importDesc->Characteristics; // OriginalFirstThunk
+  FirstThunk = (PIMAGE_THUNK_DATA)importDesc->FirstThunk;   // FirstThunk
+           
+  // no OriginalFirstThunk availble
+ if(OriginalFirstThunk==0)
+    OriginalFirstThunk=FirstThunk ;
+           
+ // lets go to the Thunk table and get ready to strip the fucntions
+ OriginalFirstThunk = (PIMAGE_THUNK_DATA)( (PBYTE)OriginalFirstThunk - Offset + (DWORD)FilePtr);
+ FirstThunk = (PIMAGE_THUNK_DATA)( (PBYTE)FirstThunk- Offset + (DWORD)FilePtr);
+                        
+ // Get base thunk
+ FirstThunkCounter=importDesc->FirstThunk;
+
+ while(1)
+ {
+   // Scanning orignialFirstThunk Table   (see below!)
+ }
+
+ importDesc++;   // Next DLL
+
+}
+
+
+// Scan OriginalFirstThunk Table (or FirstThunk if not availble)
+// ==============================================================
+While (1)
+{
+    // no more functions ?
+    if (thunk->u1.AddressOfData==0)
+        break; // goto next Dll
+    
+    if(VPointer==FirstThunkCounter) // Found our Function yet ?
+    {        
+        wsprintf(DLL_Name,"%s.", (PBYTE)(importDesc->Name) - Offset + (DWORD)FilePtr); // Strip DLL
+
+        if (thunk->u1.Ordinal & IMAGE_ORDINAL_FLAG) // No Function, only ordinal!
+        {
+          wsprintf(Ordinal,"Ordinal: %u",IMAGE_ORDINAL(thunk->u1.Ordinal));
+        }
+        Else
+        {
+           pOrdinalName = thunk->u1.AddressOfData;
+           pOrdinalName = (PIMAGE_IMPORT_BY_NAME)((PBYTE)pOrdinalName - Offset + (DWORD)FilePtr);
+                
+           wsprintf(Api,"%s",pOrdinalName->Name);
+
+        }
+        return true;
+    }
+    Else
+    {
+        FirstThunkCounter+=4; // Next Point is Dword away
+        thunk++;              // Read next thunk
+        thunkIAT++;           // Read next IAT thunk
+    }    
+}
+
+thats it for today :)
+
+Ben 2003

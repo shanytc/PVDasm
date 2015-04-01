@@ -1,0 +1,349 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{9f5963fa-3f3c-427a-a709-791bc33214ca}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Functions.c">
+      <UniqueIdentifier>{cb9c4cdd-56e6-4794-9374-4b172a820f1f}</UniqueIdentifier>
+      <Extensions>c</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Pe Editor.c">
+      <UniqueIdentifier>{5293f412-fe85-419c-aa71-6dabfa37dbd0}</UniqueIdentifier>
+      <Extensions>c</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Main.c">
+      <UniqueIdentifier>{73c7409a-428c-4403-86b5-8cc89e1df858}</UniqueIdentifier>
+      <Extensions>c</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Processes.c">
+      <UniqueIdentifier>{430781a3-4ff1-42b8-a209-1d60ebeee041}</UniqueIdentifier>
+      <Extensions>*.c</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Disassembler.c">
+      <UniqueIdentifier>{86376b1d-dc8c-4da2-aa07-df7136c73652}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Disassembler.c\Disasm_Data.c">
+      <UniqueIdentifier>{70df4175-99d4-429c-a652-a0f2c6b39385}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Disassembler.c\chip8.c">
+      <UniqueIdentifier>{9771801a-bdd3-4251-a944-3d30b61be58c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\LoadPic.c">
+      <UniqueIdentifier>{886c7a15-9dbc-493a-be5a-12ca360eb926}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\HexEditor.c">
+      <UniqueIdentifier>{59ad96b6-8d1e-4121-b45a-fd141e5ca10a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Patcher.c">
+      <UniqueIdentifier>{f18a4907-eaac-4122-8434-7c04c6d46aed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Project.c">
+      <UniqueIdentifier>{c7ef1973-0b52-4ec6-a988-fe6a328380aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\SDK.c">
+      <UniqueIdentifier>{25388bb2-0b9c-457c-a5b1-9b259144c2b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PVScript.c">
+      <UniqueIdentifier>{7fb90db3-c7d5-48f6-91be-f0630b0c4fd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{e2bc1472-6237-4f4f-ba8c-d54d6c34e5ee}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Functions.h">
+      <UniqueIdentifier>{e79ad3b5-f637-4ffe-9db7-6d419a762d9b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Pe_Editor.h">
+      <UniqueIdentifier>{5dad568d-6677-4fdd-bd0b-1a846926962c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Main.h">
+      <UniqueIdentifier>{7771a563-4efc-494b-8988-afde4476c09a}</UniqueIdentifier>
+      <Extensions>h</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Processes.h">
+      <UniqueIdentifier>{64e96135-70d2-494f-85a6-040f2b6b0743}</UniqueIdentifier>
+      <Extensions>*.h</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Disassembler.h">
+      <UniqueIdentifier>{8130b2fc-988f-482e-916a-fa6ec6936e51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Disassembler.h\Disasm_Data.h">
+      <UniqueIdentifier>{4a1248ec-40d7-46a9-9618-c981c0ae12a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Disassembler.h\Chip8.h">
+      <UniqueIdentifier>{08f8ba23-6308-4921-96e2-3871fc0f4bea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\LoadPic.h">
+      <UniqueIdentifier>{ea29a117-f248-4577-848d-cdc53a6a5eab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\HexEditor.h">
+      <UniqueIdentifier>{704048be-18a4-45a0-9096-9df78dbe2d85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Patcher.h">
+      <UniqueIdentifier>{f4b78f4a-73ae-4d2a-8344-097c5b722906}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Project.h">
+      <UniqueIdentifier>{4001ced5-9a67-42f1-ad7a-1dce82482b8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\SDK.h">
+      <UniqueIdentifier>{3cffbdab-36c9-4a80-910c-e9d428f588e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PVScript.h">
+      <UniqueIdentifier>{b9cea652-9422-4941-918f-380b47139eec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{9f3ca6be-6c80-40ad-8bef-824591155d7f}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Resize\AnchorResizing.cpp">
+      <Filter>Source Files\Functions.c</Filter>
+    </ClCompile>
+    <ClCompile Include="Functions.cpp">
+      <Filter>Source Files\Functions.c</Filter>
+    </ClCompile>
+    <ClCompile Include="PE_Editor.cpp">
+      <Filter>Source Files\Pe Editor.c</Filter>
+    </ClCompile>
+    <ClCompile Include="Sections.cpp">
+      <Filter>Source Files\Pe Editor.c</Filter>
+    </ClCompile>
+    <ClCompile Include="FileMap.cpp">
+      <Filter>Source Files\Main.c</Filter>
+    </ClCompile>
+    <ClCompile Include="Process.cpp">
+      <Filter>Source Files\Processes.c</Filter>
+    </ClCompile>
+    <ClCompile Include="CDisasmColor.cpp">
+      <Filter>Source Files\Disassembler.c\Disasm_Data.c</Filter>
+    </ClCompile>
+    <ClCompile Include="CDisasmData.cpp">
+      <Filter>Source Files\Disassembler.c\Disasm_Data.c</Filter>
+    </ClCompile>
+    <ClCompile Include="Chip8.cpp">
+      <Filter>Source Files\Disassembler.c\chip8.c</Filter>
+    </ClCompile>
+    <ClCompile Include="Disasm.cpp">
+      <Filter>Source Files\Disassembler.c</Filter>
+    </ClCompile>
+    <ClCompile Include="Disasm_Options.cpp">
+      <Filter>Source Files\Disassembler.c</Filter>
+    </ClCompile>
+    <ClCompile Include="Dsasm_Functions.cpp">
+      <Filter>Source Files\Disassembler.c</Filter>
+    </ClCompile>
+    <ClCompile Include="loadpic\loadpic.cpp">
+      <Filter>Source Files\LoadPic.c</Filter>
+    </ClCompile>
+    <ClCompile Include="HexEditor.cpp">
+      <Filter>Source Files\HexEditor.c</Filter>
+    </ClCompile>
+    <ClCompile Include="Patcher.cpp">
+      <Filter>Source Files\Patcher.c</Filter>
+    </ClCompile>
+    <ClCompile Include="Project.cpp">
+      <Filter>Source Files\Project.c</Filter>
+    </ClCompile>
+    <ClCompile Include="Wizard.cpp">
+      <Filter>Source Files\Project.c</Filter>
+    </ClCompile>
+    <ClCompile Include="SDK\SDK.CPP">
+      <Filter>Source Files\SDK.c</Filter>
+    </ClCompile>
+    <ClCompile Include="PVScript\pvscript.cpp">
+      <Filter>Source Files\PVScript.c</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Resize\AnchorResizing.h">
+      <Filter>Header Files\Functions.h</Filter>
+    </ClInclude>
+    <ClInclude Include="Functions.h">
+      <Filter>Header Files\Functions.h</Filter>
+    </ClInclude>
+    <ClInclude Include="PE_Editor.h">
+      <Filter>Header Files\Pe_Editor.h</Filter>
+    </ClInclude>
+    <ClInclude Include="PE_Sections.h">
+      <Filter>Header Files\Pe_Editor.h</Filter>
+    </ClInclude>
+    <ClInclude Include="MappedFile.h">
+      <Filter>Header Files\Main.h</Filter>
+    </ClInclude>
+    <ClInclude Include="Process.h">
+      <Filter>Header Files\Processes.h</Filter>
+    </ClInclude>
+    <ClInclude Include="CDisasmData.h">
+      <Filter>Header Files\Disassembler.h\Disasm_Data.h</Filter>
+    </ClInclude>
+    <ClInclude Include="Chip8.h">
+      <Filter>Header Files\Disassembler.h\Chip8.h</Filter>
+    </ClInclude>
+    <ClInclude Include="Disasm.h">
+      <Filter>Header Files\Disassembler.h</Filter>
+    </ClInclude>
+    <ClInclude Include="loadpic\loadpic.h">
+      <Filter>Header Files\LoadPic.h</Filter>
+    </ClInclude>
+    <ClInclude Include="HexEditor.h">
+      <Filter>Header Files\HexEditor.h</Filter>
+    </ClInclude>
+    <ClInclude Include="Patcher.h">
+      <Filter>Header Files\Patcher.h</Filter>
+    </ClInclude>
+    <ClInclude Include="Project.h">
+      <Filter>Header Files\Project.h</Filter>
+    </ClInclude>
+    <ClInclude Include="Wizard.h">
+      <Filter>Header Files\Project.h</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\SDK.H">
+      <Filter>Header Files\SDK.h</Filter>
+    </ClInclude>
+    <ClInclude Include="PVScript\pvscript.h">
+      <Filter>Header Files\PVScript.h</Filter>
+    </ClInclude>
+    <ClInclude Include="x64.h">
+      <Filter>Header Files\Main.h</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resource\FileMap.rsrc.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="resource\bitmap1.bmp">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\bmp00001.bmp">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\bmp00002.bmp">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\bmp00003.bmp">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\bmp00004.bmp">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\bmp00005.bmp">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\bmp00006.bmp">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\bmp00007.bmp">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\bmp00008.bmp">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\default1.bin">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\exports.bmp">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\function.bmp">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\icon1.ico">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\Imports.bmp">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\LIST.BMP">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\logo.gif">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\pic.bmp">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\pic.jpg">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\rc_addr.bmp">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\rc_appear.bmp">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\rc_code.bmp">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\rc_copy1.bmp">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\rc_data_manager.bmp">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\rc_define_data.bmp">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\rc_define_func.bmp">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\rc_ep.bmp">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\rc_ep1.bmp">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\rc_find.bmp">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\rc_func_manager.bmp">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\rc_hex.bmp">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\rc_imp.bmp">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\rc_patch.bmp">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\rc_ref.bmp">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\rc_save.bmp">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\rc_save1.bmp">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\rc_xref.bmp">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\ToolBar.bmp">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\ToolBarHot.bmp">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\W95MBX03.ICO">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\W95MBX04.ICO">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\xref.jpg">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="resource\pic.rgn" />
+    <CustomBuild Include="ReadMe.txt" />
+    <CustomBuild Include="resource\xref.rgn" />
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="resource\PVDasm.exe.manifest" />
+  </ItemGroup>
+</Project>

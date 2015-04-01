@@ -1,0 +1,5 @@
+file aligment
+size of headers
+make section names with 00 pads
+make VSIZE == RAW SIZE
+make VADDR == RAW OFFSET

@@ -1,0 +1,4 @@
+:TITLE Microsoft Windows Sockets 2 Reference
+:INDEX Microsoft Windows Sockets 2 Reference = sock2.hlp
+:INCLUDE WIN32SDK.CFG
+:INCLUDE sock2.toc
