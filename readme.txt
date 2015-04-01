@@ -31,9 +31,9 @@ thank you all for supporting the PVDasm.
 
                                                 [History & Changelog]
 
-
+-> 01.04.2015:  * PVDasm is now open sourced!
 -> 14.08.2011:	* Fixed the ToolBar in PVDasm 64Bit ;)
-		  The magic line for 64Bit compability: 
+		  The magic line for 64Bit compatibility: 
 		  SendMessage(hWndTool, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
 		* Task Manager is working on PVDasm 64Bit.
 		  The root cause for task manager not to show is due to LoadLibraryA("VDMDBG.DLL");
