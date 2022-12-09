@@ -209,6 +209,12 @@
     <ClInclude Include="x64.h">
       <Filter>Header Files\Main.h</Filter>
     </ClInclude>
+    <ClInclude Include="loadpic\ansiapi.h">
+      <Filter>Header Files\LoadPic.h</Filter>
+    </ClInclude>
+    <ClInclude Include="loadpic\olestd.h">
+      <Filter>Header Files\LoadPic.h</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource\FileMap.rsrc.rc">
@@ -345,5 +351,8 @@
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="resource\PVDasm.exe.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".gitignore" />
   </ItemGroup>
 </Project>

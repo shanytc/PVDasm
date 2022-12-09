@@ -38,7 +38,7 @@
 */
 
 #include <windows.h>
-#include <olestd.h>
+#include "olestd.h"
 #include <olectl.h>
 #include <comdef.h>
 #include <stdio.h>
