@@ -67,6 +67,11 @@ typedef struct SaveLoadData{
 
 }SAVE_DATA,LOAD_DATA;
 
+typedef struct WindowSubclass {
+    bool mask[255];
+    LONG_PTR window;
+}MASK_EDIT_CONTROL;
+
 // ================================================================
 // =========================  DEFINES  ============================
 // ================================================================
