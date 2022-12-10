@@ -1,2 +1,3 @@
 /x64Release/*
+/x64Debug/*
 .vs/
