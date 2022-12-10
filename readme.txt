@@ -33,7 +33,7 @@ Thank you all for supporting the PVDasm.
 
 -> 09.12.2022:
                 * Fixed a nasty crash associated with subclassing
-                  edit text inputs on new opetating systems.
+                  edit text inputs on new operating systems (Windows 10/11).
                 * Fixed LoadPic library to compile standalone.
 -> 01.04.2015:  * PVDasm is now open sourced!
 -> 14.08.2011:
