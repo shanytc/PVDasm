@@ -14,7 +14,7 @@
                    	?                                                            ?
                    	?  ProView is : 32Bit Multi Disassembler / PE|PE+ Editor     ?
                    	?  Build Version: v1.7e                                      ?
-                   	?  Copyrights by Shany Golan (R) 2003-2015                   ?
+                   	?  Copyrights by Shany Golan (R) 2003-2022                   ?
                    	?                                                            ?
                    	??????????????????????????????????????????????????????????????
 
@@ -29,9 +29,13 @@ thank you all for supporting the PVDasm.
 
                                                 [History & Change Log]
 
--> 09.12.2022: * Fixed LoadPic library to compile standalone.
--> 01.04.2015: * PVDasm is now open sourced!
--> 14.08.2011: * Fixed the ToolBar in PVDasm 64Bit ;)
+-> 09.12.2022:
+                * Fixed a nasty crash associated with subclassing
+                  edit text inputs on new opetating systems.
+                * Fixed LoadPic library to compile standalone.
+-> 01.04.2015:  * PVDasm is now open sourced!
+-> 14.08.2011:
+        * Fixed the ToolBar in PVDasm 64Bit ;)
 		  The magic line for 64Bit compatibility: 
 		  SendMessage(hWndTool, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
 		* Task Manager is working on PVDasm 64Bit.
@@ -45,7 +49,8 @@ thank you all for supporting the PVDasm.
 		  and to enable it for PVDasm 64Bit, KetilO need to recompile it for x64 :(.
 
 
--> 13.08.2011:	* Fixed the bug in the status bar, when clicking on a disassembled line 
+-> 13.08.2011:	
+        * Fixed the bug in the status bar, when clicking on a disassembled line 
 		  did not showed the actual Code Address / Code Offset.
 		* Fixed a nasty crash when PVDasm tried to resolve an APIs calls way outside
 		  of the current disassebled section. (Bad Pointer, access violation)
@@ -68,40 +73,48 @@ thank you all for supporting the PVDasm.
 		  disabling manifest causes a defect in the tool bar control...
 		  only sulution is to try and rewrite it.
 
--> 27.03.2011:	* Fixed a nasty bug in the PE Import scanner which caused PVDasm to crash.
+-> 27.03.2011:	
+        * Fixed a nasty bug in the PE Import scanner which caused PVDasm to crash.
 		* Known Issues:
 			1. in x64 PVDasm, the menu items are bad! I know.. I'm trying to figure it out,
 			   It seems VisualStudio doesn't load the BMP list correctly.
 			2. PVdasm may on several PCs not run, due to missing Distributibal x86/x64 vc++ packages,
 			   In case it happens, please let me know!
 
--> 20.02.2010:	* Fixed a buffer accees violation bug in the PE Imports scanner, thanks 'SecMAM' for the bug report.
+-> 20.02.2010:
+        * Fixed a buffer accees violation bug in the PE Imports scanner, thanks 'SecMAM' for the bug report.
 		* Increased buffers' size for extra caution.
 		* Changed MoveWindow() to SetWindowPos() for better compability and speed.
 		* Changed SetWindowLong to SetWindowLongPtr (32Bit/64Bit Compability) - thanks 'jstorme'.
 
--> 28.03.2009:	* Fixed a bug that caused PVDasm to crash when,
+-> 28.03.2009:
+        * Fixed a bug that caused PVDasm to crash when,
 		  You disassemble the same file (After it was already disassembled).
 		  Sometimes Re-Disassembly is needed (in case of defining Function entries / Data entries),
 		  and the Database need to match the view.
 
--> 20.03.2009:	* Fixed the currupted resources (I.e: Menu bar icons), for some reason,
+-> 20.03.2009:
+        * Fixed the currupted resources (I.e: Menu bar icons), for some reason,
 		  last versions of VS (or my PC) currupted them.
 
--> 2008-2009:	* Gui changes / addons / regrouped
+-> 2008-2009:
+        * Gui changes / addons / regrouped
 		* 64Bit of PVDasm has been compiled and tested under WinXP/Win7 64bit,
 		* No support for disassembling PE64 Image files, however PE+ Header (64Bit) is supported.
 
--> 08.11.2006:	* Added support for loading NE Executable,
+-> 08.11.2006:
+        * Added support for loading NE Executable,
 		  File Format, for now, PVDasm will let you,
 		  load the file, but it will not disassemble,
 		  or let you edit the NE Header.
 
--> 04.11.2006:	* Added "ret" flag to the CodeFlow array,
+-> 04.11.2006:
+        * Added "ret" flag to the CodeFlow array,
 		  (For those who uses plugin messages, it will
 		  be filled in the DISASSEMBLY struct.)
 
--> 28.10.2006:	* Updated the Plugin SDK to include new 3 Plugin Messaeges,
+-> 28.10.2006:
+        * Updated the Plugin SDK to include new 3 Plugin Messaeges,
 		  Which deals with Exports:
 		  1. PI_GET_NUMBER_OF_EXPORTS
 		  2. PI_GET_EXPORT_NAME
@@ -111,7 +124,8 @@ thank you all for supporting the PVDasm.
 		* Updated PVDasm to supprt the 3 new Plugin Messages.
 		* Goto Address box will now include the image base (for you lazy guys :))
 
--> 19.09.2006:	* PVScript Engine v1 Added to PVDasm,
+-> 19.09.2006:
+        * PVScript Engine v1 Added to PVDasm,
 		  the engine allows you to create custom commands
 		  and execute them in PVDasm without the need for any
 		  gui commands.
@@ -123,17 +137,20 @@ thank you all for supporting the PVDasm.
 
 -> 12.05.2006:	* GUI Changes.
 
--> 06.05.2006:	* PVdasm now supports editing a PE+ (64Bit),
+-> 06.05.2006:	
+        * PVdasm now supports editing a PE+ (64Bit),
 		  executable files.
 		* Fixed a bug in the masm wizard - code editor,
 		  causing pvdasm to crash.
 
--> 04.03.2006:  * Copy to clipboard/file functions has been,
+-> 04.03.2006:
+        * Copy to clipboard/file functions has been,
 		  recoded, and uses dynamic memory allocating.
 		  this should bring faster copying to memory.
 		  and eventually to the clipboard.
 
--> 21.08.2005:	* Improved the mouse hovering bug,
+-> 21.08.2005:
+        * Improved the mouse hovering bug,
 		  over a jxx/call instructions.
 		  It seems that when we horizontly scroll,
 		  the headers shifts, and the code was unable,
