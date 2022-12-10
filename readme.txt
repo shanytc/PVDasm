@@ -1,18 +1,18 @@
 
-          	   8888888b.                  888     888 d8b
-     		   888   Y88b                 888     888 Y8P
-    		   888    888                 888     888
-   		   888   d88P 888d888  .d88b. Y88b   d88P 888  .d88b.  888  888  888
-  		   8888888P"  888P"   d88""88b Y88b d88P  888 d8P  Y8b 888  888  888
- 	           888        888     888  888  Y88o88P   888 88888888 888  888  888
-    		   888        888     Y88..88P   Y888P    888 Y8b.     Y88b 888 d88P
-    		   888        888      "Y88P"     Y8P     888  "Y8888   "Y8888888P"
-                   ===============================================[Shany Golan 2019]
+          	        8888888b.                  888     888 d8b
+     		        888   Y88b                 888     888 Y8P
+    		        888    888                 888     888
+   		            888   d88P 888d888  .d88b. Y88b   d88P 888  .d88b.  888  888  888
+  		            8888888P"  888P"   d88""88b Y88b d88P  888 d8P  Y8b 888  888  888
+ 	                888        888     888  888  Y88o88P   888 88888888 888  888  888
+    		        888        888     Y88..88P   Y888P    888 Y8b.     Y88b 888 d88P
+    		        888        888      "Y88P"     Y8P     888  "Y8888   "Y8888888P"
+                   ===============================================[Shany Golan 2022]
 
 
                   	??????????????????????????????????????????????????????????????
                    	?                                                            ?
-                   	?  ProView is : 32Bit Multi Disassembler / PE|PE+ Editor     ?
+                   	?  ProView is : 32Bit Multi Disassembler & PE|PE+ Editor     ?
                    	?  Build Version: v1.7e                                      ?
                    	?  Copyrights by Shany Golan (R) 2003-2022                   ?
                    	?                                                            ?
@@ -21,11 +21,13 @@
 
                                                [General Overview]
 
-PVDasm project is a fully written from scratch disassembler. The disassembly engine has been coded by me (Ben) and it is free for usage by anyone.
-Proview (PVDasm) is my attempt to make my own disassembler as a part for university final project and for basic cpu architecture knowledge.
-PVDasm is coded fully in C (IDE: VC++ 6,2005,2010), C++, and STL Templates for memory management.
-Proview also includes a simplified versions of a pe/pe+ editor,process manager,Plugin SDK, Masm Source code wizard, and many more features.
-thank you all for supporting the PVDasm.
+PVDasm project is a fully written from scratch disassembler.
+The disassembler engine has been written by me, and it is free for usage by anyone to use.
+Proview (PVDasm) is my attempt to make my own disassembler and for CPU architecture knowledge.
+PVDasm is written fully in C (IDE: VC++ 6,2005,2010), C++, and STL Templates.
+Proview also includes a simplified versions of a PE/PE+ editor, process manager, Plugin SDK, 
+MASM Source code generator (wizard), and many more features.
+Thank you all for supporting the PVDasm.
 
                                                 [History & Change Log]
 
