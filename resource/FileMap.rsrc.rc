@@ -219,6 +219,7 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDI_INFO_BEWARE         ICON                    "W95MBX03.ICO"
+
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
@@ -435,8 +436,8 @@ BEGIN
     EDITTEXT        IDC_FAKE_EDIT,5,173,24,12,ES_AUTOHSCROLL | ES_WANTRETURN
     PUSHBUTTON      "OK",IDC_EXIT_ABOUT,159,125,19,11
     LTEXT           "Greetings:",IDC_STATIC,52,38,33,8
-    LTEXT           "PVDasm v1.7d",IDC_STATIC,87,26,48,8
-    LTEXT           "Ben / 2011",IDC_STATIC,84,127,37,8
+    LTEXT           "PVDasm v1.7e",IDC_STATIC,87,26,48,8
+    LTEXT           "Shany Golan / 2022",IDC_STATIC,75,127,71,8
     LTEXT           "Goofy - The Man && The Lengend.",IDC_STATIC,52,50,107,8
     LTEXT           "Detten - Thanks for your big help!",IDC_STATIC,52,59,106,8
     LTEXT           "Cage - Buddy!!!! (hug)!",IDC_STATIC,52,68,72,8
@@ -1010,7 +1011,9 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDI_EXE                 ICON                    "icon1.ico"
+
 IDI_INFO_HELP           ICON                    "W95MBX04.ICO"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1018,9 +1021,13 @@ IDI_INFO_HELP           ICON                    "W95MBX04.ICO"
 //
 
 IDR_BINARY              BINARY                  "pic.rgn"
+
 IDR_REGION              BINARY                  "pic.jpg"
+
 IDR_XREF                BINARY                  "xref.rgn"
+
 IDR_XREF_PIC            BINARY                  "xref.jpg"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1028,37 +1035,69 @@ IDR_XREF_PIC            BINARY                  "xref.jpg"
 //
 
 IDB_PE_TREE             BITMAP                  "LIST.BMP"
+
 IDB_EDIT_PE             BITMAP                  "bmp00005.bmp"
+
 IDB_DUMP_PE             BITMAP                  "bmp00006.bmp"
+
 IDB_TABLE_PE            BITMAP                  "bmp00007.bmp"
+
 IDB_TOOLBARHOT          BITMAP                  "ToolBarHot.bmp"
+
 IDB_TOOLBAR             BITMAP                  "ToolBar.bmp"
+
 IDB_PROCESS_KILL        BITMAP                  "bitmap1.bmp"
+
 IDB_PROCESS_DUMP        BITMAP                  "bmp00001.bmp"
+
 IDB_PROCESS_REFRESH     BITMAP                  "bmp00002.bmp"
+
 IDB_PROCESS_PRIORITY    BITMAP                  "bmp00003.bmp"
+
 IDB_PARTIAL_DUMP        BITMAP                  "bmp00004.bmp"
+
 IDB_IMPORTS_TREE        BITMAP                  "Imports.bmp"
+
 IDB_EXPORTS_TREE        BITMAP                  "exports.bmp"
+
 IDB_RC_XREF             BITMAP                  "rc_xref.bmp"
+
 IDB_RC_IMP              BITMAP                  "rc_imp.bmp"
+
 IDB_RC_REF              BITMAP                  "rc_ref.bmp"
+
 IDB_RC_SAVE             BITMAP                  "rc_save.bmp"
+
 IDB_RC_APPEARANCE       BITMAP                  "rc_appear.bmp"
+
 IDB_RC_FIND             BITMAP                  "rc_find.bmp"
+
 IDB_RC_HEXEDIT          BITMAP                  "rc_hex.bmp"
+
 IDB_RC_PATCHER          BITMAP                  "rc_patch.bmp"
+
 IDB_RC_EP               BITMAP                  "rc_ep.bmp"
+
 IDB_RC_ADDR             BITMAP                  "rc_addr.bmp"
+
 IDB_RC_CODE             BITMAP                  "rc_code.bmp"
+
 IDB_RC_COPY             BITMAP                  "rc_save1.bmp"
+
 IDB_RC_COPY_FILE        BITMAP                  "rc_copy1.bmp"
+
 IDB_RC_SELECT_ALL       BITMAP                  "rc_ep1.bmp"
+
 IDB_FUNCTION_STRINGS    BITMAP                  "function.bmp"
+
 IDB_RC_DATA_MANAGER     BITMAP                  "rc_data_manager.bmp"
+
 IDB_RC_FUNC_MANAGER     BITMAP                  "rc_func_manager.bmp"
+
 IDB_RC_DEFINE_DATA      BITMAP                  "rc_define_data.bmp"
+
 IDB_RC_DEFINE_FUNC      BITMAP                  "rc_define_func.bmp"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1116,6 +1155,18 @@ END
 //
 
 CONTROL_PANEL_RESOURCE_ID RT_MANIFEST             "PVDasm.exe.manifest"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_ABOUT AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
 #endif    // Hebrew (Israel) resources
 /////////////////////////////////////////////////////////////////////////////
 
