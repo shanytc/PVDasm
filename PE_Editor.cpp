@@ -1530,7 +1530,7 @@ void ShowImports(HWND hWnd)
     */
 
 	PIMAGE_IMPORT_DESCRIPTOR importDesc;	// Pointer to the Descriptor table
-    PIMAGE_SECTION_HEADER pSection;			// Pointer to the Sections
+	PIMAGE_SECTION_HEADER pSection{};			// Pointer to the Sections
     PIMAGE_THUNK_DATA thunk, thunkIAT=0;	// Thunk pointer [pointers to functions]
 	PIMAGE_THUNK_DATA64 thunk64, thunkIAT64=0;	// Thunk pointer [pointers to functions]
     PIMAGE_IMPORT_BY_NAME pOrdinalName;		// DLL imported name    
@@ -1538,7 +1538,7 @@ void ShowImports(HWND hWnd)
 	HTREEITEM Parent,Before;				// Tree item level
 	TV_INSERTSTRUCT tvinsert;				// Item's Properties
 	HBITMAP hBitMap; 
-	DWORD importsStartRVA,delta=-1;			// Hold Starting point of the RVA
+	DWORD importsStartRVA{}, delta = -1;			// Hold Starting point of the RVA
 	HWND ImpTree;							// Tree dialog hander
 	DWORD len;								// Function Length
 	bool error;
@@ -1555,18 +1555,18 @@ void ShowImports(HWND hWnd)
 	hImageList=ImageList_Create(16,16,ILC_COLOR16,5,10);
 	hBitMap=LoadBitmap(hInstance,MAKEINTRESOURCE(IDB_IMPORTS_TREE));
 	ImageList_Add(hImageList,hBitMap,NULL);
+
 	// Kill object
 	DeleteObject(hBitMap);
+
 	// set the picture list
 	SendDlgItemMessage(hWnd,IDC_IMPORTS_TREE,TVM_SETIMAGELIST,0,(LPARAM)hImageList);
 	
 	// get RVA of the import directory ( Extract the value of VirtualAddress )
-	if(LoadedPe==TRUE)
-	{
+	if(LoadedPe==TRUE) {
 		importsStartRVA=nt_header->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress;	
 	}
-	else if(LoadedPe64==TRUE)
-	{
+	else if(LoadedPe64==TRUE) {
 		importsStartRVA=nt_header64->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress;
 	}
 	
@@ -1606,14 +1606,15 @@ void ShowImports(HWND hWnd)
 		SendDlgItemMessage(hWnd,IDC_IMPORTS_TREE,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
 		return;
 	}
+
 	// VA-Pointer to the offset
-	delta = (INT)(pSection->VirtualAddress-pSection->PointerToRawData);
+	delta = (INT)(pSection->VirtualAddress - pSection->PointerToRawData);
 	
 	// (Use that value to go to the first IMAGE_IMPORT_DESCRIPTOR structure )
 	// Get the address of DLL pointers
 	importDesc = (PIMAGE_IMPORT_DESCRIPTOR) (importsStartRVA - delta + (DWORD)pfile);
-	if(importDesc==0)
-	{
+
+    if (importDesc==0 || (BYTE*)importDesc < (BYTE*)pfile || (BYTE*)importDesc > (BYTE*)pfile + nt_header->OptionalHeader.SizeOfImage) {
 		tvinsert.hParent=NULL;			// top most level no need handle
 		tvinsert.hInsertAfter=TVI_ROOT; // work as root level
 		tvinsert.item.mask=TVIF_TEXT|TVIF_IMAGE|TVIF_SELECTEDIMAGE;
@@ -1986,7 +1987,7 @@ void ShowExports(HWND hWnd)
 	// Local variables
 	HWND ExpTree;
 	PIMAGE_EXPORT_DIRECTORY exportDir;	// Export struct
-	PIMAGE_SECTION_HEADER header;		// Section struct
+	PIMAGE_SECTION_HEADER header{};		// Section struct
 	DWORD i;
 	PDWORD functions;
 	PWORD ordinals;
@@ -2084,6 +2085,12 @@ void ShowExports(HWND hWnd)
 	// pointer to the expotr directory
 	exportDir = MakePtr(PIMAGE_EXPORT_DIRECTORY, base,exportsStartRVA - delta);
 	
+	if ((BYTE*)exportDir < (BYTE*)pfile || (BYTE*)exportDir >(BYTE*)pfile + nt_header->OptionalHeader.SizeOfImage) {
+		ClearIMpex(ExpTree, "Currupted Export Directory");
+		return;
+	}
+
+
 	// get the pointer to the exported dll name
 	__try{
 		filename = (PSTR)(exportDir->Name - delta + base);

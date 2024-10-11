@@ -437,7 +437,7 @@ BEGIN
     PUSHBUTTON      "OK",IDC_EXIT_ABOUT,159,125,19,11
     LTEXT           "Greetings:",IDC_STATIC,52,38,33,8
     LTEXT           "PVDasm v1.7e",IDC_STATIC,87,26,48,8
-    LTEXT           "Shany Golan / 2022",IDC_STATIC,75,127,71,8
+    LTEXT           "Shany Golan / 2024",IDC_STATIC,75,127,71,8
     LTEXT           "Goofy - The Man && The Lengend.",IDC_STATIC,52,50,107,8
     LTEXT           "Detten - Thanks for your big help!",IDC_STATIC,52,59,106,8
     LTEXT           "Cage - Buddy!!!! (hug)!",IDC_STATIC,52,68,72,8
