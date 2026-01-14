@@ -413,13 +413,14 @@
 #define IDC_PVSCRIPT_ENGINE             40105
 #define IDC_PVSCRIPT                    40106
 #define IDC_DARK_MODE                   40107
+#define IDC_SPLITTER                    40108
 
 // Next default values for new objects
-// 
+//
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        244
-#define _APS_NEXT_COMMAND_VALUE         40108
+#define _APS_NEXT_COMMAND_VALUE         40109
 #define _APS_NEXT_CONTROL_VALUE         1326
 #define _APS_NEXT_SYMED_VALUE           121
 #endif
