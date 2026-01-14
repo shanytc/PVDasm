@@ -873,7 +873,7 @@ BEGIN
     END
     POPUP "&Options"
     BEGIN
-        POPUP "Message Window..."
+        POPUP "History"
         BEGIN
             MENUITEM "Clear Output\tAlt+C",         IDC_CLEARDEBUG
             POPUP "Set Colors"
@@ -886,7 +886,7 @@ BEGIN
         POPUP "Fonts"
         BEGIN
             MENUITEM "Disassembly View...\tAlt+Shift+F", IDC_DISASM_FONT
-            MENUITEM "Message Window...\tAlt+Ctrl+F", IDC_DEBUG_FONT
+            MENUITEM "History...\tAlt+Ctrl+F", IDC_DEBUG_FONT
         END
         MENUITEM SEPARATOR
         MENUITEM "Disassembly Themes\tAlt+A",   IDC_DISASM_APPEARANCE
@@ -901,7 +901,7 @@ BEGIN
             MENUITEM "Select All\tCtrl+Alt+A",      IDM_SELECT_ALL_ITEMS
         END
         MENUITEM SEPARATOR
-        MENUITEM "Dock Message Window\tCtrl+D", IDC_DOCK_DEBUG, CHECKED
+        MENUITEM "Dock History\tCtrl+D", IDC_DOCK_DEBUG, CHECKED
     END
     POPUP "&Help"
     BEGIN
