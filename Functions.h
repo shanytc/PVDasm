@@ -102,6 +102,12 @@ void    OllyDbg_Schem				(																);
 void    IDA_Schem					(																);
 void    W32dasm_Schem				(																);
 void    Custom_Schem				(																);
+// Dark Mode functions
+extern bool g_DarkMode;
+void    LoadSettings				(																);
+void    SaveSettings				(																);
+void    ApplyDarkMode				( bool dark														);
+void    ToggleDarkMode				( HWND hWnd														);
 void    SwapDword					( BYTE *MemPtr,DWORD_PTR *Original,DWORD_PTR* Mirrored			);
 void    SwapWord					( BYTE *MemPtr,WORD *Original,WORD* Mirrored					);
 int     xlstrlen					( const char* string											);
