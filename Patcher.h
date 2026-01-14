@@ -60,6 +60,7 @@
 
 BOOL CALLBACK PatcherProc	( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam	);
 BOOL GoodChars				( DWORD_PTR wParam										);
+void UpdateAssemblyPreview	( HWND hDlg												);
 
 // ================================================================
 // =========================  SUB CLASSES  ========================

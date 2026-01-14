@@ -169,6 +169,9 @@ BOOL CALLBACK PatcherProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 HideCaret(GetDlgItem(hWnd,IDC_PREVIEW)); // Remove | (caret) from EditBox
                 SetFocus(GetDlgItem(hWnd,IDC_HEX));
                 HideCaret(GetDlgItem(hWnd,IDC_HEX));     // Remove | (caret) from EditBox
+
+                // Show assembly by default
+                UpdateAssemblyPreview(hWnd);
             }
             catch(...)
             {
@@ -409,16 +412,19 @@ LRESULT CALLBACK PatcherSubClass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
                 {
                     DWORD_PTR res=0,pos;
                     res=SendMessage(hWnd,EM_GETSEL,(WPARAM)0,(LPARAM)0);
-                    res&=0x0FFFF;  // Get Starting Point 
+                    res&=0x0FFFF;  // Get Starting Point
                     res++;
 
                     if(res%3!=0)
                         res--;
-                        
+
                     SendMessage(hWnd,EM_SETSEL,(WPARAM)res,(LPARAM)res+1);
                     pos=SendMessage(hWnd,EM_LINELENGTH,0,(LPARAM)-1);
                     if(res>pos)
                         SendMessage(hWnd,EM_SETSEL,(WPARAM)pos-1,(LPARAM)pos);
+
+                    // Update assembly preview on every key change
+                    UpdateAssemblyPreview(GetParent(hWnd));
                 }
                 break;
             }
@@ -479,4 +485,67 @@ BOOL GoodChars(DWORD_PTR wParam)
     }
 
     return false;
+}
+
+
+//======================================================================================
+//================================  UpdateAssemblyPreview ==============================
+//======================================================================================
+
+void UpdateAssemblyPreview(HWND hDlg)
+{
+    DISASSEMBLY Disasm;
+    DWORD_PTR k=0, x=0;
+    DWORD_PTR Index=0, lenght;
+    byte table[]={0,1,2,3,4,5,6,7,8,9,0x0A,0x0B,0x0C,0x0D,0x0E,0x0F};
+    char Temp[50]="", Text[50]="", *DisasmPtr;
+
+    try {
+        SendMessage(GetDlgItem(hDlg,IDC_HEX),WM_GETTEXT,(WPARAM)256,(LPARAM)Temp);
+        CharUpper(Temp); // Convert to uppercase for processing
+
+        // Remove Spaces
+        lenght=StringLen(Temp);
+        for(k=0, x=0; k<lenght; k++, x++)
+        {
+            if(Temp[k]==' ')
+                k++;
+
+            Text[x]=Temp[k];
+        }
+        Text[x]='\0';
+
+        // Allocate Size bytes
+        byte *op=new byte[Size];
+
+        // Format to bytes
+        lenght=StringLen(Text);
+        for(k=0,x=0;k<lenght;k+=2,x++)
+        {
+            if(Text[k]>=0x30 && Text[k]<=0x39)
+                op[x]=(table[Text[k]-0x30])<<4;
+
+            if(Text[k]>='A' && Text[k]<='F')
+                op[x] = (table[Text[k]-0x37])<<4;
+
+            if(Text[k+1]>=0x30 && Text[k+1]<=0x39)
+                op[x]|=(table[Text[k+1]-0x30]);
+
+            if(Text[k+1]>='A' && Text[k+1]<='F')
+                op[x] |= table[Text[k+1]-0x37];
+        }
+
+        // Disassemble
+        DisasmPtr = (char*)op;
+        FlushDecoded(&Disasm);
+        Disasm.Address=(DWORD)EipAddress;
+        Decode(&Disasm,DisasmPtr,&Index);
+        CharUpper(Disasm.Assembly);
+        SendMessage(GetDlgItem(hDlg,IDC_PREVIEW),WM_SETTEXT,0,(LPARAM)Disasm.Assembly);
+
+        delete[] op;
+    }
+    catch(...)
+    {
+    }
 }
