@@ -77,6 +77,7 @@ void		PrintListModules	( char *, char *, char *, char *				);
 void		GetData				( HWND hwnd, HINSTANCE hinst					);
 void		DumpFull			( DWORD SizeOfFile, DWORD MemoryAddress			);
 void		MainProcess			( HWND hWnd,HWND ProcessList					);
+void		FilterProcesses		( const char* searchText						);
 DWORD		GetProcessPID		( int SelectedRow								);
 
 #endif

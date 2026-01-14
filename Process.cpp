@@ -45,6 +45,9 @@
 #include <vdmdbg.h>
 #include <psapi.h>
 #include "Resize\AnchorResizing.h"
+#include <vector>
+
+using std::vector;
 
 // ================================================================
 // ========================  STRUCTS  =============================
@@ -74,6 +77,8 @@ bool		processflag;
 bool		Win9x=false;		// OS Check
 bool		PartialDump=false;	// partial dump active/not active
 char		Text[MAX_PATH]="";
+HWND		hSearchEdit;		// search edit control handle
+vector<processes> AllProcesses;  // store all processes for filtering
 
 // ================================================================
 // =====================  PROTOTYPES  =============================
@@ -162,6 +167,40 @@ BOOL CALLBACK ProcessDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lPar
 			ProcessWindow=GetDlgItem(hWnd,IDC_LISTPROC);	// get the ID of the ListView
 			// get module listview handle
 			ListModules=GetDlgItem(hWnd,IDC_MODULES);	// get the ID of the ListView
+
+			// Create search edit control
+			{
+				RECT rcList;
+				GetWindowRect(ProcessWindow, &rcList);
+				MapWindowPoints(NULL, hWnd, (LPPOINT)&rcList, 2);
+
+				int editHeight = 22;
+				int spacing = 26;
+
+				// Create search box above the process list
+				hSearchEdit = CreateWindowEx(WS_EX_CLIENTEDGE, "EDIT", "",
+					WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
+					rcList.left, rcList.top, rcList.right - rcList.left, editHeight,
+					hWnd, (HMENU)IDC_PROCESS_SEARCH, GetModuleHandle(NULL), NULL);
+
+				// Set normal (non-bold) font
+				HFONT hFont = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
+				SendMessage(hSearchEdit, WM_SETFONT, (WPARAM)hFont, TRUE);
+
+				// Add internal padding (left and right margins)
+				SendMessage(hSearchEdit, EM_SETMARGINS, EC_LEFTMARGIN | EC_RIGHTMARGIN, MAKELPARAM(5, 5));
+
+				// Set placeholder/cue text
+				SendMessage(hSearchEdit, EM_SETCUEBANNER, TRUE, (LPARAM)L"Search processes...");
+
+				// Move listview down to make room for search box
+				SetWindowPos(ProcessWindow, NULL, rcList.left, rcList.top + spacing,
+					rcList.right - rcList.left, (rcList.bottom - rcList.top) - spacing,
+					SWP_NOZORDER);
+
+				// Clear process storage
+				AllProcesses.clear();
+			}
 
 			// Set listview properties/Styles
 			SendMessage(ProcessWindow,LVM_SETEXTENDEDLISTVIEWSTYLE,0,LVS_EX_FULLROWSELECT|LVS_EX_FLATSB|LVS_EX_ONECLICKACTIVATE|LVS_EX_GRIDLINES); // Full row select
@@ -344,17 +383,36 @@ BOOL CALLBACK ProcessDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lPar
 		{
 			switch(LOWORD(wParam)) // what we press on?
 			{
+				case IDC_PROCESS_SEARCH:
+				{
+					// Handle search text change
+					if(HIWORD(wParam) == EN_CHANGE)
+					{
+						char searchText[256] = "";
+						GetWindowText(hSearchEdit, searchText, sizeof(searchText));
+						FilterProcesses(searchText);
+					}
+				}
+				break;
+
 				case ID_PROCESSES_REFRESHVIEW:
 				{
 					// Refresh the entire Processes SnapShot and redraw
 					// set indexes
 					ProcessIndex=0;
 					ModuleIndex=0;
+					// Clear stored processes first
+					AllProcesses.clear();
 					// delete all items
 					SendMessage(ProcessWindow,LVM_DELETEALLITEMS,0,0); // delete all info
 					SendMessage(ListModules,LVM_DELETEALLITEMS,0,0);
 					// start redrawing
 					MainProcess(hWnd,ProcessWindow);
+					// Reapply search filter if there's search text
+					char searchText[256] = "";
+					GetWindowText(hSearchEdit, searchText, sizeof(searchText));
+					if(searchText[0] != '\0')
+						FilterProcesses(searchText);
 				}
 				break;
 				
@@ -363,10 +421,11 @@ BOOL CALLBACK ProcessDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lPar
 				{
 					DWORD  PID;
                     HANDLE hProcess;
+					char searchText[256] = "";
 
 					ProcessIndex=0;
 					ModuleIndex=0;
-					
+
 					PID=GetProcessPID((DWORD)SelectedRow); // Get PID
 					hProcess = OpenProcess(PROCESS_SET_INFORMATION, false, PID);
 					if(hProcess!=NULL)
@@ -375,8 +434,13 @@ BOOL CALLBACK ProcessDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lPar
 						SetPriorityClass(hProcess, REALTIME_PRIORITY_CLASS);
 					}
 					CloseHandle(hProcess);
+					AllProcesses.clear();
 					SendMessage(ProcessWindow,LVM_DELETEALLITEMS,0,0);
 					MainProcess(hWnd,ProcessWindow);
+					// Reapply search filter if there's search text
+					GetWindowText(hSearchEdit, searchText, sizeof(searchText));
+					if(searchText[0] != '\0')
+						FilterProcesses(searchText);
 				}
 				break;
 
@@ -385,6 +449,7 @@ BOOL CALLBACK ProcessDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lPar
 				{
 					DWORD  PID;
                     HANDLE hProcess;
+					char searchText[256] = "";
 
 					ProcessIndex=0;
 					ModuleIndex=0;
@@ -397,8 +462,13 @@ BOOL CALLBACK ProcessDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lPar
 						SetPriorityClass(hProcess, HIGH_PRIORITY_CLASS);
 					}
 					CloseHandle(hProcess);
+					AllProcesses.clear();
 					SendMessage(ProcessWindow,LVM_DELETEALLITEMS,0,0);
 					MainProcess(hWnd,ProcessWindow);
+					// Reapply search filter if there's search text
+					GetWindowText(hSearchEdit, searchText, sizeof(searchText));
+					if(searchText[0] != '\0')
+						FilterProcesses(searchText);
 				}
 				break;
 
@@ -407,6 +477,7 @@ BOOL CALLBACK ProcessDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lPar
 				{
 					DWORD  PID;
                     HANDLE hProcess;
+					char searchText[256] = "";
 
 					ProcessIndex=0;
 					ModuleIndex=0;
@@ -419,8 +490,13 @@ BOOL CALLBACK ProcessDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lPar
 						SetPriorityClass(hProcess, NORMAL_PRIORITY_CLASS);
 					}
 					CloseHandle(hProcess);
+					AllProcesses.clear();
 					SendMessage(ProcessWindow,LVM_DELETEALLITEMS,0,0);
 					MainProcess(hWnd,ProcessWindow);
+					// Reapply search filter if there's search text
+					GetWindowText(hSearchEdit, searchText, sizeof(searchText));
+					if(searchText[0] != '\0')
+						FilterProcesses(searchText);
 				}
 				break;
 
@@ -429,6 +505,7 @@ BOOL CALLBACK ProcessDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lPar
 				{
 					DWORD  PID;
                     HANDLE hProcess;
+					char searchText[256] = "";
 
 					ProcessIndex=0;
 					ModuleIndex=0;
@@ -441,8 +518,13 @@ BOOL CALLBACK ProcessDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lPar
 						SetPriorityClass(hProcess, IDLE_PRIORITY_CLASS);
 					}
 					CloseHandle(hProcess);
+					AllProcesses.clear();
 					SendMessage(ProcessWindow,LVM_DELETEALLITEMS,0,0);
 					MainProcess(hWnd,ProcessWindow);
+					// Reapply search filter if there's search text
+					GetWindowText(hSearchEdit, searchText, sizeof(searchText));
+					if(searchText[0] != '\0')
+						FilterProcesses(searchText);
 				}
 				break;
 
@@ -451,13 +533,14 @@ BOOL CALLBACK ProcessDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lPar
 					// Killing a process by its PID
 					DWORD PID=0;
 					HANDLE hpro=0;
+					char searchText[256] = "";
 
 					if(!processflag)
 					{
 						MessageBox(hWnd,"Select process to kill","Error",MB_OK);
 						return 0;
 					}
-					
+
 					PID=GetProcessPID((DWORD)SelectedRow); // Get PID
 					if(PID!=0)
 					{
@@ -480,6 +563,7 @@ BOOL CALLBACK ProcessDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lPar
 					processflag=0;
 
 					// Reset the Process View
+					AllProcesses.clear();
 					SendMessage(ProcessWindow,LVM_DELETEALLITEMS,0,0); // delete all info
 					SendMessage(ListModules,LVM_DELETEALLITEMS,0,0);
 					Sleep(2);
@@ -487,7 +571,11 @@ BOOL CALLBACK ProcessDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lPar
 					ProcessIndex=0;
 					ModuleIndex=0;
 					// ReGet all Process and modules
-					MainProcess(hWnd,ProcessWindow);	
+					MainProcess(hWnd,ProcessWindow);
+					// Reapply search filter if there's search text
+					GetWindowText(hSearchEdit, searchText, sizeof(searchText));
+					if(searchText[0] != '\0')
+						FilterProcesses(searchText);
 				}
 				break;
 
@@ -1049,8 +1137,10 @@ BOOL CALLBACK MyProcessEnumerator(DWORD dwPID, WORD wTask, LPCSTR szProcess, LPA
 		}
 		// close the handle to the process
 		CloseHandle(hProcess);
-		// update the process list 
-		ProcListMake(proc,hWnd,ProcessWindow);		
+		// Store process for filtering
+		AllProcesses.push_back(proc);
+		// update the process list
+		ProcListMake(proc,hWnd,ProcessWindow);
 	}
 	else // Win9x
 	{
@@ -1096,6 +1186,8 @@ BOOL CALLBACK MyProcessEnumerator(DWORD dwPID, WORD wTask, LPCSTR szProcess, LPA
 		}
 		// Free Process handle
 		CloseHandle(hProcess);
+		// Store process for filtering
+		AllProcesses.push_back(proc);
 		// Print info to the list
 		ProcListMake(proc,hWnd,ProcessWindow);
 	}
@@ -1105,12 +1197,48 @@ BOOL CALLBACK MyProcessEnumerator(DWORD dwPID, WORD wTask, LPCSTR szProcess, LPA
 }
 
 // ===================================================
+// ============= Filter Processes by Search Text =====
+// ===================================================
+void FilterProcesses(const char* searchText)
+{
+	// Clear the listview
+	SendMessage(ProcessWindow, LVM_DELETEALLITEMS, 0, 0);
+	ProcessIndex = 0;
+
+	// If search is empty, show all processes
+	bool showAll = (searchText == NULL || searchText[0] == '\0');
+
+	// Re-add matching processes
+	for(size_t i = 0; i < AllProcesses.size(); i++)
+	{
+		bool match = showAll;
+		if(!showAll)
+		{
+			// Case-insensitive search in process name
+			char moduleLower[256], searchLower[256];
+			lstrcpy(moduleLower, AllProcesses[i].module);
+			lstrcpy(searchLower, searchText);
+			CharLower(moduleLower);
+			CharLower(searchLower);
+			match = (strstr(moduleLower, searchLower) != NULL);
+		}
+
+		if(match)
+		{
+			ProcListMake(AllProcesses[i], hWnd, ProcessWindow);
+		}
+	}
+}
+
+// ===================================================
 // ============= Read Running Process ================
 // ===================================================
 void MainProcess(HWND Win,HWND ListBox)
 {
 	hWnd=Win;				// save Proview window handler
 	ProcessWindow=ListBox;	// get the process listview handler
+	// Clear stored processes before enumeration
+	AllProcesses.clear();
 	// start searching for processes
 	EnumProcs((PROCENUMPROC) MyProcessEnumerator, 0);
 }
@@ -1413,12 +1541,15 @@ void DumpFull(DWORD SizeOfFile, DWORD MemoryAddress)
 			hFileSize=SizeOfFile;			// update new size
 		}
 
-		// Open process as READ-ONLY for the dump process
-		hProcess=OpenProcess(PROCESS_VM_READ, 1, PID);
+		// Open process for reading memory (need VM_READ + QUERY_INFORMATION on modern Windows)
+		hProcess=OpenProcess(PROCESS_VM_READ | PROCESS_QUERY_INFORMATION, FALSE, PID);
+		// Try with limited information if full access fails
+		if(hProcess==NULL)
+			hProcess=OpenProcess(PROCESS_VM_READ | PROCESS_QUERY_LIMITED_INFORMATION, FALSE, PID);
 		// invalid process?
 		if(hProcess==NULL)
 		{
-			MessageBox(hWnd,"Faild on Opening Process for dumping!","Error Dumping!",MB_OK);
+			MessageBox(hWnd,"Failed to open process for dumping!\nTry running as Administrator.","Error Dumping!",MB_OK);
 			return;
 		}
 
@@ -1461,7 +1592,7 @@ void DumpFull(DWORD SizeOfFile, DWORD MemoryAddress)
 			// read the process's memory address and check if it has failed
 			if(ReadProcessMemory(hProcess,(LPVOID)ProcessAddress,(LPVOID)MemoryData,hFileSize,NULL)==0)
 			{
-				throw "Cannot Read Process Memory!"; // exception happened, throw it to the handler
+				throw "Cannot read process memory!\n\nThis can happen if:\n- The process is protected\n- Running without Administrator privileges\n- 32/64-bit architecture mismatch";
 			}
 
 		}
@@ -1469,14 +1600,22 @@ void DumpFull(DWORD SizeOfFile, DWORD MemoryAddress)
 		catch(char Error[])
 		{
 			MessageBox(hWnd,Error,"Error Dumping!",MB_OK);
+			CloseHandle(hFile);
+			CloseHandle(hProcess);
+			free(MemoryData);
+			DeleteFile(szFileName);  // Remove empty file
 			return;
 		}
 
-		// Write/dump the read memory into the file we chosed to save to		
+		// Write/dump the read memory into the file we chosed to save to
         if(WriteFile(hFile,MemoryData,hFileSize,&MemWritten,NULL)==0)
 		{
 			// if saved failed, show error
 			MessageBox(hWnd,"Can't Write to File!","Error Dumping!",MB_OK);
+			CloseHandle(hFile);
+			CloseHandle(hProcess);
+			free(MemoryData);
+			DeleteFile(szFileName);  // Remove empty/partial file
 			return;
 		}
 

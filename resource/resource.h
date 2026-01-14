@@ -328,6 +328,7 @@
 #define IDC_AUTO_SEARCH_CREATE          1323
 #define IDC_SCRIPT_EDIT                 1324
 #define IDC_SCRIPT_MESSAGE              1325
+#define IDC_PROCESS_SEARCH              1326
 #define IDC_LOADFILE                    40001
 #define IDC_EXIT                        40002
 #define IDC_MENUABOUT                   40004
