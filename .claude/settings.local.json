@@ -3,7 +3,14 @@
     "allow": [
       "Bash(ls:*)",
       "Bash(find:*)",
-      "Bash(iconv:*)"
+      "Bash(iconv:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(cat:*)",
+      "Bash(grep:*)",
+      "Bash(mkdir:*)",
+      "Bash(rm:*)",
+      "Bash(mv:*)"
     ]
   }
 }
