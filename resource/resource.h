@@ -330,6 +330,14 @@
 #define IDC_SCRIPT_MESSAGE              1325
 #define IDC_PROCESS_SEARCH              1326
 #define IDC_LOAD_SIGS                   1327
+#define IDC_XREF_LV                     1328
+#define IDC_XREF_FIND                   1329
+#define IDC_XREF_FINDNEXT               1330
+#define IDC_XREF_EXACT                  1331
+#define IDC_XREF_CONTAIN                1332
+#define IDC_XREF_CANCEL                 1333
+#define IDC_XREF_TARGET                 1334
+#define IDC_XREF_JUMPBACK               1335
 #define IDC_LOADFILE                    40001
 #define IDC_EXIT                        40002
 #define IDC_MENUABOUT                   40004
