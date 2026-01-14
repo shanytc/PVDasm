@@ -264,6 +264,7 @@ void	IntializeDisasm		( bool PeLoaded,bool PeLoaded64,bool NeLoaded,HWND myhWnd,
 void	GetInstruction		( BYTE Opcode,char *menemonic							);
 void	GetJumpInstruction	( BYTE Opcode,char *menemonic							);
 void	SaveDecoded			( DISASSEMBLY disasm,DISASM_OPTIONS dops,DWORD Index	);
+void	AnalyzeInstruction	( const char* assembly, const char* existingRemarks, char* outComment, size_t outSize );
 void	LoadApiSignature	(														);
 void	LocateXrefs			(														);
 void	LoadMapFile			( HWND hWnd												);
