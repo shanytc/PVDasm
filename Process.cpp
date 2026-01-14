@@ -253,15 +253,19 @@ BOOL CALLBACK ProcessDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lPar
 				{
 					// Create a menu while clicking right button of mouse
 					if(((LPNMHDR)lParam)->code == NM_RCLICK)
-					{	
-						// get selected item
-						SelectedRow=SendMessage(ProcessWindow,LVM_GETNEXTITEM,(WPARAM)-1,LVNI_FOCUSED); // return item selected
-						
-						if(SelectedRow!=-1)
+					{
+						// get selected item using hit test
+						LVHITTESTINFO lvhti = {0};
+						GetCursorPos(&lvhti.pt);
+						ScreenToClient(ProcessWindow, &lvhti.pt);
+						int hitItem = (int)SendMessage(ProcessWindow, LVM_HITTEST, 0, (LPARAM)&lvhti);
+
+						if(hitItem != -1)
 						{
+							SelectedRow = hitItem;
 							DWORD PID;
 							// get Process Id
-							PID=GetProcessPID((DWORD)SelectedRow);
+							PID=GetProcessPID(hitItem);
 							// delete all items
 							SendMessage(ListModules,LVM_DELETEALLITEMS,0,0);
 							ModuleIndex=0;		// reset the order
@@ -308,12 +312,17 @@ BOOL CALLBACK ProcessDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lPar
 					{
 						// left click on a process
 						DWORD PID;
-						// get selected item
-						SelectedRow=SendMessage(ProcessWindow,LVM_GETNEXTITEM,(WPARAM)-1,(LPARAM)LVNI_FOCUSED); // return item selected
-						if(SelectedRow!=-1)
+						// get selected item using hit test
+						LVHITTESTINFO lvhti = {0};
+						GetCursorPos(&lvhti.pt);
+						ScreenToClient(ProcessWindow, &lvhti.pt);
+						int hitItem = (int)SendMessage(ProcessWindow, LVM_HITTEST, 0, (LPARAM)&lvhti);
+
+						if(hitItem != -1)
 						{
+							SelectedRow = hitItem;
 							// get Process ID
-							PID=GetProcessPID((DWORD)SelectedRow);
+							PID=GetProcessPID(hitItem);
 							if(PID!=0)
 							{
 								// show all modules of the process
@@ -327,6 +336,7 @@ BOOL CALLBACK ProcessDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lPar
 				break;
 			}
 		}
+		break;
 
 		// This Window Message will control the dialog  //
 		//==============================================//
@@ -1005,8 +1015,10 @@ BOOL CALLBACK MyProcessEnumerator(DWORD dwPID, WORD wTask, LPCSTR szProcess, LPA
 		// Default priority is unknown
 		wsprintf(proc.priority,"%s","<Unknown>");
 
-		// Open a process for Priority reading
-		hProcess = OpenProcess(PROCESS_QUERY_INFORMATION, false, dwPID);
+		// Open a process for Priority reading (try limited info first for better compatibility)
+		hProcess = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, false, dwPID);
+		if(hProcess == NULL)
+			hProcess = OpenProcess(PROCESS_QUERY_INFORMATION, false, dwPID);
 		// Check if process is invalid
 		if(hProcess!=NULL)
 		{
@@ -1050,9 +1062,11 @@ BOOL CALLBACK MyProcessEnumerator(DWORD dwPID, WORD wTask, LPCSTR szProcess, LPA
 		wsprintf(proc.priority,"%s","<Unknown>");
 		// save process name at struct
 		wsprintf(proc.module,"%s",szProcess);
-		// Get Process priority using QUERY property
-		hProcess = OpenProcess(PROCESS_QUERY_INFORMATION, false, wTask);
-		// Faild to open a process
+		// Get Process priority using QUERY property (try limited info first)
+		hProcess = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, false, wTask);
+		if(hProcess == NULL)
+			hProcess = OpenProcess(PROCESS_QUERY_INFORMATION, false, wTask);
+		// Failed to open a process
 		if(hProcess!=NULL)
 		{
 			// Get priority
@@ -1098,7 +1112,7 @@ void MainProcess(HWND Win,HWND ListBox)
 	hWnd=Win;				// save Proview window handler
 	ProcessWindow=ListBox;	// get the process listview handler
 	// start searching for processes
-	EnumProcs((PROCENUMPROC) MyProcessEnumerator, 0); 
+	EnumProcs((PROCENUMPROC) MyProcessEnumerator, 0);
 }
 
 // ===================================================
@@ -1192,31 +1206,60 @@ void PrintModules(DWORD processID)
     hProcess = OpenProcess(PROCESS_QUERY_INFORMATION |
 							PROCESS_VM_READ,
 							FALSE, processID );
-	// Failed on opening ?
-    if (hProcess==NULL)
-        return;
 
 	// Win2K || WinXP system
 	if(Win9x==false)
 	{
-		if( lpfEnumProcessModules(hProcess, hMods, sizeof(hMods), &cbNeeded))
+		bool usedPSAPI = false;
+		// Try PSAPI method first (requires process handle)
+		if(hProcess != NULL)
 		{
-			for (i=0; i<(cbNeeded/sizeof(HMODULE)); i++) // number of modules
+			if( lpfEnumProcessModules(hProcess, hMods, sizeof(hMods), &cbNeeded))
 			{
-				// Get the full path to the module's file.
-				if ( lpfGetModuleFileNameEx( hProcess, hMods[i], szModName,
-	                  sizeof(szModName)))
+				usedPSAPI = true;
+				for (i=0; i<(cbNeeded/sizeof(HMODULE)); i++) // number of modules
 				{
-					// Print the module name and handle value.
-					lpfGetModuleInformation(hProcess,hMods[i],&mi,sizeof(mi));
-					wsprintf(Path,"%s", szModName);
-					wsprintf(Addr,"%08X",hMods[i]);
-					wsprintf(Image,"%08X",mi.SizeOfImage);
-					wsprintf(Entry,"%08X",mi.EntryPoint);
-					PrintListModules(Path,Addr,Image,Entry);
+					// Get the full path to the module's file.
+					if ( lpfGetModuleFileNameEx( hProcess, hMods[i], szModName,
+						  sizeof(szModName)))
+					{
+						// Print the module name and handle value.
+						lpfGetModuleInformation(hProcess,hMods[i],&mi,sizeof(mi));
+						wsprintf(Path,"%s", szModName);
+						wsprintf(Addr,"%08X",hMods[i]);
+						wsprintf(Image,"%08X",mi.SizeOfImage);
+						wsprintf(Entry,"%08X",mi.EntryPoint);
+						PrintListModules(Path,Addr,Image,Entry);
+					}
 				}
 			}
 		}
+
+		// Fallback to Toolhelp32 if PSAPI failed (works better on modern Windows)
+		if(!usedPSAPI)
+		{
+			HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32, processID);
+			if(hSnapshot != INVALID_HANDLE_VALUE)
+			{
+				MODULEENTRY32 module;
+				module.dwSize = sizeof(module);
+				if (Module32First(hSnapshot, &module))
+				{
+					do
+					{
+						wsprintf(Path,"%s", module.szExePath);
+						wsprintf(Addr,"%08X",module.modBaseAddr);
+						wsprintf(Image,"%08X",module.modBaseSize);
+						PrintListModules(Path,Addr,Image,"N/A");
+					} while(Module32Next(hSnapshot, &module));
+				}
+				CloseHandle(hSnapshot);
+			}
+		}
+
+		if(hProcess != NULL)
+			CloseHandle(hProcess);
+		return;
 	}
 	// Win98 || Win95 system
 	else
@@ -1243,8 +1286,9 @@ void PrintModules(DWORD processID)
 			CloseHandle(hSnapshot); // Clean up handler
 		}
 
-    CloseHandle(hProcess);// Clean up handler
-	
+    if(hProcess != NULL)
+		CloseHandle(hProcess);// Clean up handler
+
 }
 
 // =====================================================
