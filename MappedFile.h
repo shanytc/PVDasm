@@ -91,7 +91,7 @@ typedef MapTree::iterator					TreeMapItr;
 // =========================  DEFINES  ============================
 // ================================================================
 
-#define PVDASM "PVDasm v1.7e Program Disassembler"
+#define PVDASM "PVDasm v1.8 Program Disassembler"
 #define WIN32_LEAN_AND_MEAN // Discard old includes
 
 #define AddNewData(key,data) DataAddersses.insert(MapTreeAdd(key,data));
@@ -138,6 +138,7 @@ BOOL CALLBACK SetCommentDlgProc		( HWND hWnd, UINT Message, WPARAM wParam, LPARA
 BOOL CALLBACK AboutDlgProc			( HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam );
 BOOL CALLBACK ImportsDlgProc		( HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam );
 BOOL CALLBACK StringRefDlgProc		( HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam );
+BOOL CALLBACK CommentRefDlgProc		( HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam );
 BOOL CALLBACK DisasmColorsDlgProc	( HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam );
 BOOL CALLBACK XrefDlgProc			( HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam );
 BOOL CALLBACK FindDlgProc			( HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam );

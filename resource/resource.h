@@ -414,14 +414,24 @@
 #define IDC_PVSCRIPT                    40106
 #define IDC_DARK_MODE                   40107
 #define IDC_SPLITTER                    40108
+#define IDC_SHOW_COMMENTS               40109
+#define IDD_COMMENT_REF                 242
+#define IDC_COMMENT_REF_LV              1326
+#define IDC_COMMENT_FIND                1327
+#define IDC_COMMENT_CANCEL              1328
+#define IDC_COMMENT_EXACT               1329
+#define IDC_COMMENT_CONTAIN             1330
+#define IDC_COMMENT_FINDNEXT            1331
+#define IDC_IMPORT_FINDNEXT             1332
+#define IDC_STRREF_FINDNEXT             1333
 
 // Next default values for new objects
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        244
-#define _APS_NEXT_COMMAND_VALUE         40109
-#define _APS_NEXT_CONTROL_VALUE         1326
+#define _APS_NEXT_RESOURCE_VALUE        245
+#define _APS_NEXT_COMMAND_VALUE         40110
+#define _APS_NEXT_CONTROL_VALUE         1334
 #define _APS_NEXT_SYMED_VALUE           121
 #endif
 #endif
