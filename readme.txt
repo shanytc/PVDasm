@@ -36,8 +36,10 @@ Thank you all for supporting the PVDasm.
                 * Added function prologue/epilogue, parameters, and local variables analysis.
                 * Added search comments dialog and "find next" button to xref/imports dialogs.
                 * Added hand cursor when hovering over jump instructions with jump-to-target in xref dialog.
+                * Added double buffering for the list view to avoid visual artifacts.
                 * Fixed disasm engine bug for jnz instruction address.
                 * Fixed Task Manager and process dump issues.
+                * Fixed UTF encoding issue.
                 * Various UI improvements including live assembly preview in patch editor.
 
 -> 10.12.2024:
