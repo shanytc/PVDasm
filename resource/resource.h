@@ -441,12 +441,15 @@
 #define IDM_HISTORY_COPY                40110
 #define IDM_HISTORY_SAVEAS              40111
 
+#define IDD_CFG_VIEWER                  246
+#define IDC_VIEW_CFG                    40112
+
 // Next default values for new objects
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        246
-#define _APS_NEXT_COMMAND_VALUE         40112
+#define _APS_NEXT_COMMAND_VALUE         40113
 #define _APS_NEXT_CONTROL_VALUE         1337
 #define _APS_NEXT_SYMED_VALUE           121
 #endif

@@ -135,6 +135,9 @@
     <ClCompile Include="CDisasmData.cpp">
       <Filter>Source Files\Disassembler.c\Disasm_Data.c</Filter>
     </ClCompile>
+    <ClCompile Include="CFGViewer.cpp">
+      <Filter>Source Files\Disassembler.c</Filter>
+    </ClCompile>
     <ClCompile Include="Chip8.cpp">
       <Filter>Source Files\Disassembler.c\chip8.c</Filter>
     </ClCompile>
@@ -187,6 +190,9 @@
     </ClInclude>
     <ClInclude Include="CDisasmData.h">
       <Filter>Header Files\Disassembler.h\Disasm_Data.h</Filter>
+    </ClInclude>
+    <ClInclude Include="CFGViewer.h">
+      <Filter>Header Files\Disassembler.h</Filter>
     </ClInclude>
     <ClInclude Include="Chip8.h">
       <Filter>Header Files\Disassembler.h\Chip8.h</Filter>

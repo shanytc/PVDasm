@@ -283,6 +283,7 @@
   <ItemGroup>
     <ClCompile Include="CDisasmColor.cpp" />
     <ClCompile Include="CDisasmData.cpp" />
+    <ClCompile Include="CFGViewer.cpp" />
     <ClCompile Include="Chip8.cpp" />
     <ClCompile Include="VBPCode.cpp" />
     <ClCompile Include="Disasm.cpp" />
@@ -304,6 +305,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CDisasmData.h" />
+    <ClInclude Include="CFGViewer.h" />
     <ClInclude Include="Chip8.h" />
     <ClInclude Include="VBPCode.h" />
     <ClInclude Include="VBOpcodeTable.h" />

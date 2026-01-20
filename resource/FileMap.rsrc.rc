@@ -738,6 +738,14 @@ BEGIN
     EDITTEXT        IDC_SCRIPT_MESSAGE,1,2,369,59,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_OEMCONVERT | ES_READONLY | ES_WANTRETURN | WS_VSCROLL | WS_HSCROLL
 END
 
+IDD_CFG_VIEWER DIALOGEX 0, 0, 500, 400
+STYLE DS_SETFONT | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MAXIMIZEBOX
+EXSTYLE WS_EX_TOOLWINDOW
+CAPTION "Control Flow Graph Viewer"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -888,6 +896,7 @@ BEGIN
         MENUITEM "Show Comments\tCtrl+K",       IDC_SHOW_COMMENTS
         MENUITEM SEPARATOR
         MENUITEM "XReferences\tCtrl+Space",     IDC_XREF_MENU
+        MENUITEM "View Function Graph\tCtrl+G", IDC_VIEW_CFG
         MENUITEM SEPARATOR
         MENUITEM "Code Patcher\tAlt+E",         IDM_PATCHER
         MENUITEM "Add Comment\tCtrl+M",         IDC_DISASM_ADD_COMMENT
@@ -1159,6 +1168,7 @@ BEGIN
     "F",            IDM_FIND,               VIRTKEY, CONTROL, NOINVERT
     "F",            IDC_DEBUG_FONT,         VIRTKEY, CONTROL, ALT, NOINVERT
     "F",            IDC_DISASM_FONT,        VIRTKEY, SHIFT, ALT, NOINVERT
+    "G",            IDC_VIEW_CFG,           VIRTKEY, CONTROL, NOINVERT
     "H",            IDC_HEX_EDITOR,         VIRTKEY, CONTROL, NOINVERT
     "M",            IDC_DISASM_ADD_COMMENT, VIRTKEY, CONTROL, NOINVERT
     "M",            IDC_EXPORT_MAP_PVDASM,  VIRTKEY, ALT, NOINVERT
