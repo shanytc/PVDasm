@@ -62,6 +62,7 @@
 #include "SDK/SDK.H"
 #include "Wizard.h"
 #include "PVScript/pvscript.h"
+#include "CFGViewer.h"
 
 // STL Includes
 #include <vector>
