@@ -1,0 +1,920 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html dir="ltr">
+
+<!-- Mirrored from localhost/phpbb2/viewtopic.php?t=1756&start=0&postdays=0&postorder=asc&highlight= by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 04 Mar 2018 20:55:43 GMT -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Style-Type" content="text/css">
+
+<link rel="top" href="index-2.html" title="VB Decompiler Forum Index" />
+<link rel="search" href="search.html" title="Search" />
+<link rel="help" href="faq.html" title="FAQ" />
+<link rel="author" href="memberlist.html" title="Memberlist" />
+<link rel="prev" href="viewtopic7468.html" xx="t=1756&amp;view=previous" title="View previous topic" />
+<link rel="next" href="viewtopicced5.html" xx="t=1756&amp;view=next" title="View next topic" />
+<link rel="up" href="viewforum12a3.html" xx="f=2" title="Structures" />
+
+<title>VB Decompiler :: View topic - Decompiler Markup Language</title>
+<!-- link rel="stylesheet" href="templates/subSilver/subSilver.css" type="text/css" -->
+<style type="text/css">
+<!--
+/*
+  The original subSilver Theme for phpBB version 2+
+  Created by subBlue design
+  http://www.subBlue.com
+
+  NOTE: These CSS definitions are stored within the main page body so that you can use the phpBB2
+  theme administration centre. When you have finalised your style you could cut the final CSS code
+  and place it in an external file, deleting this section to save bandwidth.
+*/
+
+/* General page style. The scroll bar colours only visible in IE5.5+ */
+body {
+	background-color: #E5E5E5;
+	scrollbar-face-color: #DEE3E7;
+	scrollbar-highlight-color: #FFFFFF;
+	scrollbar-shadow-color: #DEE3E7;
+	scrollbar-3dlight-color: #D1D7DC;
+	scrollbar-arrow-color:  #006699;
+	scrollbar-track-color: #EFEFEF;
+	scrollbar-darkshadow-color: #98AAB1;
+}
+
+/* General font families for common tags */
+font,th,td,p { font-family: Verdana, Arial, Helvetica, sans-serif }
+a:link,a:active,a:visited { color : #006699; }
+a:hover		{ text-decoration: underline; color : #DD6900; }
+hr	{ height: 0px; border: solid #D1D7DC 0px; border-top-width: 1px;}
+
+/* This is the border line & background colour round the entire page */
+.bodyline	{ background-color: #FFFFFF; border: 1px #98AAB1 solid; }
+
+/* This is the outline round the main forum tables */
+.forumline	{ background-color: #FFFFFF; border: 2px #006699 solid; }
+
+/* Main table cell colours and backgrounds */
+td.row1	{ background-color: #EFEFEF; }
+td.row2	{ background-color: #DEE3E7; }
+td.row3	{ background-color: #D1D7DC; }
+
+/*
+  This is for the table cell above the Topics, Post & Last posts on the index.php page
+  By default this is the fading out gradiated silver background.
+  However, you could replace this with a bitmap specific for each forum
+*/
+td.rowpic {
+		background-color: #FFFFFF;
+		background-image: url(templates/subSilver/images/cellpic2.jpg);
+		background-repeat: repeat-y;
+}
+
+/* Header cells - the blue and silver gradient backgrounds */
+th	{
+	color: #FFA34F; font-size: 11px; font-weight : bold;
+	background-color: #006699; height: 25px;
+	background-image: url(templates/subSilver/images/cellpic3.gif);
+}
+
+td.cat,td.catHead,td.catSides,td.catLeft,td.catRight,td.catBottom {
+			background-image: url(templates/subSilver/images/cellpic1.gif);
+			background-color:#D1D7DC; border: #FFFFFF; border-style: solid; height: 28px;
+}
+
+/*
+  Setting additional nice inner borders for the main table cells.
+  The names indicate which sides the border will be on.
+  Don't worry if you don't understand this, just ignore it :-)
+*/
+td.cat,td.catHead,td.catBottom {
+	height: 29px;
+	border-width: 0px 0px 0px 0px;
+}
+th.thHead,th.thSides,th.thTop,th.thLeft,th.thRight,th.thBottom,th.thCornerL,th.thCornerR {
+	font-weight: bold; border: #FFFFFF; border-style: solid; height: 28px;
+}
+td.row3Right,td.spaceRow {
+	background-color: #D1D7DC; border: #FFFFFF; border-style: solid;
+}
+
+th.thHead,td.catHead { font-size: 12px; border-width: 1px 1px 0px 1px; }
+th.thSides,td.catSides,td.spaceRow	 { border-width: 0px 1px 0px 1px; }
+th.thRight,td.catRight,td.row3Right	 { border-width: 0px 1px 0px 0px; }
+th.thLeft,td.catLeft	  { border-width: 0px 0px 0px 1px; }
+th.thBottom,td.catBottom  { border-width: 0px 1px 1px 1px; }
+th.thTop	 { border-width: 1px 0px 0px 0px; }
+th.thCornerL { border-width: 1px 0px 0px 1px; }
+th.thCornerR { border-width: 1px 1px 0px 0px; }
+
+/* The largest text used in the index page title and toptic title etc. */
+.maintitle	{
+	font-weight: bold; font-size: 22px; font-family: "Trebuchet MS",Verdana, Arial, Helvetica, sans-serif;
+	text-decoration: none; line-height : 120%; color : #000000;
+}
+
+/* General text */
+.gen { font-size : 12px; }
+.genmed { font-size : 11px; }
+.gensmall { font-size : 10px; }
+.gen,.genmed,.gensmall { color : #000000; }
+a.gen,a.genmed,a.gensmall { color: #006699; text-decoration: none; }
+a.gen:hover,a.genmed:hover,a.gensmall:hover	{ color: #DD6900; text-decoration: underline; }
+
+/* The register, login, search etc links at the top of the page */
+.mainmenu		{ font-size : 11px; color : #000000 }
+a.mainmenu		{ text-decoration: none; color : #006699;  }
+a.mainmenu:hover{ text-decoration: underline; color : #DD6900; }
+
+/* Forum category titles */
+.cattitle		{ font-weight: bold; font-size: 12px ; letter-spacing: 1px; color : #006699}
+a.cattitle		{ text-decoration: none; color : #006699; }
+a.cattitle:hover{ text-decoration: underline; }
+
+/* Forum title: Text and link to the forums used in: index.php */
+.forumlink		{ font-weight: bold; font-size: 12px; color : #006699; }
+a.forumlink 	{ text-decoration: none; color : #006699; }
+a.forumlink:hover{ text-decoration: underline; color : #DD6900; }
+
+/* Used for the navigation text, (Page 1,2,3 etc) and the navigation bar when in a forum */
+.nav			{ font-weight: bold; font-size: 11px; color : #000000;}
+a.nav			{ text-decoration: none; color : #006699; }
+a.nav:hover		{ text-decoration: underline; }
+
+/* titles for the topics: could specify viewed link colour too */
+.topictitle,h1,h2	{ font-weight: bold; font-size: 11px; color : #000000; }
+a.topictitle:link   { text-decoration: none; color : #006699; }
+a.topictitle:visited { text-decoration: none; color : #5493B4; }
+a.topictitle:hover	{ text-decoration: underline; color : #DD6900; }
+
+/* Name of poster in viewmsg.php and viewtopic.php and other places */
+.name			{ font-size : 11px; color : #000000;}
+
+/* Location, number of posts, post date etc */
+.postdetails		{ font-size : 10px; color : #000000; }
+
+/* The content of the posts (body of text) */
+.postbody { font-size : 12px; line-height: 18px}
+a.postlink:link	{ text-decoration: none; color : #006699 }
+a.postlink:visited { text-decoration: none; color : #5493B4; }
+a.postlink:hover { text-decoration: underline; color : #DD6900}
+
+/* Quote & Code blocks */
+.code {
+	font-family: Courier, 'Courier New', sans-serif; font-size: 11px; color: #006600;
+	background-color: #FAFAFA; border: #D1D7DC; border-style: solid;
+	border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+}
+
+.quote {
+	font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11px; color: #444444; line-height: 125%;
+	background-color: #FAFAFA; border: #D1D7DC; border-style: solid;
+	border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+}
+
+/* Copyright and bottom info */
+.copyright		{ font-size: 10px; font-family: Verdana, Arial, Helvetica, sans-serif; color: #444444; letter-spacing: -1px;}
+a.copyright		{ color: #444444; text-decoration: none;}
+a.copyright:hover { color: #000000; text-decoration: underline;}
+
+/* Form elements */
+input,textarea, select {
+	color : #000000;
+	font: normal 11px Verdana, Arial, Helvetica, sans-serif;
+	border-color : #000000;
+}
+
+/* The text input fields background colour */
+input.post, textarea.post, select {
+	background-color : #FFFFFF;
+}
+
+input { text-indent : 2px; }
+
+/* The buttons used for bbCode styling in message post */
+input.button {
+	background-color : #EFEFEF;
+	color : #000000;
+	font-size: 11px; font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+/* The main submit button option */
+input.mainoption {
+	background-color : #FAFAFA;
+	font-weight : bold;
+}
+
+/* None-bold submit button */
+input.liteoption {
+	background-color : #FAFAFA;
+	font-weight : normal;
+}
+
+/* This is the line in the posting page which shows the rollover
+  help line. This is actually a text box, but if set to be the same
+  colour as the background no one will know ;)
+*/
+.helpline { background-color: #DEE3E7; border-style: none; }
+
+/* Import the fancy styles for IE only (NS4.x doesn't use the @import function) */
+@import url("templates/subSilver/formIE.css");
+-->
+</style>
+</head>
+<body bgcolor="#E5E5E5" text="#000000" link="#006699" vlink="#5493B4">
+
+<a name="top"></a>
+
+<table width="100%" cellspacing="0" cellpadding="10" border="0" align="center">
+	<tr>
+		<td class="bodyline"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<tr>
+				<td><a href="index-2.html"><img src="templates/subSilver/images/logo_phpBB.gif" border="0" alt="VB Decompiler Forum Index" vspace="1" /></a></td>
+				<td align="center" width="100%" valign="middle"><span class="maintitle">VB Decompiler</span><br /><span class="gen">Hosted by TheAutomaters.com<br />&nbsp; </span>
+				<table cellspacing="0" cellpadding="2" border="0">
+					<tr>
+						<td align="center" valign="top" nowrap="nowrap"><span class="mainmenu">&nbsp;
+						<a href="memberlist.html" class="mainmenu"><img src="templates/subSilver/images/icon_mini_members.gif" width="12" height="13" border="0" alt="Memberlist" hspace="3" />Memberlist</a>
+						</span></td>
+					</tr>
+					<tr>
+						<td height="25" align="center" valign="top" nowrap="nowrap"><span class="mainmenu">&nbsp;</td>
+					</tr>
+				</table></td>
+			</tr>
+		</table>
+
+		<br />
+
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0">
+  <tr>
+	<td align="left" valign="bottom" colspan="2"><a class="maintitle" href="viewtopic91a2.html" xx="t=1756&amp;start=0&amp;postdays=0&amp;postorder=asc&amp;highlight=">Decompiler Markup Language</a><br />
+	  <span class="gensmall"><b></b><br />
+	  &nbsp; </span></td>
+  </tr>
+</table>
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0">
+  <tr>
+	<td></td>
+	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="index-2.html" class="nav">VB Decompiler Forum Index</a>
+	  -> <a href="viewforum12a3.html" xx="f=2" class="nav">Structures</a></span></td>
+  </tr>
+</table>
+
+<table class="forumline" width="100%" cellspacing="1" cellpadding="3" border="0">
+	<tr>
+		<th class="thLeft" width="150" height="26" nowrap="nowrap">Author</th>
+		<th class="thRight" nowrap="nowrap">Message</th>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2205"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Oct 02, 2003 5:09 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Decompiler Markup Language
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Ok here is an Idea that I had...in order to keep consistency among all of the people developing decompilers....i wanted to propose a DML or Decompiler MarkUp Language.... it would be an xml language that would basically tell a program how to parse[at the minimum] a vb exe file...
+<br />
+
+<br />
+using includes and such we could make custom structs that are essentially dynamic....
+<br />
+
+<br />
+I am starting it right now.....let me know your guy's opinions as to wether you would use such a thing or not....<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2206"></a><b>Anonymous</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 10 Feb 2008<br />Posts: 0<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Oct 02, 2003 9:31 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Sounds very good.
+<br />
+It would be "universal" because for tool using such DML file does not matter what to parse.
+<br />
+May be there is such(similar) tool somewhere already 
+<br />
+
+<br />
+1) What about placing decompiled parts in different files?
+<br />
+Theirs names will be known during processing...</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2207"></a><b>Anonymous</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 10 Feb 2008<br />Posts: 0<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Oct 02, 2003 10:57 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">some parts of processing requeries specific algorithmes.
+<br />
+so tool to be universal MUST (?) contain some scripting language capable processing bit operations
+<br />
+
+<br />
+More I think more boring it seems to me.
+<br />
+
+<br />
+Have I missed something? </span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2208"></a><b>golem</b></span><br /><span class="postdetails">Often here<br /><!--<img src="pro_rank_02.gif" alt="Often here" title="Often here" border="0" /><br />--><br /><br />Joined: 18 Nov 2002<br />Posts: 73<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Oct 02, 2003 4:17 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Maybe you have heard of golems_Folly and this thing called golem Definition Language (gDL)? 
+<br />
+
+<br />
+gDL is dynamic (can be edited on the fly), integrated (treats the source code/structures as a database), heuristic (automatically sees linkages/relationships with other structures AND automatically analyzes the validity of the field contents), visual (supports attributes permitting the intelligent viewing of structures/data item contents)...
+<br />
+
+<br />
+What an original idea you have there Mr. Unleaded! 
+<br />
+
+<br />
+Carry on!
+<br />
+golem </span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2210"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Fri Oct 03, 2003 1:11 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;golem&quot;:1keka1qt]Maybe you have heard of golems_Folly and this thing called golem Definition Language (gDL)? 
+<br />
+
+<br />
+gDL is dynamic (can be edited on the fly), integrated (treats the source code/structures as a database), heuristic (automatically sees linkages/relationships with other structures AND automatically analyzes the validity of the field contents), visual (supports attributes permitting the intelligent viewing of structures/data item contents)...
+<br />
+
+<br />
+What an original idea you have there Mr. Unleaded! 
+<br />
+
+<br />
+Carry on!
+<br />
+golem [/:1keka1qt]Ahh golem   Haven't seen you in a while....i see that youve migrated to this board now...i still dont know what happened to decompiler.com
+<br />
+
+<br />
+
+<br />
+I forgot that you had mentioned this gDL...you never really went very indepth with it from what ive read on decompiler..... since you have experience in this..... would you like to share anything general....or specific about it?<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2214"></a><b>golem</b></span><br /><span class="postdetails">Often here<br /><!--<img src="pro_rank_02.gif" alt="Often here" title="Often here" border="0" /><br />--><br /><br />Joined: 18 Nov 2002<br />Posts: 73<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Oct 04, 2003 4:46 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Migrated? No, just visiting... Don't really consider myself a 'member' of this MB... Though I don't have a problem with my logon have made yet another leap to a new MB, presumably from my originally signing up... 
+<br />
+
+<br />
+<!-- w --><a class="postlink" href="http://www.decompiler.com/">http://www.decompiler.com</a><!-- w -->. What happened? Stanley basically abandoned us... Despite the great excitement when it first opened up, it rapidly went into decline because the underlying philosophy behind the MB was flawed...
+<br />
+
+<br />
+Everyone who asked, regardless of their ability and their contributions to a/the decompiler, was made a moderator... I often got the impression that the entire setup was a honey pot... A culture of wannabeism was the dominant theme. Some of the guys with the least abilities or results were the most vocal in pushing for what they were interested in...
+<br />
+
+<br />
+When I posted the first published sample output of a recovered project using golems_Folly... Let's just say the results were pretty laughable. Most of decompiler.com's members had absolutely NO IDEA of the significance of what had truly been accomplished. 
+<br />
+
+<br />
+My absolute favorite was the Moogster's comment that it looked pretty good except for a few errors when he loaded into his VB6 IDE, therefore had problems... Psst Moogman, it was VB5... and was flawless. 
+<br />
+
+<br />
+Actually, Mr. Unleaded, I have been lurking here all along... Monitoring what you guys have been up to... Looking for the MBs progress.
+<br />
+
+<br />
+I have discussed gDL several times in the past. It was predicatably of little interest or help on decompiler.com. 
+<br />
+
+<br />
+gDL, like COM, is an amazingly simple concept and is basically implemented as follows. Now keep in mind that golems_Folly lives in a VB5 runtime IDE environment and that is why it can be dynamically altered on the fly (or worse case, as in the redefinition of a core UDT, with a simple full recompile  ).
+<br />
+
+<br />
+All of the VB program structures are defined via VB Type structures, for instance...
+<br />
+
+<br />
+Type Structure1
+<br />
+  Field1 as Long   ' 0 LVA
+<br />
+  Field2 as Long   ' 4 OVA
+<br />
+  Field3 as Guid_Type  ' 8 GUID
+<br />
+  Field4 as String *2 '18
+<br />
+  Field5(15) as Integer '1A
+<br />
+End Type
+<br />
+
+<br />
+When golems_Folly is started up, it loads up and parses its own source code, cataloging all of the UDT structures. During the course of parsing the project to be analyzed (read the Exe at the heart of that specific project), as it comes to points where it reads the program structures, it both validates and sequentially logs the entries out to a .gLG log file, it also loads them into a parsed/cataloged structures array, using a process I have named Ghosting.
+<br />
+
+<br />
+If you look at the hypothetical UDT structure... The offset is not an active field (Ghosting calculates its own  ), is just for editing purposes in the IDE, but the VB types (Integer, Long, UDTs...) are actively interpreted and more importantly, the keyword based attribute type and other supporting info (following the UDT offset) is what makes the magic occur...
+<br />
+
+<br />
+Once the Exe is fully parsed, you can either examine the binary image by either looking at the .gLG output or visually cruise the Exe which uses the arrays the gDL attributes controls the field formatting, verifies the links (points to other structures), etc...
+<br />
+
+<br />
+Though executed in VB, this gDL concept with a little imagination and mental flexibility can be implemented in most any language...
+<br />
+
+<br />
+Carry on!
+<br />
+golem </span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2215"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Oct 05, 2003 12:55 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">I can understand making the structures and stuff in some sort of definition language.....but i have yet to think of a good way to generate output for it.
+<br />
+
+<br />
+I mean the Structures and UDT seems fairly simple....but once you get to the code....i mean you could make a new UDT for each opcode and give that udt substructures[the variables].....but then converting those variables and udt would be a custom process specific to each type of executable...ie VB3 vs VB6
+<br />
+
+<br />
+My memory mapping program is a kind-of output that might be used...it at least shows a visual representation of the location of many of the structures....but the memory map could not be the primary output because it misses a great deal of information that would be needed for decompiling....
+<br />
+
+<br />
+I suppose that for each custom struct...you could specify a place for output....ie a file or stdout....or other....maybe even have some running variables in a struct to output data based on the variables generated...
+<br />
+
+<br />
+golem: care to elaborate on how you display[but not nesasarily visually] your output?<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2217"></a><b>golem</b></span><br /><span class="postdetails">Often here<br /><!--<img src="pro_rank_02.gif" alt="Often here" title="Often here" border="0" /><br />--><br /><br />Joined: 18 Nov 2002<br />Posts: 73<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Oct 05, 2003 2:26 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">gDL basically has nothing to do with the tokens definition database. gDL is strictly used to define the VB program structures, though the subroutines and related structures are of course referenced by other structures. 
+<br />
+
+<br />
+&gt;care to elaborate on how you display[but not nesasarily visually] your output?
+<br />
+Your question doesn't make much sense in the context of the above description about gDL. The visual output consists of structures... that exactly match/are the UDT, its file location and length, its field definitions and their respective field and attribute/database types. For instance, LVAs get represented in hex typically as 004xxxxx/yyyyyy (being file offset). Any fields that are links to other structures actually do become links, which you can advance to...
+<br />
+
+<br />
+You can examine the structures from the program in question statically by viewing the gLG file or dynamically, using the Ghosting arrays, by selecting a pull down list (sorted by location in the Exe binary image  ) or starting from the top... which would of course be the Dos_Header.
+<br />
+
+<br />
+I have interwoven a couple of more wrinkles (naturally  ), but they are not really relevant to a baseline outline of gDL... at least as described here. 
+<br />
+
+<br />
+Carry on!
+<br />
+golem </span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2218"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Oct 05, 2003 6:11 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Im talking about how do you get from iterating the class structures with gDL to something like your project file? do you do that with gDL? or by other means?<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2220"></a><b>golem</b></span><br /><span class="postdetails">Often here<br /><!--<img src="pro_rank_02.gif" alt="Often here" title="Often here" border="0" /><br />--><br /><br />Joined: 18 Nov 2002<br />Posts: 73<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Oct 05, 2003 3:52 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">In reading your responses and your seeming inability to even be able to ask a relevant question, one can't help but come to the conclusion that you are fairly clueless. 
+<br />
+
+<br />
+This and the almost total lack of collective progress on a VB5/6 decompiler as evidenced by the glaring errors and omissions in the core VB5/6 structures, and the almost humorous opcode definitions leads to comment that...
+<br />
+
+<br />
+Yes, 'there are 10 types of people in this world, those that understand binary and those who don't...' and there is little doubt of which of those 10 types of people you are...
+<br />
+
+<br />
+Carry on!
+<br />
+golem </span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2221"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Mon Oct 06, 2003 2:57 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">(my apologies for interrupting the conversation)
+<br />
+
+<br />
+[:295q61t9]This and the almost total lack of collective progress on a VB5/6 decompiler as evidenced by the glaring errors and omissions in the core VB5/6 structures, and the almost humorous opcode definitions leads to comment that...[/:295q61t9]
+<br />
+golem, this MB is meant for learning and researching, thats why we have created another MB 
+<br />
+perhaps u could help us in correcting that "humorous opcode definitions" and the errors and omissions in "our" structures 
+<br />
+i believe u are way ahead from me in VB5/6 decompiling technics, at least u demostrate a higher level of knowlegde. while im glad we have a member like that, im also sad because that member "laught" at us <br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2223"></a><b>golem</b></span><br /><span class="postdetails">Often here<br /><!--<img src="pro_rank_02.gif" alt="Often here" title="Often here" border="0" /><br />--><br /><br />Joined: 18 Nov 2002<br />Posts: 73<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Dec 10, 2003 1:34 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: You are of course...
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">quite right Alfa. 
+<br />
+
+<br />
+Maybe it's some type of elitism... It can probably just be chalked up to a demonstratable lack of performance by most of the MB participants. 
+<br />
+
+<br />
+I harp about the structures a lot... But REALLY!!! You would think that SOMEONE would notice all of the essential structures/fields that are simply NOT documented... NOT even conceived of... even in the core data structures.
+<br />
+
+<br />
+What am I talking about? Here is an example...
+<br />
+
+<br />
+How about a concept I call: 'The address is everything'. 
+<br />
+
+<br />
+Who here can even tell us what I am babbling about? 
+<br />
+
+<br />
+Carry on!
+<br />
+golem </span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr align="center">
+		<td class="catBottom" colspan="2" height="28"></td>
+		<td></td>
+	</tr>
+</table>
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+  <tr>
+	<td></td>
+	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="index-2.html" class="nav">VB Decompiler Forum Index</a>
+	  -> <a href="viewforum12a3.html" xx="f=2" class="nav">Structures</a></span></td>
+	<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">All times are GMT</span><br /><span class="nav"></span>
+	  </td>
+  </tr>
+  <tr>
+	<td align="left" colspan="3"><span class="nav">Page <b>1</b> of <b>1</b></span></td>
+  </tr>
+</table>
+
+<table width="100%" cellspacing="2" border="0" align="center">
+  <tr>
+	<td width="40%" valign="top" nowrap="nowrap" align="left"><span class="gensmall"></span><br />
+	  &nbsp;<br />
+	  </td>
+	<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">You <b>can</b> post new topics in this forum<br />You <b>can</b> reply to topics in this forum<br />You <b>can</b> edit your posts in this forum<br />You <b>can</b> delete your posts in this forum<br />You <b>can</b> vote in polls in this forum<br /></span></td>
+  </tr>
+</table>
+
+
+<div align="center"><span class="copyright"><br /><br />
+<!--
+	We request you retain the full copyright notice below including the link to www.phpbb.com.
+	This not only gives respect to the large amount of time given freely by the developers
+	but also helps build interest, traffic and use of phpBB 2.0. If you cannot (for good
+	reason) retain the full copyright we request you at least leave in place the
+	Powered by phpBB line, with phpBB linked to www.phpbb.com. If you refuse
+	to include even this then support on our forums may be affected.
+
+	The phpBB Group : 2002
+// -->
+Powered by <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB</a> &copy; 2001, 2005 phpBB Group<br /></span></div>
+		</td>
+	</tr>
+</table>
+
+</body>
+
+<!-- Mirrored from localhost/phpbb2/viewtopic.php?t=1756&start=0&postdays=0&postorder=asc&highlight= by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 04 Mar 2018 20:55:43 GMT -->
+</html>
+

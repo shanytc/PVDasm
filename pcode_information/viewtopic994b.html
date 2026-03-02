@@ -1,0 +1,2254 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html dir="ltr">
+
+<!-- Mirrored from localhost/phpbb2/viewtopic.php?t=1798&postdays=0&postorder=asc&start=0 by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 04 Mar 2018 20:55:23 GMT -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Style-Type" content="text/css">
+
+<link rel="top" href="index-2.html" title="VB Decompiler Forum Index" />
+<link rel="search" href="search.html" title="Search" />
+<link rel="help" href="faq.html" title="FAQ" />
+<link rel="author" href="memberlist.html" title="Memberlist" />
+<link rel="prev" href="viewtopic7fbe.html" xx="t=1798&amp;view=previous" title="View previous topic" />
+<link rel="next" href="viewtopic7cc9.html" xx="t=1798&amp;view=next" title="View next topic" />
+<link rel="up" href="viewforum31e6.html" xx="f=4" title="Visual Basic" />
+
+<title>VB Decompiler :: View topic - msvbvm60.dll+vba6.dll</title>
+<!-- link rel="stylesheet" href="templates/subSilver/subSilver.css" type="text/css" -->
+<style type="text/css">
+<!--
+/*
+  The original subSilver Theme for phpBB version 2+
+  Created by subBlue design
+  http://www.subBlue.com
+
+  NOTE: These CSS definitions are stored within the main page body so that you can use the phpBB2
+  theme administration centre. When you have finalised your style you could cut the final CSS code
+  and place it in an external file, deleting this section to save bandwidth.
+*/
+
+/* General page style. The scroll bar colours only visible in IE5.5+ */
+body {
+	background-color: #E5E5E5;
+	scrollbar-face-color: #DEE3E7;
+	scrollbar-highlight-color: #FFFFFF;
+	scrollbar-shadow-color: #DEE3E7;
+	scrollbar-3dlight-color: #D1D7DC;
+	scrollbar-arrow-color:  #006699;
+	scrollbar-track-color: #EFEFEF;
+	scrollbar-darkshadow-color: #98AAB1;
+}
+
+/* General font families for common tags */
+font,th,td,p { font-family: Verdana, Arial, Helvetica, sans-serif }
+a:link,a:active,a:visited { color : #006699; }
+a:hover		{ text-decoration: underline; color : #DD6900; }
+hr	{ height: 0px; border: solid #D1D7DC 0px; border-top-width: 1px;}
+
+/* This is the border line & background colour round the entire page */
+.bodyline	{ background-color: #FFFFFF; border: 1px #98AAB1 solid; }
+
+/* This is the outline round the main forum tables */
+.forumline	{ background-color: #FFFFFF; border: 2px #006699 solid; }
+
+/* Main table cell colours and backgrounds */
+td.row1	{ background-color: #EFEFEF; }
+td.row2	{ background-color: #DEE3E7; }
+td.row3	{ background-color: #D1D7DC; }
+
+/*
+  This is for the table cell above the Topics, Post & Last posts on the index.php page
+  By default this is the fading out gradiated silver background.
+  However, you could replace this with a bitmap specific for each forum
+*/
+td.rowpic {
+		background-color: #FFFFFF;
+		background-image: url(templates/subSilver/images/cellpic2.jpg);
+		background-repeat: repeat-y;
+}
+
+/* Header cells - the blue and silver gradient backgrounds */
+th	{
+	color: #FFA34F; font-size: 11px; font-weight : bold;
+	background-color: #006699; height: 25px;
+	background-image: url(templates/subSilver/images/cellpic3.gif);
+}
+
+td.cat,td.catHead,td.catSides,td.catLeft,td.catRight,td.catBottom {
+			background-image: url(templates/subSilver/images/cellpic1.gif);
+			background-color:#D1D7DC; border: #FFFFFF; border-style: solid; height: 28px;
+}
+
+/*
+  Setting additional nice inner borders for the main table cells.
+  The names indicate which sides the border will be on.
+  Don't worry if you don't understand this, just ignore it :-)
+*/
+td.cat,td.catHead,td.catBottom {
+	height: 29px;
+	border-width: 0px 0px 0px 0px;
+}
+th.thHead,th.thSides,th.thTop,th.thLeft,th.thRight,th.thBottom,th.thCornerL,th.thCornerR {
+	font-weight: bold; border: #FFFFFF; border-style: solid; height: 28px;
+}
+td.row3Right,td.spaceRow {
+	background-color: #D1D7DC; border: #FFFFFF; border-style: solid;
+}
+
+th.thHead,td.catHead { font-size: 12px; border-width: 1px 1px 0px 1px; }
+th.thSides,td.catSides,td.spaceRow	 { border-width: 0px 1px 0px 1px; }
+th.thRight,td.catRight,td.row3Right	 { border-width: 0px 1px 0px 0px; }
+th.thLeft,td.catLeft	  { border-width: 0px 0px 0px 1px; }
+th.thBottom,td.catBottom  { border-width: 0px 1px 1px 1px; }
+th.thTop	 { border-width: 1px 0px 0px 0px; }
+th.thCornerL { border-width: 1px 0px 0px 1px; }
+th.thCornerR { border-width: 1px 1px 0px 0px; }
+
+/* The largest text used in the index page title and toptic title etc. */
+.maintitle	{
+	font-weight: bold; font-size: 22px; font-family: "Trebuchet MS",Verdana, Arial, Helvetica, sans-serif;
+	text-decoration: none; line-height : 120%; color : #000000;
+}
+
+/* General text */
+.gen { font-size : 12px; }
+.genmed { font-size : 11px; }
+.gensmall { font-size : 10px; }
+.gen,.genmed,.gensmall { color : #000000; }
+a.gen,a.genmed,a.gensmall { color: #006699; text-decoration: none; }
+a.gen:hover,a.genmed:hover,a.gensmall:hover	{ color: #DD6900; text-decoration: underline; }
+
+/* The register, login, search etc links at the top of the page */
+.mainmenu		{ font-size : 11px; color : #000000 }
+a.mainmenu		{ text-decoration: none; color : #006699;  }
+a.mainmenu:hover{ text-decoration: underline; color : #DD6900; }
+
+/* Forum category titles */
+.cattitle		{ font-weight: bold; font-size: 12px ; letter-spacing: 1px; color : #006699}
+a.cattitle		{ text-decoration: none; color : #006699; }
+a.cattitle:hover{ text-decoration: underline; }
+
+/* Forum title: Text and link to the forums used in: index.php */
+.forumlink		{ font-weight: bold; font-size: 12px; color : #006699; }
+a.forumlink 	{ text-decoration: none; color : #006699; }
+a.forumlink:hover{ text-decoration: underline; color : #DD6900; }
+
+/* Used for the navigation text, (Page 1,2,3 etc) and the navigation bar when in a forum */
+.nav			{ font-weight: bold; font-size: 11px; color : #000000;}
+a.nav			{ text-decoration: none; color : #006699; }
+a.nav:hover		{ text-decoration: underline; }
+
+/* titles for the topics: could specify viewed link colour too */
+.topictitle,h1,h2	{ font-weight: bold; font-size: 11px; color : #000000; }
+a.topictitle:link   { text-decoration: none; color : #006699; }
+a.topictitle:visited { text-decoration: none; color : #5493B4; }
+a.topictitle:hover	{ text-decoration: underline; color : #DD6900; }
+
+/* Name of poster in viewmsg.php and viewtopic.php and other places */
+.name			{ font-size : 11px; color : #000000;}
+
+/* Location, number of posts, post date etc */
+.postdetails		{ font-size : 10px; color : #000000; }
+
+/* The content of the posts (body of text) */
+.postbody { font-size : 12px; line-height: 18px}
+a.postlink:link	{ text-decoration: none; color : #006699 }
+a.postlink:visited { text-decoration: none; color : #5493B4; }
+a.postlink:hover { text-decoration: underline; color : #DD6900}
+
+/* Quote & Code blocks */
+.code {
+	font-family: Courier, 'Courier New', sans-serif; font-size: 11px; color: #006600;
+	background-color: #FAFAFA; border: #D1D7DC; border-style: solid;
+	border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+}
+
+.quote {
+	font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11px; color: #444444; line-height: 125%;
+	background-color: #FAFAFA; border: #D1D7DC; border-style: solid;
+	border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+}
+
+/* Copyright and bottom info */
+.copyright		{ font-size: 10px; font-family: Verdana, Arial, Helvetica, sans-serif; color: #444444; letter-spacing: -1px;}
+a.copyright		{ color: #444444; text-decoration: none;}
+a.copyright:hover { color: #000000; text-decoration: underline;}
+
+/* Form elements */
+input,textarea, select {
+	color : #000000;
+	font: normal 11px Verdana, Arial, Helvetica, sans-serif;
+	border-color : #000000;
+}
+
+/* The text input fields background colour */
+input.post, textarea.post, select {
+	background-color : #FFFFFF;
+}
+
+input { text-indent : 2px; }
+
+/* The buttons used for bbCode styling in message post */
+input.button {
+	background-color : #EFEFEF;
+	color : #000000;
+	font-size: 11px; font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+/* The main submit button option */
+input.mainoption {
+	background-color : #FAFAFA;
+	font-weight : bold;
+}
+
+/* None-bold submit button */
+input.liteoption {
+	background-color : #FAFAFA;
+	font-weight : normal;
+}
+
+/* This is the line in the posting page which shows the rollover
+  help line. This is actually a text box, but if set to be the same
+  colour as the background no one will know ;)
+*/
+.helpline { background-color: #DEE3E7; border-style: none; }
+
+/* Import the fancy styles for IE only (NS4.x doesn't use the @import function) */
+@import url("templates/subSilver/formIE.css");
+-->
+</style>
+</head>
+<body bgcolor="#E5E5E5" text="#000000" link="#006699" vlink="#5493B4">
+
+<a name="top"></a>
+
+<table width="100%" cellspacing="0" cellpadding="10" border="0" align="center">
+	<tr>
+		<td class="bodyline"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<tr>
+				<td><a href="index-2.html"><img src="templates/subSilver/images/logo_phpBB.gif" border="0" alt="VB Decompiler Forum Index" vspace="1" /></a></td>
+				<td align="center" width="100%" valign="middle"><span class="maintitle">VB Decompiler</span><br /><span class="gen">Hosted by TheAutomaters.com<br />&nbsp; </span>
+				<table cellspacing="0" cellpadding="2" border="0">
+					<tr>
+						<td align="center" valign="top" nowrap="nowrap"><span class="mainmenu">&nbsp;
+						<a href="memberlist.html" class="mainmenu"><img src="templates/subSilver/images/icon_mini_members.gif" width="12" height="13" border="0" alt="Memberlist" hspace="3" />Memberlist</a>
+						</span></td>
+					</tr>
+					<tr>
+						<td height="25" align="center" valign="top" nowrap="nowrap"><span class="mainmenu">&nbsp;</td>
+					</tr>
+				</table></td>
+			</tr>
+		</table>
+
+		<br />
+
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0">
+  <tr>
+	<td align="left" valign="bottom" colspan="2"><a class="maintitle" href="viewtopicf860.html" xx="t=1798&amp;start=0&amp;postdays=0&amp;postorder=asc&amp;highlight=">msvbvm60.dll+vba6.dll</a><br />
+	  <span class="gensmall"><b>Goto page <b>1</b>, <a href="viewtopicaf29.html" xx="t=1798&amp;postdays=0&amp;postorder=asc&amp;start=20">2</a>, <a href="viewtopic5866.html" xx="t=1798&amp;postdays=0&amp;postorder=asc&amp;start=40">3</a>&nbsp;&nbsp;<a href="viewtopicaf29.html" xx="t=1798&amp;postdays=0&amp;postorder=asc&amp;start=20">Next</a></b><br />
+	  &nbsp; </span></td>
+  </tr>
+</table>
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0">
+  <tr>
+	<td></td>
+	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="index-2.html" class="nav">VB Decompiler Forum Index</a>
+	  -> <a href="viewforum31e6.html" xx="f=4" class="nav">Visual Basic</a></span></td>
+  </tr>
+</table>
+
+<table class="forumline" width="100%" cellspacing="1" cellpadding="3" border="0">
+	<tr>
+		<th class="thLeft" width="150" height="26" nowrap="nowrap">Author</th>
+		<th class="thRight" nowrap="nowrap">Message</th>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2558"></a><b>Libor</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 11 Aug 2004<br />Posts: 13<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Tue Aug 24, 2004 9:04 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: msvbvm60.dll+vba6.dll
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">seems that nobody on this site is interested in disassembling msvbvm60.dll or vba6.dll....
+<br />
+I think those DLLs could contain interesting and helpful functions....</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2561"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Tue Aug 24, 2004 11:20 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">621,021 lines in my MSVBVM60.lst file ...
+<br />
+
+<br />
+Not interested in VBA6.dll myself, though   .......      
+<br />
+</span><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center"><tr> 	  <td><span class="genmed"><b>Code:</b></span></td>	</tr>	<tr>	  <td class="code">
+<br />
+; Borg Disassembler v2&#46;27 &#58; C&#58;WINNTsystem32Msvbvm60&#46;dll
+<br />
+;
+<br />
+;             Created by Borg Disassembler
+<br />
+;                   written by Cronos
+<br />
+
+<br />
+1000&#58;66001000 ;-----------------------------------------------------------------------
+<br />
+1000&#58;66001000 ;Segment &#58; 1000h     Offset &#58; 66001000h     Size &#58; fe000h
+<br />
+1000&#58;66001000 ;32-bit Code
+<br />
+1000&#58;66001000 ;-----------------------------------------------------------------------
+<br />
+1000&#58;66001000 ;                                   XREFS First&#58; 1000&#58;660f0018 Number &#58; 1
+<br />
+1000&#58;66001000 ExitThread&#58;
+<br />
+1000&#58;66001000 5ecc0f00             dd     0fcc5eh
+<br />
+</td>	</tr></table><span class="postbody">
+<br />
+
+<br />
+The sheer number of code samples in there gave me an idea - an hour` or so in the IDE and I had quite a reasonable little plugin disassembler function .... good enough to let me paste just-in-time code in mnemonic form, maybe???  ... we'll see ....
+<br />
+
+<br />
+</span><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center"><tr> 	  <td><span class="genmed"><b>Code:</b></span></td>	</tr>	<tr>	  <td class="code">
+<br />
+f746~test~dword ptr &#91;esi+%1&#93;, %4
+<br />
+f76424~mul~dword ptr &#91;esp+%1&#93;
+<br />
+f782~test~dword ptr &#91;edx+%4&#93;, %4
+<br />
+</td>	</tr></table><span class="postbody">
+<br />
+
+<br />
+
+<br />
+Some form of call-chain analysis might be done with this document too ...</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2563"></a><b>ionescu007</b></span><br /><span class="postdetails">Sometimes here<br /><!--<img src="pro_rank_01.gif" alt="Sometimes here" title="Sometimes here" border="0" /><br />--><br /><br />Joined: 21 Aug 2004<br />Posts: 33<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Tue Aug 24, 2004 11:39 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">I've disassembled 65% of ThunRTMain...a huge part of the runtime are each of the native controls (I've found a table describing them all) and their handlers/events/methods/properties. The rest are simple COM/OLE functions that could simply made into stubs calline oleaut32. Most of the array/string types in VB are actualyl OLE and documented.
+<br />
+
+<br />
+Best regards,
+<br />
+Alex Ionescu
+<br />
+Kernel Developer, ReactOS
+<br />
+President, Relsoft Technologies</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2572"></a><b>Libor</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 11 Aug 2004<br />Posts: 13<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Aug 25, 2004 9:27 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: vba6.dll
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Do you know some Eb* functions?
+<br />
+e.g. EbExecuteLine - <!-- m --><a class="postlink" href="http://www.tek-tips.com/faqs.cfm?fid=492">http://www.tek-tips.com/faqs.cfm?fid=492</a><!-- m -->
+<br />
+It is quite interesting.</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2575"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Aug 25, 2004 12:56 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">They are VBA interface routines aren't they? They'd turn into VBA's pcode?
+<br />
+
+<br />
+
+<br />
+Cheers, Alex, but why only 65% ????  Borg freeware did the whole thing in about 10-15 minutes.</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2586"></a><b>ionescu007</b></span><br /><span class="postdetails">Sometimes here<br /><!--<img src="pro_rank_01.gif" alt="Sometimes here" title="Sometimes here" border="0" /><br />--><br /><br />Joined: 21 Aug 2004<br />Posts: 33<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Aug 25, 2004 7:09 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">I don't see how any company/person can transform 300KB of ASM code into over 2500 lines of compilable C Code in 15 minutes. Few people can write 2500 lines of C in an hour from their own head, much less from ASM. Are you sure we are talking about the same thing?
+<br />
+
+<br />
+Best regards,
+<br />
+Alex Ionescu
+<br />
+Kernel Developer, ReactOS
+<br />
+President, Relsoft Technologies</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2589"></a><b>Libor</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 11 Aug 2004<br />Posts: 13<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Aug 25, 2004 9:19 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Yes, they are. VB IDE uses this dll too.
+<br />
+Call it (Eb*) like normal API.</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2590"></a><b>ionescu007</b></span><br /><span class="postdetails">Sometimes here<br /><!--<img src="pro_rank_01.gif" alt="Sometimes here" title="Sometimes here" border="0" /><br />--><br /><br />Joined: 21 Aug 2004<br />Posts: 33<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Aug 25, 2004 10:05 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Libor, I was referring to Dr's post, although I just realized he was joking around...I think.
+<br />
+
+<br />
+Best regards,
+<br />
+Alex Ionescu
+<br />
+Kernel Developer, ReactOS
+<br />
+President, Relsoft Technologies</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2591"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Aug 26, 2004 4:15 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Alex,
+<br />
+
+<br />
+Libor was responding to my qn about Eb functions, I think!
+<br />
+
+<br />
+Re: terminology, my apologies, I just seem to be using the wrong <span style="font-weight: bold">lexicon</span>!
+<br />
+
+<br />
+By "disassembling" I was referring to the process of producing a symbolic assembler listing, suitably cross-referenced and symbolised, etc, as Borg does ....   it can be "re-assembled"
+<br />
+
+<br />
+Coming up to a HLL, even C, I'd call "decompiling", a far harder task obviously ...  if you're decompiling MSVBM60 into "C", your times d make much more sense!
+<br />
+
+<br />
+Cheers</span>
+						<span class="gensmall"><br /><br />Last edited by Dr Memory on Thu Aug 26, 2004 4:45 am; edited 1 time in total</span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2592"></a><b>ionescu007</b></span><br /><span class="postdetails">Sometimes here<br /><!--<img src="pro_rank_01.gif" alt="Sometimes here" title="Sometimes here" border="0" /><br />--><br /><br />Joined: 21 Aug 2004<br />Posts: 33<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Aug 26, 2004 4:18 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">No you're right, it's my fault for not having said decompiling.
+<br />
+
+<br />
+In other news, I've spent the whole night proving that most of the -1 "flags" or starting "nulls" in the structures are because those values are hardcoded or removed to 0 (Basically each heap has a pointer to the master heap as its first element. the compiler sets this to 0 when compiling, so many of the object structures start with a null because of this). Most of the 0xffffffff are also hard-coded and will never change. I suspect they are "reserved" values for future versions of VB that never came out. 
+<br />
+
+<br />
+Best regards,
+<br />
+Alex Ionescu
+<br />
+Kernel Developer, ReactOS
+<br />
+President, Relsoft Technologies</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2593"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Aug 26, 2004 4:48 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">That's a relief ....  cheers! </span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2594"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Aug 26, 2004 4:51 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">BTW, why C?   Why not compile it back into something readable?      </span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2598"></a><b>Libor</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 11 Aug 2004<br />Posts: 13<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Aug 26, 2004 10:31 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">...something more readable...VB 
+<br />
+
+<br />
+Alex-did you uncover what happens in DLLMain (msvbvm60.dll)? Or you are working only on ThunRTMain?   </span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2599"></a><b>ionescu007</b></span><br /><span class="postdetails">Sometimes here<br /><!--<img src="pro_rank_01.gif" alt="Sometimes here" title="Sometimes here" border="0" /><br />--><br /><br />Joined: 21 Aug 2004<br />Posts: 33<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Aug 26, 2004 10:46 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">C is very readable..... VB just makes things ugly. What looks simpler to you...
+<br />
+
+<br />
+{
+<br />
+PVB_HEADER Header
+<br />
+
+<br />
+MessageBox (ULONG_PTR)Header +Header-&gt;bSZProjectName
+<br />
+} 
+<br />
+or...
+<br />
+
+<br />
+{
+<br />
+Declare function lstrlenA lib kernel32 src origin...
+<br />
+declare function lstrcpyna lib ....
+<br />
+Dim Header as VB_HEADER
+<br />
+Dim TempString as String, StringLen As long
+<br />
+
+<br />
+RtlMoveMemory Header, HeaderPtr, Len(Header)
+<br />
+StringLen = lstrlen(HeaderPtr + Header.oProjectName)
+<br />
+TempString = String$(StringLen, 0)
+<br />
+lstrcpyn(TempString, StringLen)
+<br />
+Msgbox TempString
+<br />
+}
+<br />
+
+<br />
+Libor: DllMain is a sub-part of thunRTmain, it will be easy.
+<br />
+
+<br />
+Best regards,
+<br />
+Alex Ionescu
+<br />
+Kernel Developer, ReactOS
+<br />
+President, Relsoft Technologies</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2602"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Aug 26, 2004 12:11 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Demo- Function Unassemble(Address&amp;) As String
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Just for interest's sake, here's a screenshot of my little runtime function.
+<br />
+
+<br />
+Here I've just taken my old "Process/Module Viewer" and added an option to disassemble any function I click on in the exports window.  
+<br />
+
+<br />
+
+<br />
+Notes:
+<br />
+<ul>
+<br />
+The function is called with "Unassemble(Address, Len)"
+<br />
+
+<br />
+It returns a vbLf-delimited report string, caller just shoves it into msgbox, clipbd, listbox, etc
+<br />
+
+<br />
+Table-driven. It's simply an interpreter, driven by a master table, which can be changed on the fly if needed (refresh).
+<br />
+
+<br />
+The table is also suitable for the reverse process, ie. quick pseudo-assembly of short code segments, which is quite useful for "just-in-time" asm injection
+<br />
+
+<br />
+Symbol interpretion is std dbghelp-based. If there's none around, I just have to rely on the export table, I can always extract symbol table stuff from LST files if I want to, although API's like kernel export nearly everything anyway, so the export table is usually enough.</ul></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2606"></a><b>golem</b></span><br /><span class="postdetails">Often here<br /><!--<img src="pro_rank_02.gif" alt="Often here" title="Often here" border="0" /><br />--><br /><br />Joined: 18 Nov 2002<br />Posts: 73<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Aug 26, 2004 4:16 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: EbExectuteLine...
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">EbExecuteLine interesting... Quite interesting. Really? What exactly can you do with it?
+<br />
+
+<br />
+A quick search only shows VB5/6 declaration statements for EbExecuteLine curiously devoid of any actual code/usage.
+<br />
+
+<br />
+C more readable than VB.  THAT is funny (in a WORN kind of way  )!
+<br />
+
+<br />
+&gt;seems that nobody on this site is interested in disassembling 
+<br />
+&gt;msvbvm60.dll or vba6.dll....
+<br />
+Au contraire... Way back when JosephCo et al were with us they refused to share any of their hard fought info (or tools/methodology) and is the only reason we don't have a Level 10 capable (100%  ) VB5/6 decompiler...
+<br />
+
+<br />
+I seem to recall that some of us actually thought we could take VB5/6 to Linux.  No really!
+<br />
+
+<br />
+Carry on!
+<br />
+golem </span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2607"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Aug 26, 2004 4:33 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Re: EbExectuteLine...
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;golem&quot;:2573ub3x]Au contraire... Way back when JosephCo et al were with us they refused to share any of their hard fought info (or tools/methodology) and is the only reason we don't have a Level 10 capable (100%  ) VB5/6 decompiler...[/:2573ub3x]
+<br />
+
+<br />
+Well, I never saw many info from you either; only some nice thoughs but nothing that could help us making a better decompiler <br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2608"></a><b>golem</b></span><br /><span class="postdetails">Often here<br /><!--<img src="pro_rank_02.gif" alt="Often here" title="Often here" border="0" /><br />--><br /><br />Joined: 18 Nov 2002<br />Posts: 73<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Aug 26, 2004 5:25 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Hmmm....
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">&gt;I never saw many info from you either
+<br />
+ Are you sure that is the story you want to go with? 
+<br />
+
+<br />
+You are on a roll Alfa. Been watching your rapid progress the last few weeks. 
+<br />
+
+<br />
+Have you considered xrefing ((exe) offsets to) your structures definitions to your 'sample' programs? ( Like gDL does automagically...  )
+<br />
+
+<br />
+Carry on!
+<br />
+golem </span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2610"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Aug 26, 2004 6:00 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">My rapid progress?
+<br />
+I've been away for more than 1 year 
+<br />
+
+<br />
+I do like your gDL (at least the idea, because I never 'saw' it working), we are trying to do a better gDL (this time online) and with your knowlegde maybe you could help (2 heads thinking are better than 1)<br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2611"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Aug 26, 2004 7:57 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Re: EbExectuteLine...
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;golem&quot;:2osak3xl]C more readable than VB.  THAT is funny [/:2osak3xl]
+<br />
+
+<br />
+I think I like golem ...     </span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2612"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Aug 26, 2004 8:00 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">We could run a conference for a week on this subject alone ....
+<br />
+
+<br />
+Hey, not a bad idea   ..........................  Amsterdam is nice at this time of year </span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2615"></a><b>ionescu007</b></span><br /><span class="postdetails">Sometimes here<br /><!--<img src="pro_rank_01.gif" alt="Sometimes here" title="Sometimes here" border="0" /><br />--><br /><br />Joined: 21 Aug 2004<br />Posts: 33<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Fri Aug 27, 2004 4:50 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">I got a VB app running inside ReactOS with a custom-written runtime (5KB!) so it's perfect feasible. At least anything that won't use forms.
+<br />
+
+<br />
+Best regards,
+<br />
+Alex Ionescu
+<br />
+Kernel Developer, ReactOS
+<br />
+President, Relsoft Technologies</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2616"></a><b>Libor</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 11 Aug 2004<br />Posts: 13<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Fri Aug 27, 2004 8:39 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">EbExecuteLine - example code
+<br />
+<!-- m --><a class="postlink" href="http://www.freevbcode.com/ShowCode.Asp?ID=1901">http://www.freevbcode.com/ShowCode.Asp?ID=1901</a><!-- m --></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2627"></a><b>golem</b></span><br /><span class="postdetails">Often here<br /><!--<img src="pro_rank_02.gif" alt="Often here" title="Often here" border="0" /><br />--><br /><br />Joined: 18 Nov 2002<br />Posts: 73<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Fri Aug 27, 2004 2:29 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Ok. Let's try that again...
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Thanks for the url Libor.  
+<br />
+
+<br />
+&gt;What exactly can you do with it?
+<br />
+Let me rephrase... Has anyone been able to do do anything useful with EbExecuteLine? An example might be like making hidden info available or gaining programmatic access to the IDE or (insert some exotic hackerish decompiler writer concept here  )?
+<br />
+
+<br />
+&gt; At least anything that won't use forms.
+<br />
+I think I HURT myself... 
+<br />
+
+<br />
+Carry on!
+<br />
+golem </span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2635"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Fri Aug 27, 2004 4:58 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">You realise it's IDE only?</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2640"></a><b>Libor</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 11 Aug 2004<br />Posts: 13<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Fri Aug 27, 2004 9:01 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">..stop...it was only an example of one interesting function
+<br />
+i wanted only to say that there could be more interesting functions like that one</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2643"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Fri Aug 27, 2004 11:22 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Sorry,  Libor, the dog, or AOL,  ate the bit where I had said "That's fascinating ...  "  
+<br />
+
+<br />
+It'd be interesting to find one that returned the pcode maybe 
+<br />
+
+<br />
+Or perhaps a way to manufacture a Debug object at runtime?  Imagine showing a debug window (I mean a real VB one) from an EXE, that'd be exotic .....</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2651"></a><b>golem</b></span><br /><span class="postdetails">Often here<br /><!--<img src="pro_rank_02.gif" alt="Often here" title="Often here" border="0" /><br />--><br /><br />Joined: 18 Nov 2002<br />Posts: 73<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Aug 28, 2004 6:03 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Hmmm.... Let's try that again. ;)
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Stop! Stop what? Asking questions... Never going to happen Libor. 
+<br />
+
+<br />
+It's all a matter of pushing the envelope. Your pointing out EbExecuteLine is BEYOND fascinating. 
+<br />
+
+<br />
+&gt;You realise it's IDE only?
+<br />
+Access to the full symbol set, on the fly code changes (mostly , on the fly break, on the fly debug...
+<br />
+
+<br />
+Is there any other way to run VB? 
+<br />
+
+<br />
+Let's review where we are (vis-a-vis EbExecuteLine)...
+<br />
+
+<br />
+On the surface it provides no more capability than crtl-breaking to debug immediate window AND these 'RE' discussions/forum entries found on the net don't really do anything more than parrot what everyone has 'discovered' about this DLL entry, with my apologies to the first RE. 
+<br />
+
+<br />
+Let's scrap the veneer off of this thing. It's not like MS publishes an API doc on how to use these 'internals', no?   This thing smacks of a prior RE effort. What we have is someone grabbed the library call name... Deciphered that there are 4 parms, only 2 of which have even been named. If either of these two longs are input options for... and masked...
+<br />
+
+<br />
+Sure leaves a lot of room for Hmmm...s. 
+<br />
+
+<br />
+I don't know... Consider in the IDE. You can make code changes on the fly, that I have yet to see be duplicated with the type of transparency (to the IDE user  ) and ease of use in any other environment.
+<br />
+
+<br />
+While a program is loaded and running, the IDE user can interrupt the execution, say via a breakpoint, and ADD A LINE OF CODE and then resume... 
+<br />
+
+<br />
+Implications? 
+<br />
+
+<br />
+There is sure a lot of the internals of the IDE that haven't been explored... In fact, I would go so far as to say it is virtually unexplored. Is EbExecuteLine the start of a bread crumb trail in this quest to map out the IDE or just a mere minor curiousity?
+<br />
+
+<br />
+Carry on!
+<br />
+golem </span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2652"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Aug 28, 2004 11:59 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">You'll have noticed a project reset is required for some changes, like anything that changes the symbol table - VBA is, I suspect, merely providing the same service to the IDE that it does to others, it's a dynamic interpreter...
+<br />
+
+<br />
+I imagine a symbol table is defined, then EbExecuteLine can be called over and over while that table is valid...
+<br />
+
+<br />
+You can insert any line on the fly because the source is just a linked list array of strings, so it's no problem - until you invalidate the current symbol table...
+<br />
+
+<br />
+I read somewhere that VBA and VB6 pcode is different - it's probably just that there are special opcodes for the IDE, and for pcode runtime, maybe?</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2654"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Aug 29, 2004 12:23 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">It's all COM of course  - I doubt you are actually meant to call it directly, but via some interface on an object (the symbol table or context perhaps?) - project reset is trash current object and create new one...
+<br />
+
+<br />
+Alex said over on another thread that the compile-time COM stuff is all generated by VBA6.dll ....  that is interesting</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2655"></a><b>ionescu007</b></span><br /><span class="postdetails">Sometimes here<br /><!--<img src="pro_rank_01.gif" alt="Sometimes here" title="Sometimes here" border="0" /><br />--><br /><br />Joined: 21 Aug 2004<br />Posts: 33<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Aug 29, 2004 1:26 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">VBA6.dll is three things:
+<br />
+
+<br />
+1) A Mini-Runtime for VBA files (includes stuff like rtcMessageBox, rtcBeep and other rtc (RunTime Calls).
+<br />
+
+<br />
+2) The Internal VB Compiler (it creates all the structures)
+<br />
+
+<br />
+3) The VB Interpreter in IDE. (Eb calls)
+<br />
+
+<br />
+Best regards,
+<br />
+Alex Ionescu
+<br />
+Kernel Developer, ReactOS
+<br />
+President, Relsoft Technologies</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2656"></a><b>vbgamer45</b></span><br /><span class="postdetails">Regular user<br /><!--<img src="pro_rank_03.gif" alt="Regular user" title="Regular user" border="0" /><br />--><br /><br />Joined: 07 Jul 2004<br />Posts: 93<br />Location: 127.0.0.1</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Aug 29, 2004 1:46 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Internal VB Compiler hmm. Got to check that out.</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2657"></a><b>golem</b></span><br /><span class="postdetails">Often here<br /><!--<img src="pro_rank_02.gif" alt="Often here" title="Often here" border="0" /><br />--><br /><br />Joined: 18 Nov 2002<br />Posts: 73<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Aug 29, 2004 2:14 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Come on Alex...
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">And?
+<br />
+
+<br />
+Carry on!
+<br />
+golem </span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2658"></a><b>ionescu007</b></span><br /><span class="postdetails">Sometimes here<br /><!--<img src="pro_rank_01.gif" alt="Sometimes here" title="Sometimes here" border="0" /><br />--><br /><br />Joined: 21 Aug 2004<br />Posts: 33<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Aug 29, 2004 5:46 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">vbgamer45: Where do you think I'm getting all the proper values for the strutctures for the compiler from, as well as knowing when something is "IDE use only"? It's all in VBA.
+<br />
+
+<br />
+Best regards,
+<br />
+Alex Ionescu
+<br />
+Kernel Developer, ReactOS
+<br />
+President, Relsoft Technologies</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2659"></a><b>golem</b></span><br /><span class="postdetails">Often here<br /><!--<img src="pro_rank_02.gif" alt="Often here" title="Often here" border="0" /><br />--><br /><br />Joined: 18 Nov 2002<br />Posts: 73<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Aug 29, 2004 5:55 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Ok...
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Please God, I just want to be like all of the other people!
+<br />
+What's that? Stupid, petty, AND vindictive...
+<br />
+
+<br />
+Carry on!
+<br />
+golem 
+<br />
+Head gNonsense Developer AND
+<br />
+Supreme Commander
+<br />
+Igotnu Thin Technologies
+<br />
+
+<br />
+ AND here I thought we were going to be friends.</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2662"></a><b>sarge</b></span><br /><span class="postdetails">Moderator<br /><!--<img src="pro_rank_mod.gif" alt="Moderator" title="Moderator" border="0" /><br />--><br /><br />Joined: 24 Sep 2002<br />Posts: 194<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Aug 29, 2004 2:05 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Reminds me of a previous MB where I used to hang out...
+<br />
+
+<br />
+Sarge</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2663"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Aug 29, 2004 2:11 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody"> <!-- s<img src="images/smilies/" alt="" border="0" /> --><img src="%7bSMILIES_PATH%7d/icon_lol.html" alt="<img src="images/smilies/index.html" alt="" border="0" />" title="Laughing" /><!-- s<img src="images/smilies/" alt="" border="0" /> --> <br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2668"></a><b>golem</b></span><br /><span class="postdetails">Often here<br /><!--<img src="pro_rank_02.gif" alt="Often here" title="Often here" border="0" /><br />--><br /><br />Joined: 18 Nov 2002<br />Posts: 73<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Aug 29, 2004 2:59 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Ok. (Part deux :)
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">AND? Where was I? 
+<br />
+
+<br />
+&gt;a project reset is required for some changes
+<br />
+Yes, absolutely true.
+<br />
+
+<br />
+&gt;like anything that changes the symbol table...
+<br />
+Yes and no.
+<br />
+
+<br />
+For example:
+<br />
+
+<br />
+(Within the context of a subroutine, the local variable declarations while a program is executing, in break  )
+<br />
+
+<br />
+Add in a new variable declaration at the end of the list &gt; Works.
+<br />
+Add in a new variable declaration at the beginning of the list &gt; Works.
+<br />
+Add in a new UDT variable declaration at the end of the list &gt; Works.
+<br />
+Change variable name &gt; Nope.
+<br />
+Change variable type &gt; Nope.
+<br />
+Remove a newly added variable declaration (not yet referenced  ) &gt; Nope.
+<br />
+Touch anything (even the leading space count) on a UDT declaration/Redim &gt; Nope (AND a real clue  )
+<br />
+
+<br />
+&gt;until you invalidate the current symbol table... 
+<br />
+One can only hazard a guess (Any 'proper' confirmations?  ) that Docs should be tweaked to read to say something like...
+<br />
+
+<br />
+&gt;until you invalidate the current dynamic symbol table...
+<br />
+Sorry Doc, I didn't get it quite right, but I think you get the point...
+<br />
+
+<br />
+You CAN make on the fly additions to the symbol table. Wow!
+<br />
+
+<br />
+&gt;VBA6.dll is three things: 
+<br />
+&gt;1) A Mini-Runtime for VBA files 
+<br />
+Nah! (gn) . Nothing 'Mini-' about it. More like:
+<br />
+
+<br />
+1) VBA Runtime.
+<br />
+
+<br />
+Slightly different environment VB IDE vs VBA. If anything it just seems like VBA, operating within other applications, would by necessity have to have more extensions, but it seems the IDE should have access to the same basic capabilities via GetObject/SetObject...
+<br />
+
+<br />
+With almost no exposure to VBA, I just don't know. 
+<br />
+
+<br />
+&gt;I read somewhere that VBA and VB6 pcode is different
+<br />
+A quick line count of the pcode opcodes yields the number 1332 (for VB5 and including the VB6 'extensions'  ). Maybe a better way to describe might be that the environments share a core of the same opcodes but have their own ranges of opcodes to support certain types of extended capabilities. (Based on my limited research  ).
+<br />
+
+<br />
+After all consider the typical opcode...
+<br />
+
+<br />
+  Mnemoic Operand(s) [(Environment)]
+<br />
+
+<br />
+In fact, there is some evidence 'VB' was ported/setup up to run in other environments... Based on the 'labels'. There was a/some 'Apple'? (Thank you Anna  ) opcodes. Can't seem to locate them at this moment... (Don't you just hate it when that happens?  ).
+<br />
+
+<br />
+Carry on!
+<br />
+golem </span>
+						<span class="gensmall"><br /><br />Last edited by golem on Tue Aug 31, 2004 4:17 pm; edited 1 time in total</span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2670"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Aug 29, 2004 4:10 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Here's my new Christmas wish list:
+<br />
+
+<br />
+<ul>
+<br />
+<li> New Harley[/*:m:20e5hlre]</ul>
+<br />
+<ul>
+<br />
+<li> A compiler generator!  [/*:m:20e5hlre]</ul>
+<br />
+
+<br />
+Nothing flash!
+<br />
+
+<br />
+I dream up the new VB statements or expressions I want while I'm in the bath - so I reach for the laptop
+<br />
+
+<br />
+...  it falls in the bath,  but I have a backup ...
+<br />
+
+<br />
+... I run the tool, ULTIMATE VB6,   I type some BNF off the top of my head into the SYNTAX window, tap-tap-tap, some sort of code template spec in the other, click-click-click, press a button, thud, groan ......   forgot to adjust the SEMANTICS switches, try again, YES, here we go .....  hey presto ......
+<br />
+
+<br />
+ ....  I click on the old "hammer and Tongs" icon to start the IDE, and I am in the brand new SDK!
+<br />
+
+<br />
+
+<br />
+What a stunt!  Now THAT would rock the Doctor's socks, I can tell you!  </span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2671"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Aug 29, 2004 5:34 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">o_O<br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2675"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Aug 29, 2004 7:08 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Does that mean you already got one???   </span>
+						<span class="gensmall"><br /><br />Last edited by Dr Memory on Tue Aug 31, 2004 10:53 am; edited 1 time in total</span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2701"></a><b>Anna Wrecksit</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 16 Jan 2004<br />Posts: 3<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Tue Aug 31, 2004 10:46 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Re: Ok. (Part deux :)
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;golem&quot;:3tz2t0zi]
+<br />
+In fact, there is some evidence 'VB' was ported/setup up to run in other environments... Based on the 'labels'. There was a/some 'Mac'(/Apple?) opcodes. Can't seem to locate them at this moment... (Don't you just hate it when that happens?  ).
+<br />
+[/:3tz2t0zi]
+<br />
+
+<br />
+The AppleScript references come from VBA's origins in Excel (v4 IIRC?). They lived on when VB was rewritten (VB 4) based on VBA. Excel was cross-platform, but I don't think VB was ever ported back to the Mac.
+<br />
+
+<br />
+Anna</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr align="center">
+		<td class="catBottom" colspan="2" height="28"></td>
+		<td></td>
+	</tr>
+</table>
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+  <tr>
+	<td></td>
+	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="index-2.html" class="nav">VB Decompiler Forum Index</a>
+	  -> <a href="viewforum31e6.html" xx="f=4" class="nav">Visual Basic</a></span></td>
+	<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">All times are GMT</span><br /><span class="nav">Goto page <b>1</b>, <a href="viewtopicaf29.html" xx="t=1798&amp;postdays=0&amp;postorder=asc&amp;start=20">2</a>, <a href="viewtopic5866.html" xx="t=1798&amp;postdays=0&amp;postorder=asc&amp;start=40">3</a>&nbsp;&nbsp;<a href="viewtopicaf29.html" xx="t=1798&amp;postdays=0&amp;postorder=asc&amp;start=20">Next</a></span>
+	  </td>
+  </tr>
+  <tr>
+	<td align="left" colspan="3"><span class="nav">Page <b>1</b> of <b>3</b></span></td>
+  </tr>
+</table>
+
+<table width="100%" cellspacing="2" border="0" align="center">
+  <tr>
+	<td width="40%" valign="top" nowrap="nowrap" align="left"><span class="gensmall"></span><br />
+	  &nbsp;<br />
+	  </td>
+	<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">You <b>can</b> post new topics in this forum<br />You <b>can</b> reply to topics in this forum<br />You <b>can</b> edit your posts in this forum<br />You <b>can</b> delete your posts in this forum<br />You <b>can</b> vote in polls in this forum<br /></span></td>
+  </tr>
+</table>
+
+
+<div align="center"><span class="copyright"><br /><br />
+<!--
+	We request you retain the full copyright notice below including the link to www.phpbb.com.
+	This not only gives respect to the large amount of time given freely by the developers
+	but also helps build interest, traffic and use of phpBB 2.0. If you cannot (for good
+	reason) retain the full copyright we request you at least leave in place the
+	Powered by phpBB line, with phpBB linked to www.phpbb.com. If you refuse
+	to include even this then support on our forums may be affected.
+
+	The phpBB Group : 2002
+// -->
+Powered by <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB</a> &copy; 2001, 2005 phpBB Group<br /></span></div>
+		</td>
+	</tr>
+</table>
+
+</body>
+
+<!-- Mirrored from localhost/phpbb2/viewtopic.php?t=1798&postdays=0&postorder=asc&start=0 by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 04 Mar 2018 20:55:23 GMT -->
+</html>
+

@@ -1,0 +1,2692 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html dir="ltr">
+
+<!-- Mirrored from localhost/phpbb2/viewtopic.php?t=1710&postdays=0&postorder=asc&start=0 by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 04 Mar 2018 20:55:56 GMT -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Style-Type" content="text/css">
+
+<link rel="top" href="index-2.html" title="VB Decompiler Forum Index" />
+<link rel="search" href="search.html" title="Search" />
+<link rel="help" href="faq.html" title="FAQ" />
+<link rel="author" href="memberlist.html" title="Memberlist" />
+<link rel="prev" href="viewtopic66bb.html" xx="t=1710&amp;view=previous" title="View previous topic" />
+<link rel="next" href="viewtopic66a3.html" xx="t=1710&amp;view=next" title="View next topic" />
+<link rel="up" href="viewforumeb13.html" xx="f=13" title="Common Application Programs" />
+
+<title>VB Decompiler :: View topic - CommonApp 2.0 [Exe Only]</title>
+<!-- link rel="stylesheet" href="templates/subSilver/subSilver.css" type="text/css" -->
+<style type="text/css">
+<!--
+/*
+  The original subSilver Theme for phpBB version 2+
+  Created by subBlue design
+  http://www.subBlue.com
+
+  NOTE: These CSS definitions are stored within the main page body so that you can use the phpBB2
+  theme administration centre. When you have finalised your style you could cut the final CSS code
+  and place it in an external file, deleting this section to save bandwidth.
+*/
+
+/* General page style. The scroll bar colours only visible in IE5.5+ */
+body {
+	background-color: #E5E5E5;
+	scrollbar-face-color: #DEE3E7;
+	scrollbar-highlight-color: #FFFFFF;
+	scrollbar-shadow-color: #DEE3E7;
+	scrollbar-3dlight-color: #D1D7DC;
+	scrollbar-arrow-color:  #006699;
+	scrollbar-track-color: #EFEFEF;
+	scrollbar-darkshadow-color: #98AAB1;
+}
+
+/* General font families for common tags */
+font,th,td,p { font-family: Verdana, Arial, Helvetica, sans-serif }
+a:link,a:active,a:visited { color : #006699; }
+a:hover		{ text-decoration: underline; color : #DD6900; }
+hr	{ height: 0px; border: solid #D1D7DC 0px; border-top-width: 1px;}
+
+/* This is the border line & background colour round the entire page */
+.bodyline	{ background-color: #FFFFFF; border: 1px #98AAB1 solid; }
+
+/* This is the outline round the main forum tables */
+.forumline	{ background-color: #FFFFFF; border: 2px #006699 solid; }
+
+/* Main table cell colours and backgrounds */
+td.row1	{ background-color: #EFEFEF; }
+td.row2	{ background-color: #DEE3E7; }
+td.row3	{ background-color: #D1D7DC; }
+
+/*
+  This is for the table cell above the Topics, Post & Last posts on the index.php page
+  By default this is the fading out gradiated silver background.
+  However, you could replace this with a bitmap specific for each forum
+*/
+td.rowpic {
+		background-color: #FFFFFF;
+		background-image: url(templates/subSilver/images/cellpic2.jpg);
+		background-repeat: repeat-y;
+}
+
+/* Header cells - the blue and silver gradient backgrounds */
+th	{
+	color: #FFA34F; font-size: 11px; font-weight : bold;
+	background-color: #006699; height: 25px;
+	background-image: url(templates/subSilver/images/cellpic3.gif);
+}
+
+td.cat,td.catHead,td.catSides,td.catLeft,td.catRight,td.catBottom {
+			background-image: url(templates/subSilver/images/cellpic1.gif);
+			background-color:#D1D7DC; border: #FFFFFF; border-style: solid; height: 28px;
+}
+
+/*
+  Setting additional nice inner borders for the main table cells.
+  The names indicate which sides the border will be on.
+  Don't worry if you don't understand this, just ignore it :-)
+*/
+td.cat,td.catHead,td.catBottom {
+	height: 29px;
+	border-width: 0px 0px 0px 0px;
+}
+th.thHead,th.thSides,th.thTop,th.thLeft,th.thRight,th.thBottom,th.thCornerL,th.thCornerR {
+	font-weight: bold; border: #FFFFFF; border-style: solid; height: 28px;
+}
+td.row3Right,td.spaceRow {
+	background-color: #D1D7DC; border: #FFFFFF; border-style: solid;
+}
+
+th.thHead,td.catHead { font-size: 12px; border-width: 1px 1px 0px 1px; }
+th.thSides,td.catSides,td.spaceRow	 { border-width: 0px 1px 0px 1px; }
+th.thRight,td.catRight,td.row3Right	 { border-width: 0px 1px 0px 0px; }
+th.thLeft,td.catLeft	  { border-width: 0px 0px 0px 1px; }
+th.thBottom,td.catBottom  { border-width: 0px 1px 1px 1px; }
+th.thTop	 { border-width: 1px 0px 0px 0px; }
+th.thCornerL { border-width: 1px 0px 0px 1px; }
+th.thCornerR { border-width: 1px 1px 0px 0px; }
+
+/* The largest text used in the index page title and toptic title etc. */
+.maintitle	{
+	font-weight: bold; font-size: 22px; font-family: "Trebuchet MS",Verdana, Arial, Helvetica, sans-serif;
+	text-decoration: none; line-height : 120%; color : #000000;
+}
+
+/* General text */
+.gen { font-size : 12px; }
+.genmed { font-size : 11px; }
+.gensmall { font-size : 10px; }
+.gen,.genmed,.gensmall { color : #000000; }
+a.gen,a.genmed,a.gensmall { color: #006699; text-decoration: none; }
+a.gen:hover,a.genmed:hover,a.gensmall:hover	{ color: #DD6900; text-decoration: underline; }
+
+/* The register, login, search etc links at the top of the page */
+.mainmenu		{ font-size : 11px; color : #000000 }
+a.mainmenu		{ text-decoration: none; color : #006699;  }
+a.mainmenu:hover{ text-decoration: underline; color : #DD6900; }
+
+/* Forum category titles */
+.cattitle		{ font-weight: bold; font-size: 12px ; letter-spacing: 1px; color : #006699}
+a.cattitle		{ text-decoration: none; color : #006699; }
+a.cattitle:hover{ text-decoration: underline; }
+
+/* Forum title: Text and link to the forums used in: index.php */
+.forumlink		{ font-weight: bold; font-size: 12px; color : #006699; }
+a.forumlink 	{ text-decoration: none; color : #006699; }
+a.forumlink:hover{ text-decoration: underline; color : #DD6900; }
+
+/* Used for the navigation text, (Page 1,2,3 etc) and the navigation bar when in a forum */
+.nav			{ font-weight: bold; font-size: 11px; color : #000000;}
+a.nav			{ text-decoration: none; color : #006699; }
+a.nav:hover		{ text-decoration: underline; }
+
+/* titles for the topics: could specify viewed link colour too */
+.topictitle,h1,h2	{ font-weight: bold; font-size: 11px; color : #000000; }
+a.topictitle:link   { text-decoration: none; color : #006699; }
+a.topictitle:visited { text-decoration: none; color : #5493B4; }
+a.topictitle:hover	{ text-decoration: underline; color : #DD6900; }
+
+/* Name of poster in viewmsg.php and viewtopic.php and other places */
+.name			{ font-size : 11px; color : #000000;}
+
+/* Location, number of posts, post date etc */
+.postdetails		{ font-size : 10px; color : #000000; }
+
+/* The content of the posts (body of text) */
+.postbody { font-size : 12px; line-height: 18px}
+a.postlink:link	{ text-decoration: none; color : #006699 }
+a.postlink:visited { text-decoration: none; color : #5493B4; }
+a.postlink:hover { text-decoration: underline; color : #DD6900}
+
+/* Quote & Code blocks */
+.code {
+	font-family: Courier, 'Courier New', sans-serif; font-size: 11px; color: #006600;
+	background-color: #FAFAFA; border: #D1D7DC; border-style: solid;
+	border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+}
+
+.quote {
+	font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11px; color: #444444; line-height: 125%;
+	background-color: #FAFAFA; border: #D1D7DC; border-style: solid;
+	border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+}
+
+/* Copyright and bottom info */
+.copyright		{ font-size: 10px; font-family: Verdana, Arial, Helvetica, sans-serif; color: #444444; letter-spacing: -1px;}
+a.copyright		{ color: #444444; text-decoration: none;}
+a.copyright:hover { color: #000000; text-decoration: underline;}
+
+/* Form elements */
+input,textarea, select {
+	color : #000000;
+	font: normal 11px Verdana, Arial, Helvetica, sans-serif;
+	border-color : #000000;
+}
+
+/* The text input fields background colour */
+input.post, textarea.post, select {
+	background-color : #FFFFFF;
+}
+
+input { text-indent : 2px; }
+
+/* The buttons used for bbCode styling in message post */
+input.button {
+	background-color : #EFEFEF;
+	color : #000000;
+	font-size: 11px; font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+/* The main submit button option */
+input.mainoption {
+	background-color : #FAFAFA;
+	font-weight : bold;
+}
+
+/* None-bold submit button */
+input.liteoption {
+	background-color : #FAFAFA;
+	font-weight : normal;
+}
+
+/* This is the line in the posting page which shows the rollover
+  help line. This is actually a text box, but if set to be the same
+  colour as the background no one will know ;)
+*/
+.helpline { background-color: #DEE3E7; border-style: none; }
+
+/* Import the fancy styles for IE only (NS4.x doesn't use the @import function) */
+@import url("templates/subSilver/formIE.css");
+-->
+</style>
+</head>
+<body bgcolor="#E5E5E5" text="#000000" link="#006699" vlink="#5493B4">
+
+<a name="top"></a>
+
+<table width="100%" cellspacing="0" cellpadding="10" border="0" align="center">
+	<tr>
+		<td class="bodyline"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<tr>
+				<td><a href="index-2.html"><img src="templates/subSilver/images/logo_phpBB.gif" border="0" alt="VB Decompiler Forum Index" vspace="1" /></a></td>
+				<td align="center" width="100%" valign="middle"><span class="maintitle">VB Decompiler</span><br /><span class="gen">Hosted by TheAutomaters.com<br />&nbsp; </span>
+				<table cellspacing="0" cellpadding="2" border="0">
+					<tr>
+						<td align="center" valign="top" nowrap="nowrap"><span class="mainmenu">&nbsp;
+						<a href="memberlist.html" class="mainmenu"><img src="templates/subSilver/images/icon_mini_members.gif" width="12" height="13" border="0" alt="Memberlist" hspace="3" />Memberlist</a>
+						</span></td>
+					</tr>
+					<tr>
+						<td height="25" align="center" valign="top" nowrap="nowrap"><span class="mainmenu">&nbsp;</td>
+					</tr>
+				</table></td>
+			</tr>
+		</table>
+
+		<br />
+
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0">
+  <tr>
+	<td align="left" valign="bottom" colspan="2"><a class="maintitle" href="viewtopicf53c.html" xx="t=1710&amp;start=0&amp;postdays=0&amp;postorder=asc&amp;highlight=">CommonApp 2.0 [Exe Only]</a><br />
+	  <span class="gensmall"><b>Goto page <b>1</b>, <a href="viewtopic251f.html" xx="t=1710&amp;postdays=0&amp;postorder=asc&amp;start=20">2</a>, <a href="viewtopic301d.html" xx="t=1710&amp;postdays=0&amp;postorder=asc&amp;start=40">3</a>&nbsp;&nbsp;<a href="viewtopic251f.html" xx="t=1710&amp;postdays=0&amp;postorder=asc&amp;start=20">Next</a></b><br />
+	  &nbsp; </span></td>
+  </tr>
+</table>
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0">
+  <tr>
+	<td></td>
+	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="index-2.html" class="nav">VB Decompiler Forum Index</a>
+	  -> <a href="viewforumeb13.html" xx="f=13" class="nav">Common Application Programs</a></span></td>
+  </tr>
+</table>
+
+<table class="forumline" width="100%" cellspacing="1" cellpadding="3" border="0">
+	<tr>
+		<th class="thLeft" width="150" height="26" nowrap="nowrap">Author</th>
+		<th class="thRight" nowrap="nowrap">Message</th>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="1911"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Nov 30, 2002 5:49 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: CommonApp 2.0 [Exe Only]
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Here is the second Common Application (v2.0) for testing purposes.
+<br />
+This was made by moogman.<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2434"></a><b>vbgamer45</b></span><br /><span class="postdetails">Regular user<br /><!--<img src="pro_rank_03.gif" alt="Regular user" title="Regular user" border="0" /><br />--><br /><br />Joined: 07 Jul 2004<br />Posts: 93<br />Location: 127.0.0.1</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Fri Aug 06, 2004 4:19 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">My output of CommonApp2 so far.
+<br />
+
+<br />
+
+<br />
+this_is_the_project_name.vbp
+<br />
+[code=text:3oj5q8jo]<div class="text" id="{CB}" style="font-family: monospace;"><ol><li style="" class="li1">Type=Exe</li><li style="" class="li2">Form=frmMain.frm</li><li style="" class="li1">Module=modMain; modMain.bas</li><li style="" class="li2">Startup=&quot;Sub Main&quot;</li><li style="" class="li1">Description=&quot;this is the project description&quot;</li><li style="" class="li2">HelpFile=&quot;help_file_name.hlp&quot;</li><li style="" class="li1">Name=&quot;this_is_the_project_name&quot;</li><li style="" class="li2">Title=&quot;this_is_the_project_title&quot;</li><li style="" class="li1">ExeName32=&quot;CommonApp2&quot;</li><li style="" class="li2">VersionCompanyName=&quot;Moogster inc <img src="images/smilies/index.html" alt="" border="0" />&quot;</li></ol></div></td>	</tr></table><span class="postbody">
+<br />
+
+<br />
+
+<br />
+
+<br />
+
+<br />
+frmMain.frm
+<br />
+[vb:3oj5q8jo]<div class="vb" id="{CB}" style="font-family: monospace;"><ol><li style="" class="li1">VERSION <span style="color: #000000;">5.00</span></li><li style="" class="li2"><span style="color: #008000;">'Object Offset: 10121</span></li><li style="" class="li1">Begin VB.<span style="color: #000000;">Form</span> frmMain</li><li style="" class="li2">     Caption = <span style="color: #a31515;">&quot;Common Application 2&quot;</span>  <span style="color: #008000;">' GuiOpcode: 1 Offset Dec: 10138</span></li><li style="" class="li1">     ScaleMode = <span style="color: #000000;">1</span>  <span style="color: #008000;">' GuiOpcode: 25 Offset Dec: 10162</span></li><li style="" class="li2">     WhatsThisButton = <span style="color: #000000;">-1</span>  <span style="color: #008000;">' GuiOpcode: 66 Offset Dec: 10165</span></li><li style="" class="li1">     Picture=<span style="color: #a31515;">&quot;frmMain.frx&quot;</span>:<span style="color: #000000;">0000</span>  <span style="color: #008000;">' GuiOpcode: 33 Offset Dec: 10167</span></li><li style="" class="li2">     Icon=<span style="color: #a31515;">&quot;frmMain.frx&quot;</span>:0BDC  <span style="color: #008000;">' GuiOpcode: 35 Offset Dec: 13204</span></li><li style="" class="li1">     LinkTopic = <span style="color: #a31515;">&quot;Form1&quot;</span>  <span style="color: #008000;">' GuiOpcode: 36 Offset Dec: 14295</span></li><li style="" class="li2">     ClientLeft = <span style="color: #000000;">60</span></li><li style="" class="li1">     ClientTop = <span style="color: #000000;">345</span></li><li style="" class="li2">     ClientWidth = <span style="color: #000000;">6930</span></li><li style="" class="li1">     ClientHeight = <span style="color: #000000;">7245</span></li><li style="" class="li2">     StartUpPosition = <span style="color: #000000;">3</span>  <span style="color: #008000;">' GuiOpcode: 70 Offset Dec: 14321</span></li><li style="" class="li1">     <span style="color: #008000;">'Object Offset: 14324</span></li><li style="" class="li2">     Begin VB.<span style="color: #000000;">PictureBox</span> PictureArray</li><li style="" class="li1">          Index = <span style="color: #000000;">9</span>  <span style="color: #008000;">' GuiOpcode: 2 Offset Dec: 14348</span></li><li style="" class="li2">          <span style="color: #0000ff;">Left</span> = <span style="color: #000000;">3510</span></li><li style="" class="li1">          Top = <span style="color: #000000;">6630</span></li><li style="" class="li2">          Height = <span style="color: #000000;">330</span></li><li style="" class="li1">          <span style="color: #0000ff;">Width</span> = <span style="color: #000000;">285</span></li><li style="" class="li2">          TabIndex = <span style="color: #000000;">21</span>  <span style="color: #008000;">' GuiOpcode: 18 Offset Dec: 14360</span></li><li style="" class="li1">          ScaleMode = <span style="color: #000000;">1</span>  <span style="color: #008000;">' GuiOpcode: 26 Offset Dec: 14363</span></li><li style="" class="li2">     <span style="color: #0000ff;">End</span></li><li style="" class="li1">     <span style="color: #008000;">'Object Offset: 14369</span></li><li style="" class="li2">     Begin VB.<span style="color: #000000;">PictureBox</span> PictureArray</li><li style="" class="li1">          Index = <span style="color: #000000;">8</span>  <span style="color: #008000;">' GuiOpcode: 2 Offset Dec: 14393</span></li><li style="" class="li2">          <span style="color: #0000ff;">Left</span> = <span style="color: #000000;">3150</span></li><li style="" class="li1">          Top = <span style="color: #000000;">6630</span></li><li style="" class="li2">          Height = <span style="color: #000000;">330</span></li><li style="" class="li1">          <span style="color: #0000ff;">Width</span> = <span style="color: #000000;">285</span></li><li style="" class="li2">          TabIndex = <span style="color: #000000;">20</span>  <span style="color: #008000;">' GuiOpcode: 18 Offset Dec: 14405</span></li><li style="" class="li1">          ScaleMode = <span style="color: #000000;">1</span>  <span style="color: #008000;">' GuiOpcode: 26 Offset Dec: 14408</span></li><li style="" class="li2">     <span style="color: #0000ff;">End</span></li><li style="" class="li1">     <span style="color: #008000;">'Object Offset: 14414</span></li><li style="" class="li2">     Begin VB.<span style="color: #000000;">PictureBox</span> PictureArray</li><li style="" class="li1">          Index = <span style="color: #000000;">7</span>  <span style="color: #008000;">' GuiOpcode: 2 Offset Dec: 14438</span></li><li style="" class="li2">          <span style="color: #0000ff;">Left</span> = <span style="color: #000000;">2790</span></li><li style="" class="li1">          Top = <span style="color: #000000;">6630</span></li><li style="" class="li2">          Height = <span style="color: #000000;">330</span></li><li style="" class="li1">          <span style="color: #0000ff;">Width</span> = <span style="color: #000000;">285</span></li><li style="" class="li2">          TabIndex = <span style="color: #000000;">19</span>  <span style="color: #008000;">' GuiOpcode: 18 Offset Dec: 14450</span></li><li style="" class="li1">          ScaleMode = <span style="color: #000000;">1</span>  <span style="color: #008000;">' GuiOpcode: 26 Offset Dec: 14453</span></li><li style="" class="li2">     <span style="color: #0000ff;">End</span></li><li style="" class="li1">     <span style="color: #008000;">'Object Offset: 14459</span></li><li style="" class="li2">     Begin VB.<span style="color: #000000;">PictureBox</span> PictureArray</li><li style="" class="li1">          Index = <span style="color: #000000;">6</span>  <span style="color: #008000;">' GuiOpcode: 2 Offset Dec: 14483</span></li><li style="" class="li2">          <span style="color: #0000ff;">Left</span> = <span style="color: #000000;">2370</span></li><li style="" class="li1">          Top = <span style="color: #000000;">6630</span></li><li style="" class="li2">          Height = <span style="color: #000000;">330</span></li><li style="" class="li1">          <span style="color: #0000ff;">Width</span> = <span style="color: #000000;">285</span></li><li style="" class="li2">          TabIndex = <span style="color: #000000;">18</span>  <span style="color: #008000;">' GuiOpcode: 18 Offset Dec: 14495</span></li><li style="" class="li1">          ScaleMode = <span style="color: #000000;">1</span>  <span style="color: #008000;">' GuiOpcode: 26 Offset Dec: 14498</span></li><li style="" class="li2">     <span style="color: #0000ff;">End</span></li><li style="" class="li1">     <span style="color: #008000;">'Object Offset: 14504</span></li><li style="" class="li2">     Begin VB.<span style="color: #000000;">PictureBox</span> PictureArray</li><li style="" class="li1">          Index = <span style="color: #000000;">5</span>  <span style="color: #008000;">' GuiOpcode: 2 Offset Dec: 14528</span></li><li style="" class="li2">          <span style="color: #0000ff;">Left</span> = <span style="color: #000000;">1950</span></li><li style="" class="li1">          Top = <span style="color: #000000;">6630</span></li><li style="" class="li2">          Height = <span style="color: #000000;">330</span></li><li style="" class="li1">          <span style="color: #0000ff;">Width</span> = <span style="color: #000000;">285</span></li><li style="" class="li2">          TabIndex = <span style="color: #000000;">17</span>  <span style="color: #008000;">' GuiOpcode: 18 Offset Dec: 14540</span></li><li style="" class="li1">          ScaleMode = <span style="color: #000000;">1</span>  <span style="color: #008000;">' GuiOpcode: 26 Offset Dec: 14543</span></li><li style="" class="li2">     <span style="color: #0000ff;">End</span></li><li style="" class="li1">     <span style="color: #008000;">'Object Offset: 14549</span></li><li style="" class="li2">     Begin VB.<span style="color: #000000;">PictureBox</span> PictureArray</li><li style="" class="li1">          Index = <span style="color: #000000;">4</span>  <span style="color: #008000;">' GuiOpcode: 2 Offset Dec: 14573</span></li><li style="" class="li2">          <span style="color: #0000ff;">Left</span> = <span style="color: #000000;">1530</span></li><li style="" class="li1">          Top = <span style="color: #000000;">6630</span></li><li style="" class="li2">          Height = <span style="color: #000000;">330</span></li><li style="" class="li1">          <span style="color: #0000ff;">Width</span> = <span style="color: #000000;">285</span></li><li style="" class="li2">          TabIndex = <span style="color: #000000;">16</span>  <span style="color: #008000;">' GuiOpcode: 18 Offset Dec: 14585</span></li><li style="" class="li1">          ScaleMode = <span style="color: #000000;">1</span>  <span style="color: #008000;">' GuiOpcode: 26 Offset Dec: 14588</span></li><li style="" class="li2">     <span style="color: #0000ff;">End</span></li><li style="" class="li1">     <span style="color: #008000;">'Object Offset: 14594</span></li><li style="" class="li2">     Begin VB.<span style="color: #000000;">PictureBox</span> PictureArray</li><li style="" class="li1">          Index = <span style="color: #000000;">3</span>  <span style="color: #008000;">' GuiOpcode: 2 Offset Dec: 14618</span></li><li style="" class="li2">          <span style="color: #0000ff;">Left</span> = <span style="color: #000000;">1170</span></li><li style="" class="li1">          Top = <span style="color: #000000;">6630</span></li><li style="" class="li2">          Height = <span style="color: #000000;">330</span></li><li style="" class="li1">          <span style="color: #0000ff;">Width</span> = <span style="color: #000000;">285</span></li><li style="" class="li2">          TabIndex = <span style="color: #000000;">15</span>  <span style="color: #008000;">' GuiOpcode: 18 Offset Dec: 14630</span></li><li style="" class="li1">          ScaleMode = <span style="color: #000000;">1</span>  <span style="color: #008000;">' GuiOpcode: 26 Offset Dec: 14633</span></li><li style="" class="li2">     <span style="color: #0000ff;">End</span></li><li style="" class="li1">     <span style="color: #008000;">'Object Offset: 14639</span></li><li style="" class="li2">     Begin VB.<span style="color: #000000;">PictureBox</span> PictureArray</li><li style="" class="li1">          Index = <span style="color: #000000;">2</span>  <span style="color: #008000;">' GuiOpcode: 2 Offset Dec: 14663</span></li><li style="" class="li2">          <span style="color: #0000ff;">Left</span> = <span style="color: #000000;">810</span></li><li style="" class="li1">          Top = <span style="color: #000000;">6630</span></li><li style="" class="li2">          Height = <span style="color: #000000;">330</span></li><li style="" class="li1">          <span style="color: #0000ff;">Width</span> = <span style="color: #000000;">285</span></li><li style="" class="li2">          TabIndex = <span style="color: #000000;">14</span>  <span style="color: #008000;">' GuiOpcode: 18 Offset Dec: 14675</span></li><li style="" class="li1">          ScaleMode = <span style="color: #000000;">1</span>  <span style="color: #008000;">' GuiOpcode: 26 Offset Dec: 14678</span></li><li style="" class="li2">     <span style="color: #0000ff;">End</span></li><li style="" class="li1">     <span style="color: #008000;">'Object Offset: 14684</span></li><li style="" class="li2">     Begin VB.<span style="color: #000000;">PictureBox</span> PictureArray</li><li style="" class="li1">          Index = <span style="color: #000000;">1</span>  <span style="color: #008000;">' GuiOpcode: 2 Offset Dec: 14708</span></li><li style="" class="li2">          <span style="color: #0000ff;">Left</span> = <span style="color: #000000;">450</span></li><li style="" class="li1">          Top = <span style="color: #000000;">6630</span></li><li style="" class="li2">          Height = <span style="color: #000000;">330</span></li><li style="" class="li1">          <span style="color: #0000ff;">Width</span> = <span style="color: #000000;">285</span></li><li style="" class="li2">          TabIndex = <span style="color: #000000;">13</span>  <span style="color: #008000;">' GuiOpcode: 18 Offset Dec: 14720</span></li><li style="" class="li1">          ScaleMode = <span style="color: #000000;">1</span>  <span style="color: #008000;">' GuiOpcode: 26 Offset Dec: 14723</span></li><li style="" class="li2">     <span style="color: #0000ff;">End</span></li><li style="" class="li1">     <span style="color: #008000;">'Object Offset: 14729</span></li><li style="" class="li2">     Begin VB.<span style="color: #000000;">PictureBox</span> PictureArray</li><li style="" class="li1">          Index = <span style="color: #000000;">0</span>  <span style="color: #008000;">' GuiOpcode: 2 Offset Dec: 14753</span></li><li style="" class="li2">          <span style="color: #0000ff;">Left</span> = <span style="color: #000000;">90</span></li><li style="" class="li1">          Top = <span style="color: #000000;">6630</span></li><li style="" class="li2">          Height = <span style="color: #000000;">330</span></li><li style="" class="li1">          <span style="color: #0000ff;">Width</span> = <span style="color: #000000;">285</span></li><li style="" class="li2">          TabIndex = <span style="color: #000000;">12</span>  <span style="color: #008000;">' GuiOpcode: 18 Offset Dec: 14765</span></li><li style="" class="li1">          ScaleMode = <span style="color: #000000;">1</span>  <span style="color: #008000;">' GuiOpcode: 26 Offset Dec: 14768</span></li><li style="" class="li2">     <span style="color: #0000ff;">End</span></li><li style="" class="li1">     <span style="color: #008000;">'Object Offset: 14774</span></li><li style="" class="li2">     Begin VB.<span style="color: #000000;">PictureBox</span> Picture2</li><li style="" class="li1">          Picture=<span style="color: #a31515;">&quot;frmMain.frx&quot;</span>:101E  <span style="color: #008000;">' GuiOpcode: 3 Offset Dec: 14792</span></li><li style="" class="li2">          <span style="color: #0000ff;">Left</span> = <span style="color: #000000;">90</span></li><li style="" class="li1">          Top = <span style="color: #000000;">2130</span></li><li style="" class="li2">          Height = <span style="color: #000000;">4320</span></li><li style="" class="li1">          <span style="color: #0000ff;">Width</span> = <span style="color: #000000;">4620</span></li><li style="" class="li2">          TabIndex = <span style="color: #000000;">4</span>  <span style="color: #008000;">' GuiOpcode: 18 Offset Dec: 44868</span></li><li style="" class="li1">          ScaleMode = <span style="color: #000000;">1</span>  <span style="color: #008000;">' GuiOpcode: 26 Offset Dec: 44871</span></li><li style="" class="li2">          <span style="color: #008000;">'Object Offset: 44877</span></li><li style="" class="li1">          Begin VB.<span style="color: #000000;">PictureBox</span> Picture6</li><li style="" class="li2">               <span style="color: #0000ff;">Left</span> = <span style="color: #000000;">1455</span></li><li style="" class="li1">               Top = <span style="color: #000000;">2340</span></li><li style="" class="li2">               Height = <span style="color: #000000;">1290</span></li><li style="" class="li1">               <span style="color: #0000ff;">Width</span> = <span style="color: #000000;">1860</span></li><li style="" class="li2">               TabIndex = <span style="color: #000000;">9</span>  <span style="color: #008000;">' GuiOpcode: 18 Offset Dec: 44904</span></li><li style="" class="li1">               ScaleMode = <span style="color: #000000;">1</span>  <span style="color: #008000;">' GuiOpcode: 26 Offset Dec: 44907</span></li><li style="" class="li2">               <span style="color: #008000;">'Object Offset: 44913</span></li><li style="" class="li1">               Begin VB.<span style="color: #000000;">PictureBox</span> Picture7</li><li style="" class="li2">                    <span style="color: #0000ff;">Left</span> = <span style="color: #000000;">195</span></li><li style="" class="li1">                    Top = <span style="color: #000000;">180</span></li><li style="" class="li2">                    Height = <span style="color: #000000;">870</span></li><li style="" class="li1">                    <span style="color: #0000ff;">Width</span> = <span style="color: #000000;">1395</span></li><li style="" class="li2">                    TabIndex = <span style="color: #000000;">10</span>  <span style="color: #008000;">' GuiOpcode: 18 Offset Dec: 44940</span></li><li style="" class="li1">                    ScaleMode = <span style="color: #000000;">1</span>  <span style="color: #008000;">' GuiOpcode: 26 Offset Dec: 44943</span></li><li style="" class="li2">                    <span style="color: #008000;">'Object Offset: 44949</span></li><li style="" class="li1">                    Begin VB.<span style="color: #000000;">CommandButton</span> Command1</li><li style="" class="li2">                         Caption = <span style="color: #a31515;">&quot;Button&quot;</span>  <span style="color: #008000;">' GuiOpcode: 1 Offset Dec: 44967</span></li><li style="" class="li1">                         <span style="color: #0000ff;">Left</span> = <span style="color: #000000;">270</span></li><li style="" class="li2">                         Top = <span style="color: #000000;">225</span></li><li style="" class="li1">                         Height = <span style="color: #000000;">360</span></li><li style="" class="li2">                         <span style="color: #0000ff;">Width</span> = <span style="color: #000000;">870</span></li><li style="" class="li1">                         TabIndex = <span style="color: #000000;">11</span>  <span style="color: #008000;">' GuiOpcode: 17 Offset Dec: 44986</span></li><li style="" class="li2">                    <span style="color: #0000ff;">End</span></li><li style="" class="li1">               <span style="color: #0000ff;">End</span></li><li style="" class="li2">          <span style="color: #0000ff;">End</span></li><li style="" class="li1">          <span style="color: #008000;">'Object Offset: 44992</span></li><li style="" class="li2">          Begin VB.<span style="color: #000000;">PictureBox</span> Picture3</li><li style="" class="li1">               <span style="color: #0000ff;">Left</span> = <span style="color: #000000;">1665</span></li><li style="" class="li2">               Top = <span style="color: #000000;">60</span></li><li style="" class="li1">               Height = <span style="color: #000000;">1725</span></li><li style="" class="li2">               <span style="color: #0000ff;">Width</span> = <span style="color: #000000;">2250</span></li><li style="" class="li1">               TabIndex = <span style="color: #000000;">5</span>  <span style="color: #008000;">' GuiOpcode: 18 Offset Dec: 45019</span></li><li style="" class="li2">               ScaleMode = <span style="color: #000000;">1</span>  <span style="color: #008000;">' GuiOpcode: 26 Offset Dec: 45022</span></li><li style="" class="li1">               <span style="color: #008000;">'Object Offset: 45028</span></li><li style="" class="li2">               Begin VB.<span style="color: #000000;">PictureBox</span> Picture4</li><li style="" class="li1">                    <span style="color: #0000ff;">Left</span> = <span style="color: #000000;">180</span></li><li style="" class="li2">                    Top = <span style="color: #000000;">165</span></li><li style="" class="li1">                    Height = <span style="color: #000000;">1380</span></li><li style="" class="li2">                    <span style="color: #0000ff;">Width</span> = <span style="color: #000000;">1785</span></li><li style="" class="li1">                    TabIndex = <span style="color: #000000;">6</span>  <span style="color: #008000;">' GuiOpcode: 18 Offset Dec: 45055</span></li><li style="" class="li2">                    ScaleMode = <span style="color: #000000;">1</span>  <span style="color: #008000;">' GuiOpcode: 26 Offset Dec: 45058</span></li><li style="" class="li1">                    <span style="color: #008000;">'Object Offset: 45064</span></li><li style="" class="li2">                    Begin VB.<span style="color: #000000;">PictureBox</span> Picture5</li><li style="" class="li1">                         <span style="color: #0000ff;">Left</span> = <span style="color: #000000;">210</span></li><li style="" class="li2">                         Top = <span style="color: #000000;">150</span></li><li style="" class="li1">                         Height = <span style="color: #000000;">1050</span></li><li style="" class="li2">                         <span style="color: #0000ff;">Width</span> = <span style="color: #000000;">1395</span></li><li style="" class="li1">                         TabIndex = <span style="color: #000000;">7</span>  <span style="color: #008000;">' GuiOpcode: 18 Offset Dec: 45091</span></li><li style="" class="li2">                         ScaleMode = <span style="color: #000000;">1</span>  <span style="color: #008000;">' GuiOpcode: 26 Offset Dec: 45094</span></li><li style="" class="li1">                         <span style="color: #008000;">'Object Offset: 45100</span></li><li style="" class="li2">                         Begin VB.<span style="color: #000000;">TextBox</span> Text1</li><li style="" class="li1">                              <span style="color: #0000ff;">Left</span> = <span style="color: #000000;">180</span></li><li style="" class="li2">                              Top = <span style="color: #000000;">285</span></li><li style="" class="li1">                              Height = <span style="color: #000000;">435</span></li><li style="" class="li2">                              <span style="color: #0000ff;">Width</span> = <span style="color: #000000;">975</span></li><li style="" class="li1">                              Text = <span style="color: #a31515;">&quot;Text1&quot;</span>  <span style="color: #008000;">' GuiOpcode: 11 Offset Dec: 45124</span></li><li style="" class="li2">                              TabIndex = <span style="color: #000000;">8</span>  <span style="color: #008000;">' GuiOpcode: 18 Offset Dec: 45133</span></li><li style="" class="li1">                         <span style="color: #0000ff;">End</span></li><li style="" class="li2">                    <span style="color: #0000ff;">End</span></li><li style="" class="li1">               <span style="color: #0000ff;">End</span></li><li style="" class="li2">          <span style="color: #0000ff;">End</span></li><li style="" class="li1">     <span style="color: #0000ff;">End</span></li><li style="" class="li2">     <span style="color: #008000;">'Object Offset: 45141</span></li><li style="" class="li1">     Begin VB.<span style="color: #000000;">PictureBox</span> Picture1</li><li style="" class="li2">          Picture=<span style="color: #a31515;">&quot;frmMain.frx&quot;</span>:<span style="color: #000000;">8590</span>  <span style="color: #008000;">' GuiOpcode: 3 Offset Dec: 45159</span></li><li style="" class="li1">          <span style="color: #0000ff;">Left</span> = <span style="color: #000000;">4905</span></li><li style="" class="li2">          Top = <span style="color: #000000;">2130</span></li><li style="" class="li1">          Height = <span style="color: #000000;">1680</span></li><li style="" class="li2">          <span style="color: #0000ff;">Width</span> = <span style="color: #000000;">1680</span></li><li style="" class="li1">          TabIndex = <span style="color: #000000;">3</span>  <span style="color: #008000;">' GuiOpcode: 18 Offset Dec: 46964</span></li><li style="" class="li2">          ScaleMode = <span style="color: #000000;">1</span>  <span style="color: #008000;">' GuiOpcode: 26 Offset Dec: 46967</span></li><li style="" class="li1">     <span style="color: #0000ff;">End</span></li><li style="" class="li2">     <span style="color: #008000;">'Object Offset: 46973</span></li><li style="" class="li1">     Begin MSWinsockLib.<span style="color: #000000;">Winsock</span> Winsock1 <span style="color: #008000;">'Length:100</span></li><li style="" class="li2">     <span style="color: #0000ff;">End</span></li><li style="" class="li1">     <span style="color: #008000;">'Object Offset: 47074</span></li><li style="" class="li2">     Begin VB.<span style="color: #000000;">TextBox</span> txtItem</li><li style="" class="li1">          <span style="color: #0000ff;">Left</span> = <span style="color: #000000;">1695</span></li><li style="" class="li2">          Top = <span style="color: #000000;">90</span></li><li style="" class="li1">          Height = <span style="color: #000000;">285</span></li><li style="" class="li2">          <span style="color: #0000ff;">Width</span> = <span style="color: #000000;">2415</span></li><li style="" class="li1">          TabIndex = <span style="color: #000000;">2</span>  <span style="color: #008000;">' GuiOpcode: 18 Offset Dec: 47100</span></li><li style="" class="li2">          Tag = <span style="color: #a31515;">&quot;huge_long_tag__that was shank for the sake of readability on the forum__long_tagÿ&quot;</span>  <span style="color: #008000;">' GuiOpcode: 33 Offset Dec: 47103</span></li><li style="" class="li1">     <span style="color: #0000ff;">End</span></li><li style="" class="li2">     <span style="color: #008000;">'Object Offset: 49713</span></li><li style="" class="li1">     Begin VB.<span style="color: #000000;">ListBox</span> lstItems</li><li style="" class="li2">          <span style="color: #0000ff;">Left</span> = <span style="color: #000000;">1680</span></li><li style="" class="li1">          Top = <span style="color: #000000;">570</span></li><li style="" class="li2">          Height = <span style="color: #000000;">1230</span></li><li style="" class="li1">          <span style="color: #0000ff;">Width</span> = <span style="color: #000000;">3375</span></li><li style="" class="li2">          TabIndex = <span style="color: #000000;">1</span>  <span style="color: #008000;">' GuiOpcode: 17 Offset Dec: 49740</span></li><li style="" class="li1">     <span style="color: #0000ff;">End</span></li><li style="" class="li2">     <span style="color: #008000;">'Object Offset: 49744</span></li><li style="" class="li1">     Begin VB.<span style="color: #000000;">CommandButton</span> cmdAdd</li><li style="" class="li2">          Caption = <span style="color: #a31515;">&quot;Add&quot;</span>  <span style="color: #008000;">' GuiOpcode: 1 Offset Dec: 49760</span></li><li style="" class="li1">          <span style="color: #0000ff;">Left</span> = <span style="color: #000000;">4215</span></li><li style="" class="li2">          Top = <span style="color: #000000;">90</span></li><li style="" class="li1">          Height = <span style="color: #000000;">255</span></li><li style="" class="li2">          <span style="color: #0000ff;">Width</span> = <span style="color: #000000;">855</span></li><li style="" class="li1">          TabIndex = <span style="color: #000000;">0</span>  <span style="color: #008000;">' GuiOpcode: 17 Offset Dec: 49776</span></li><li style="" class="li2">     <span style="color: #0000ff;">End</span></li><li style="" class="li1"><span style="color: #0000ff;">End</span></li><li style="" class="li2"><span style="color: #008000;">'BEGIN Code List</span></li><li style="" class="li1"><span style="color: #0000ff;">Sub</span> Function1<span style="color: #000000;">&#40;</span><span style="color: #000000;">&#41;</span></li><li style="" class="li2"><span style="color: #0000ff;">End</span> <span style="color: #0000ff;">Sub</span></li><li style="" class="li1"><span style="color: #0000ff;">Sub</span> Function2<span style="color: #000000;">&#40;</span><span style="color: #000000;">&#41;</span></li><li style="" class="li2"><span style="color: #0000ff;">End</span> <span style="color: #0000ff;">Sub</span></li><li style="" class="li1"><span style="color: #0000ff;">Sub</span> Sub1<span style="color: #000000;">&#40;</span><span style="color: #000000;">&#41;</span></li><li style="" class="li2"><span style="color: #0000ff;">End</span> <span style="color: #0000ff;">Sub</span></li><li style="" class="li1"><span style="color: #0000ff;">Sub</span> Sub2<span style="color: #000000;">&#40;</span><span style="color: #000000;">&#41;</span></li><li style="" class="li2"><span style="color: #0000ff;">End</span> <span style="color: #0000ff;">Sub</span></li></ol></div>[/vb:3oj5q8jo]
+<br />
+
+<br />
+Things I need to work on getting the external componet table, handling of events. Then comes to the really tough stuff... understanding pcode. 
+<br />
+Thankfully there is this message board with the the opcodes for it heh. 
+<br />
+Well I have all the imports proccessed from the import section of the exe and I am making a list of the ordinal, entrypoints,functionname,vb function name right now. Maybe I could link them somehow..</span>
+						<span class="gensmall"><br /><br />Last edited by vbgamer45 on Sat Sep 11, 2004 3:17 pm; edited 1 time in total</span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2437"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Fri Aug 06, 2004 5:26 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Very nice vbgamer.
+<br />
+Keep up the good work <br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2439"></a><b>sarge</b></span><br /><span class="postdetails">Moderator<br /><!--<img src="pro_rank_mod.gif" alt="Moderator" title="Moderator" border="0" /><br />--><br /><br />Joined: 24 Sep 2002<br />Posts: 194<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Fri Aug 06, 2004 7:26 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Not bad at all.
+<br />
+
+<br />
+Don't forget that one of your procedures in the code section must be the "Sub Main"..you should be able to identify it with very little additional effort.
+<br />
+
+<br />
+Hint: since you already know the hard part (where the procedures are); all you have to do is match one of them with the SubMain address
+<br />
+
+<br />
+Very definitely keep up the good work, and don't let the PCode stuff worry you, it's not hard, just &%&$^% tedious.
+<br />
+
+<br />
+Sarge</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2442"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Aug 07, 2004 3:40 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;sarge&quot;:2jsvaepx]Not bad at all.
+<br />
+
+<br />
+Don't forget that one of your procedures in the code section must be the "Sub Main"..you should be able to identify it with very little additional effort.
+<br />
+
+<br />
+Hint: since you already know the hard part (where the procedures are); all you have to do is match one of them with the SubMain address
+<br />
+
+<br />
+Very definitely keep up the good work, and don't let the PCode stuff worry you, it's not hard, just &%&$^% tedious.
+<br />
+
+<br />
+Sarge[/:2jsvaepx]
+<br />
+
+<br />
+
+<br />
+Yes very tedious thats why we kinda developed an instruction set so to speak of how to read and parse the pcode.....no one has really worked on it though.....but when i get some tiem i will probably make the online pcode database into a web service instead of what it is now(just a dynamic textfile).<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2447"></a><b>sarge</b></span><br /><span class="postdetails">Moderator<br /><!--<img src="pro_rank_mod.gif" alt="Moderator" title="Moderator" border="0" /><br />--><br /><br />Joined: 24 Sep 2002<br />Posts: 194<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Aug 07, 2004 11:57 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Hey, when I click on the link up top (commonapp2.zip), all that happens is that I go to an html page, no zip file, no download, etc...
+<br />
+
+<br />
+Sarge</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2448"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Aug 07, 2004 12:55 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Fixed.<br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2455"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Aug 07, 2004 5:00 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;vbgamer45&quot;:e2z48rv4]My output of CommonApp2 so far.
+<br />
+[/:e2z48rv4]
+<br />
+
+<br />
+
+<br />
+I just wanted to say that i modified your output that you posted, only the "Huge long tag"  because it made the whole forum too wide.
+<br />
+
+<br />
+
+<br />
+Anyways Good Job <br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2457"></a><b>sarge</b></span><br /><span class="postdetails">Moderator<br /><!--<img src="pro_rank_mod.gif" alt="Moderator" title="Moderator" border="0" /><br />--><br /><br />Joined: 24 Sep 2002<br />Posts: 194<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Aug 07, 2004 8:39 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Got it, thanks....
+<br />
+
+<br />
+Sarge</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2497"></a><b>vbgamer45</b></span><br /><span class="postdetails">Regular user<br /><!--<img src="pro_rank_03.gif" alt="Regular user" title="Regular user" border="0" /><br />--><br /><br />Joined: 07 Jul 2004<br />Posts: 93<br />Location: 127.0.0.1</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Mon Aug 16, 2004 9:01 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">The begining of my quest for P-code
+<br />
+[code=text:k331d73j]<div class="text" id="{CB}" style="font-family: monospace;"><ol><li style="" class="li1">Semi VB Decompiler vbgamer45</li><li style="" class="li2">P-Code Output for : C:\unzipped\commonapp2[1]\CommonApp2.exe</li><li style="" class="li1">---------------------------------</li><li style="" class="li2">40C658 frmMain.cmdAdd_Event:</li><li style="" class="li1">40C658              27 64FF             LitVar_Missing  ???</li><li style="" class="li2">40C65B              25                  PopAdLdVar</li><li style="" class="li1">40C65C              04 74FF             lea var_8C</li><li style="" class="li2">40C65F              21                  FLdPrThis</li><li style="" class="li1">40C660              0F 2403             VCallAd  ???</li><li style="" class="li2">40C663              19 78FF             FStAdFunc  ???</li><li style="" class="li1">40C666              08 78FF             mov SR,var_88</li><li style="" class="li2">40C669              0D A0000000         call unk_4018D0(unk_401A2C)</li><li style="" class="li1">40C66E              6C 74FF             push [var_8C]</li><li style="" class="li2">40C671              21                  FLdPrThis</li><li style="" class="li1">40C672              0F 2803             VCallAd  ???</li><li style="" class="li2">40C675              19 60FF             FStAdFunc  ???</li><li style="" class="li1">40C678              08 60FF             mov SR,var_A0</li><li style="" class="li2">40C67B              0D EC010100         call  ???=0(unk_401A3C)</li><li style="" class="li1">40C680              2F 74FF             FFree1Str  ???</li><li style="" class="li2">40C683              29                  var_88 var_A0 FFreeAd:</li><li style="" class="li1">40C68A              13                  ret</li><li style="" class="li2">40C68B              00 FC               LargeBos  ???</li><li style="" class="li1"> </li><li style="" class="li2">40C778 frmMain.Form_Event:</li><li style="" class="li1">40C778              F5 04010000         push 00000104</li><li style="" class="li2">40C77D              04 64FF             lea var_9C</li><li style="" class="li1">40C780              0A 02000800         call ext_401008(arg_8)</li><li style="" class="li2">40C785              04 64FF             lea var_9C</li><li style="" class="li1">40C788              60                  CStrVarTmp</li><li style="" class="li2">40C789              31 74FF             FStStr  ???</li><li style="" class="li1">40C78C              35 64FF             FFree1Var  ???</li><li style="" class="li2">40C78F              F5 04010000         push 00000104</li><li style="" class="li1">40C794              6C 74FF             push [var_8C]</li><li style="" class="li2">40C797              04 60FF             lea var_A0</li><li style="" class="li1">40C79A              34                  CStr2Ansi</li><li style="" class="li2">40C79B              6C 60FF             push [var_A0]</li><li style="" class="li1">40C79E              5E 03000800         call unk_4019DC(arg_8)</li><li style="" class="li2">40C7A3              71 5CFF             pop [var_A4]</li><li style="" class="li1">40C7A6              3C                  SetLastSystemError</li><li style="" class="li2">40C7A7              6C 60FF             push [var_A0]</li><li style="" class="li1">40C7AA              04 74FF             lea var_8C</li><li style="" class="li2">40C7AD              FC58                CStr2Uni</li><li style="" class="li1">40C7AF              6C 5CFF             push [var_A4]</li><li style="" class="li2">40C7B2              71 78FF             pop [var_88]</li><li style="" class="li1">40C7B5              2F 60FF             FFree1Str  ???</li><li style="" class="li2">40C7B8              6C 78FF             push [var_88]</li><li style="" class="li1">40C7BB              04 74FF             lea var_8C</li><li style="" class="li2">40C7BE              4D 4CFF0840         CVarRef:  ???</li><li style="" class="li1">40C7C3              04 64FF             lea var_9C</li><li style="" class="li2">40C7C6              0A 04000C00         call ext_401028(arg_C)</li><li style="" class="li1">40C7CB              04 64FF             lea var_9C</li><li style="" class="li2">40C7CE              60                  CStrVarTmp</li><li style="" class="li1">40C7CF              31 74FF             FStStr  ???</li><li style="" class="li2">40C7D2              35 64FF             FFree1Var  ???</li><li style="" class="li1">40C7D5              6C 74FF             push [var_8C]</li><li style="" class="li2">40C7D8              05 0500             lea unk_40D008</li><li style="" class="li1">40C7DB              24 0600             newnull xxx_401BFC</li><li style="" class="li2">40C7DE              0D 54000700         call unk_4021F0(unk_401768)</li><li style="" class="li1">40C7E3              27 4CFF             LitVar_Missing  ???</li><li style="" class="li2">40C7E6              25                  PopAdLdVar</li><li style="" class="li1">40C7E7              1B 0800             lea v_401A50 'this item added on form load' </li><li style="" class="li2">40C7EA              21                  FLdPrThis</li><li style="" class="li1">40C7EB              0F 2803             VCallAd  ???</li><li style="" class="li2">40C7EE              19 48FF             FStAdFunc  ???</li><li style="" class="li1">40C7F1              08 48FF             mov SR,var_B8</li><li style="" class="li2">40C7F4              0D EC010100         call  ???=0(unk_401A3C)</li><li style="" class="li1">40C7F9              1A 48FF             FFree1Ad  ???</li><li style="" class="li2">40C7FC              10 00070900         ThisVCallHresult  ???</li><li style="" class="li1">40C801              13                  ret</li><li style="" class="li2">40C802              00 00               LargeBos  ???</li><li style="" class="li1"> </li><li style="" class="li2">40C580 frmMain.Form_Event:</li><li style="" class="li1">40C580              27 FCFE             LitVar_Missing  ???</li><li style="" class="li2">40C583              27 1CFF             LitVar_Missing  ???</li><li style="" class="li1">40C586              27 3CFF             LitVar_Missing  ???</li><li style="" class="li2">40C589              F5 00000000         push 00000000</li><li style="" class="li1">40C58E              3A 6CFF0A00         LitVarStr  ???</li><li style="" class="li2">40C593              4E 5CFF             FStVarCopyObj  ???</li><li style="" class="li1">40C596              04 5CFF             lea var_A4</li><li style="" class="li2">40C599              0A 0B001400         call ext_401004(arg_14)</li><li style="" class="li1">40C59E              36                  var_A4 var_C4 var_E4 var_104 FFreeVar</li><li style="" class="li2">40C5A9              13                  ret</li><li style="" class="li1">40C5AA              00 00               LargeBos  ???</li><li style="" class="li2"> </li><li style="" class="li1">40C4C0 frmMain.Proc4244696:</li><li style="" class="li2">40C4C0              6C 1800             push [arg_18]</li><li style="" class="li1">40C4C3              43 78FF             strcpy var_88</li><li style="" class="li2">40C4C6              6C 1C00             push [arg_1C]</li><li style="" class="li1">40C4C9              43 74FF             strcpy var_8C</li><li style="" class="li2">40C4CC              04 70FF             lea var_90</li><li style="" class="li1">40C4CF              10 F8060900         ThisVCallHresult  ???</li><li style="" class="li2">40C4D4              2F 70FF             FFree1Str  ???</li><li style="" class="li1">40C4D7              13                  ret</li><li style="" class="li2"> </li><li style="" class="li1">40C3B8 frmMain.Proc4244420:</li><li style="" class="li2">40C3B8              04 78FF             lea var_88</li><li style="" class="li1">40C3BB              10 FC060900         ThisVCallHresult  ???</li><li style="" class="li2">40C3C0              2F 78FF             FFree1Str  ???</li><li style="" class="li1">40C3C3              13                  ret</li><li style="" class="li2"> </li><li style="" class="li1">40C348 frmMain.Proc4244304:</li><li style="" class="li2">40C348              10 04070900         ThisVCallHresult  ???</li><li style="" class="li1">40C34D              13                  ret</li><li style="" class="li2">40C34E              00 00               LargeBos  ???</li><li style="" class="li1"> </li><li style="" class="li2">40C47C frmMain.Proc4244620:</li><li style="" class="li1">40C47C              FF2D                ZeroRetVal</li><li style="" class="li2">40C47E              1B 0C00             lea v_401AC4 'Function1passedback' </li><li style="" class="li1">40C481              43 78FF             strcpy var_88</li><li style="" class="li2">40C484              FF2F 0C000400       ExitProcCbHresult  ???</li><li style="" class="li1">40C48A              00 00               LargeBos  ???</li><li style="" class="li2"> </li><li style="" class="li1">40C438 frmMain.Proc4244552:</li><li style="" class="li2">40C438              FF2D                ZeroRetVal</li><li style="" class="li1">40C43A              1B 0D00             lea v_401AF0 'Function2passedback' </li><li style="" class="li2">40C43D              43 78FF             strcpy var_88</li><li style="" class="li1">40C440              FF2F 0C000400       ExitProcCbHresult  ???</li><li style="" class="li2">40C446              00 00               LargeBos  ???</li><li style="" class="li1"> </li><li style="" class="li2">40C514 frmMain.Proc4244800:</li><li style="" class="li1">40C514              27 FCFE             LitVar_Missing  ???</li><li style="" class="li2">40C517              27 1CFF             LitVar_Missing  ???</li><li style="" class="li1">40C51A              27 3CFF             LitVar_Missing  ???</li><li style="" class="li2">40C51D              F5 00000000         push 00000000</li><li style="" class="li1">40C522              3A 6CFF0E00         LitVarStr  ???</li><li style="" class="li2">40C527              4E 5CFF             FStVarCopyObj  ???</li><li style="" class="li1">40C52A              04 5CFF             lea var_A4</li><li style="" class="li2">40C52D              0A 0B001400         call ext_401004(arg_14)</li><li style="" class="li1">40C532              36                  var_A4 var_C4 var_E4 var_104 FFreeVar</li><li style="" class="li2">40C53D              13                  ret</li><li style="" class="li1">40C53E              00 00               LargeBos  ???</li><li style="" class="li2"> </li><li style="" class="li1">40C5EC frmMain.Proc4245016:</li><li style="" class="li2">40C5EC              27 FCFE             LitVar_Missing  ???</li><li style="" class="li1">40C5EF              27 1CFF             LitVar_Missing  ???</li><li style="" class="li2">40C5F2              27 3CFF             LitVar_Missing  ???</li><li style="" class="li1">40C5F5              F5 00000000         push 00000000</li><li style="" class="li2">40C5FA              3A 6CFF0E00         LitVarStr  ???</li><li style="" class="li1">40C5FF              4E 5CFF             FStVarCopyObj  ???</li><li style="" class="li2">40C602              04 5CFF             lea var_A4</li><li style="" class="li1">40C605              0A 0B001400         call ext_401004(arg_14)</li><li style="" class="li2">40C60A              36                  var_A4 var_C4 var_E4 var_104 FFreeVar</li><li style="" class="li1">40C615              13                  ret</li><li style="" class="li2">40C616              00 00               LargeBos  ???</li><li style="" class="li1"> </li><li style="" class="li2">40C380 Sub Main:</li><li style="" class="li1">40C380              0A 00000000         call modMain.Proc4245716(arg_0)</li><li style="" class="li2">40C385              14                  ret</li><li style="" class="li1">40C386              00 00               LargeBos  ???</li><li style="" class="li2"> </li><li style="" class="li1">40C844 modMain.Proc4245716:</li><li style="" class="li2">40C844              27 FCFE             LitVar_Missing  ???</li><li style="" class="li1">40C847              27 1CFF             LitVar_Missing  ???</li><li style="" class="li2">40C84A              27 3CFF             LitVar_Missing  ???</li><li style="" class="li1">40C84D              F5 00000000         push 00000000</li><li style="" class="li2">40C852              3A 6CFF0100         LitVarStr  ???</li><li style="" class="li1">40C857              4E 5CFF             FStVarCopyObj  ???</li><li style="" class="li2">40C85A              04 5CFF             lea var_A4</li><li style="" class="li1">40C85D              0A 02001400         call ext_401004(arg_14)</li><li style="" class="li2">40C862              36                  var_A4 var_C4 var_E4 var_104 FFreeVar</li><li style="" class="li1">40C86D              05 0300             lea unk_40D008</li><li style="" class="li2">40C870              56 0400             NewIfNullAd  ???</li><li style="" class="li1">40C873              FD9C F8FE           FStAdNoPop  ???</li><li style="" class="li2">40C877              05 0500             lea unk_40D34C</li><li style="" class="li1">40C87A              24 0600             newnull xxx_401BB8</li><li style="" class="li2">40C87D              0D 0C000700         call Sub Main(unk_401BA8)</li><li style="" class="li1">40C882              1A F8FE             FFree1Ad  ???</li><li style="" class="li2">40C885              27 4CFF             LitVar_Missing  ???</li><li style="" class="li1">40C888              25                  PopAdLdVar</li><li style="" class="li2">40C889              27 6CFF             LitVar_Missing  ???</li><li style="" class="li1">40C88C              25                  PopAdLdVar</li><li style="" class="li2">40C88D              05 0300             lea unk_40D008</li><li style="" class="li1">40C890              24 0400             newnull xxx_401BFC</li><li style="" class="li2">40C893              0D B0020800         call  ???=F(unk_401768)</li><li style="" class="li1">40C898              27 FCFE             LitVar_Missing  ???</li><li style="" class="li2">40C89B              27 1CFF             LitVar_Missing  ???</li><li style="" class="li1">40C89E              27 3CFF             LitVar_Missing  ???</li><li style="" class="li2">40C8A1              F5 41000000         push 00000041</li><li style="" class="li1">40C8A6              3A 6CFF0900         LitVarStr  ???</li><li style="" class="li2">40C8AB              4E 5CFF             FStVarCopyObj  ???</li><li style="" class="li1">40C8AE              04 5CFF             lea var_A4</li><li style="" class="li2">40C8B1              5E 02001400         call ext_401004(arg_14)</li><li style="" class="li1">40C8B6              F5 01000000         push 00000001</li><li style="" class="li2">40C8BB              C7                  cmpd</li><li style="" class="li1">40C8BC              36                  var_A4 var_C4 var_E4 var_104 FFreeVar</li><li style="" class="li2">40C8C7              1C 8C00             jnz loc_40C8D0</li><li style="" class="li1">40C8CA              0A 0A000000         call unk_401B50(arg_0)</li><li style="" class="li2">40C8CF              3C                  SetLastSystemError</li><li style="" class="li1"> </li><li style="" class="li2">40C8D0 loc_40C8D0:          ; 40C8C7</li><li style="" class="li1">40C8D0              14                  ret</li><li style="" class="li2">40C8D1              FFFF                Unknow  ???</li></ol></div></td>	</tr></table><span class="postbody">
+<br />
+
+<br />
+
+<br />
+...I still don't know how to tell the type of event it is. COM just isn't working for me.  Mainly the Form object is always off.
+<br />
+
+<br />
+Added SubMain detection.</span>
+						<span class="gensmall"><br /><br />Last edited by vbgamer45 on Sat Sep 11, 2004 3:16 pm; edited 2 times in total</span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2498"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Mon Aug 16, 2004 9:11 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">looking good 
+<br />
+
+<br />
+I know the Events are indexed in COM.
+<br />
+
+<br />
+I got them out correctly using COM.....i will try to look tonight at my old code.<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2831"></a><b>sarge</b></span><br /><span class="postdetails">Moderator<br /><!--<img src="pro_rank_mod.gif" alt="Moderator" title="Moderator" border="0" /><br />--><br /><br />Joined: 24 Sep 2002<br />Posts: 194<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Mon Sep 13, 2004 5:59 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">MrU and Moog:
+<br />
+When I analyze CommonApp2, I (and I am sure many others), can clearly see the existance of two functions and two subs (with appropriate text messages).  However, when I actually run CA2, I can't seem to find the magic event that actually accesses them, other than the one Sub that runs on FormLoad.  Since I don't have the source (hey,  was it ever released?), I don't know where I should be looking.  Are all those procs supposed to run automatically when CA2 is run, or should I be clicking my little heart out on the form someplace?
+<br />
+
+<br />
+Sarge</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2832"></a><b>vbgamer45</b></span><br /><span class="postdetails">Regular user<br /><!--<img src="pro_rank_03.gif" alt="Regular user" title="Regular user" border="0" /><br />--><br /><br />Joined: 07 Jul 2004<br />Posts: 93<br />Location: 127.0.0.1</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Mon Sep 13, 2004 6:12 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">The source for CommonApp2 was released but I don't have it either. It would nice to see.
+<br />
+
+<br />
+Whats going on with the bcode??my output is no longer in boxes like before</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2833"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Mon Sep 13, 2004 6:31 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Source Code
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;vbgamer45&quot;:35cwjet9]The source for CommonApp2 was released but I don't have it either. It would nice to see.
+<br />
+
+<br />
+Whats going on with the bcode??my output is no longer in boxes like before[/:35cwjet9]
+<br />
+
+<br />
+
+<br />
+Actually I do not recall the source code of common App 2 being released...
+<br />
+
+<br />
+I may have it somewhere...
+<br />
+
+<br />
+Moog is off the scene last i talked to him....but i will see what i can find.
+<br />
+
+<br />
+As far as the vbcode/pcode tags....thats all _aLfa_<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2834"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Mon Sep 13, 2004 8:18 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;vbgamer45&quot;:3eq7dpnn]Whats going on with the bcode??my output is no longer in boxes like before[/:3eq7dpnn]
+<br />
+Am I blind, or everything is fine?
+<br />
+
+<br />
+The source of CA2 was released on this forum, you guys are just lazy, problem is the link is broken (<!-- l --><a class="postlink-local" href="viewtopiccfcd.html" xx="p=2075">viewtopic.php?p=2075</a><!-- l -->), so go bother moog <br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2836"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Mon Sep 13, 2004 9:09 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Like I said. i probably have a copy....i will see what i can find.
+<br />
+
+<br />
+decompiler.com is not active anymore....so yea I wouldnt call it lazy <br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2838"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Tue Sep 14, 2004 4:36 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Just a thought on identifying event procedures ...
+<br />
+
+<br />
+All COM objects boil down to a "method list", a table of function pointers, ie the VTable.  The ordering is fixed, and for intrinsic VB objects like a Form, it's quite likely that the VTable is going to be always in the same order, whether in IDE or runtime or pcode or whatever ....
+<br />
+
+<br />
+Perhaps all you need is one valid snapshot, eg:
+<br />
+
+<br />
+VB.Label1.Vtable = "Click, Caption, GotFocus, "
+<br />
+
+<br />
+Reading the Vtable for a control at runtime is easy, so I'd use that, get a little proggie to list the first 20 words of its VTable, which is found by De-refing ObjPtr(Control), compare that to an ASM listing of itself, and hey presto ..., work out the standard event handler ordinal positions for that method...
+<br />
+
+<br />
+That's the theory, anyway 
+<br />
+
+<br />
+
+<br />
+Hmmm... it's entirely possible you won't have a clue what I'm talking about  ...       I'm sure I could explain it in plain English, if I were called upon to do so ...  <br />_________________<br />[size=75:2sg2dqh1]<span style="color: darkblue"><span style="font-style: italic">At first, I was irridescent.  Then, I became transparent.  Finally, I was absent ... </span></span></span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2839"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Tue Sep 14, 2004 8:08 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Well, we all already know that, but you don't need to create a snapshot.
+<br />
+
+<br />
+You can use plain COM to retrieve the event names (;
+<br />
+
+<br />
+By the way, VB5 events order are diferent, or it has less events (in some cases) than VB6 (:<br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2840"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Tue Sep 14, 2004 9:50 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Yes, of course, you can iterate the member names ...
+<br />
+
+<br />
+Now all you need is one snapshot of the EXE's VTable for that object taken at runtime, and you can identify the true "name" for  that "cmdObj.Event" label MrUnleaded was looking for  ....<br />_________________<br />[size=75:2sg2dqh1]<span style="color: darkblue"><span style="font-style: italic">At first, I was irridescent.  Then, I became transparent.  Finally, I was absent ... </span></span></span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2843"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Tue Sep 14, 2004 11:10 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Iterate? What for?
+<br />
+
+<br />
+The events are in the same order as the VB5/6.OLB, you just have to do a simple formula like: &lt;event index in the exe&gt; - &lt;insert some random number here&gt; to retrieve the COM index of the event.
+<br />
+
+<br />
+Unless your talking about Native compiled EXE's, then I'm afraid I must agree with your method <br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2844"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Tue Sep 14, 2004 1:15 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;Dr Memory&quot;:327gql6q]Yes, of course, you can iterate the member names ...
+<br />
+
+<br />
+Now all you need is one snapshot of the EXE's VTable for that object taken at runtime, and you can identify the true "name" for  that "cmdObj.Event" label MrUnleaded was looking for  ....[/:327gql6q]
+<br />
+
+<br />
+I am not looking for it.....maybe it was vbgamer....
+<br />
+
+<br />
+I have some experience with COM and yea... you and _aLfa_ are right.
+<br />
+
+<br />
+The vtable....is stored in COM....all you need is a class or set of functions to retrieve the entry based on the ID.....this vtable id appears in pcode often as well.
+<br />
+
+<br />
+this is how you determine "cmdObj.Event" in pcode. as for native....maybe _aLfa_ knows...<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2845"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Tue Sep 14, 2004 3:19 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Sorry for the mistaken identity there!  
+<br />
+
+<br />
+
+<br />
+It's the same principle in all cases really ....  I was wondering whether the structure mappings have advanced to the point where we can drill down to these VTables yet?
+<br />
+
+<br />
+If not,  a runtime VTable might be used as a "key" to search the EXE and find exactly where they are ...  but if we already know, then that's that ...<br />_________________<br />[size=75:2sg2dqh1]<span style="color: darkblue"><span style="font-style: italic">At first, I was irridescent.  Then, I became transparent.  Finally, I was absent ... </span></span></span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2846"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Tue Sep 14, 2004 3:31 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;Dr Memory&quot;:1nvv0kmw]Sorry for the mistaken identity there!  
+<br />
+
+<br />
+
+<br />
+It's the same principle in all cases really ....  I was wondering whether the structure mappings have advanced to the point where we can drill down to these VTables yet?
+<br />
+
+<br />
+If not,  a runtime VTable might be used as a "key" to search the EXE and find exactly where they are ...  but if we already know, then that's that ...[/:1nvv0kmw]
+<br />
+
+<br />
+well....the thing is the VTables are not stored in the exe which we are examining. they are either stored in an ocx, dll, or a type lib file(olb?).
+<br />
+
+<br />
+most of the info on the vb controls is stored in VB6.OLB.
+<br />
+
+<br />
+I have never bothered to "drill down" the file as the typelib viewer(an example on this board) can pull all the necessary info out of the file using COM api/classes.
+<br />
+
+<br />
+I really dont see a point to drill down in this case. i do not think i have retrieved any invalid data through this method....<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2916"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Fri Oct 01, 2004 4:02 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[:3gi073x1]well....the thing is the VTables are not stored in the exe which we are examining. they are either stored in an ocx, dll, or a type lib file(olb?). [/:3gi073x1]
+<br />
+
+<br />
+I would hazard a guess, that such an exe will have no GUI, but will access only project-global objects like App, Printer, Screen etc ...  they are  entirely contained in the runtime library vtable and all ...
+<br />
+
+<br />
+Or, it could still have a GUI, but one provided by external (public) objects only - some COM server or DLL ....
+<br />
+
+<br />
+Could I have a look at the exe? It sounds quite educational ...  <br />_________________<br />[size=75:2sg2dqh1]<span style="color: darkblue"><span style="font-style: italic">At first, I was irridescent.  Then, I became transparent.  Finally, I was absent ... </span></span></span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2917"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Fri Oct 01, 2004 6:01 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Forms\CommonApp2\frmMain.frm
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Gee, it's been quiet around here lately ....  
+<br />
+
+<br />
+I've got an excuse ... I've been busy all week writing <span style="font-style: italic">this ....</span>
+<br />
+
+<br />
+This is the first successful output from the prototype of a new toolkit I'm building, it's called <span style="font-weight: bold">vbInFORMant</span>   (every vbDetective should have one   )
+<br />
+
+<br />
+It's not exactly a "Forms Decompiler", but it is awfully close - and it does other useful things.... 
+<br />
+
+<br />
+This is it's first "clean snaffle" of the CommonApp2 GUI ..... by "clean" I mean it produced this exact FRM, and the icons/pictures to go with it, so that the FRM is directly usable as-is ... I can load it in the IDE and run it, and it will restore the control states to what they were when I took the "snapshot".  The bulk of the properties are embedded in the FRM, only a few items are loaded by code (I don't have a FRX-builder just yet, so the path of least resistance is to snaffle the Icon and Picture properties with <span style="font-style: italic">SavePicture</span> and <span style="font-style: italic">LoadPicture</span>,  so this code is generated for now into "Form_ReLoad")
+<br />
+
+<br />
+<span style="font-weight: bold">FormsCommonApp2frmMain.frm</span>
+<br />
+</span><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center"><tr> 	  <td><span class="genmed"><b>Code:</b></span></td>	</tr>	<tr>	  <td class="code">VERSION 5&#46;00
+<br />
+Object = &quot;&#123;248DD890-BB45-11CF-9ABC-0080C7E7B78D&#125;#1&#46;0#0&quot;; &quot;MSWINSCK&#46;OCX&quot;
+<br />
+Begin VB&#46;Form frmMain 
+<br />
+   Caption         =   &quot;C&#58;WINNTSystem32&quot;
+<br />
+   ClientHeight    =   7245
+<br />
+   ClientLeft      =   0
+<br />
+   ClientTop       =   0
+<br />
+   ClientWidth     =   6930
+<br />
+   LinkTopic       =   &quot;Form1&quot;
+<br />
+   ScaleHeight     =   7245
+<br />
+   ScaleWidth      =   6930
+<br />
+   StartUpPosition =   3  'Windows Default
+<br />
+   Begin VB&#46;PictureBox PictureArray 
+<br />
+      Height          =   330
+<br />
+      Index           =   9
+<br />
+      Left            =   3510
+<br />
+      ScaleHeight     =   270
+<br />
+      ScaleWidth      =   225
+<br />
+      TabIndex        =   21
+<br />
+      Top             =   6630
+<br />
+      Width           =   285
+<br />
+   End
+<br />
+   Begin VB&#46;PictureBox PictureArray 
+<br />
+      Height          =   330
+<br />
+      Index           =   8
+<br />
+      Left            =   3150
+<br />
+      ScaleHeight     =   270
+<br />
+      ScaleWidth      =   225
+<br />
+      TabIndex        =   20
+<br />
+      Top             =   6630
+<br />
+      Width           =   285
+<br />
+   End
+<br />
+   Begin VB&#46;PictureBox PictureArray 
+<br />
+      Height          =   330
+<br />
+      Index           =   7
+<br />
+      Left            =   2790
+<br />
+      ScaleHeight     =   270
+<br />
+      ScaleWidth      =   225
+<br />
+      TabIndex        =   19
+<br />
+      Top             =   6630
+<br />
+      Width           =   285
+<br />
+   End
+<br />
+   Begin VB&#46;PictureBox PictureArray 
+<br />
+      Height          =   330
+<br />
+      Index           =   6
+<br />
+      Left            =   2370
+<br />
+      ScaleHeight     =   270
+<br />
+      ScaleWidth      =   225
+<br />
+      TabIndex        =   18
+<br />
+      Top             =   6630
+<br />
+      Width           =   285
+<br />
+   End
+<br />
+   Begin VB&#46;PictureBox PictureArray 
+<br />
+      Height          =   330
+<br />
+      Index           =   5
+<br />
+      Left            =   1950
+<br />
+      ScaleHeight     =   270
+<br />
+      ScaleWidth      =   225
+<br />
+      TabIndex        =   0
+<br />
+      Top             =   6630
+<br />
+      Width           =   285
+<br />
+   End
+<br />
+   Begin VB&#46;PictureBox PictureArray 
+<br />
+      Height          =   330
+<br />
+      Index           =   4
+<br />
+      Left            =   1530
+<br />
+      ScaleHeight     =   270
+<br />
+      ScaleWidth      =   225
+<br />
+      TabIndex        =   16
+<br />
+      Top             =   6630
+<br />
+      Width           =   285
+<br />
+   End
+<br />
+   Begin VB&#46;PictureBox PictureArray 
+<br />
+      Height          =   330
+<br />
+      Index           =   3
+<br />
+      Left            =   1170
+<br />
+      ScaleHeight     =   270
+<br />
+      ScaleWidth      =   225
+<br />
+      TabIndex        =   15
+<br />
+      Top             =   6630
+<br />
+      Width           =   285
+<br />
+   End
+<br />
+   Begin VB&#46;PictureBox PictureArray 
+<br />
+      Height          =   330
+<br />
+      Index           =   2
+<br />
+      Left            =   810
+<br />
+      ScaleHeight     =   270
+<br />
+      ScaleWidth      =   225
+<br />
+      TabIndex        =   14
+<br />
+      Top             =   6630
+<br />
+      Width           =   285
+<br />
+   End
+<br />
+   Begin VB&#46;PictureBox PictureArray 
+<br />
+      Height          =   330
+<br />
+      Index           =   1
+<br />
+      Left            =   450
+<br />
+      ScaleHeight     =   270
+<br />
+      ScaleWidth      =   225
+<br />
+      TabIndex        =   13
+<br />
+      Top             =   6630
+<br />
+      Width           =   285
+<br />
+   End
+<br />
+   Begin VB&#46;PictureBox PictureArray 
+<br />
+      Height          =   330
+<br />
+      Index           =   0
+<br />
+      Left            =   90
+<br />
+      ScaleHeight     =   270
+<br />
+      ScaleWidth      =   225
+<br />
+      TabIndex        =   12
+<br />
+      Top             =   6630
+<br />
+      Width           =   285
+<br />
+   End
+<br />
+   Begin VB&#46;PictureBox Picture2 
+<br />
+      Height          =   4320
+<br />
+      Left            =   90
+<br />
+      ScaleHeight     =   4260
+<br />
+      ScaleWidth      =   4560
+<br />
+      TabIndex        =   4
+<br />
+      Top             =   2130
+<br />
+      Width           =   4620
+<br />
+      Begin VB&#46;PictureBox Picture6 
+<br />
+         Height          =   1290
+<br />
+         Left            =   1455
+<br />
+         ScaleHeight     =   1230
+<br />
+         ScaleWidth      =   1800
+<br />
+         TabIndex        =   9
+<br />
+         Top             =   2340
+<br />
+         Width           =   1860
+<br />
+         Begin VB&#46;PictureBox Picture7 
+<br />
+            Height          =   870
+<br />
+            Left            =   195
+<br />
+            ScaleHeight     =   810
+<br />
+            ScaleWidth      =   1335
+<br />
+            TabIndex        =   10
+<br />
+            Top             =   180
+<br />
+            Width           =   1395
+<br />
+            Begin VB&#46;CommandButton Command1 
+<br />
+               Caption         =   &quot;Button&quot;
+<br />
+               Height          =   360
+<br />
+               Left            =   270
+<br />
+               TabIndex        =   11
+<br />
+               Top             =   225
+<br />
+               Width           =   870
+<br />
+            End
+<br />
+         End
+<br />
+      End
+<br />
+      Begin VB&#46;PictureBox Picture3 
+<br />
+         Height          =   1725
+<br />
+         Left            =   1665
+<br />
+         ScaleHeight     =   1665
+<br />
+         ScaleWidth      =   2190
+<br />
+         TabIndex        =   5
+<br />
+         Top             =   60
+<br />
+         Width           =   2250
+<br />
+         Begin VB&#46;PictureBox Picture4 
+<br />
+            Height          =   1380
+<br />
+            Left            =   180
+<br />
+            ScaleHeight     =   1320
+<br />
+            ScaleWidth      =   1725
+<br />
+            TabIndex        =   6
+<br />
+            Top             =   165
+<br />
+            Width           =   1785
+<br />
+            Begin VB&#46;PictureBox Picture5 
+<br />
+               Height          =   1050
+<br />
+               Left            =   210
+<br />
+               ScaleHeight     =   990
+<br />
+               ScaleWidth      =   1335
+<br />
+               TabIndex        =   7
+<br />
+               Top             =   150
+<br />
+               Width           =   1395
+<br />
+               Begin VB&#46;TextBox Text1 
+<br />
+                  Height          =   435
+<br />
+                  Left            =   180
+<br />
+                  TabIndex        =   8
+<br />
+                  Text            =   &quot;Text1&quot;
+<br />
+                  Top             =   285
+<br />
+                  Width           =   975
+<br />
+               End
+<br />
+            End
+<br />
+         End
+<br />
+      End
+<br />
+   End
+<br />
+   Begin VB&#46;PictureBox Picture1 
+<br />
+      Height          =   1680
+<br />
+      Left            =   4905
+<br />
+      ScaleHeight     =   1620
+<br />
+      ScaleWidth      =   1620
+<br />
+      TabIndex        =   3
+<br />
+      Top             =   2130
+<br />
+      Width           =   1680
+<br />
+   End
+<br />
+   Begin MSWinsockLib&#46;Winsock Winsock1 
+<br />
+      Left            =   0
+<br />
+      Top             =   0
+<br />
+      _ExtentX        =   741
+<br />
+      _ExtentY        =   741
+<br />
+      _Version        =   393216
+<br />
+   End
+<br />
+   Begin VB&#46;TextBox txtItem 
+<br />
+      Height          =   285
+<br />
+      Left            =   1695
+<br />
+      TabIndex        =   2
+<br />
+      Top             =   90
+<br />
+      Width           =   2415
+<br />
+   End
+<br />
+   Begin VB&#46;ListBox lstItems 
+<br />
+      Height          =   1230
+<br />
+      Left            =   1680
+<br />
+      TabIndex        =   1
+<br />
+      Top             =   570
+<br />
+      Width           =   3375
+<br />
+   End
+<br />
+   Begin VB&#46;CommandButton cmdAdd 
+<br />
+      Caption         =   &quot;Add&quot;
+<br />
+      Height          =   255
+<br />
+      Left            =   4215
+<br />
+      TabIndex        =   17
+<br />
+      Top             =   90
+<br />
+      Width           =   855
+<br />
+   End
+<br />
+End
+<br />
+Attribute VB_Name = &quot;frmMain&quot;
+<br />
+Attribute VB_GlobalNameSpace = False
+<br />
+Attribute VB_Creatable = False
+<br />
+Attribute VB_PredeclaredId = True
+<br />
+Attribute VB_Exposed = False
+<br />
+Option Explicit
+<br />
+'
+<br />
+' VB5/6 Form Deconstructor - &#40;c&#41; 2004 MathImagics
+<br />
+'       frm produced 10-01-2004
+<br />
+'
+<br />
+'==============================================
+<br />
+'
+<br />
+'  Data and Resource loading code generated
+<br />
+'    by  VB5/6  InFORMant
+<br />
+'
+<br />
+'
+<br />
+'==============================================
+<br />
+'
+<br />
+Private Sub Form_Load&#40;&#41;
+<br />
+   Me&#46;Icon = LoadPicture&#40;Me&#46;Name &amp; &quot;&#46;ico&quot;&#41;
+<br />
+   Me&#46;Picture = LoadPicture&#40;Me&#46;Name &amp; &quot;&#46;bmp&quot;&#41;
+<br />
+   Picture2&#46;Picture = LoadPicture&#40;Me&#46;Name &amp; &quot;_&quot; &amp; Picture2&#46;Name &amp; &quot;&#46;bmp&quot;&#41;
+<br />
+   Picture1&#46;Picture = LoadPicture&#40;Me&#46;Name &amp; &quot;_&quot; &amp; Picture1&#46;Name &amp; &quot;&#46;bmp&quot;&#41;
+<br />
+   txtItem&#46;Tag = &quot;huge_long_tag__huge_long_tag__huge_long_tag__huge_long_tag__huge&quot; &amp; _
+<br />
+                 &quot;_long_tag__huge_long_tag__huge_long_tag__huge_long_tag__huge_lon&quot; &amp; _
+<br />
+                 &quot;g_tag__huge_long_tag__huge_long_tag__huge_long_tag__huge_long_ta&quot; &amp; _
+<br />
+                 &quot;g__huge_long_tag__huge_long_tag__huge_long_tag__huge_long_tag__h&quot; &amp; _
+<br />
+                 &quot;uge_long_tag__huge_long_tag__huge_long_tag__huge_long_tag__huge_&quot; &amp; _
+<br />
+                 &quot;long_tag__huge_long_tag__huge_long_tag__huge_long_tag__huge_long&quot; &amp; _
+<br />
+                 &quot;_tag__huge_long_tag__huge_long_tag__huge_long_tag__huge_long_tag&quot; &amp; _
+<br />
+                 &quot;__huge_long_tag__huge_long_tag__huge_long_tag__huge_long_tag__hu&quot; &amp; _
+<br />
+                 &quot;ge_long_tag__huge_long_tag__huge_long_tag__huge_long_tag__huge_l&quot; &amp; _
+<br />
+                 &quot;ong_tag__huge_long_tag__huge_long_tag__huge_long_tag__huge_long_&quot; &amp; _
+<br />
+                 &quot;tag__huge_long_tag__huge_long_tag__huge_long_tag__huge_long_tag_&quot; &amp; _
+<br />
+                 &quot;_huge_long_tag__huge_long_tag__huge_long_tag__huge_long_tag__hug&quot; &amp; _
+<br />
+                 &quot;e_long_tag__huge_long_tag__huge_long_tag__huge_long_tag__huge_lo&quot; &amp; _
+<br />
+                 &quot;ng_tag__huge_long_tag__huge_long_tag__huge_long_tag__huge_long_t&quot; &amp; _
+<br />
+                 &quot;ag__huge_long_tag__huge_long_tag__huge_long_tag__huge_long_tag__&quot; &amp; _
+<br />
+                 &quot;huge_long_tag__huge_long_tag__huge_long_tag__huge_long_tag__huge&quot; &amp; _
+<br />
+                 &quot;_long_tag__huge_long_tag__huge_long_tag__huge_long_tag__huge_lon&quot; &amp; _
+<br />
+                 &quot;g_tag__huge_long_tag__huge_long_tag__huge_long_tag__huge_long_ta&quot; &amp; _
+<br />
+                 &quot;g__huge_long_tag__huge_long_tag__huge_long_tag__huge_long_tag__h&quot; &amp; _
+<br />
+                 &quot;uge_long_tag__huge_long_tag__huge_long_tag__huge_long_tag__huge_&quot; &amp; _
+<br />
+                 &quot;long_tag__huge_long_tag&quot;
+<br />
+   lstItems&#46;AddItem &quot;this item added on form load&quot;
+<br />
+   End Sub</td>	</tr></table><span class="postbody">
+<br />
+
+<br />
+You can confirm that it has found the "huge long tag", among other things, by scrolling directly to the end of the text window ....
+<br />
+
+<br />
+What is vbInFORMant?  It's not strictly a "Forms Decompiler", as it doesn't even touch the exe file, it's a generic GUI "Snaffler", and is doing everything with a runtime copy of the app.  It can of course capture DATA within controls, not just appearance properties and captions, but entire TreeView's, so has practical uses there (it can use early-binding to get at the data) ...
+<br />
+
+<br />
+What it can't do is give you the exact properties as they were built in the original compilation - only after Form_Load at a minimum, so anything can and will have happened 
+<br />
+
+<br />
+What goes into the FRM that I generate, and what goes into the "Form_Load" code I generate (I should call it Form_ReLoad) is fairly arbitrary, I don't know without reading the EXE structures (or following them in memory) what the actual IDE settings were...
+<br />
+
+<br />
+So the exact distinction between my "Snaffler" and a true "Decompiler" can be observed in my FRM which has no idea whether that TAG value for Text1 was set in the IDE or not 
+<br />
+
+<br />
+But it has many practical purposes, nevertheless, I'm sure!   
+<br />
+
+<br />
+I have a couple of screenshots and I will attach them in a new post next up ...
+<br />
+
+<br />
+Cheers
+<br />
+
+<br />
+Dr M<br />_________________<br />[size=75:2sg2dqh1]<span style="color: darkblue"><span style="font-style: italic">At first, I was irridescent.  Then, I became transparent.  Finally, I was absent ... </span></span></span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2918"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Fri Oct 01, 2004 7:04 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Screenshot: vbInFORMant(&quot;CommonApp2.exe&quot;)
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">The first screenshot shows the &quot;snaffle&quot; process - the background form is provided by the vbInformant server, a standard VB6 ActiveX DLL, but running as an in-process in the target (with the help of a small but sharp tool) ...
+<br />
+
+<br />
+the host window is self-evident, and the small window is the tool's front-end, which doesn't do much at all except list the currently running VB6 exe's (or any EXE using a VB6 ActiveX dll with a GUI), and when I click on one of those, it invokes the small, sharp tool to attach the &quot;clip-on&quot; COM service to the target.
+<br />
+
+<br />
+The server could do its work without any visible trace, but for the demo (and to show off a bit) it shows its own Form on which it has  logs its progress during the FRM generation process - it enumerates all the host's controls as it produces them ...
+<br />
+
+<br />
+The &quot;???.vbp&quot; in the caption is a reminder to myself to go and fetch this from the header structures - as I mentioned earlier, I'm not using them at this stage, it's all COM and a couple of surgical tools ...
+<br />
+
+<br />
+[font=Comic Sans MS:363rhr6p]<span style="color: darkred">Sorry, guys, I tried twice to upload a jpg &#40;136kb&#41; but it gets an error 
+<br />
+
+<br />
+Have I exceeded the size limit? Or should I try a gif?[/font:363rhr6p] </span><br />_________________<br />[size=75:2sg2dqh1]<span style="color: darkblue"><span style="font-style: italic">At first, I was irridescent.  Then, I became transparent.  Finally, I was absent ... </span></span></span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2919"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Fri Oct 01, 2004 11:42 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">I've made GIF versions - I've posted them in another BB fine, but still I'm getting errors (non-specific "unable to download") sigh ....
+<br />
+
+<br />
+They are only 96 and 130 kb ...   ??????  (help _aLfa_ !!!)<br />_________________<br />[size=75:2sg2dqh1]<span style="color: darkblue"><span style="font-style: italic">At first, I was irridescent.  Then, I became transparent.  Finally, I was absent ... </span></span></span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2920"></a><b>sarge</b></span><br /><span class="postdetails">Moderator<br /><!--<img src="pro_rank_mod.gif" alt="Moderator" title="Moderator" border="0" /><br />--><br /><br />Joined: 24 Sep 2002<br />Posts: 194<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Mon Oct 04, 2004 1:09 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">So what you're saying is....no CommonApp2 source?
+<br />
+
+<br />
+sarge</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2921"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Mon Oct 04, 2004 3:15 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">What "error" do you get?
+<br />
+
+<br />
+I like the concept.... you could possibly turn this into an process to save the state of a VB exe. like a pause and play type operation on the exe.<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2924"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Tue Oct 05, 2004 2:39 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">A series of form snapshots can be wrapped in a simple VBP wrapper that lets it emulate a "PowerPoint" presentation - forget screenshots.  I now have "Save complete Form", or "Save new display state" which just adds a properties update procedure to the existing form...  the wrapper just provides "Next" and "Prev" buttons, all else is automatic. Compile and send the EXE, which will compress to a smaller file than any single JPG screenshot would...
+<br />
+
+<br />
+
+<br />
+The error code when I upload attachments is non-specific, and doesn't occur until right at the end (a considerable time!) - it doesn't give any reason it just says "Unable to load "...
+<br />
+
+<br />
+I'll try again and get the exact text of the message ...
+<br />
+
+<br />
+
+<br />
+Sarge:  Yes, it's a bit weak, really!  No source code extraction ...  
+<br />
+
+<br />
+Maybe next week .....<br />_________________<br />[size=75:2sg2dqh1]<span style="color: darkblue"><span style="font-style: italic">At first, I was irridescent.  Then, I became transparent.  Finally, I was absent ... </span></span></span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2925"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Tue Oct 05, 2004 2:46 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;MrUnleaded&quot;:aazc5585]What "error" do you get?
+<br />
+
+<br />
+I like the concept.... you could possibly turn this into an process to save the state of a VB exe. like a pause and play type operation on the exe.[/:aazc5585]
+<br />
+
+<br />
+Reporting and Automation both have potentially interesting uses of this
+<br />
+
+<br />
+
+<br />
+This is what I get when I attach any file, even a little zip:
+<br />
+<span style="font-weight: bold">Upload Error: Could not upload Attachment to ./files/ss_gui_snaffle_001.gif.</span><br />_________________<br />[size=75:2sg2dqh1]<span style="color: darkblue"><span style="font-style: italic">At first, I was irridescent.  Then, I became transparent.  Finally, I was absent ... </span></span></span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2926"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Tue Oct 05, 2004 2:47 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">I can load them quite happily at xtremevbtalk.com, so I don't know what the problem is ...  some IE compatibility problem?
+<br />
+
+<br />
+Is there an FTP access method?<br />_________________<br />[size=75:2sg2dqh1]<span style="color: darkblue"><span style="font-style: italic">At first, I was irridescent.  Then, I became transparent.  Finally, I was absent ... </span></span></span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2928"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Tue Oct 05, 2004 3:51 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">i increased your quota. try to upload again.<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2929"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Oct 06, 2004 2:18 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: The Last Picture Show
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Hokey dokey, here we go ...
+<br />
+
+<br />
+Curses, it's the same result ... wot a pain  ...   it's something about this box and this forum  ... I uploaded from the laptop just a couple of weeks back ...   nuts ...  
+<br />
+
+<br />
+I could email them to you and you could put them in maybe?
+<br />
+
+<br />
+The irony is, I don't need screenshots any more, not for showing VB apps, I just give you a very small zipped EXE which shows the real thing.  But if I can't upload those either that kind of cruels the idea ....  
+<br />
+
+<br />
+I might try putting SP6 on this box tomorrow, see if that helps - it's still running SP0, and IE5.0 ...<br />_________________<br />[size=75:2sg2dqh1]<span style="color: darkblue"><span style="font-style: italic">At first, I was irridescent.  Then, I became transparent.  Finally, I was absent ... </span></span></span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2931"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Oct 06, 2004 3:31 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">yea if you cant upload something, you can email them to me, just send it to the address in my profile.  and put a subject like "please upload" or whatever.
+<br />
+
+<br />
+This goes for everyone.<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2933"></a><b>sarge</b></span><br /><span class="postdetails">Moderator<br /><!--<img src="pro_rank_mod.gif" alt="Moderator" title="Moderator" border="0" /><br />--><br /><br />Joined: 24 Sep 2002<br />Posts: 194<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Oct 06, 2004 5:04 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Actually, my comment was NOT aimed at your new stuff....I was refering to my original question some dozens of posts ago.  Where IS the CommonApp2 source code, so I can see how to activate those "hidden" function routines, so I can see if RACE 3.4 parses them correctly.
+<br />
+
+<br />
+Sarge</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2934"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Oct 06, 2004 5:11 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;sarge&quot;:ocw7x70f]Actually, my comment was NOT aimed at your new stuff....I was refering to my original question some dozens of posts ago.  Where IS the CommonApp2 source code, so I can see how to activate those "hidden" function routines, so I can see if RACE 3.4 parses them correctly.
+<br />
+
+<br />
+Sarge[/:ocw7x70f]To answer that....i did look through my stuff to find it, but to no avail. it was once posted on extra.decompiler.com the person who would most likely have it would be moog. 
+<br />
+
+<br />
+If anyone wants to make a new commonapp....go right ahead. post the exe then after a month or so you can post the source.<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2939"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Oct 07, 2004 8:06 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Sorry, Sarge!    I thought you were just being witty!    
+<br />
+
+<br />
+
+<br />
+
+<br />
+Thanks MrU - I'll do that - I will try SP6 too ...<br />_________________<br />[size=75:2sg2dqh1]<span style="color: darkblue"><span style="font-style: italic">At first, I was irridescent.  Then, I became transparent.  Finally, I was absent ... </span></span></span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2944"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Oct 10, 2004 4:40 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: for whatever reason...
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Here you go Dr Memory 
+<br />
+
+<br />
+I got the same error you got.....but its fixed now. there was a file permissions problem.
+<br />
+
+<br />
+Anyways feel free to test it out. <br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2945"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Oct 10, 2004 8:03 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Thanks!  
+<br />
+
+<br />
+ I originally thought the problem might be in the files themselves, but got the same error when I tried a zip file containing them.
+<br />
+
+<br />
+Does the permissions error you got tell us anything?  Something I can do before uploading the files maybe?<br />_________________<br />[size=75:2sg2dqh1]<span style="color: darkblue"><span style="font-style: italic">At first, I was irridescent.  Then, I became transparent.  Finally, I was absent ... </span></span></span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2946"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Mon Oct 11, 2004 3:32 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">no...it was something we didnt do when the board was updated....
+<br />
+
+<br />
+noone had "write" permission to the directory where the files go.....but they do now. so just upload like you were before and you should ge good to go.<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2947"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Tue Oct 12, 2004 7:48 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Cool, glad that's sorted ...<br />_________________<br />[size=75:2sg2dqh1]<span style="color: darkblue"><span style="font-style: italic">At first, I was irridescent.  Then, I became transparent.  Finally, I was absent ... </span></span></span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2966"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Oct 21, 2004 10:55 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Moog thought of things like that so i wouldnt be surprised.
+<br />
+
+<br />
+Sarge,aLfa,Dr Memory, if any of you would like to recompile the source that Anna submitted for us...then we can repost it. just to make sure the source is a valid representaton of the exe
+<br />
+
+<br />
+btw Thanks Anna.<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr align="center">
+		<td class="catBottom" colspan="2" height="28"></td>
+		<td></td>
+	</tr>
+</table>
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+  <tr>
+	<td></td>
+	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="index-2.html" class="nav">VB Decompiler Forum Index</a>
+	  -> <a href="viewforumeb13.html" xx="f=13" class="nav">Common Application Programs</a></span></td>
+	<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">All times are GMT</span><br /><span class="nav">Goto page <b>1</b>, <a href="viewtopic251f.html" xx="t=1710&amp;postdays=0&amp;postorder=asc&amp;start=20">2</a>, <a href="viewtopic301d.html" xx="t=1710&amp;postdays=0&amp;postorder=asc&amp;start=40">3</a>&nbsp;&nbsp;<a href="viewtopic251f.html" xx="t=1710&amp;postdays=0&amp;postorder=asc&amp;start=20">Next</a></span>
+	  </td>
+  </tr>
+  <tr>
+	<td align="left" colspan="3"><span class="nav">Page <b>1</b> of <b>3</b></span></td>
+  </tr>
+</table>
+
+<table width="100%" cellspacing="2" border="0" align="center">
+  <tr>
+	<td width="40%" valign="top" nowrap="nowrap" align="left"><span class="gensmall"></span><br />
+	  &nbsp;<br />
+	  </td>
+	<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">You <b>can</b> post new topics in this forum<br />You <b>can</b> reply to topics in this forum<br />You <b>can</b> edit your posts in this forum<br />You <b>can</b> delete your posts in this forum<br />You <b>can</b> vote in polls in this forum<br /></span></td>
+  </tr>
+</table>
+
+
+<div align="center"><span class="copyright"><br /><br />
+<!--
+	We request you retain the full copyright notice below including the link to www.phpbb.com.
+	This not only gives respect to the large amount of time given freely by the developers
+	but also helps build interest, traffic and use of phpBB 2.0. If you cannot (for good
+	reason) retain the full copyright we request you at least leave in place the
+	Powered by phpBB line, with phpBB linked to www.phpbb.com. If you refuse
+	to include even this then support on our forums may be affected.
+
+	The phpBB Group : 2002
+// -->
+Powered by <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB</a> &copy; 2001, 2005 phpBB Group<br /></span></div>
+		</td>
+	</tr>
+</table>
+
+</body>
+
+<!-- Mirrored from localhost/phpbb2/viewtopic.php?t=1710&postdays=0&postorder=asc&start=0 by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 04 Mar 2018 20:55:56 GMT -->
+</html>
+

@@ -1,0 +1,824 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html dir="ltr">
+
+<!-- Mirrored from localhost/phpbb2/viewtopic.php?t=1807&start=0&postdays=0&postorder=asc&highlight= by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 04 Mar 2018 20:55:48 GMT -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Style-Type" content="text/css">
+
+<link rel="top" href="index-2.html" title="VB Decompiler Forum Index" />
+<link rel="search" href="search.html" title="Search" />
+<link rel="help" href="faq.html" title="FAQ" />
+<link rel="author" href="memberlist.html" title="Memberlist" />
+<link rel="prev" href="viewtopic8685.html" xx="t=1807&amp;view=previous" title="View previous topic" />
+<link rel="next" href="viewtopic3871.html" xx="t=1807&amp;view=next" title="View next topic" />
+<link rel="up" href="viewforume774.html" xx="f=5" title="The Code" />
+
+<title>VB Decompiler :: View topic - Visual Basic 6 Compliler command line options</title>
+<!-- link rel="stylesheet" href="templates/subSilver/subSilver.css" type="text/css" -->
+<style type="text/css">
+<!--
+/*
+  The original subSilver Theme for phpBB version 2+
+  Created by subBlue design
+  http://www.subBlue.com
+
+  NOTE: These CSS definitions are stored within the main page body so that you can use the phpBB2
+  theme administration centre. When you have finalised your style you could cut the final CSS code
+  and place it in an external file, deleting this section to save bandwidth.
+*/
+
+/* General page style. The scroll bar colours only visible in IE5.5+ */
+body {
+	background-color: #E5E5E5;
+	scrollbar-face-color: #DEE3E7;
+	scrollbar-highlight-color: #FFFFFF;
+	scrollbar-shadow-color: #DEE3E7;
+	scrollbar-3dlight-color: #D1D7DC;
+	scrollbar-arrow-color:  #006699;
+	scrollbar-track-color: #EFEFEF;
+	scrollbar-darkshadow-color: #98AAB1;
+}
+
+/* General font families for common tags */
+font,th,td,p { font-family: Verdana, Arial, Helvetica, sans-serif }
+a:link,a:active,a:visited { color : #006699; }
+a:hover		{ text-decoration: underline; color : #DD6900; }
+hr	{ height: 0px; border: solid #D1D7DC 0px; border-top-width: 1px;}
+
+/* This is the border line & background colour round the entire page */
+.bodyline	{ background-color: #FFFFFF; border: 1px #98AAB1 solid; }
+
+/* This is the outline round the main forum tables */
+.forumline	{ background-color: #FFFFFF; border: 2px #006699 solid; }
+
+/* Main table cell colours and backgrounds */
+td.row1	{ background-color: #EFEFEF; }
+td.row2	{ background-color: #DEE3E7; }
+td.row3	{ background-color: #D1D7DC; }
+
+/*
+  This is for the table cell above the Topics, Post & Last posts on the index.php page
+  By default this is the fading out gradiated silver background.
+  However, you could replace this with a bitmap specific for each forum
+*/
+td.rowpic {
+		background-color: #FFFFFF;
+		background-image: url(templates/subSilver/images/cellpic2.jpg);
+		background-repeat: repeat-y;
+}
+
+/* Header cells - the blue and silver gradient backgrounds */
+th	{
+	color: #FFA34F; font-size: 11px; font-weight : bold;
+	background-color: #006699; height: 25px;
+	background-image: url(templates/subSilver/images/cellpic3.gif);
+}
+
+td.cat,td.catHead,td.catSides,td.catLeft,td.catRight,td.catBottom {
+			background-image: url(templates/subSilver/images/cellpic1.gif);
+			background-color:#D1D7DC; border: #FFFFFF; border-style: solid; height: 28px;
+}
+
+/*
+  Setting additional nice inner borders for the main table cells.
+  The names indicate which sides the border will be on.
+  Don't worry if you don't understand this, just ignore it :-)
+*/
+td.cat,td.catHead,td.catBottom {
+	height: 29px;
+	border-width: 0px 0px 0px 0px;
+}
+th.thHead,th.thSides,th.thTop,th.thLeft,th.thRight,th.thBottom,th.thCornerL,th.thCornerR {
+	font-weight: bold; border: #FFFFFF; border-style: solid; height: 28px;
+}
+td.row3Right,td.spaceRow {
+	background-color: #D1D7DC; border: #FFFFFF; border-style: solid;
+}
+
+th.thHead,td.catHead { font-size: 12px; border-width: 1px 1px 0px 1px; }
+th.thSides,td.catSides,td.spaceRow	 { border-width: 0px 1px 0px 1px; }
+th.thRight,td.catRight,td.row3Right	 { border-width: 0px 1px 0px 0px; }
+th.thLeft,td.catLeft	  { border-width: 0px 0px 0px 1px; }
+th.thBottom,td.catBottom  { border-width: 0px 1px 1px 1px; }
+th.thTop	 { border-width: 1px 0px 0px 0px; }
+th.thCornerL { border-width: 1px 0px 0px 1px; }
+th.thCornerR { border-width: 1px 1px 0px 0px; }
+
+/* The largest text used in the index page title and toptic title etc. */
+.maintitle	{
+	font-weight: bold; font-size: 22px; font-family: "Trebuchet MS",Verdana, Arial, Helvetica, sans-serif;
+	text-decoration: none; line-height : 120%; color : #000000;
+}
+
+/* General text */
+.gen { font-size : 12px; }
+.genmed { font-size : 11px; }
+.gensmall { font-size : 10px; }
+.gen,.genmed,.gensmall { color : #000000; }
+a.gen,a.genmed,a.gensmall { color: #006699; text-decoration: none; }
+a.gen:hover,a.genmed:hover,a.gensmall:hover	{ color: #DD6900; text-decoration: underline; }
+
+/* The register, login, search etc links at the top of the page */
+.mainmenu		{ font-size : 11px; color : #000000 }
+a.mainmenu		{ text-decoration: none; color : #006699;  }
+a.mainmenu:hover{ text-decoration: underline; color : #DD6900; }
+
+/* Forum category titles */
+.cattitle		{ font-weight: bold; font-size: 12px ; letter-spacing: 1px; color : #006699}
+a.cattitle		{ text-decoration: none; color : #006699; }
+a.cattitle:hover{ text-decoration: underline; }
+
+/* Forum title: Text and link to the forums used in: index.php */
+.forumlink		{ font-weight: bold; font-size: 12px; color : #006699; }
+a.forumlink 	{ text-decoration: none; color : #006699; }
+a.forumlink:hover{ text-decoration: underline; color : #DD6900; }
+
+/* Used for the navigation text, (Page 1,2,3 etc) and the navigation bar when in a forum */
+.nav			{ font-weight: bold; font-size: 11px; color : #000000;}
+a.nav			{ text-decoration: none; color : #006699; }
+a.nav:hover		{ text-decoration: underline; }
+
+/* titles for the topics: could specify viewed link colour too */
+.topictitle,h1,h2	{ font-weight: bold; font-size: 11px; color : #000000; }
+a.topictitle:link   { text-decoration: none; color : #006699; }
+a.topictitle:visited { text-decoration: none; color : #5493B4; }
+a.topictitle:hover	{ text-decoration: underline; color : #DD6900; }
+
+/* Name of poster in viewmsg.php and viewtopic.php and other places */
+.name			{ font-size : 11px; color : #000000;}
+
+/* Location, number of posts, post date etc */
+.postdetails		{ font-size : 10px; color : #000000; }
+
+/* The content of the posts (body of text) */
+.postbody { font-size : 12px; line-height: 18px}
+a.postlink:link	{ text-decoration: none; color : #006699 }
+a.postlink:visited { text-decoration: none; color : #5493B4; }
+a.postlink:hover { text-decoration: underline; color : #DD6900}
+
+/* Quote & Code blocks */
+.code {
+	font-family: Courier, 'Courier New', sans-serif; font-size: 11px; color: #006600;
+	background-color: #FAFAFA; border: #D1D7DC; border-style: solid;
+	border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+}
+
+.quote {
+	font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11px; color: #444444; line-height: 125%;
+	background-color: #FAFAFA; border: #D1D7DC; border-style: solid;
+	border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+}
+
+/* Copyright and bottom info */
+.copyright		{ font-size: 10px; font-family: Verdana, Arial, Helvetica, sans-serif; color: #444444; letter-spacing: -1px;}
+a.copyright		{ color: #444444; text-decoration: none;}
+a.copyright:hover { color: #000000; text-decoration: underline;}
+
+/* Form elements */
+input,textarea, select {
+	color : #000000;
+	font: normal 11px Verdana, Arial, Helvetica, sans-serif;
+	border-color : #000000;
+}
+
+/* The text input fields background colour */
+input.post, textarea.post, select {
+	background-color : #FFFFFF;
+}
+
+input { text-indent : 2px; }
+
+/* The buttons used for bbCode styling in message post */
+input.button {
+	background-color : #EFEFEF;
+	color : #000000;
+	font-size: 11px; font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+/* The main submit button option */
+input.mainoption {
+	background-color : #FAFAFA;
+	font-weight : bold;
+}
+
+/* None-bold submit button */
+input.liteoption {
+	background-color : #FAFAFA;
+	font-weight : normal;
+}
+
+/* This is the line in the posting page which shows the rollover
+  help line. This is actually a text box, but if set to be the same
+  colour as the background no one will know ;)
+*/
+.helpline { background-color: #DEE3E7; border-style: none; }
+
+/* Import the fancy styles for IE only (NS4.x doesn't use the @import function) */
+@import url("templates/subSilver/formIE.css");
+-->
+</style>
+</head>
+<body bgcolor="#E5E5E5" text="#000000" link="#006699" vlink="#5493B4">
+
+<a name="top"></a>
+
+<table width="100%" cellspacing="0" cellpadding="10" border="0" align="center">
+	<tr>
+		<td class="bodyline"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<tr>
+				<td><a href="index-2.html"><img src="templates/subSilver/images/logo_phpBB.gif" border="0" alt="VB Decompiler Forum Index" vspace="1" /></a></td>
+				<td align="center" width="100%" valign="middle"><span class="maintitle">VB Decompiler</span><br /><span class="gen">Hosted by TheAutomaters.com<br />&nbsp; </span>
+				<table cellspacing="0" cellpadding="2" border="0">
+					<tr>
+						<td align="center" valign="top" nowrap="nowrap"><span class="mainmenu">&nbsp;
+						<a href="memberlist.html" class="mainmenu"><img src="templates/subSilver/images/icon_mini_members.gif" width="12" height="13" border="0" alt="Memberlist" hspace="3" />Memberlist</a>
+						</span></td>
+					</tr>
+					<tr>
+						<td height="25" align="center" valign="top" nowrap="nowrap"><span class="mainmenu">&nbsp;</td>
+					</tr>
+				</table></td>
+			</tr>
+		</table>
+
+		<br />
+
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0">
+  <tr>
+	<td align="left" valign="bottom" colspan="2"><a class="maintitle" href="viewtopic6286.html" xx="t=1807&amp;start=0&amp;postdays=0&amp;postorder=asc&amp;highlight=">Visual Basic 6 Compliler command line options</a><br />
+	  <span class="gensmall"><b></b><br />
+	  &nbsp; </span></td>
+  </tr>
+</table>
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0">
+  <tr>
+	<td></td>
+	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="index-2.html" class="nav">VB Decompiler Forum Index</a>
+	  -> <a href="viewforume774.html" xx="f=5" class="nav">The Code</a></span></td>
+  </tr>
+</table>
+
+<table class="forumline" width="100%" cellspacing="1" cellpadding="3" border="0">
+	<tr>
+		<th class="thLeft" width="150" height="26" nowrap="nowrap">Author</th>
+		<th class="thRight" nowrap="nowrap">Message</th>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2625"></a><b>drk||Raziel</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 25 Aug 2004<br />Posts: 8<br />Location: Athens</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Fri Aug 27, 2004 2:20 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Visual Basic 6 Compliler command line options
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">I didn't found any info on the net so i decided to load IDA and a hexeditor..
+<br />
+
+<br />
+This is what i found:
+<br />
+
+<br />
+                            --Visual Basic 6 Compiler Options(c2) List--
+<br />
+
+<br />
+-nowarn4786:?? disable warning 4786=??
+<br />
+-nowarn4715:?? disable warning 4715=??
+<br />
+-cap:??	
+<br />
+-nodlp:??
+<br />
+-dlp:??
+<br />
+-ZX:??? needs an input file,seems to need a Object File , then complier error (internal.. error)
+<br />
+-ZI:/ZI enable Edit and Continue debug info(in c), seems to work 
+<br />
+-S:?? it seems to be Display listing on screen
+<br />
+-dos:?? from 16 bit VB??  it is used from VB6 , not needed to complie
+<br />
+-Fo# : object file (-Fo"C:\myobj.obj")
+<br />
+-H#:   external name length restriction (default 31) (c2 c++v6)
+<br />
+-Zl:/Zl omit default library name in .OBJ(in C) ,it seems to work
+<br />
+-Za:/Za disable extensions (implies /Op)(in c) , seems to have no effect...
+<br />
+-Zd:/Zd line number debugging info only ,seems to work
+<br />
+-Zi:/Zi enable debugging information (in c)
+<br />
+-Brepro:?? it seems to have no effect
+<br />
+-Bd: it seems to have no effect
+<br />
+-Fs#: generate a source file listing with .LST extension (c2 c++v6)
+<br />
+-Fa#:/Fa[file] name assembly listing file
+<br />
+-FA#:/FA[sc] configure assembly listing s= source , c= code bytes
+<br />
+-pr:??
+<br />
+-QIWMTemu:??
+<br />
+-QIfist:/QIfist[-] use FIST instead of ftol()
+<br />
+-QI0f:/QI0f[-] enable Pentium 0x0f fix
+<br />
+-QIfdiv:/QIfdiv[-] enable Pentium FDIV fix
+<br />
+-QIf   : ?? possibly enable QIfist and QIfdiv ?? [RE needed]
+<br />
+-p6gj:??
+<br />
+-noblend:?? possibly forcode generation ,No optimize for blended model (default)
+<br />
+-nolock :???
+<br />
+-noehopt :??? possibly some optimization, off
+<br />
+-ehopt   :??? possibly some optimization, on
+<br />
+-bzalign :??align mode  perhaps??
+<br />
+-basic   :??possibly compile VB code.. but his compiler complies VB code so what's this ?? , compiler freeses if removed
+<br />
+-nogen   :?? hmm possibly do not generate output (syntax checking olny..) it seems to have no effect
+<br />
+
+<br />
+These are REALY strange... possibly left from C compiler.. [RE needed]
+<br />
+-MT      :/MT link with LIBCMT.LIB  
+<br />
+-MD	   :/MD link with MSVCRT.LIB 
+<br />
+-ML	   :/ML link with LIBC.LIB , used by vb6 , not needed to compile 
+<br />
+-MTd	   :/MTd link with LIBCMTD.LIB debug lib
+<br />
+-MDd	   :/MDd link with MSVCRTD.LIB debug lib
+<br />
+-MLd	   :/MLd link with LIBCD.LIB debug lib
+<br />
+-EHa	   :  /EHa enable C++ EH (w/ SEH exceptions)
+<br />
+-EHs     :  /EHs enable C++ EH (no SEH exceptions)
+<br />
+         
+<br />
+-loopopt	: ?? Posibly loop expanding optimization
+<br />
+-Loop#	: ?? Possibly how much to expand.. (the param..)
+<br />
+
+<br />
+
+<br />
+-vol# :?? takes one par...
+<br />
+-il#	:Complier Intermediate File (???) input , must exist , needed for compilation
+<br />
+-isize# :?? takes one par..
+<br />
+-ide : ?? runing from ide?? never used from VB6 ide tho...
+<br />
+
+<br />
+-Fd# :/Fd[file] name .PDB file   
+<br />
+-f#  :File to Compile , -f "filename" /-f"Filename"
+<br />
+-ef# :?? takes one par,seems to have no effect
+<br />
+-off#:?? takes one par, seems to have no effect
+<br />
+-db#	:?? taes one par , debug maby? , seems to have no effect
+<br />
+-W#   :possibly warning level...
+<br />
+-O#	:/O[opts] where "opts" is a string containing the following: 
+<br />
+	 a relax alias checking 
+<br />
+	 g enable global optimizations and global common expressions 
+<br />
+	 p improve consistency in floating-point calculations
+<br />
+	 s optimize for size
+<br />
+	 t optimize for speed (default) 
+<br />
+	 w assume no aliasing except across function calls 
+<br />
+
+<br />
+-A#	: All these are legal
+<br />
+	/AT Tiny Memory Model; combined code and data limited to 64K 
+<br />
+	/AS Small Memory Model; code and data limited to 64K each 
+<br />
+	/AM Medium Memory Model; data is limited to 64K 
+<br />
+	/AC Compact Memory Model; code is limited to 64K 
+<br />
+	/AL Large Memory Model; unlimited code and data but arrays are limited to 64K
+<br />
+	/AH Huge Memory Model; unlimited code, data and array size 
+<br />
+
+<br />
+-G#	:All these are legal
+<br />
+	/G3 optimize for 80386                   
+<br />
+	/Gh enable _penter function call
+<br />
+	/G4 optimize for 80486                   
+<br />
+	/G5 optimize for Pentium                 
+<br />
+	/G6 optimize for PPro, P-II, P-III       
+<br />
+	/GX[-] enable C++ EH (same as /EHsc)   
+<br />
+	/GA optimize for Windows Application  : ok too
+<br />
+	/Gf enable string pooling              
+<br />
+	/Gy separate functions for linker   :This is used   by Vb6
+<br />
+	/GZ Enable stack checks (/RTCs)       
+<br />
+	/Gs[num] control stack checking calls         
+<br />
+
+<br />
+-fastcap:??? it has effect on the ouput
+<br />
+-stkfill#:???
+<br />
+-Gt#	:	/Gt[num]  places data items larger than "num" bytes into different
+<br />
+		  segments. The default value for "num is 256 bytes.
+<br />
+
+<br />
+-Gs#	:/Gs[num] control stack checking calls , Gs4096 by defualt
+<br />
+-cbstring 
+<br />
+
+<br />
+I hope you like it :)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2632"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Fri Aug 27, 2004 4:25 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">I hadn't spotted "ehopt" before - sounds like ExceptHandling maybe? ... sounds intriguing ...
+<br />
+
+<br />
+You have to remember many of these options are not  really changeable - C2 was a real C compiler, the original MVC (?) compiler maybe, which they adopted a copy of and performed some sort of surgery
+<br />
+
+<br />
+
+<br />
+<span style="text-decoration: underline">-Z options</span>
+<br />
+
+<br />
+Suggest don't mess with them - your OBJ files will probably not link properly, as they can affect naming conventions
+<br />
+
+<br />
+<span style="text-decoration: underline">-basic, -il </span>
+<br />
+
+<br />
+Crucial, that tells C2 it's VB who is calling!  
+<br />
+
+<br />
+The IL files contain the data tables needed for C2 to embed the correct table data - COM, DB links, Line numbering for RESUME support, etc etc
+<br />
+
+<br />
+Again, unwise to touch
+<br />
+
+<br />
+<span style="color: #880000">However, C programmers might be able to tell us (or somebody can try), whether C2 can still compile C if we leave off the -basic option ???</span>
+<br />
+
+<br />
+
+<br />
+<span style="text-decoration: underline"> /G options</span>
+<br />
+
+<br />
+A 1-1 correspondence with the control panel, so that all makes sense, you can control all the GUI options basically, from the command line, which is the ideal situation.
+<br />
+
+<br />
+
+<br />
+<span style="text-decoration: underline"> /AH ???? </span>   
+<br />
+
+<br />
+Now, have I been asleep?  Are they hiding the "Huge" model from us for a reason?  Or did it not go according to plan? 
+<br />
+
+<br />
+</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2633"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Fri Aug 27, 2004 4:38 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Tsk,...   by "VB calling", I mean "VB executing", of course .... </span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2638"></a><b>drk||Raziel</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 25 Aug 2004<br />Posts: 8<br />Location: Athens</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Fri Aug 27, 2004 6:54 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Calling Vb's C2 without -basic makes it go on an infinitive loop...
+<br />
+
+<br />
+VB's C2 is not so similar with C C2.dll...
+<br />
+The compiler backend is the same 
+<br />
+[Code generation , Asm level Optimizarion,Register managment]
+<br />
+
+<br />
+The compiler Frontend is a lot diferent 
+<br />
+[Language Syntax/Gramar , Higth Level opts (Very important) , Type conrvetions , OOP handing , exeptions ect..]
+<br />
+
+<br />
+That's the reson that vb suffers from performance... Bad front end that can make *bad* code run realy slow + Slow runtime dll's
+<br />
+
+<br />
+On C the first pass is made by cl.exe , c1.dll, c1xx.dll and the code generation is made by c2.dll [as far as i know , mauby wrong..]
+<br />
+
+<br />
+VB's c2 is a subset of C's c2.dll + a buggy, fast made parser/fisrt pass analyser... This causes the problems with the listings too..
+<br />
+
+<br />
+
+<br />
+If i have time i will do some real RE on this .. but i think that it is not worth... it would be better to write a VB frontend for GCC and a new runtime Lib... waht do you think??
+<br />
+
+<br />
+*Edit* 
+<br />
+The Zx seems to work well .. at least , the exe compiles...
+<br />
+i don't have IDA rigth now , i'l test it later </span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2644"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Aug 28, 2004 12:43 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">VB/GCC, now that's exotic!  
+<br />
+
+<br />
+That's one form of C I do actually have somewhere ...</span>
+						<span class="gensmall"><br /><br />Last edited by Dr Memory on Sat Aug 28, 2004 1:01 am; edited 1 time in total</span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2645"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Aug 28, 2004 12:53 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Yes, it's not hard to write good code - you can emulate RtlMoveMemory with conventional code and get a 6 to 4 performance ratio, not bad for a HLL, especially with all its other talents
+<br />
+
+<br />
+
+<br />
+I wonder what % of the millions of compilations done every day are using all default options?</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr align="center">
+		<td class="catBottom" colspan="2" height="28"></td>
+		<td></td>
+	</tr>
+</table>
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+  <tr>
+	<td></td>
+	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="index-2.html" class="nav">VB Decompiler Forum Index</a>
+	  -> <a href="viewforume774.html" xx="f=5" class="nav">The Code</a></span></td>
+	<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">All times are GMT</span><br /><span class="nav"></span>
+	  </td>
+  </tr>
+  <tr>
+	<td align="left" colspan="3"><span class="nav">Page <b>1</b> of <b>1</b></span></td>
+  </tr>
+</table>
+
+<table width="100%" cellspacing="2" border="0" align="center">
+  <tr>
+	<td width="40%" valign="top" nowrap="nowrap" align="left"><span class="gensmall"></span><br />
+	  &nbsp;<br />
+	  </td>
+	<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">You <b>can</b> post new topics in this forum<br />You <b>can</b> reply to topics in this forum<br />You <b>can</b> edit your posts in this forum<br />You <b>can</b> delete your posts in this forum<br />You <b>can</b> vote in polls in this forum<br /></span></td>
+  </tr>
+</table>
+
+
+<div align="center"><span class="copyright"><br /><br />
+<!--
+	We request you retain the full copyright notice below including the link to www.phpbb.com.
+	This not only gives respect to the large amount of time given freely by the developers
+	but also helps build interest, traffic and use of phpBB 2.0. If you cannot (for good
+	reason) retain the full copyright we request you at least leave in place the
+	Powered by phpBB line, with phpBB linked to www.phpbb.com. If you refuse
+	to include even this then support on our forums may be affected.
+
+	The phpBB Group : 2002
+// -->
+Powered by <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB</a> &copy; 2001, 2005 phpBB Group<br /></span></div>
+		</td>
+	</tr>
+</table>
+
+</body>
+
+<!-- Mirrored from localhost/phpbb2/viewtopic.php?t=1807&start=0&postdays=0&postorder=asc&highlight= by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 04 Mar 2018 20:55:48 GMT -->
+</html>
+

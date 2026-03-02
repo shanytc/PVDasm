@@ -1,0 +1,1900 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html dir="ltr">
+
+<!-- Mirrored from localhost/phpbb2/viewtopic.php?t=1721&view=previous by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 04 Mar 2018 20:55:41 GMT -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Style-Type" content="text/css">
+
+<link rel="top" href="index-2.html" title="VB Decompiler Forum Index" />
+<link rel="search" href="search.html" title="Search" />
+<link rel="help" href="faq.html" title="FAQ" />
+<link rel="author" href="memberlist.html" title="Memberlist" />
+<link rel="prev" href="viewtopic26f0.html" xx="t=25&amp;view=previous" title="View previous topic" />
+<link rel="next" href="viewtopic196c.html" xx="t=25&amp;view=next" title="View next topic" />
+<link rel="up" href="viewforum12a3.html" xx="f=2" title="Structures" />
+
+<title>VB Decompiler :: View topic - EventTable</title>
+<!-- link rel="stylesheet" href="templates/subSilver/subSilver.css" type="text/css" -->
+<style type="text/css">
+<!--
+/*
+  The original subSilver Theme for phpBB version 2+
+  Created by subBlue design
+  http://www.subBlue.com
+
+  NOTE: These CSS definitions are stored within the main page body so that you can use the phpBB2
+  theme administration centre. When you have finalised your style you could cut the final CSS code
+  and place it in an external file, deleting this section to save bandwidth.
+*/
+
+/* General page style. The scroll bar colours only visible in IE5.5+ */
+body {
+	background-color: #E5E5E5;
+	scrollbar-face-color: #DEE3E7;
+	scrollbar-highlight-color: #FFFFFF;
+	scrollbar-shadow-color: #DEE3E7;
+	scrollbar-3dlight-color: #D1D7DC;
+	scrollbar-arrow-color:  #006699;
+	scrollbar-track-color: #EFEFEF;
+	scrollbar-darkshadow-color: #98AAB1;
+}
+
+/* General font families for common tags */
+font,th,td,p { font-family: Verdana, Arial, Helvetica, sans-serif }
+a:link,a:active,a:visited { color : #006699; }
+a:hover		{ text-decoration: underline; color : #DD6900; }
+hr	{ height: 0px; border: solid #D1D7DC 0px; border-top-width: 1px;}
+
+/* This is the border line & background colour round the entire page */
+.bodyline	{ background-color: #FFFFFF; border: 1px #98AAB1 solid; }
+
+/* This is the outline round the main forum tables */
+.forumline	{ background-color: #FFFFFF; border: 2px #006699 solid; }
+
+/* Main table cell colours and backgrounds */
+td.row1	{ background-color: #EFEFEF; }
+td.row2	{ background-color: #DEE3E7; }
+td.row3	{ background-color: #D1D7DC; }
+
+/*
+  This is for the table cell above the Topics, Post & Last posts on the index.php page
+  By default this is the fading out gradiated silver background.
+  However, you could replace this with a bitmap specific for each forum
+*/
+td.rowpic {
+		background-color: #FFFFFF;
+		background-image: url(templates/subSilver/images/cellpic2.jpg);
+		background-repeat: repeat-y;
+}
+
+/* Header cells - the blue and silver gradient backgrounds */
+th	{
+	color: #FFA34F; font-size: 11px; font-weight : bold;
+	background-color: #006699; height: 25px;
+	background-image: url(templates/subSilver/images/cellpic3.gif);
+}
+
+td.cat,td.catHead,td.catSides,td.catLeft,td.catRight,td.catBottom {
+			background-image: url(templates/subSilver/images/cellpic1.gif);
+			background-color:#D1D7DC; border: #FFFFFF; border-style: solid; height: 28px;
+}
+
+/*
+  Setting additional nice inner borders for the main table cells.
+  The names indicate which sides the border will be on.
+  Don't worry if you don't understand this, just ignore it :-)
+*/
+td.cat,td.catHead,td.catBottom {
+	height: 29px;
+	border-width: 0px 0px 0px 0px;
+}
+th.thHead,th.thSides,th.thTop,th.thLeft,th.thRight,th.thBottom,th.thCornerL,th.thCornerR {
+	font-weight: bold; border: #FFFFFF; border-style: solid; height: 28px;
+}
+td.row3Right,td.spaceRow {
+	background-color: #D1D7DC; border: #FFFFFF; border-style: solid;
+}
+
+th.thHead,td.catHead { font-size: 12px; border-width: 1px 1px 0px 1px; }
+th.thSides,td.catSides,td.spaceRow	 { border-width: 0px 1px 0px 1px; }
+th.thRight,td.catRight,td.row3Right	 { border-width: 0px 1px 0px 0px; }
+th.thLeft,td.catLeft	  { border-width: 0px 0px 0px 1px; }
+th.thBottom,td.catBottom  { border-width: 0px 1px 1px 1px; }
+th.thTop	 { border-width: 1px 0px 0px 0px; }
+th.thCornerL { border-width: 1px 0px 0px 1px; }
+th.thCornerR { border-width: 1px 1px 0px 0px; }
+
+/* The largest text used in the index page title and toptic title etc. */
+.maintitle	{
+	font-weight: bold; font-size: 22px; font-family: "Trebuchet MS",Verdana, Arial, Helvetica, sans-serif;
+	text-decoration: none; line-height : 120%; color : #000000;
+}
+
+/* General text */
+.gen { font-size : 12px; }
+.genmed { font-size : 11px; }
+.gensmall { font-size : 10px; }
+.gen,.genmed,.gensmall { color : #000000; }
+a.gen,a.genmed,a.gensmall { color: #006699; text-decoration: none; }
+a.gen:hover,a.genmed:hover,a.gensmall:hover	{ color: #DD6900; text-decoration: underline; }
+
+/* The register, login, search etc links at the top of the page */
+.mainmenu		{ font-size : 11px; color : #000000 }
+a.mainmenu		{ text-decoration: none; color : #006699;  }
+a.mainmenu:hover{ text-decoration: underline; color : #DD6900; }
+
+/* Forum category titles */
+.cattitle		{ font-weight: bold; font-size: 12px ; letter-spacing: 1px; color : #006699}
+a.cattitle		{ text-decoration: none; color : #006699; }
+a.cattitle:hover{ text-decoration: underline; }
+
+/* Forum title: Text and link to the forums used in: index.php */
+.forumlink		{ font-weight: bold; font-size: 12px; color : #006699; }
+a.forumlink 	{ text-decoration: none; color : #006699; }
+a.forumlink:hover{ text-decoration: underline; color : #DD6900; }
+
+/* Used for the navigation text, (Page 1,2,3 etc) and the navigation bar when in a forum */
+.nav			{ font-weight: bold; font-size: 11px; color : #000000;}
+a.nav			{ text-decoration: none; color : #006699; }
+a.nav:hover		{ text-decoration: underline; }
+
+/* titles for the topics: could specify viewed link colour too */
+.topictitle,h1,h2	{ font-weight: bold; font-size: 11px; color : #000000; }
+a.topictitle:link   { text-decoration: none; color : #006699; }
+a.topictitle:visited { text-decoration: none; color : #5493B4; }
+a.topictitle:hover	{ text-decoration: underline; color : #DD6900; }
+
+/* Name of poster in viewmsg.php and viewtopic.php and other places */
+.name			{ font-size : 11px; color : #000000;}
+
+/* Location, number of posts, post date etc */
+.postdetails		{ font-size : 10px; color : #000000; }
+
+/* The content of the posts (body of text) */
+.postbody { font-size : 12px; line-height: 18px}
+a.postlink:link	{ text-decoration: none; color : #006699 }
+a.postlink:visited { text-decoration: none; color : #5493B4; }
+a.postlink:hover { text-decoration: underline; color : #DD6900}
+
+/* Quote & Code blocks */
+.code {
+	font-family: Courier, 'Courier New', sans-serif; font-size: 11px; color: #006600;
+	background-color: #FAFAFA; border: #D1D7DC; border-style: solid;
+	border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+}
+
+.quote {
+	font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11px; color: #444444; line-height: 125%;
+	background-color: #FAFAFA; border: #D1D7DC; border-style: solid;
+	border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+}
+
+/* Copyright and bottom info */
+.copyright		{ font-size: 10px; font-family: Verdana, Arial, Helvetica, sans-serif; color: #444444; letter-spacing: -1px;}
+a.copyright		{ color: #444444; text-decoration: none;}
+a.copyright:hover { color: #000000; text-decoration: underline;}
+
+/* Form elements */
+input,textarea, select {
+	color : #000000;
+	font: normal 11px Verdana, Arial, Helvetica, sans-serif;
+	border-color : #000000;
+}
+
+/* The text input fields background colour */
+input.post, textarea.post, select {
+	background-color : #FFFFFF;
+}
+
+input { text-indent : 2px; }
+
+/* The buttons used for bbCode styling in message post */
+input.button {
+	background-color : #EFEFEF;
+	color : #000000;
+	font-size: 11px; font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+/* The main submit button option */
+input.mainoption {
+	background-color : #FAFAFA;
+	font-weight : bold;
+}
+
+/* None-bold submit button */
+input.liteoption {
+	background-color : #FAFAFA;
+	font-weight : normal;
+}
+
+/* This is the line in the posting page which shows the rollover
+  help line. This is actually a text box, but if set to be the same
+  colour as the background no one will know ;)
+*/
+.helpline { background-color: #DEE3E7; border-style: none; }
+
+/* Import the fancy styles for IE only (NS4.x doesn't use the @import function) */
+@import url("templates/subSilver/formIE.css");
+-->
+</style>
+</head>
+<body bgcolor="#E5E5E5" text="#000000" link="#006699" vlink="#5493B4">
+
+<a name="top"></a>
+
+<table width="100%" cellspacing="0" cellpadding="10" border="0" align="center">
+	<tr>
+		<td class="bodyline"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<tr>
+				<td><a href="index-2.html"><img src="templates/subSilver/images/logo_phpBB.gif" border="0" alt="VB Decompiler Forum Index" vspace="1" /></a></td>
+				<td align="center" width="100%" valign="middle"><span class="maintitle">VB Decompiler</span><br /><span class="gen">Hosted by TheAutomaters.com<br />&nbsp; </span>
+				<table cellspacing="0" cellpadding="2" border="0">
+					<tr>
+						<td align="center" valign="top" nowrap="nowrap"><span class="mainmenu">&nbsp;
+						<a href="memberlist.html" class="mainmenu"><img src="templates/subSilver/images/icon_mini_members.gif" width="12" height="13" border="0" alt="Memberlist" hspace="3" />Memberlist</a>
+						</span></td>
+					</tr>
+					<tr>
+						<td height="25" align="center" valign="top" nowrap="nowrap"><span class="mainmenu">&nbsp;</td>
+					</tr>
+				</table></td>
+			</tr>
+		</table>
+
+		<br />
+
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0">
+  <tr>
+	<td align="left" valign="bottom" colspan="2"><a class="maintitle" href="viewtopica0d0.html" xx="t=25&amp;start=0&amp;postdays=0&amp;postorder=asc&amp;highlight=">EventTable</a><br />
+	  <span class="gensmall"><b>Goto page <b>1</b>, <a href="viewtopicc202.html" xx="t=25&amp;postdays=0&amp;postorder=asc&amp;start=20">2</a>&nbsp;&nbsp;<a href="viewtopicc202.html" xx="t=25&amp;postdays=0&amp;postorder=asc&amp;start=20">Next</a></b><br />
+	  &nbsp; </span></td>
+  </tr>
+</table>
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0">
+  <tr>
+	<td></td>
+	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="index-2.html" class="nav">VB Decompiler Forum Index</a>
+	  -> <a href="viewforum12a3.html" xx="f=2" class="nav">Structures</a></span></td>
+  </tr>
+</table>
+
+<table class="forumline" width="100%" cellspacing="1" cellpadding="3" border="0">
+	<tr>
+		<th class="thLeft" width="150" height="26" nowrap="nowrap">Author</th>
+		<th class="thRight" nowrap="nowrap">Message</th>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="121"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Oct 17, 2002 4:04 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: EventTable
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody"><span style="font-weight: bold">Parent:</span> &lt;a href="./viewtopic.php?t=24"&gt;Control&lt;/a&gt;
+<br />
+<span style="font-weight: bold">Structure Size:</span> 0x18 + (aControl.EventCount * 4)
+<br />
+
+<br />
+</span><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center"><tr> 	  <td><span class="genmed"><b>Code:</b></span></td>	</tr>	<tr>	  <td class="code">Private Type tEventTable
+<br />
+    Null1 As Long                                  ' 0x00
+<br />
+    aControl As Long                               ' 0x04
+<br />
+    aObjectInfo As Long                            ' 0x08
+<br />
+    aQueryInterface As Long                        ' 0x0C
+<br />
+    aAddRef As Long                                ' 0x10
+<br />
+    aRelease As Long                               ' 0x14
+<br />
+    aEventPointer&#40;aControl&#46;EventCount - 1&#41; As Long ' 0x18 
+<br />
+End Type</td>	</tr></table><span class="postbody">
+<br />
+
+<br />
+<span style="font-weight: bold">Related Items:</span>
+<br />
+&lt;a href="./viewtopic.php?t=24"&gt;aControl&lt;/a&gt;
+<br />
+&lt;a href="./viewtopic.php?t=14"&gt;aObjectInfo&lt;/a&gt;
+<br />
+&lt;a href="./viewtopic.php?t=26"&gt;EventPointer&lt;/a&gt;</span>
+						<span class="gensmall"><br /><br />Last edited by MrUnleaded on Wed Dec 24, 2003 1:36 am; edited 4 times in total</span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="126"></a><b>Anonymous</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 10 Feb 2008<br />Posts: 0<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Fri Oct 18, 2002 10:07 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">The three &quot;jmp&quot; are addersses to the exported class interface thingybobs from the ocx. I think they are QueryInterface, AddInterface, ReleaseInterface but I cant be quite sure without looking at my code (im in Uni)...</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="127"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Fri Oct 18, 2002 3:59 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: oh yea
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;moogman&quot;:136s6j2m]The three "jmp" are addersses to the exported class interface thingybobs from the ocx. I think they are QueryInterface, AddInterface, ReleaseInterface but I cant be quite sure without looking at my code (im in Uni)...[/:136s6j2m]
+<br />
+
+<br />
+
+<br />
+oh yea...i forgot to mention that.....do you think that those jumps are of any importance to us?
+<br />
+
+<br />
+heres the jmps:
+<br />
+</span><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center"><tr> 	  <td><span class="genmed"><b>Code:</b></span></td>	</tr>	<tr>	  <td class="code">
+<br />
+aJmp1      'Address of &#58;       jmp     ds&#58;EVENT_SINK_QueryInterface
+<br />
+aJmp2      'Address of &#58;       jmp     ds&#58;EVENT_SINK_AddRef
+<br />
+aJmp3      'Address of &#58;       jmp     ds&#58;EVENT_SINK_Release
+<br />
+</td>	</tr></table><span class="postbody"></span>
+						<span class="gensmall"><br /><br />Last edited by MrUnleaded on Wed Dec 24, 2003 1:26 am; edited 1 time in total</span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="136"></a><b>Anonymous</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 10 Feb 2008<br />Posts: 0<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Mon Oct 21, 2002 1:04 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Ahh there we go. No, not of any importance at all since we could just as easily get the addresses from the import section. But, rather than keeping them as abstract as they currently are, we can document them to show that we know what they do </span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="1927"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Tue Dec 03, 2002 11:49 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: updated
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">i updated the struct to show what the three jumps are....even though we dont really need them to decompile....<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="1961"></a><b>sarge</b></span><br /><span class="postdetails">Moderator<br /><!--<img src="pro_rank_mod.gif" alt="Moderator" title="Moderator" border="0" /><br />--><br /><br />Joined: 24 Sep 2002<br />Posts: 194<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Dec 08, 2002 10:41 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Ok, so as per the discussion in the &quot;corrections&quot; forum, both EventPointer and EventTable have issues:
+<br />
+
+<br />
+1. EventTable's text points out the need for a new struct representing that array
+<br />
+
+<br />
+2. EventPointer's struct need re-definition.
+<br />
+
+<br />
+
+<br />
+I'll post this message in both forums
+<br />
+
+<br />
+sarge</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2002"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Tue Dec 10, 2002 10:54 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;sarge&quot;:3ban9f32]
+<br />
+1. EventTable's text points out the need for a new struct representing that array
+<br />
+
+<br />
+sarge[/:3ban9f32]
+<br />
+Ok lets start with event table and once we are satisfied move on to event pointer....
+<br />
+
+<br />
+The way i see it....in a struct...if we have..
+<br />
+
+<br />
+aSomeObjectTable as Long
+<br />
+
+<br />
+it means an address to a struct that has an array of "SomeObject"
+<br />
+
+<br />
+now when i see:
+<br />
+
+<br />
+aSomeObjectArray as Long
+<br />
+
+<br />
+i think that means simple an consecutive array of "SomeObject"
+<br />
+
+<br />
+and i know not all of the structs follow this..[side note: if you see one let me know/change it] but this one does.....so whats wrong with it?<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"><br /><br />Last edited by MrUnleaded on Wed Dec 24, 2003 1:27 am; edited 1 time in total</span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2004"></a><b>sarge</b></span><br /><span class="postdetails">Moderator<br /><!--<img src="pro_rank_mod.gif" alt="Moderator" title="Moderator" border="0" /><br />--><br /><br />Joined: 24 Sep 2002<br />Posts: 194<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Dec 11, 2002 3:18 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">My comment was aimed at your text statement below the struc definition:
+<br />
+
+<br />
+&quot;Directly proceeding this structure is an array of Addresses(Longs). &quot;
+<br />
+  
+<br />
+That array of addresses needs to be defined in a struct, too.  I merely wanted to get that struct definition listed/posted like the others (in a nice blue table), so we can reference it properly.  Then, of course, we can make that reference.  The reference to be made is, if I remember correctly, now named Address5.  Once this array  struct is created, we can put in a more descriptive name.
+<br />
+
+<br />
+Also, the data within this yet-to-be-created struct are pointers that point into other structs (sheesh--don't they all?), so this will allow us to clean up those other structs also.
+<br />
+
+<br />
+Sarge
+<br />
+
+<br />
+------------------------
+<br />
+I think I'm people type 11</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2005"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Dec 11, 2002 6:19 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;sarge&quot;:cefzuc79]My comment was aimed at your text statement below the struc definition:
+<br />
+
+<br />
+"Directly proceeding this structure is an array of Addresses(Longs). "
+<br />
+  
+<br />
+That array of addresses needs to be defined in a struct, too.  I merely wanted to get that struct definition listed/posted like the others (in a nice blue table), so we can reference it properly. 
+<br />
+
+<br />
+...
+<br />
+
+<br />
+[/:cefzuc79]
+<br />
+
+<br />
+i changed the struct....is this what you were wanting? I hope so...What else?<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"><br /><br />Last edited by MrUnleaded on Wed Dec 24, 2003 1:28 am; edited 1 time in total</span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2007"></a><b>Anonymous</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 10 Feb 2008<br />Posts: 0<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Dec 11, 2002 8:47 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Heh, although that structure cant be quickly imported to your local project since the number of sections in the array needs to be constant, but thats fine for the same of completion </span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2014"></a><b>sarge</b></span><br /><span class="postdetails">Moderator<br /><!--<img src="pro_rank_mod.gif" alt="Moderator" title="Moderator" border="0" /><br />--><br /><br />Joined: 24 Sep 2002<br />Posts: 194<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Dec 11, 2002 2:41 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Conceptually, more like this:
+<br />
+
+<br />
+Private Type tEventTable 
+<br />
+    Null1 As Long                                  ' 0x00 
+<br />
+    aControl As Long                               ' 0x04 
+<br />
+    aObjectInfo As Long                            ' 0x08 
+<br />
+    aQueryInterface As Long                        ' 0x0C 
+<br />
+    aAddRef As Long                                ' 0x10 
+<br />
+    aRelease As Long                               ' 0x14 
+<br />
+End Type
+<br />
+
+<br />
+Private Type tEventLinkTable
+<br />
+    aEventLink1 as Long
+<br />
+    aEventLink2 as Long
+<br />
+    etc
+<br />
+End Type
+<br />
+
+<br />
+Here's the problem...
+<br />
+Note that EventLinkTable (valid name?)is the new struct that contains the address array noted in the text statement previously mentioned.  The significant thing here is the length of the table (ie quantity of entries to give the struct size).  The end of the table is determined by the number of active events in the module; this is the total number of active events of the form and all the controls.  This is NOT the same as the number of events the form/control may have; it is a count of ONLY those ACTIVE events (events that actually have code in them).  One obvious answer is to determine how many total active events there are.  Since I don't know of any flag/variable (at least that we have defined yet) that keeps that count, there are two other options:
+<br />
+
+<br />
+1. Analyze the forms and controls events to get the count.  This is probably not the desired method; you will end up analyzing the data just to get a single piece of info to satisfy this struct, when the intent of this struct is to allow you to analyze the data!  Sort of a vicious circle...you can do it, but why?  Once you've analyzed the data, you don't need this struct anymore, other than as the requirement/knowledge to map out a VB exe as best as possible.
+<br />
+
+<br />
+2. Look for the &quot;end-of-table&quot; flag.  Wow, this is the obvious answer--why not just do it and forget option #1?  Because the &quot;end-of-table&quot; flag, which is a NULL, is currently defined as the NULL that is at the start of the EventTable.  (This works out only because the EventTable is guaranteed to immediately follow the EventLinkTable) So, if you follow this thinking, the data becomes:
+<br />
+
+<br />
+Private Type tEventLinkTable
+<br />
+    aEventLink1 as Long
+<br />
+    aEventLink2 as Long
+<br />
+    etc...
+<br />
+    NULL as long
+<br />
+End Type
+<br />
+
+<br />
+and change EventTable to 
+<br />
+
+<br />
+Private Type tEventTable
+<br />
+    aControl as Long
+<br />
+    etc
+<br />
+End Type
+<br />
+
+<br />
+BUT, the NULL that you have removed from here is required as it is the target of Control.aEventTable, so it CAN'T be moved.
+<br />
+
+<br />
+(Take a deep breath)
+<br />
+
+<br />
+Now, remember that this is conceptually how it works...what the final struct definitions are, is the intent of this discussion.  Once that is decided, the useage of the new elements (aEventLink1, etc) needs to be determined.  But we need to set up this struct first.
+<br />
+
+<br />
+sarge
+<br />
+
+<br />
+PS: This is the first of two complications of &quot;mixed&quot; structs</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2016"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Dec 11, 2002 4:06 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;sarge&quot;:1ebe28hs]Conceptually, more like this:
+<br />
+
+<br />
+Private Type tEventTable 
+<br />
+    Null1 As Long                                  ' 0x00 
+<br />
+    aControl As Long                               ' 0x04 
+<br />
+    aObjectInfo As Long                            ' 0x08 
+<br />
+    aQueryInterface As Long                        ' 0x0C 
+<br />
+    aAddRef As Long                                ' 0x10 
+<br />
+    aRelease As Long                               ' 0x14 
+<br />
+End Type
+<br />
+
+<br />
+Private Type tEventLinkTable
+<br />
+    aEventLink1 as Long
+<br />
+    aEventLink2 as Long
+<br />
+    etc
+<br />
+End Type
+<br />
+[/:1ebe28hs]
+<br />
+
+<br />
+I dont think that we should go this route because this would imply that each Event is different then another and that we should be analyzing them differently. They are the Same....the only difference is the name we give them.... that can be easily determined with COM...
+<br />
+
+<br />
+[=&quot;sarge&quot;:1ebe28hs]
+<br />
+The end of the table is determined by the number of active events in the module; this is the total number of active events of the form and all the controls. 
+<br />
+[/:1ebe28hs]
+<br />
+I have to dissagree. the End of table is defined by 4*EventCount; EventCount is the number of events a Control <span style="font-style: italic">may</span> have. If an event address is null it should not be processed otherwise, continue.
+<br />
+
+<br />
+[=&quot;sarge&quot;:1ebe28hs]
+<br />
+it is a count of ONLY those ACTIVE events (events that actually have code in them).  
+<br />
+[/:1ebe28hs]
+<br />
+No because some have code and some are null
+<br />
+[=&quot;sarge&quot;:1ebe28hs]
+<br />
+...
+<br />
+
+<br />
+2. Look for the "end-of-table" flag.  Wow, this is the obvious answer--why not just do it and forget option #1?  Because the "end-of-table" flag, which is a NULL, is currently defined as the NULL that is at the start of the EventTable.  (This works out only because the EventTable is guaranteed to immediately follow the EventLinkTable) So, if you follow this thinking, the data becomes:
+<br />
+[/:1ebe28hs]
+<br />
+there isnt an End Of Table flag...some events have null addresses and some dont....and that depends on which Event it correlates to....
+<br />
+
+<br />
+ie it could come in this order:
+<br />
+Form_load
+<br />
+Form_Click
+<br />
+Form_Unload
+<br />
+
+<br />
+but if we only had an evvent for Click....it would be like...
+<br />
+00 00 00 00
+<br />
+00 40 XX XX
+<br />
+00 00 00 00
+<br />
+
+<br />
+and by this we would know that the address 0040XXXX points to a Form_Click
+<br />
+
+<br />
+[=&quot;sarge&quot;:1ebe28hs]
+<br />
+
+<br />
+Now, remember that this is conceptually how it works...what the final struct definitions are, is the intent of this discussion.  Once that is decided, the useage of the new elements (aEventLink1, etc) needs to be determined.  But we need to set up this struct first.
+<br />
+
+<br />
+sarge
+<br />
+
+<br />
+PS: This is the first of two complications of "mixed" structs[/:1ebe28hs]
+<br />
+
+<br />
+i think you are missing out on a lot by not using COMTLB....all of the events names can be determine by simply knowing the parent control and the index in the events.<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"><br /><br />Last edited by MrUnleaded on Wed Dec 24, 2003 1:28 am; edited 1 time in total</span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2017"></a><b>sarge</b></span><br /><span class="postdetails">Moderator<br /><!--<img src="pro_rank_mod.gif" alt="Moderator" title="Moderator" border="0" /><br />--><br /><br />Joined: 24 Sep 2002<br />Posts: 194<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Dec 11, 2002 7:10 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Whoa!
+<br />
+
+<br />
+&gt;&quot;the End of table is defined by 4*EventCount&quot;.
+<br />
+ Absolutely not.  It that were true, then the EventLinkTable would have some 21(or whatever) controls for the form + maybe 15( or whatever) for the command button, etc, for a total of maybe 60 or 80 or so.  In CommonApp, it only has like 3 (or some other small figure)
+<br />
+
+<br />
+&gt;&quot;I dont think that we should go this route because this would imply that each Event is different then another and that we should be analyzing them differently&quot;.
+<br />
+ It implies no such thing..it implies each EventLink is different, which of course it is, as it points to different structs, each containing pointers to different events.
+<br />
+
+<br />
+&gt;&quot;No because some have code and some are null &quot;. 
+<br />
+No. ALL have code in them or they wouldn't be in this struct.  The &quot;some have code and some are null&quot; struct is completely separate and different.
+<br />
+
+<br />
+&quot; think you are missing out on a lot by not using COM\TLB....all of the events names can be determine by simply knowing the parent control and the index in the events. &quot; 
+<br />
+&gt; This has nothing to do with this struct.  The event names can be determined without any COM/TBL, as they are already in the exe.
+<br />
+
+<br />
+Remember, we are looking at the array of address that occur before the EventTable.
+<br />
+
+<br />
+Sarge</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2020"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Dec 11, 2002 8:01 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: PROceeding hehe
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;sarge&quot;:15m89p9g]Whoa!
+<br />
+...
+<br />
+Remember, we are looking at the array of address that occur before the EventTable.
+<br />
+
+<br />
+Sarge[/:15m89p9g]
+<br />
+
+<br />
+BEFORE??? there is nothing before the EventTable Structs....
+<br />
+
+<br />
+except maybe another EventTable....
+<br />
+
+<br />
+here look at my export of CommonApp as i try to explain...
+<br />
+
+<br />
+<!-- m --><a class="postlink" href="http://decompiler.theautomaters.com/files/2_1035406661.html">http://decompiler.theautomaters.com/fil ... 06661.html</a><!-- m -->
+<br />
+
+<br />
+ill try to show what i mean...
+<br />
+
+<br />
+if you look at the offset for the EventTable of lstItems which is at 0x190C...there you have your struct....you move over 0x18 bytes and you are at the end of the part of the Struct that is always the same...[0x1924] after this there is an array of Longs[addresses]  21 of them to be exact....since lstItems has 21 Events....
+<br />
+
+<br />
+Well they are all Null because the lstItem control has no code for any of its evetns...
+<br />
+
+<br />
+directly proceding [0x1978] is the EventTable for txtItem it has 24 nulls after...again no code for any of its events....
+<br />
+
+<br />
+after that we have the EventTable for cmdAdd [0x19F0]....at 0x1A08 is the start of the EventAddresses....the first is the Click Event.....it has a coresponding address...because in the Click event we add the text to the list or whatever....
+<br />
+
+<br />
+the address is 0x1AE0.....which takes us to one of the EventPointers....and i will save that discussion for later 
+<br />
+
+<br />
+i hope this helps  sorry if i seemed stand-offish ;0)<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"><br /><br />Last edited by MrUnleaded on Wed Dec 24, 2003 1:29 am; edited 1 time in total</span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2021"></a><b>sarge</b></span><br /><span class="postdetails">Moderator<br /><!--<img src="pro_rank_mod.gif" alt="Moderator" title="Moderator" border="0" /><br />--><br /><br />Joined: 24 Sep 2002<br />Posts: 194<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Dec 11, 2002 8:20 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Hey, no problem!  Remember what I just went through with ProjectInfo!!!
+<br />
+
+<br />
+
+<br />
+Anyway, let's try another route.  Where does OptionalObjectInfo.Address5 point to?  &amp;h1900.  Note that this is just BEFORE the EventTable, and, co-incidently, happens NOT to be defined.  (Obviously, if it WERE defined, we would have a name for it, and Address5 would have a more proper name).
+<br />
+The whole point of this is, that &amp;h1900 is the same array that is indicated in that text statement .  Since the statement is there, I felt we could get rid of it by defining the array properly (as a struct), thus allowing us to get a bit more knowledge of the app format (filling in the gap between &amp;h1900 and &amp;h190C) , as well as cleaning up an ambiguous name like Address5.
+<br />
+
+<br />
+Further, note that those address are the active events,quantity 3,etc, as mentioned above.
+<br />
+
+<br />
+This is the first step, and by itself is not major.  Unfortunately, it has a domino effect that we have not yet attacked.  Thus, my strong belief that we better get this part strictly correct before we try those dominos.  
+<br />
+
+<br />
+Sarge</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2022"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Dec 11, 2002 9:16 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;sarge&quot;:fibzs1zv]Hey, no problem!  Remember what I just went through with ProjectInfo!!!
+<br />
+
+<br />
+
+<br />
+Anyway, let's try another route.  Where does OptionalObjectInfo.Address5 point to?  &amp;h1900.  Note that this is just BEFORE the EventTable, and, co-incidently, happens NOT to be defined.  (Obviously, if it WERE defined, we would have a name for it, and Address5 would have a more proper name).
+<br />
+[/:fibzs1zv]
+<br />
+ok ok.....before....
+<br />
+[=&quot;sarge&quot;:fibzs1zv]
+<br />
+The whole point of this is, that &amp;h1900 is the same array that is indicated in that text statement .  [/:fibzs1zv]
+<br />
+
+<br />
+for the record....it did say proceeding(after)..... not preceding(before)....
+<br />
+
+<br />
+
+<br />
+[=&quot;sarge&quot;:fibzs1zv]
+<br />
+Since the statement is there, I felt we could get rid of it by defining the array properly (as a struct), thus allowing us to get a bit more knowledge of the app format (filling in the gap between &amp;h1900 and &amp;h190C) , as well as cleaning up an ambiguous name like Address5.
+<br />
+
+<br />
+Further, note that those address are the active events,quantity 3,etc, as mentioned above.
+<br />
+[/:fibzs1zv]
+<br />
+
+<br />
+you are correct....kinda....they point to the middle of the EventPointers...of the active Events...
+<br />
+
+<br />
+but the thing is....the Active EventPointer addresses(the ones after each event table)....point to 7 bytes before where the other addresses[0x1900-0x190C] point to...so...
+<br />
+
+<br />
+either the EventPointer Struct is too long....ie it should be 7 bytes....or....um...well... i dont know....
+<br />
+
+<br />
+i do know that my EventPointers get me to the source code.... 
+<br />
+
+<br />
+
+<br />
+[=&quot;sarge&quot;:fibzs1zv]
+<br />
+
+<br />
+This is the first step, and by itself is not major.  Unfortunately, it has a domino effect that we have not yet attacked.  Thus, my strong belief that we better get this part strictly correct before we try those dominos.  
+<br />
+
+<br />
+Sarge[/:fibzs1zv]
+<br />
+
+<br />
+thats why you set up barricades.....soif you knock over some dominos...they all dont get knocked over 
+<br />
+
+<br />
+so what do you suggest Sarge?<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2023"></a><b>sarge</b></span><br /><span class="postdetails">Moderator<br /><!--<img src="pro_rank_mod.gif" alt="Moderator" title="Moderator" border="0" /><br />--><br /><br />Joined: 24 Sep 2002<br />Posts: 194<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Dec 11, 2002 9:37 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Ok, the good news is that you have stumbled onto the 2nd point where there are &quot;mixed&quot; structs...
+<br />
+
+<br />
+the bad news is:
+<br />
+&quot;so what do you suggest Sarge? &quot;
+<br />
+Aghh!  Thats why I was asking you guys!!!
+<br />
+
+<br />
+Ok, rather than try to answer that now , let me get back to you later with something that may help. (that's called a &quot;cop-out&quot;!)
+<br />
+
+<br />
+Sargeg</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2028"></a><b>sarge</b></span><br /><span class="postdetails">Moderator<br /><!--<img src="pro_rank_mod.gif" alt="Moderator" title="Moderator" border="0" /><br />--><br /><br />Joined: 24 Sep 2002<br />Posts: 194<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Dec 12, 2002 6:34 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Well, here's the concept - (maybe):
+<br />
+
+<br />
+1. First of two parallel paths
+<br />
+
+<br />
+(OptionalObjectInfo)
+<br />
+Address5
+<br />
+....points to
+<br />
+.......NewStruct
+<br />
+.......{
+<br />
+..........EventLink1 as Long	'0x00
+<br />
+..........EventLink2 as Long	'0x04
+<br />
+..........etc
+<br />
+.......}
+<br />
+
+<br />
+2. Second of two parallel paths
+<br />
+(EventTable)
+<br />
+text note
+<br />
+....points to
+<br />
+.......EventPointer
+<br />
+.......{
+<br />
+..........Const1 as Byte          '0x00
+<br />
+..........Flag as Long            '0x01
+<br />
+..........Const2 as Integer       '0x05
+<br />
+..........Event_Link as EventLink '0x07
+<br />
+.......}
+<br />
+
+<br />
+3. Both paths meet
+<br />
+
+<br />
+EventLink
+<br />
+..{
+<br />
+....CompileType as Byte  '0x00
+<br />
+....aCodeInfo as Long 	 '0x01	
+<br />
+....PushCmd as Byte	 '0x05
+<br />
+....PushAddress as Long  '0x06
+<br />
+....Const as Byte        '0x0A
+<br />
+..}
+<br />
+
+<br />
+Note that EventLink is a new struct.
+<br />
+
+<br />
+This seems close to what happens. Some of the existing stuff needs to be changed, some is new.
+<br />
+Also, I feel that we should make the names used in a calling function match the name in the called function.  (Sometimes they don't, like EventPointer.aEvent is the same as CodeInfo).
+<br />
+
+<br />
+Can anyone clean this up, either 'cause there's errors or 'cause the flow is objectional?
+<br />
+
+<br />
+Sarge</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2030"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Dec 12, 2002 10:48 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Alright...alright its starting to make sense to me....but you are slightly off....
+<br />
+
+<br />
+
+<br />
+ok here is the original EventPointer:
+<br />
+
+<br />
+</span><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center"><tr> 	  <td><span class="genmed"><b>Code:</b></span></td>	</tr>	<tr>	  <td class="code">
+<br />
+Private Type tEventPointer 
+<br />
+    Const1 As Byte      ' 0x00 
+<br />
+    Flag1 As Long       ' 0x01 
+<br />
+    Const2 As Long      ' 0x05 
+<br />
+    Const3 As Byte      ' 0x09 
+<br />
+    aEvent As Long      ' 0x0A 
+<br />
+                        ' 0x0E &amp;lt;-- Structure Size 
+<br />
+End Type
+<br />
+</td>	</tr></table><span class="postbody">
+<br />
+
+<br />
+and we modify this a little bit....
+<br />
+
+<br />
+</span><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center"><tr> 	  <td><span class="genmed"><b>Code:</b></span></td>	</tr>	<tr>	  <td class="code">
+<br />
+Private Type tEventPointer 
+<br />
+    Const1 As Byte      ' 0x00 
+<br />
+    Flag1 As Long       ' 0x01 
+<br />
+    Const2 As Integer   ' 0x05 split up const2 into 2 ints
+<br />
+    Const3 As Integer   ' 0x07  
+<br />
+    Const4 As Byte      ' 0x09 changed from const3
+<br />
+    aEvent As Long      ' 0x0A 
+<br />
+                        ' 0x0E &amp;lt;-- Structure Size 
+<br />
+End Type
+<br />
+</td>	</tr></table><span class="postbody">
+<br />
+
+<br />
+now according to the addresses at 0x1900[in commonApp] it would take us right to the new Const3[the entry point is your err sarge]
+<br />
+
+<br />
+so....sarge suggests that const3 and after should be a struct called EventLink:
+<br />
+
+<br />
+</span><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center"><tr> 	  <td><span class="genmed"><b>Code:</b></span></td>	</tr>	<tr>	  <td class="code">
+<br />
+Private Type tEventLink 
+<br />
+
+<br />
+    Const3 As Integer   ' 0x07  
+<br />
+    Const4 As Byte      ' 0x09 
+<br />
+    aEvent As Long      ' 0x0A 
+<br />
+                        ' 0x0E &amp;lt;-- Structure Size 
+<br />
+End Type
+<br />
+</td>	</tr></table><span class="postbody">
+<br />
+
+<br />
+with updated offsets and names...
+<br />
+
+<br />
+</span><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center"><tr> 	  <td><span class="genmed"><b>Code:</b></span></td>	</tr>	<tr>	  <td class="code">
+<br />
+Private Type tEventLink 
+<br />
+
+<br />
+    Const1 As Integer        ' 0x00  
+<br />
+    CompileType As Byte      ' 0x02 compileType According to Sarge&#91;more info?&#93;
+<br />
+    aEvent As Long           ' 0x03 
+<br />
+                             ' 0x07 &amp;lt;-- Structure Size 
+<br />
+End Type
+<br />
+</td>	</tr></table><span class="postbody">
+<br />
+
+<br />
+and when we combine EventPointer and EventLink.....we get:
+<br />
+
+<br />
+
+<br />
+</span><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center"><tr> 	  <td><span class="genmed"><b>Code:</b></span></td>	</tr>	<tr>	  <td class="code">
+<br />
+Private Type tEventPointer 
+<br />
+    Const1 As Byte          ' 0x00 
+<br />
+    Flag1 As Long           ' 0x01 
+<br />
+    Const2 As Integer       ' 0x05 
+<br />
+    EventLink As tEventLink ' 0x07  
+<br />
+                            ' 0x0E &amp;lt;-- Structure Size 
+<br />
+End Type
+<br />
+</td>	</tr></table><span class="postbody">
+<br />
+
+<br />
+Ok.....now if this all looks correct....i will make the corresponding updates and corrections....
+<br />
+
+<br />
+let me know what you all think asap<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2031"></a><b>sarge</b></span><br /><span class="postdetails">Moderator<br /><!--<img src="pro_rank_mod.gif" alt="Moderator" title="Moderator" border="0" /><br />--><br /><br />Joined: 24 Sep 2002<br />Posts: 194<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Dec 12, 2002 11:35 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Two items:
+<br />
+
+<br />
+1. It's beginning to look like what I thought I said, so obviously your cleanup is pretty good.  Of course, I will review it, (as, I expect, will the rest of the group.) and get back to  you.
+<br />
+
+<br />
+2. The answer to &quot;compileType According to Sarge[more info?] &quot; was, actually, already posted twice (I think twice, but I know for sure once).
+<br />
+Search for a reference to PCode-vs-Native, and/or a reference to 0x33-vs-0xE9.  When you find this, it should raise more questions; I BELIEVE the struct is different between these two, meaning you now have a conditional struct definition.  But let's get this part correct first, then modify it to accomodate as needed.
+<br />
+
+<br />
+Sarge
+<br />
+
+<br />
+PS: as for being &quot;slightly off&quot;, well, that's the story of my life.  why do you think I am so heavily dependent upon you all?  But hey..when this is finished, it will be dynamite!
+<br />
+
+<br />
+PPS: Again, a very sincere ThankYou to all of you who are here helping, especially those who have taken the time to put up with my rantings and ravings.</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2044"></a><b>Anonymous</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 10 Feb 2008<br />Posts: 0<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Dec 15, 2002 4:28 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Its the people who dont rant and rave, the people who are always content that I worry about; If we were all content then how would anything get done?! Please, carry on Sarge </span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2047"></a><b>sarge</b></span><br /><span class="postdetails">Moderator<br /><!--<img src="pro_rank_mod.gif" alt="Moderator" title="Moderator" border="0" /><br />--><br /><br />Joined: 24 Sep 2002<br />Posts: 194<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Dec 15, 2002 5:30 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Rant...Rave
+<br />
+
+<br />
+Rant Rant....Rave Rave
+<br />
+
+<br />
+Rant Rant Ran......................................
+<br />
+
+<br />
+Ah, hell!
+<br />
+
+<br />
+
+<br />
+Merry Christmas everybody
+<br />
+
+<br />
+Sarge</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2052"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Mon Dec 16, 2002 2:17 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;sarge&quot;:3u2aazzm]Rant...Rave
+<br />
+
+<br />
+Rant Rant....Rave Rave
+<br />
+
+<br />
+Rant Rant Ran......................................
+<br />
+
+<br />
+Ah, hell!
+<br />
+
+<br />
+
+<br />
+Merry Christmas everybody
+<br />
+
+<br />
+Sarge[/:3u2aazzm]
+<br />
+
+<br />
+woo hoo christmas is ten more days.... 
+<br />
+
+<br />
+Merry Christmas and happy new year!<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr align="center">
+		<td class="catBottom" colspan="2" height="28"></td>
+		<td></td>
+	</tr>
+</table>
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+  <tr>
+	<td></td>
+	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="index-2.html" class="nav">VB Decompiler Forum Index</a>
+	  -> <a href="viewforum12a3.html" xx="f=2" class="nav">Structures</a></span></td>
+	<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">All times are GMT</span><br /><span class="nav">Goto page <b>1</b>, <a href="viewtopicc202.html" xx="t=25&amp;postdays=0&amp;postorder=asc&amp;start=20">2</a>&nbsp;&nbsp;<a href="viewtopicc202.html" xx="t=25&amp;postdays=0&amp;postorder=asc&amp;start=20">Next</a></span>
+	  </td>
+  </tr>
+  <tr>
+	<td align="left" colspan="3"><span class="nav">Page <b>1</b> of <b>2</b></span></td>
+  </tr>
+</table>
+
+<table width="100%" cellspacing="2" border="0" align="center">
+  <tr>
+	<td width="40%" valign="top" nowrap="nowrap" align="left"><span class="gensmall"></span><br />
+	  &nbsp;<br />
+	  </td>
+	<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">You <b>can</b> post new topics in this forum<br />You <b>can</b> reply to topics in this forum<br />You <b>can</b> edit your posts in this forum<br />You <b>can</b> delete your posts in this forum<br />You <b>can</b> vote in polls in this forum<br /></span></td>
+  </tr>
+</table>
+
+
+<div align="center"><span class="copyright"><br /><br />
+<!--
+	We request you retain the full copyright notice below including the link to www.phpbb.com.
+	This not only gives respect to the large amount of time given freely by the developers
+	but also helps build interest, traffic and use of phpBB 2.0. If you cannot (for good
+	reason) retain the full copyright we request you at least leave in place the
+	Powered by phpBB line, with phpBB linked to www.phpbb.com. If you refuse
+	to include even this then support on our forums may be affected.
+
+	The phpBB Group : 2002
+// -->
+Powered by <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB</a> &copy; 2001, 2005 phpBB Group<br /></span></div>
+		</td>
+	</tr>
+</table>
+
+</body>
+
+<!-- Mirrored from localhost/phpbb2/viewtopic.php?t=1721&view=previous by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 04 Mar 2018 20:55:41 GMT -->
+</html>
+

@@ -1,0 +1,938 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html dir="ltr">
+
+<!-- Mirrored from localhost/phpbb2/viewtopic.php?t=175&start=0&postdays=0&postorder=asc&highlight= by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 04 Mar 2018 20:55:59 GMT -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Style-Type" content="text/css">
+
+<link rel="top" href="index-2.html" title="VB Decompiler Forum Index" />
+<link rel="search" href="search.html" title="Search" />
+<link rel="help" href="faq.html" title="FAQ" />
+<link rel="author" href="memberlist.html" title="Memberlist" />
+<link rel="prev" href="viewtopicee14.html" xx="t=175&amp;view=previous" title="View previous topic" />
+<link rel="next" href="viewtopic37db.html" xx="t=175&amp;view=next" title="View next topic" />
+<link rel="up" href="viewforum740d.html" xx="f=21" title="Base" />
+
+<title>VB Decompiler :: View topic - 0A ImpAdCallFPR4 / ImpAdCall</title>
+<!-- link rel="stylesheet" href="templates/subSilver/subSilver.css" type="text/css" -->
+<style type="text/css">
+<!--
+/*
+  The original subSilver Theme for phpBB version 2+
+  Created by subBlue design
+  http://www.subBlue.com
+
+  NOTE: These CSS definitions are stored within the main page body so that you can use the phpBB2
+  theme administration centre. When you have finalised your style you could cut the final CSS code
+  and place it in an external file, deleting this section to save bandwidth.
+*/
+
+/* General page style. The scroll bar colours only visible in IE5.5+ */
+body {
+	background-color: #E5E5E5;
+	scrollbar-face-color: #DEE3E7;
+	scrollbar-highlight-color: #FFFFFF;
+	scrollbar-shadow-color: #DEE3E7;
+	scrollbar-3dlight-color: #D1D7DC;
+	scrollbar-arrow-color:  #006699;
+	scrollbar-track-color: #EFEFEF;
+	scrollbar-darkshadow-color: #98AAB1;
+}
+
+/* General font families for common tags */
+font,th,td,p { font-family: Verdana, Arial, Helvetica, sans-serif }
+a:link,a:active,a:visited { color : #006699; }
+a:hover		{ text-decoration: underline; color : #DD6900; }
+hr	{ height: 0px; border: solid #D1D7DC 0px; border-top-width: 1px;}
+
+/* This is the border line & background colour round the entire page */
+.bodyline	{ background-color: #FFFFFF; border: 1px #98AAB1 solid; }
+
+/* This is the outline round the main forum tables */
+.forumline	{ background-color: #FFFFFF; border: 2px #006699 solid; }
+
+/* Main table cell colours and backgrounds */
+td.row1	{ background-color: #EFEFEF; }
+td.row2	{ background-color: #DEE3E7; }
+td.row3	{ background-color: #D1D7DC; }
+
+/*
+  This is for the table cell above the Topics, Post & Last posts on the index.php page
+  By default this is the fading out gradiated silver background.
+  However, you could replace this with a bitmap specific for each forum
+*/
+td.rowpic {
+		background-color: #FFFFFF;
+		background-image: url(templates/subSilver/images/cellpic2.jpg);
+		background-repeat: repeat-y;
+}
+
+/* Header cells - the blue and silver gradient backgrounds */
+th	{
+	color: #FFA34F; font-size: 11px; font-weight : bold;
+	background-color: #006699; height: 25px;
+	background-image: url(templates/subSilver/images/cellpic3.gif);
+}
+
+td.cat,td.catHead,td.catSides,td.catLeft,td.catRight,td.catBottom {
+			background-image: url(templates/subSilver/images/cellpic1.gif);
+			background-color:#D1D7DC; border: #FFFFFF; border-style: solid; height: 28px;
+}
+
+/*
+  Setting additional nice inner borders for the main table cells.
+  The names indicate which sides the border will be on.
+  Don't worry if you don't understand this, just ignore it :-)
+*/
+td.cat,td.catHead,td.catBottom {
+	height: 29px;
+	border-width: 0px 0px 0px 0px;
+}
+th.thHead,th.thSides,th.thTop,th.thLeft,th.thRight,th.thBottom,th.thCornerL,th.thCornerR {
+	font-weight: bold; border: #FFFFFF; border-style: solid; height: 28px;
+}
+td.row3Right,td.spaceRow {
+	background-color: #D1D7DC; border: #FFFFFF; border-style: solid;
+}
+
+th.thHead,td.catHead { font-size: 12px; border-width: 1px 1px 0px 1px; }
+th.thSides,td.catSides,td.spaceRow	 { border-width: 0px 1px 0px 1px; }
+th.thRight,td.catRight,td.row3Right	 { border-width: 0px 1px 0px 0px; }
+th.thLeft,td.catLeft	  { border-width: 0px 0px 0px 1px; }
+th.thBottom,td.catBottom  { border-width: 0px 1px 1px 1px; }
+th.thTop	 { border-width: 1px 0px 0px 0px; }
+th.thCornerL { border-width: 1px 0px 0px 1px; }
+th.thCornerR { border-width: 1px 1px 0px 0px; }
+
+/* The largest text used in the index page title and toptic title etc. */
+.maintitle	{
+	font-weight: bold; font-size: 22px; font-family: "Trebuchet MS",Verdana, Arial, Helvetica, sans-serif;
+	text-decoration: none; line-height : 120%; color : #000000;
+}
+
+/* General text */
+.gen { font-size : 12px; }
+.genmed { font-size : 11px; }
+.gensmall { font-size : 10px; }
+.gen,.genmed,.gensmall { color : #000000; }
+a.gen,a.genmed,a.gensmall { color: #006699; text-decoration: none; }
+a.gen:hover,a.genmed:hover,a.gensmall:hover	{ color: #DD6900; text-decoration: underline; }
+
+/* The register, login, search etc links at the top of the page */
+.mainmenu		{ font-size : 11px; color : #000000 }
+a.mainmenu		{ text-decoration: none; color : #006699;  }
+a.mainmenu:hover{ text-decoration: underline; color : #DD6900; }
+
+/* Forum category titles */
+.cattitle		{ font-weight: bold; font-size: 12px ; letter-spacing: 1px; color : #006699}
+a.cattitle		{ text-decoration: none; color : #006699; }
+a.cattitle:hover{ text-decoration: underline; }
+
+/* Forum title: Text and link to the forums used in: index.php */
+.forumlink		{ font-weight: bold; font-size: 12px; color : #006699; }
+a.forumlink 	{ text-decoration: none; color : #006699; }
+a.forumlink:hover{ text-decoration: underline; color : #DD6900; }
+
+/* Used for the navigation text, (Page 1,2,3 etc) and the navigation bar when in a forum */
+.nav			{ font-weight: bold; font-size: 11px; color : #000000;}
+a.nav			{ text-decoration: none; color : #006699; }
+a.nav:hover		{ text-decoration: underline; }
+
+/* titles for the topics: could specify viewed link colour too */
+.topictitle,h1,h2	{ font-weight: bold; font-size: 11px; color : #000000; }
+a.topictitle:link   { text-decoration: none; color : #006699; }
+a.topictitle:visited { text-decoration: none; color : #5493B4; }
+a.topictitle:hover	{ text-decoration: underline; color : #DD6900; }
+
+/* Name of poster in viewmsg.php and viewtopic.php and other places */
+.name			{ font-size : 11px; color : #000000;}
+
+/* Location, number of posts, post date etc */
+.postdetails		{ font-size : 10px; color : #000000; }
+
+/* The content of the posts (body of text) */
+.postbody { font-size : 12px; line-height: 18px}
+a.postlink:link	{ text-decoration: none; color : #006699 }
+a.postlink:visited { text-decoration: none; color : #5493B4; }
+a.postlink:hover { text-decoration: underline; color : #DD6900}
+
+/* Quote & Code blocks */
+.code {
+	font-family: Courier, 'Courier New', sans-serif; font-size: 11px; color: #006600;
+	background-color: #FAFAFA; border: #D1D7DC; border-style: solid;
+	border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+}
+
+.quote {
+	font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11px; color: #444444; line-height: 125%;
+	background-color: #FAFAFA; border: #D1D7DC; border-style: solid;
+	border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+}
+
+/* Copyright and bottom info */
+.copyright		{ font-size: 10px; font-family: Verdana, Arial, Helvetica, sans-serif; color: #444444; letter-spacing: -1px;}
+a.copyright		{ color: #444444; text-decoration: none;}
+a.copyright:hover { color: #000000; text-decoration: underline;}
+
+/* Form elements */
+input,textarea, select {
+	color : #000000;
+	font: normal 11px Verdana, Arial, Helvetica, sans-serif;
+	border-color : #000000;
+}
+
+/* The text input fields background colour */
+input.post, textarea.post, select {
+	background-color : #FFFFFF;
+}
+
+input { text-indent : 2px; }
+
+/* The buttons used for bbCode styling in message post */
+input.button {
+	background-color : #EFEFEF;
+	color : #000000;
+	font-size: 11px; font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+/* The main submit button option */
+input.mainoption {
+	background-color : #FAFAFA;
+	font-weight : bold;
+}
+
+/* None-bold submit button */
+input.liteoption {
+	background-color : #FAFAFA;
+	font-weight : normal;
+}
+
+/* This is the line in the posting page which shows the rollover
+  help line. This is actually a text box, but if set to be the same
+  colour as the background no one will know ;)
+*/
+.helpline { background-color: #DEE3E7; border-style: none; }
+
+/* Import the fancy styles for IE only (NS4.x doesn't use the @import function) */
+@import url("templates/subSilver/formIE.css");
+-->
+</style>
+</head>
+<body bgcolor="#E5E5E5" text="#000000" link="#006699" vlink="#5493B4">
+
+<a name="top"></a>
+
+<table width="100%" cellspacing="0" cellpadding="10" border="0" align="center">
+	<tr>
+		<td class="bodyline"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<tr>
+				<td><a href="index-2.html"><img src="templates/subSilver/images/logo_phpBB.gif" border="0" alt="VB Decompiler Forum Index" vspace="1" /></a></td>
+				<td align="center" width="100%" valign="middle"><span class="maintitle">VB Decompiler</span><br /><span class="gen">Hosted by TheAutomaters.com<br />&nbsp; </span>
+				<table cellspacing="0" cellpadding="2" border="0">
+					<tr>
+						<td align="center" valign="top" nowrap="nowrap"><span class="mainmenu">&nbsp;
+						<a href="memberlist.html" class="mainmenu"><img src="templates/subSilver/images/icon_mini_members.gif" width="12" height="13" border="0" alt="Memberlist" hspace="3" />Memberlist</a>
+						</span></td>
+					</tr>
+					<tr>
+						<td height="25" align="center" valign="top" nowrap="nowrap"><span class="mainmenu">&nbsp;</td>
+					</tr>
+				</table></td>
+			</tr>
+		</table>
+
+		<br />
+
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0">
+  <tr>
+	<td align="left" valign="bottom" colspan="2"><a class="maintitle" href="viewtopicaa59.html" xx="t=175&amp;start=0&amp;postdays=0&amp;postorder=asc&amp;highlight=">0A ImpAdCallFPR4 / ImpAdCall</a><br />
+	  <span class="gensmall"><b></b><br />
+	  &nbsp; </span></td>
+  </tr>
+</table>
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0">
+  <tr>
+	<td></td>
+	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="index-2.html" class="nav">VB Decompiler Forum Index</a>
+	  -> <a href="viewforum740d.html" xx="f=21" class="nav">Base</a></span></td>
+  </tr>
+</table>
+
+<table class="forumline" width="100%" cellspacing="1" cellpadding="3" border="0">
+	<tr>
+		<th class="thLeft" width="150" height="26" nowrap="nowrap">Author</th>
+		<th class="thRight" nowrap="nowrap">Message</th>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="338"></a><b>Anonymous</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 10 Feb 2008<br />Posts: 0<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Tue Nov 19, 2002 7:27 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 0A ImpAdCallFPR4 / ImpAdCall
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">NumBytes: 5
+<br />
+ArgStr: h%h%
+<br />
+SrcStr: 
+<br />
+Comments:
+<br />
+
+<br />
+<span style="font-weight: bold">Runtime engine:</span>
+<br />
+[asm:3re0n41c]<div class="asm" id="{CB}" style="font-family: monospace;"><ol><li style="" class="li1"><span style="color: #00007f;">movzx</span> <span style="color: #46aa03; font-weight:bold;">ecx</span>, <span style="color: #0000ff;">word</span> <span style="color: #0000ff;">ptr</span> <span style="color: #66cc66;">&#91;</span><span style="color: #46aa03; font-weight:bold;">esi</span><span style="color: #66cc66;">&#93;</span>         <span style="color: #adadad; font-style: italic;">; ecx = arg0 (constant pool index)</span></li><li style="" class="li2"><span style="color: #00007f;">movzx</span> <span style="color: #46aa03; font-weight:bold;">edi</span>, <span style="color: #0000ff;">word</span> <span style="color: #0000ff;">ptr</span> <span style="color: #66cc66;">&#91;</span>esi<span style="color: #ff0000;">+2</span><span style="color: #66cc66;">&#93;</span>       <span style="color: #adadad; font-style: italic;">; edi = arg1 (method arguments size)</span></li><li style="" class="li1"><span style="color: #00007f;">add</span>   <span style="color: #46aa03; font-weight:bold;">esi</span>, <span style="color: #ff0000;">4</span></li><li style="" class="li2"><span style="color: #00007f;">add</span>   <span style="color: #46aa03; font-weight:bold;">edi</span>, <span style="color: #46aa03; font-weight:bold;">esp</span></li><li style="" class="li1"><span style="color: #00007f;">mov</span>   <span style="color: #46aa03; font-weight:bold;">edx</span>, <span style="color: #66cc66;">&#91;</span>ebp-54h<span style="color: #66cc66;">&#93;</span>              <span style="color: #adadad; font-style: italic;">; edx = constantPool</span></li><li style="" class="li2"><span style="color: #00007f;">mov</span>   <span style="color: #46aa03; font-weight:bold;">eax</span>, <span style="color: #66cc66;">&#91;</span><span style="color: #46aa03; font-weight:bold;">edx</span>+<span style="color: #46aa03; font-weight:bold;">ecx</span>*<span style="color: #ff0000;">4</span><span style="color: #66cc66;">&#93;</span>            <span style="color: #adadad; font-style: italic;">; eax = constantPool(arg0)</span></li><li style="" class="li1"><span style="color: #00007f;">or</span>    <span style="color: #46aa03; font-weight:bold;">eax</span>, <span style="color: #46aa03; font-weight:bold;">eax</span>                    <span style="color: #adadad; font-style: italic;">; if eax = 0 then</span></li><li style="" class="li2"><span style="color: #00007f;">nop</span></li><li style="" class="li1"><span style="color: #00007f;">jz</span>    _lblEX_ImpAdCallFPR4_22     <span style="color: #adadad; font-style: italic;">; goto ImpAdCallFPR4_22</span></li><li style="" class="li2"> </li><li style="" class="li1">lblCheckEventMonitors:</li><li style="" class="li2">  <span style="color: #00007f;">cmp</span>   _g_EventMonitorsEnabled, <span style="color: #ff0000;">0</span>  <span style="color: #adadad; font-style: italic;">; if EventMonitors are enabled</span></li><li style="" class="li1">  <span style="color: #00007f;">jnz</span>   lblEventMonitorsEnabled</li><li style="" class="li2">  <span style="color: #00007f;">call</span>  <span style="color: #46aa03; font-weight:bold;">eax</span>                         <span style="color: #adadad; font-style: italic;">; call function</span></li><li style="" class="li1"> </li><li style="" class="li2">lblStackError_0:</li><li style="" class="li1">  <span style="color: #00007f;">cmp</span>   <span style="color: #46aa03; font-weight:bold;">edi</span>, <span style="color: #46aa03; font-weight:bold;">esp</span></li><li style="" class="li2">  <span style="color: #00007f;">jnz</span>   StackErr_0</li><li style="" class="li1"> </li><li style="" class="li2">lblNextOpCode:</li><li style="" class="li1">  <span style="color: #00007f;">xor</span>   <span style="color: #46aa03; font-weight:bold;">eax</span>, <span style="color: #46aa03; font-weight:bold;">eax</span></li><li style="" class="li2">  <span style="color: #00007f;">mov</span>   <span style="color: #46aa03; font-weight:bold;">al</span>, <span style="color: #66cc66;">&#91;</span><span style="color: #46aa03; font-weight:bold;">esi</span><span style="color: #66cc66;">&#93;</span></li><li style="" class="li1">  <span style="color: #00007f;">inc</span>   <span style="color: #46aa03; font-weight:bold;">esi</span></li><li style="" class="li2">  <span style="color: #00007f;">jmp</span>   <span style="color: #46aa03; font-weight:bold;">ds</span>:_tblByteDisp<span style="color: #66cc66;">&#91;</span><span style="color: #46aa03; font-weight:bold;">eax</span>*<span style="color: #ff0000;">4</span><span style="color: #66cc66;">&#93;</span></li></ol></div>[/asm:3re0n41c]</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2069"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Dec 18, 2002 11:13 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Post - Moved
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;sarge&quot;:yq634onl]You guys are gonna love this!!!
+<br />
+
+<br />
+
+<br />
+The address at offset 0x34 should be renamed to something like aExecutionReferenceTable.  It is a pointer to an array of addresses, whose values are the "flow control" for those procedures who are called as "external" to a given procedure.  Like this example:
+<br />
+
+<br />
+1. SubMain is:
+<br />
+	call sub1
+<br />
+	call sub2
+<br />
+	call sub3
+<br />
+	end
+<br />
+
+<br />
+2. sub1, sub2, and sub3 are procedures within the same module; their actual code doesn't matter.
+<br />
+
+<br />
+3. Under PCode, SubMain looks like this:
+<br />
+0A 00 00 00 00
+<br />
+0A 01 00 00 00
+<br />
+0A 02 00 00 00
+<br />
+(end)
+<br />
+
+<br />
+4. The three "0A"'s are obviously the calls, but here's how they work:
+<br />
+
+<br />
+ObjectInfo.aExecutionReferencTable contains, say,  0x10C0.  This is the ExecutionBaseReference.  It is the address of the array of ExecutionPointers.  Go there.
+<br />
+
+<br />
+5. You will now find three addresses in this array, let's use:
+<br />
+0x10EC
+<br />
+0x10F8
+<br />
+0x1104
+<br />
+
+<br />
+6. These are pointers to the CodeExecution struct, that is sort of like this:
+<br />
+ </span><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center"><tr> 	  <td><span class="genmed"><b>Code:</b></span></td>	</tr>	<tr>	  <td class="code">
+<br />
+	Const as byte  0x00 = 0xBA
+<br />
+	aRVA&#40;?&#41; as long   0x001
+<br />
+	Const2 as byte 0x05 = 0xB9
+<br />
+	aAddress as long  0x06
+<br />
+	Const3 as integer 0x0A = 0xFFE1
+<br />
+</td>	</tr></table><span class="postbody">
+<br />
+
+<br />
+7. When SubMain runs, it finds the first 0x0A.  It then get the first parameter, which is the two byte value 0.  This is the table index value. 
+<br />
+It then goes to the table at 0x10C0, moves to address offset 0 (which is still 0x10C0) and gets the address there.  
+<br />
+
+<br />
+8. This address is 0x10EC.  It is the address of the first (in this case) CodeExecutionStructure.  Inside this struct is the RVA(?)  = 0x14C4.  This is the address of the CodeInfo struct for the code that is the target of this first call.  Using the standard calculation for CodeInfo address minus CodeInfo.CodeLength, you get to the first PCode byte of the called procedure!  WOW!
+<br />
+
+<br />
+9. After this first procedure finishes, and returns to SubMain, the process is repeated, but this time the index is 1, so it moves ahead 4 bytes to the next address pointer, which gives you address 0x10F8 in the table.  At 0x10F8 is the CodeInfo struct that is the target of this second call!  
+<br />
+
+<br />
+10. And so on for the third call, with the offset being 2 addresses = 8 bytes ahead.
+<br />
+
+<br />
+11. So, now you know how to parse the PCode opcode 0x0A; realize that it is a PCode "jump" (which we will assign the VB command "Call") and use its first parameter to find the Call target.  So, now you can create the source code as:
+<br />
+
+<br />
+	call Proc_1234
+<br />
+	call Proc_5678
+<br />
+	call Proc_9ABC
+<br />
+
+<br />
+with those procedure names matching those procedures which we all know we can already find and name.
+<br />
+
+<br />
+Sarge[/:yq634onl]<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"><br /><br />Last edited by MrUnleaded on Tue Dec 30, 2003 1:30 am; edited 1 time in total</span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2070"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Dec 19, 2002 4:17 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: more info on this one....
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">the first integer is an Index for the ConstantPool[it gets out a long]......its looking for a name of an event\Procedure
+<br />
+
+<br />
+theres a catch.....this first integer includes external functions like MsgBox...which makes things a little more difficult...
+<br />
+
+<br />
+the second integer....is simple...it is an Integer....it tells the number of bytes used for the Event\Procedure....with 4 bytes per item[a pointer i assume....]  basically take this number and divid by 4 and you will get the number of arguments<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"><br /><br />Last edited by MrUnleaded on Tue Dec 30, 2003 1:29 am; edited 1 time in total</span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2090"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Dec 21, 2002 9:00 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: only thing holding me back...
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;MrUnleaded&quot;:20hndx0u]
+<br />
+
+<br />
+theres a catch.....this first integer includes external functions like MsgBox...which makes things a little more difficult...
+<br />
+
+<br />
+[/:20hndx0u]
+<br />
+ok well ive managed to figure out that at the location it points to you get a jump command
+<br />
+
+<br />
+that jump command directs you to an Address in the Import Address Table[Directory 12 of the PE Optional Header]
+<br />
+
+<br />
+only thing is im not sure how to resolve the address to get the name out of the library....
+<br />
+
+<br />
+does anyone know how to do this?
+<br />
+
+<br />
+if you refer to commonApp 1.0 then the IAT is at 0x1000 and the first address is 0x735205EE but the imagebase on MSVBVM60.DLL is 0x66000000  and the size of msvbvm60.dll doesnt exceed 0x1D5205EE so im not sure where to look to get out msvbvm60.dll's export of MsgBox...
+<br />
+
+<br />
+or am i doing this wrong and 0x735205EE isnt even an address?
+<br />
+
+<br />
+i was reading the PE stuff on the IAT and it says before binding it is a HintOrdinal  and after binding it is an Address.....
+<br />
+
+<br />
+if this is before binding....[which i dont think it is] we are looking at an address.....any suggestions?<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"><br /><br />Last edited by MrUnleaded on Tue Dec 30, 2003 1:30 am; edited 1 time in total</span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2092"></a><b>Anonymous</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 10 Feb 2008<br />Posts: 0<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Dec 22, 2002 1:55 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">The load base (which is what you should look at) for MSVBVM is 0x73420000
+<br />
+The address for rtcMsgBox is 0x73502096 (Entrypoint E2096)
+<br />
+
+<br />
+You can use:
+<br />
+
+<br />
+            Dim hVB As Long
+<br />
+            Dim hModule As Long
+<br />
+            hVB = GetModuleHandle(&quot;MSVBVM60.DLL&quot;)  ' Returns the instance handle. Since its always loaded, dont bother loading it
+<br />
+
+<br />
+            Debug.Print Hex(GetProcAddress(hVB, &quot;rtcMsgBox&quot;))
+<br />
+
+<br />
+To show you that info. This should help.
+<br />
+
+<br />
+Oh, and something that should also make you slap your head in d'oh:
+<br />
+0x735205EE is the proc address of MethCallEngine. (EntryPoint 0x1005EE)
+<br />
+
+<br />
+If you need any more guidance then just say  I wouldnt want to give too much away, because its not a challenge then no?</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2093"></a><b>Anonymous</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 10 Feb 2008<br />Posts: 0<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Dec 22, 2002 1:59 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Oh, almost forgot: <!-- m --><a class="postlink" href="http://www.dependencywalker.com/">http://www.dependencywalker.com/</a><!-- m --> should help. Use it on commonapp or MSBVM and then check up the thingybobs ie rtcMsgBox and MethCallEngine</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2095"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Mon Dec 23, 2002 5:25 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;moogman&quot;:3dxc3q2q]The load base (which is what you should look at) for MSVBVM is 0x73420000
+<br />
+[/:3dxc3q2q]
+<br />
+
+<br />
+hmm ok....things are beginning to make sense....how do you get the loadbase? do i have to examine it with my PE header reader? 
+<br />
+
+<br />
+[=&quot;moogman&quot;:3dxc3q2q]
+<br />
+The address for rtcMsgBox is 0x73502096 (Entrypoint E2096)
+<br />
+
+<br />
+You can use:
+<br />
+
+<br />
+            Dim hVB As Long
+<br />
+            Dim hModule As Long
+<br />
+            hVB = GetModuleHandle("MSVBVM60.DLL")  ' Returns the instance handle. Since its always loaded, dont bother loading it
+<br />
+
+<br />
+            Debug.Print Hex(GetProcAddress(hVB, "rtcMsgBox"))
+<br />
+
+<br />
+To show you that info. This should help.
+<br />
+[/:3dxc3q2q]
+<br />
+
+<br />
+alright but how do i get the function name from the address?
+<br />
+
+<br />
+[=&quot;moogman&quot;:3dxc3q2q]
+<br />
+Oh, and something that should also make you slap your head in d'oh:
+<br />
+0x735205EE is the proc address of MethCallEngine. (EntryPoint 0x1005EE)
+<br />
+[/:3dxc3q2q]
+<br />
+yea i saw that  Hiew told me 
+<br />
+
+<br />
+[=&quot;moogman&quot;:3dxc3q2q]
+<br />
+If you need any more guidance then just say  I wouldnt want to give too much away, because its not a challenge then no?[/:3dxc3q2q]
+<br />
+
+<br />
+there always a challenge waiting behind the current door at which we stand <br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"><br /><br />Last edited by MrUnleaded on Tue Dec 30, 2003 1:30 am; edited 1 time in total</span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2096"></a><b>Anonymous</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 10 Feb 2008<br />Posts: 0<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Mon Dec 23, 2002 7:21 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[:42fw79a2]there always a challenge waiting behind the current door at which we stand[/:42fw79a2]
+<br />
+
+<br />
+You are correct, GrassHopper.  This is a lesson we have all learned, and will probably learn again.
+<br />
+
+<br />
+(signed)
+<br />
+Worshipful Master
+<br />
+
+<br />
+er.. better known as  Sarge</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2099"></a><b>Anonymous</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 10 Feb 2008<br />Posts: 0<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Dec 25, 2002 7:15 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Ok, yes to summarise:
+<br />
+
+<br />
+@  ImpAdCallFPR4 has two integer parameters. 1) a variable pool index and 2) the size of parameters.
+<br />
+
+<br />
+@  We can get the variable using standard methods
+<br />
+
+<br />
+@  This variable points to a section of assembly code as follows:
+<br />
+
+<br />
+   mov     edx, 401498h
+<br />
+   mov     ecx, offset ProcCallEngine
+<br />
+   jmp     ecx
+<br />
+
+<br />
+   (I remember when joCo and I were discussing this a while ago. Heh, it makes sense now...thanks joe )
+<br />
+
+<br />
+As we can see from this, edx holds the address of the procedure and then ProcCallEngine basically gets called.
+<br />
+
+<br />
+***OR*** in the case of external you get the jmp table.
+<br />
+   jmp     ds:rtcMsgBox --&gt; The external rtcMsgBox 0x(96 20 50 73)
+<br />
+
+<br />
+
+<br />
+@  So we know that the address of rtcMsgBox (for example) is 0x73502096. How do we resolve it to a function name asks MrU... We use the info in the Import section. Of course, this information would have been first processed and cached and then it would be easier and quicker to lookup these addresses.
+<br />
+I cant be bothered to explain, but basically:
+<br />
+
+<br />
+IMAGE_DATA_DIRECTORY(IMAGE_DIRECTORY_ENTRY_IMPORT).VirtualAddress will help
+<br />
+IMAGE_IMPORT_DESCRIPTOR will help
+<br />
+Note that there is always one more IMAGE_IMPORT_DESCRIPTOR than there are 
+<br />
+imports. Check the .Characteristics and if it = 0 then you've got the last
+<br />
+structure. Exit your loop then
+<br />
+Otherwise, carry on. The rest *should* be self-explanatory 
+<br />
+
+<br />
+PS. MrU, are you sure that you were looking at the right place when you got out MethCallEngine (or ProcCallEngine) instead of rtcMsgBox?</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr align="center">
+		<td class="catBottom" colspan="2" height="28"></td>
+		<td></td>
+	</tr>
+</table>
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+  <tr>
+	<td></td>
+	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="index-2.html" class="nav">VB Decompiler Forum Index</a>
+	  -> <a href="viewforum740d.html" xx="f=21" class="nav">Base</a></span></td>
+	<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">All times are GMT</span><br /><span class="nav"></span>
+	  </td>
+  </tr>
+  <tr>
+	<td align="left" colspan="3"><span class="nav">Page <b>1</b> of <b>1</b></span></td>
+  </tr>
+</table>
+
+<table width="100%" cellspacing="2" border="0" align="center">
+  <tr>
+	<td width="40%" valign="top" nowrap="nowrap" align="left"><span class="gensmall"></span><br />
+	  &nbsp;<br />
+	  </td>
+	<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">You <b>can</b> post new topics in this forum<br />You <b>can</b> reply to topics in this forum<br />You <b>can</b> edit your posts in this forum<br />You <b>can</b> delete your posts in this forum<br />You <b>can</b> vote in polls in this forum<br /></span></td>
+  </tr>
+</table>
+
+
+<div align="center"><span class="copyright"><br /><br />
+<!--
+	We request you retain the full copyright notice below including the link to www.phpbb.com.
+	This not only gives respect to the large amount of time given freely by the developers
+	but also helps build interest, traffic and use of phpBB 2.0. If you cannot (for good
+	reason) retain the full copyright we request you at least leave in place the
+	Powered by phpBB line, with phpBB linked to www.phpbb.com. If you refuse
+	to include even this then support on our forums may be affected.
+
+	The phpBB Group : 2002
+// -->
+Powered by <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB</a> &copy; 2001, 2005 phpBB Group<br /></span></div>
+		</td>
+	</tr>
+</table>
+
+</body>
+
+<!-- Mirrored from localhost/phpbb2/viewtopic.php?t=175&start=0&postdays=0&postorder=asc&highlight= by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 04 Mar 2018 20:55:59 GMT -->
+</html>
+

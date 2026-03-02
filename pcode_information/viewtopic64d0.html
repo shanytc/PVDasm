@@ -1,0 +1,844 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html dir="ltr">
+
+<!-- Mirrored from localhost/phpbb2/viewtopic.php?t=1725&start=0&postdays=0&postorder=asc&highlight= by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 04 Mar 2018 20:40:58 GMT -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Style-Type" content="text/css">
+
+<link rel="top" href="index-2.html" title="VB Decompiler Forum Index" />
+<link rel="search" href="search.html" title="Search" />
+<link rel="help" href="faq.html" title="FAQ" />
+<link rel="author" href="memberlist.html" title="Memberlist" />
+<link rel="prev" href="viewtopic7cbe.html" xx="t=1725&amp;view=previous" title="View previous topic" />
+<link rel="next" href="viewtopic5877.html" xx="t=1725&amp;view=next" title="View next topic" />
+<link rel="up" href="viewforumeb13.html" xx="f=13" title="Common Application Programs" />
+
+<title>VB Decompiler :: View topic - CommonApp 1.0 - Show &amp; Tell</title>
+<!-- link rel="stylesheet" href="templates/subSilver/subSilver.css" type="text/css" -->
+<style type="text/css">
+<!--
+/*
+  The original subSilver Theme for phpBB version 2+
+  Created by subBlue design
+  http://www.subBlue.com
+
+  NOTE: These CSS definitions are stored within the main page body so that you can use the phpBB2
+  theme administration centre. When you have finalised your style you could cut the final CSS code
+  and place it in an external file, deleting this section to save bandwidth.
+*/
+
+/* General page style. The scroll bar colours only visible in IE5.5+ */
+body {
+	background-color: #E5E5E5;
+	scrollbar-face-color: #DEE3E7;
+	scrollbar-highlight-color: #FFFFFF;
+	scrollbar-shadow-color: #DEE3E7;
+	scrollbar-3dlight-color: #D1D7DC;
+	scrollbar-arrow-color:  #006699;
+	scrollbar-track-color: #EFEFEF;
+	scrollbar-darkshadow-color: #98AAB1;
+}
+
+/* General font families for common tags */
+font,th,td,p { font-family: Verdana, Arial, Helvetica, sans-serif }
+a:link,a:active,a:visited { color : #006699; }
+a:hover		{ text-decoration: underline; color : #DD6900; }
+hr	{ height: 0px; border: solid #D1D7DC 0px; border-top-width: 1px;}
+
+/* This is the border line & background colour round the entire page */
+.bodyline	{ background-color: #FFFFFF; border: 1px #98AAB1 solid; }
+
+/* This is the outline round the main forum tables */
+.forumline	{ background-color: #FFFFFF; border: 2px #006699 solid; }
+
+/* Main table cell colours and backgrounds */
+td.row1	{ background-color: #EFEFEF; }
+td.row2	{ background-color: #DEE3E7; }
+td.row3	{ background-color: #D1D7DC; }
+
+/*
+  This is for the table cell above the Topics, Post & Last posts on the index.php page
+  By default this is the fading out gradiated silver background.
+  However, you could replace this with a bitmap specific for each forum
+*/
+td.rowpic {
+		background-color: #FFFFFF;
+		background-image: url(templates/subSilver/images/cellpic2.jpg);
+		background-repeat: repeat-y;
+}
+
+/* Header cells - the blue and silver gradient backgrounds */
+th	{
+	color: #FFA34F; font-size: 11px; font-weight : bold;
+	background-color: #006699; height: 25px;
+	background-image: url(templates/subSilver/images/cellpic3.gif);
+}
+
+td.cat,td.catHead,td.catSides,td.catLeft,td.catRight,td.catBottom {
+			background-image: url(templates/subSilver/images/cellpic1.gif);
+			background-color:#D1D7DC; border: #FFFFFF; border-style: solid; height: 28px;
+}
+
+/*
+  Setting additional nice inner borders for the main table cells.
+  The names indicate which sides the border will be on.
+  Don't worry if you don't understand this, just ignore it :-)
+*/
+td.cat,td.catHead,td.catBottom {
+	height: 29px;
+	border-width: 0px 0px 0px 0px;
+}
+th.thHead,th.thSides,th.thTop,th.thLeft,th.thRight,th.thBottom,th.thCornerL,th.thCornerR {
+	font-weight: bold; border: #FFFFFF; border-style: solid; height: 28px;
+}
+td.row3Right,td.spaceRow {
+	background-color: #D1D7DC; border: #FFFFFF; border-style: solid;
+}
+
+th.thHead,td.catHead { font-size: 12px; border-width: 1px 1px 0px 1px; }
+th.thSides,td.catSides,td.spaceRow	 { border-width: 0px 1px 0px 1px; }
+th.thRight,td.catRight,td.row3Right	 { border-width: 0px 1px 0px 0px; }
+th.thLeft,td.catLeft	  { border-width: 0px 0px 0px 1px; }
+th.thBottom,td.catBottom  { border-width: 0px 1px 1px 1px; }
+th.thTop	 { border-width: 1px 0px 0px 0px; }
+th.thCornerL { border-width: 1px 0px 0px 1px; }
+th.thCornerR { border-width: 1px 1px 0px 0px; }
+
+/* The largest text used in the index page title and toptic title etc. */
+.maintitle	{
+	font-weight: bold; font-size: 22px; font-family: "Trebuchet MS",Verdana, Arial, Helvetica, sans-serif;
+	text-decoration: none; line-height : 120%; color : #000000;
+}
+
+/* General text */
+.gen { font-size : 12px; }
+.genmed { font-size : 11px; }
+.gensmall { font-size : 10px; }
+.gen,.genmed,.gensmall { color : #000000; }
+a.gen,a.genmed,a.gensmall { color: #006699; text-decoration: none; }
+a.gen:hover,a.genmed:hover,a.gensmall:hover	{ color: #DD6900; text-decoration: underline; }
+
+/* The register, login, search etc links at the top of the page */
+.mainmenu		{ font-size : 11px; color : #000000 }
+a.mainmenu		{ text-decoration: none; color : #006699;  }
+a.mainmenu:hover{ text-decoration: underline; color : #DD6900; }
+
+/* Forum category titles */
+.cattitle		{ font-weight: bold; font-size: 12px ; letter-spacing: 1px; color : #006699}
+a.cattitle		{ text-decoration: none; color : #006699; }
+a.cattitle:hover{ text-decoration: underline; }
+
+/* Forum title: Text and link to the forums used in: index.php */
+.forumlink		{ font-weight: bold; font-size: 12px; color : #006699; }
+a.forumlink 	{ text-decoration: none; color : #006699; }
+a.forumlink:hover{ text-decoration: underline; color : #DD6900; }
+
+/* Used for the navigation text, (Page 1,2,3 etc) and the navigation bar when in a forum */
+.nav			{ font-weight: bold; font-size: 11px; color : #000000;}
+a.nav			{ text-decoration: none; color : #006699; }
+a.nav:hover		{ text-decoration: underline; }
+
+/* titles for the topics: could specify viewed link colour too */
+.topictitle,h1,h2	{ font-weight: bold; font-size: 11px; color : #000000; }
+a.topictitle:link   { text-decoration: none; color : #006699; }
+a.topictitle:visited { text-decoration: none; color : #5493B4; }
+a.topictitle:hover	{ text-decoration: underline; color : #DD6900; }
+
+/* Name of poster in viewmsg.php and viewtopic.php and other places */
+.name			{ font-size : 11px; color : #000000;}
+
+/* Location, number of posts, post date etc */
+.postdetails		{ font-size : 10px; color : #000000; }
+
+/* The content of the posts (body of text) */
+.postbody { font-size : 12px; line-height: 18px}
+a.postlink:link	{ text-decoration: none; color : #006699 }
+a.postlink:visited { text-decoration: none; color : #5493B4; }
+a.postlink:hover { text-decoration: underline; color : #DD6900}
+
+/* Quote & Code blocks */
+.code {
+	font-family: Courier, 'Courier New', sans-serif; font-size: 11px; color: #006600;
+	background-color: #FAFAFA; border: #D1D7DC; border-style: solid;
+	border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+}
+
+.quote {
+	font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11px; color: #444444; line-height: 125%;
+	background-color: #FAFAFA; border: #D1D7DC; border-style: solid;
+	border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+}
+
+/* Copyright and bottom info */
+.copyright		{ font-size: 10px; font-family: Verdana, Arial, Helvetica, sans-serif; color: #444444; letter-spacing: -1px;}
+a.copyright		{ color: #444444; text-decoration: none;}
+a.copyright:hover { color: #000000; text-decoration: underline;}
+
+/* Form elements */
+input,textarea, select {
+	color : #000000;
+	font: normal 11px Verdana, Arial, Helvetica, sans-serif;
+	border-color : #000000;
+}
+
+/* The text input fields background colour */
+input.post, textarea.post, select {
+	background-color : #FFFFFF;
+}
+
+input { text-indent : 2px; }
+
+/* The buttons used for bbCode styling in message post */
+input.button {
+	background-color : #EFEFEF;
+	color : #000000;
+	font-size: 11px; font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+/* The main submit button option */
+input.mainoption {
+	background-color : #FAFAFA;
+	font-weight : bold;
+}
+
+/* None-bold submit button */
+input.liteoption {
+	background-color : #FAFAFA;
+	font-weight : normal;
+}
+
+/* This is the line in the posting page which shows the rollover
+  help line. This is actually a text box, but if set to be the same
+  colour as the background no one will know ;)
+*/
+.helpline { background-color: #DEE3E7; border-style: none; }
+
+/* Import the fancy styles for IE only (NS4.x doesn't use the @import function) */
+@import url("templates/subSilver/formIE.css");
+-->
+</style>
+</head>
+<body bgcolor="#E5E5E5" text="#000000" link="#006699" vlink="#5493B4">
+
+<a name="top"></a>
+
+<table width="100%" cellspacing="0" cellpadding="10" border="0" align="center">
+	<tr>
+		<td class="bodyline"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<tr>
+				<td><a href="index-2.html"><img src="templates/subSilver/images/logo_phpBB.gif" border="0" alt="VB Decompiler Forum Index" vspace="1" /></a></td>
+				<td align="center" width="100%" valign="middle"><span class="maintitle">VB Decompiler</span><br /><span class="gen">Hosted by TheAutomaters.com<br />&nbsp; </span>
+				<table cellspacing="0" cellpadding="2" border="0">
+					<tr>
+						<td align="center" valign="top" nowrap="nowrap"><span class="mainmenu">&nbsp;
+						<a href="memberlist.html" class="mainmenu"><img src="templates/subSilver/images/icon_mini_members.gif" width="12" height="13" border="0" alt="Memberlist" hspace="3" />Memberlist</a>
+						</span></td>
+					</tr>
+					<tr>
+						<td height="25" align="center" valign="top" nowrap="nowrap"><span class="mainmenu">&nbsp;</td>
+					</tr>
+				</table></td>
+			</tr>
+		</table>
+
+		<br />
+
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0">
+  <tr>
+	<td align="left" valign="bottom" colspan="2"><a class="maintitle" href="viewtopic64d0.html" xx="t=1725&amp;start=0&amp;postdays=0&amp;postorder=asc&amp;highlight=">CommonApp 1.0 - Show &amp; Tell</a><br />
+	  <span class="gensmall"><b></b><br />
+	  &nbsp; </span></td>
+  </tr>
+</table>
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0">
+  <tr>
+	<td></td>
+	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="index-2.html" class="nav">VB Decompiler Forum Index</a>
+	  -> <a href="viewforumeb13.html" xx="f=13" class="nav">Common Application Programs</a></span></td>
+  </tr>
+</table>
+
+<table class="forumline" width="100%" cellspacing="1" cellpadding="3" border="0">
+	<tr>
+		<th class="thLeft" width="150" height="26" nowrap="nowrap">Author</th>
+		<th class="thRight" nowrap="nowrap">Message</th>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2089"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Dec 21, 2002 8:50 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: CommonApp 1.0 - Show &amp; Tell
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">I figured its about time i repost what i have for commonApp 1.0 seeing how i am just about done....just need to do one thing now....and im very close....as soon as i finsih i will post it.
+<br />
+
+<br />
+Feel free to post what you have also <br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2091"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Dec 22, 2002 6:20 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: well hers what i got...
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">heres this_is_the_project_title.vbp
+<br />
+[code=text:109wm56a]<div class="text" id="{CB}" style="font-family: monospace;"><ol><li style="" class="li1">Type=Exe</li><li style="" class="li2">Form=Form\frmMain.frm</li><li style="" class="li1">Module=Module\modMain.bas</li><li style="" class="li2">HelpFile=&quot;help_file_name.hlp&quot;</li><li style="" class="li1">Title=&quot;this_is_the_project_title&quot;</li><li style="" class="li2">ExeName32=&quot;CommonApp&quot;</li><li style="" class="li1">Name=&quot;this_is_the_project_name&quot;</li><li style="" class="li2">CompilationType=-1</li></ol></div></td>	</tr></table><span class="postbody">
+<br />
+
+<br />
+
+<br />
+modMain.bas
+<br />
+[vb:109wm56a]<div class="vb" id="{CB}" style="font-family: monospace;"><ol><li style="" class="li1">VERSION <span style="color: #cc66cc;">5.00</span></li><li style="" class="li2">Attribute VB_Name = <span style="color: #ff0000;">&quot;modMain&quot;</span></li><li style="" class="li1">&nbsp;</li><li style="" class="li2"><span style="color: #b1b100;">Option</span> <span style="color: #b1b100;">Explicit</span></li><li style="" class="li1">&nbsp;</li><li style="" class="li2">&nbsp;</li><li style="" class="li1"><span style="color: #808080;">' Procedure modMain_1C48</span></li><li style="" class="li2"><span style="color: #cc66cc;">7231</span>:</li><li style="" class="li1"><span style="color: #cc66cc;">7232</span>:&nbsp; &nbsp;<span style="color: #b1b100;">Call</span> modMain_1EC8<span style="color: #66cc66;">&#40;</span><span style="color: #66cc66;">&#41;</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </li><li style="" class="li2"><span style="color: #cc66cc;">7237</span>:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</li><li style="" class="li1"><span style="color: #808080;">' End Procedure</span></li><li style="" class="li2">&nbsp;</li><li style="" class="li1">&nbsp;</li><li style="" class="li2"><span style="color: #808080;">' Procedure modMain_1EC8</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #b1b100;">Dim</span> local_A4 <span style="color: #b1b100;">As</span> Variant</li><li style="" class="li2"><span style="color: #cc66cc;">7791</span>:</li><li style="" class="li1"><span style="color: #cc66cc;">7792</span>:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</li><li style="" class="li2"><span style="color: #cc66cc;">7795</span>:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</li><li style="" class="li1"><span style="color: #cc66cc;">7798</span>:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</li><li style="" class="li2"><span style="color: #cc66cc;">7801</span>:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</li><li style="" class="li1"><span style="color: #cc66cc;">7806</span>:&nbsp; &nbsp;</li><li style="" class="li2"><span style="color: #cc66cc;">7811</span>:&nbsp; &nbsp;local_A4 = <span style="color: #ff0000;">&quot;tester called&quot;</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</li><li style="" class="li1"><span style="color: #cc66cc;">7814</span>:&nbsp; &nbsp;</li><li style="" class="li2"><span style="color: #cc66cc;">7817</span>:&nbsp; &nbsp;<span style="color: #b1b100;">Call</span> <span style="color: #b1b100;">MsgBox</span><span style="color: #66cc66;">&#40;</span>local_A4, <span style="color: #cc66cc;">0</span><span style="color: #66cc66;">&#41;</span></li><li style="" class="li1"><span style="color: #cc66cc;">7822</span>:&nbsp; &nbsp;</li><li style="" class="li2"><span style="color: #cc66cc;">7833</span>:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</li><li style="" class="li1"><span style="color: #cc66cc;">7836</span>:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</li><li style="" class="li2"><span style="color: #cc66cc;">7840</span>:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</li><li style="" class="li1"><span style="color: #cc66cc;">7843</span>:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</li><li style="" class="li2"><span style="color: #cc66cc;">7846</span>:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</li><li style="" class="li1"><span style="color: #cc66cc;">7849</span>:&nbsp; &nbsp;. &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </li><li style="" class="li2"><span style="color: #cc66cc;">7854</span>:&nbsp; &nbsp;</li><li style="" class="li1"><span style="color: #cc66cc;">7857</span>:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</li><li style="" class="li2"><span style="color: #cc66cc;">7860</span>:&nbsp; &nbsp;</li><li style="" class="li1"><span style="color: #cc66cc;">7861</span>:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</li><li style="" class="li2"><span style="color: #cc66cc;">7864</span>:&nbsp; &nbsp;</li><li style="" class="li1"><span style="color: #cc66cc;">7865</span>:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</li><li style="" class="li2"><span style="color: #cc66cc;">7868</span>:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</li><li style="" class="li1"><span style="color: #cc66cc;">7871</span>:&nbsp; &nbsp;. &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </li><li style="" class="li2"><span style="color: #cc66cc;">7876</span>:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</li><li style="" class="li1"><span style="color: #808080;">' End Procedure</span></li></ol></div>[/vb:109wm56a]
+<br />
+
+<br />
+frmMain.frm
+<br />
+[vb:109wm56a]<div class="vb" id="{CB}" style="font-family: monospace;"><ol><li style="" class="li1">VERSION <span style="color: #cc66cc;">5.00</span></li><li style="" class="li2">Begin VB.<span style="color: #66cc66;">Form</span> frmMain</li><li style="" class="li1">&nbsp; &nbsp; Caption = <span style="color: #ff0000;">&quot;Common Application&quot;</span></li><li style="" class="li2">&nbsp; &nbsp; ScaleMode = <span style="color: #cc66cc;">1</span></li><li style="" class="li1">&nbsp; &nbsp; WhatsThisButton = <span style="color: #b1b100;">False</span></li><li style="" class="li2">&nbsp; &nbsp; LinkTopic = <span style="color: #ff0000;">&quot;Form1&quot;</span></li><li style="" class="li1">&nbsp; &nbsp; ClientLeft = <span style="color: #cc66cc;">60</span></li><li style="" class="li2">&nbsp; &nbsp; ClientTop = <span style="color: #cc66cc;">345</span></li><li style="" class="li1">&nbsp; &nbsp; ClientWidth = <span style="color: #cc66cc;">3645</span></li><li style="" class="li2">&nbsp; &nbsp; ClientHeight = <span style="color: #cc66cc;">1965</span></li><li style="" class="li1">&nbsp; &nbsp; StartUpPosition = <span style="color: #cc66cc;">3</span></li><li style="" class="li2">&nbsp; &nbsp; Begin VB.<span style="color: #66cc66;">TextBox</span> txtItem</li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #b1b100;">Left</span> = <span style="color: #cc66cc;">120</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; Top = <span style="color: #cc66cc;">120</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #b1b100;">Width</span> = <span style="color: #cc66cc;">2415</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; Height = <span style="color: #cc66cc;">285</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; TabIndex = <span style="color: #cc66cc;">2</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #b1b100;">End</span></li><li style="" class="li1">&nbsp; &nbsp; Begin VB.<span style="color: #66cc66;">ListBox</span> lstItems</li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #b1b100;">Left</span> = <span style="color: #cc66cc;">120</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; Top = <span style="color: #cc66cc;">600</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #b1b100;">Width</span> = <span style="color: #cc66cc;">3375</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; Height = <span style="color: #cc66cc;">1230</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; TabIndex = <span style="color: #cc66cc;">1</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #b1b100;">End</span></li><li style="" class="li2">&nbsp; &nbsp; Begin VB.<span style="color: #66cc66;">CommandButton</span> cmdAdd</li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; Caption = <span style="color: #ff0000;">&quot;Add&quot;</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #b1b100;">Left</span> = <span style="color: #cc66cc;">2640</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; Top = <span style="color: #cc66cc;">120</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #b1b100;">Width</span> = <span style="color: #cc66cc;">855</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; Height = <span style="color: #cc66cc;">255</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; TabIndex = <span style="color: #cc66cc;">0</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #b1b100;">End</span></li><li style="" class="li2"><span style="color: #b1b100;">End</span></li><li style="" class="li1">Attribute VB_Name = <span style="color: #ff0000;">&quot;frmMain&quot;</span></li><li style="" class="li2">&nbsp;</li><li style="" class="li1"><span style="color: #b1b100;">Option</span> <span style="color: #b1b100;">Explicit</span></li><li style="" class="li2">&nbsp;</li><li style="" class="li1">&nbsp;</li><li style="" class="li2"><span style="color: #808080;">' Procedure cmdAdd_Click</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #b1b100;">Dim</span> local_8C <span style="color: #b1b100;">As</span> Variant</li><li style="" class="li2"><span style="color: #cc66cc;">7539</span>:</li><li style="" class="li1"><span style="color: #cc66cc;">7540</span>:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</li><li style="" class="li2"><span style="color: #cc66cc;">7543</span>:&nbsp; &nbsp;</li><li style="" class="li1"><span style="color: #cc66cc;">7544</span>:&nbsp; &nbsp;</li><li style="" class="li2"><span style="color: #cc66cc;">7547</span>:&nbsp; &nbsp;</li><li style="" class="li1"><span style="color: #cc66cc;">7548</span>:&nbsp; &nbsp;</li><li style="" class="li2"><span style="color: #cc66cc;">7551</span>:&nbsp; &nbsp;</li><li style="" class="li1"><span style="color: #cc66cc;">7554</span>:&nbsp; &nbsp;</li><li style="" class="li2"><span style="color: #cc66cc;">7557</span>:&nbsp; &nbsp;local_8C = txtItem.<span style="color: #66cc66;">Text</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </li><li style="" class="li1"><span style="color: #cc66cc;">7562</span>:&nbsp; &nbsp;</li><li style="" class="li2"><span style="color: #cc66cc;">7565</span>:&nbsp; &nbsp;</li><li style="" class="li1"><span style="color: #cc66cc;">7566</span>:&nbsp; &nbsp;</li><li style="" class="li2"><span style="color: #cc66cc;">7569</span>:&nbsp; &nbsp;</li><li style="" class="li1"><span style="color: #cc66cc;">7572</span>:&nbsp; &nbsp;</li><li style="" class="li2"><span style="color: #cc66cc;">7575</span>:&nbsp; &nbsp;<span style="color: #b1b100;">Call</span> lstItems.<span style="color: #66cc66;">AddItem</span><span style="color: #66cc66;">&#40;</span>local_8C<span style="color: #66cc66;">&#41;</span> &nbsp; &nbsp; &nbsp; &nbsp; </li><li style="" class="li1"><span style="color: #cc66cc;">7580</span>:&nbsp; &nbsp;</li><li style="" class="li2"><span style="color: #cc66cc;">7583</span>:&nbsp; &nbsp;</li><li style="" class="li1"><span style="color: #cc66cc;">7590</span>:&nbsp; &nbsp;</li><li style="" class="li2"><span style="color: #808080;">' End Procedure</span></li><li style="" class="li1">&nbsp;</li><li style="" class="li2">&nbsp;</li><li style="" class="li1"><span style="color: #808080;">' Procedure Form_Load</span></li><li style="" class="li2"><span style="color: #cc66cc;">7351</span>:</li><li style="" class="li1"><span style="color: #cc66cc;">7352</span>:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</li><li style="" class="li2"><span style="color: #cc66cc;">7355</span>:&nbsp; &nbsp;</li><li style="" class="li1"><span style="color: #cc66cc;">7356</span>:&nbsp; &nbsp;</li><li style="" class="li2"><span style="color: #cc66cc;">7359</span>:&nbsp; &nbsp;</li><li style="" class="li1"><span style="color: #cc66cc;">7360</span>:&nbsp; &nbsp;</li><li style="" class="li2"><span style="color: #cc66cc;">7363</span>:&nbsp; &nbsp;</li><li style="" class="li1"><span style="color: #cc66cc;">7366</span>:&nbsp; &nbsp;</li><li style="" class="li2"><span style="color: #cc66cc;">7369</span>:&nbsp; &nbsp;<span style="color: #b1b100;">Call</span> lstItems.<span style="color: #66cc66;">AddItem</span><span style="color: #66cc66;">&#40;</span><span style="color: #ff0000;">&quot;this item added on form load&quot;</span><span style="color: #66cc66;">&#41;</span></li><li style="" class="li1"><span style="color: #cc66cc;">7374</span>:&nbsp; &nbsp;</li><li style="" class="li2"><span style="color: #cc66cc;">7377</span>:&nbsp; &nbsp;</li><li style="" class="li1"><span style="color: #808080;">' End Procedure</span></li><li style="" class="li2">&nbsp;</li><li style="" class="li1">&nbsp;</li><li style="" class="li2"><span style="color: #808080;">' Procedure Form_Click</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #b1b100;">Dim</span> local_A4 <span style="color: #b1b100;">As</span> Variant</li><li style="" class="li2"><span style="color: #cc66cc;">7431</span>:</li><li style="" class="li1"><span style="color: #cc66cc;">7432</span>:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</li><li style="" class="li2"><span style="color: #cc66cc;">7435</span>:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</li><li style="" class="li1"><span style="color: #cc66cc;">7438</span>:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</li><li style="" class="li2"><span style="color: #cc66cc;">7441</span>:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</li><li style="" class="li1"><span style="color: #cc66cc;">7446</span>:&nbsp; &nbsp;</li><li style="" class="li2"><span style="color: #cc66cc;">7451</span>:&nbsp; &nbsp;local_A4 = <span style="color: #ff0000;">&quot;form was clicked&quot;</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </li><li style="" class="li1"><span style="color: #cc66cc;">7454</span>:&nbsp; &nbsp;</li><li style="" class="li2"><span style="color: #cc66cc;">7457</span>:&nbsp; &nbsp;<span style="color: #b1b100;">Call</span> <span style="color: #b1b100;">MsgBox</span><span style="color: #66cc66;">&#40;</span>local_A4, <span style="color: #cc66cc;">0</span><span style="color: #66cc66;">&#41;</span> <span style="color: #808080;">'this should be MsgBox Import</span></li><li style="" class="li1"><span style="color: #cc66cc;">7462</span>:&nbsp; &nbsp;</li><li style="" class="li2"><span style="color: #cc66cc;">7473</span>:&nbsp; &nbsp;</li><li style="" class="li1"><span style="color: #808080;">' End Procedure</span></li></ol></div>[/vb:109wm56a]<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"><br /><br />Last edited by MrUnleaded on Sat Dec 28, 2002 9:27 pm; edited 1 time in total</span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2094"></a><b>sarge</b></span><br /><span class="postdetails">Moderator<br /><!--<img src="pro_rank_mod.gif" alt="Moderator" title="Moderator" border="0" /><br />--><br /><br />Joined: 24 Sep 2002<br />Posts: 194<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Dec 22, 2002 2:45 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">And at what point were you going to share the secrets of getting that output with us?
+<br />
+
+<br />
+Seriously, this is neat stuff!  So much for those &quot;can't decompile&quot; 
+<br />
+smarta??es.  I get the feeling you guys are way ahead of me in the actual decompile ability!  Guess I'm spending too much time on RACE and not enough on my decompiler.
+<br />
+
+<br />
+Good job.
+<br />
+
+<br />
+Sarge</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2100"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Dec 28, 2002 9:32 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: bout dang time
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">well i finally made the link....and i got the name of the Imports...
+<br />
+
+<br />
+heres what i did...
+<br />
+
+<br />
+I looked at CommonApp's Imports....and then loaded the PE stuff for the requesting DLLs[only one in this case MSVBVM60.DLL] and Cross Referenced the Exports for MSVBVM60 with the Imports in CommonApp....this includes the FunctionName,Hint,Ordinal,Offset
+<br />
+
+<br />
+then a created a Collection with the Index of the AddressesOffsets
+<br />
+
+<br />
+Also...I made a Part Called FunctionAlias....
+<br />
+
+<br />
+to get the Alias i trim a couple of prefixes[rtc,_,__] and suffixes[Var,Bstr,Char]
+<br />
+
+<br />
+ok i think im about done with CA1...  on to CA2 <br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2102"></a><b>Anonymous</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 10 Feb 2008<br />Posts: 0<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Dec 29, 2002 12:35 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">MrU:
+<br />
+Eww! At the moment, im just sticking with the ordinal. I dont like the sound of chopping up strings to suit the user (; Like we discussed, MrU there are many circumstances that this method would break. I try to stay away from string manipuation as much as possible heehee. Oh well, I guess you have a time-constraint to stick to... (;
+<br />
+
+<br />
+Sarge:
+<br />
+As far as I can see, we're not *that* far ahead of you now. Basically, you need to implement the argument string handler for the opcodes and you'll automagically be up to the same ability. If you need help in doing that, then ask away! But MrU and I do have a couple of difference in processing the arguments. For example, MrU would sometimes use &quot;u&quot; to push things onto the stack, whereas I would not. Both approaches are just as effective as you can see, but we're gonna have to be careful not to get confused </span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2104"></a><b>Anonymous</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 10 Feb 2008<br />Posts: 0<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Dec 29, 2002 6:59 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Well, I decided to look at this section today in more depth. I always try and relate to the logic of &quot;if VB can do it, then so can I&quot;. So, I messed around with the type library stuff a little more. You'll like this:
+<br />
+@  MSVBVM??.DLL is com-compatible.
+<br />
+@  There is a function GetDLLEntry.
+<br />
+
+<br />
+A sample use of this follows:
+<br />
+
+<br />
+[vb:rawj59kf]<div class="vb" id="{CB}" style="font-family: monospace;"><ol><li style="" class="li1"><span style="color: #b1b100;">Function</span> NameFromOrdinal<span style="color: #66cc66;">&#40;</span> _</li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;LibName <span style="color: #b1b100;">As</span> <span style="color: #b1b100;">String</span>, _</li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Ordinal <span style="color: #b1b100;">As</span> <span style="color: #b1b100;">Integer</span> _</li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #66cc66;">&#41;</span> <span style="color: #b1b100;">As</span> MemberInfo</li><li style="" class="li1">&nbsp; <span style="color: #b1b100;">Dim</span> TypeInfo <span style="color: #b1b100;">As</span> TypeInfo</li><li style="" class="li2">&nbsp; <span style="color: #b1b100;">Dim</span> Member <span style="color: #b1b100;">As</span> MemberInfo</li><li style="" class="li1">&nbsp; </li><li style="" class="li2">&nbsp; <span style="color: #b1b100;">Dim</span> sDLLName <span style="color: #b1b100;">As</span> <span style="color: #b1b100;">String</span></li><li style="" class="li1">&nbsp; <span style="color: #b1b100;">Dim</span> sEntryName <span style="color: #b1b100;">As</span> <span style="color: #b1b100;">String</span></li><li style="" class="li2">&nbsp; <span style="color: #b1b100;">Dim</span> iOrdinal <span style="color: #b1b100;">As</span> <span style="color: #b1b100;">Integer</span></li><li style="" class="li1">&nbsp; </li><li style="" class="li2">&nbsp; <span style="color: #b1b100;">On</span> <span style="color: #b1b100;">Error</span> <span style="color: #b1b100;">Resume</span> <span style="color: #b1b100;">Next</span></li><li style="" class="li1">&nbsp; </li><li style="" class="li2">&nbsp; <span style="color: #b1b100;">For</span> Each TypeInfo In TypeLibInfo.<span style="color: #66cc66;">TypeInfos</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #b1b100;">For</span> Each Member In TypeInfo.<span style="color: #66cc66;">Members</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; Member.<span style="color: #66cc66;">GetDllEntry</span> sDLLName, sEntryName, iOrdinal</li><li style="" class="li1">&nbsp; &nbsp; &nbsp; <span style="color: #b1b100;">If</span> Ordinal = iOrdinal <span style="color: #b1b100;">Then</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #b1b100;">Set</span> NameFromOrdinal = Member</li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #b1b100;">Exit</span> <span style="color: #b1b100;">Function</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; <span style="color: #b1b100;">End</span> <span style="color: #b1b100;">If</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #b1b100;">Next</span></li><li style="" class="li2">&nbsp; <span style="color: #b1b100;">Next</span></li><li style="" class="li1"><span style="color: #b1b100;">End</span> <span style="color: #b1b100;">Function</span></li></ol></div>[/vb:rawj59kf]
+<br />
+
+<br />
+This returns a member in the type library when given an ordinal number. It is almost encapsulated providing the following points are noted:
+<br />
+
+<br />
+@  Private TLI As New TLIApplication
+<br />
+@  Private TypeLibInfo As TypeLibInfo
+<br />
+@  Set TypeLibInfo = TLI.TypeLibInfoFromFile(&lt;filename&gt;)
+<br />
+
+<br />
+And of course, the type library must be loaded 
+<br />
+
+<br />
+I was going to say something else... nope its gone. Oh well, couldnt have been that important hehe!
+<br />
+
+<br />
+Sorry, in a bit of a rush - pub is calling!
+<br />
+
+<br />
+Ciao,
+<br />
+moog</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2127"></a><b>Anonymous</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 10 Feb 2008<br />Posts: 0<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Mar 05, 2003 4:18 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: All-in-one?
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Guys (and Gals),
+<br />
+Do you like the idea of making all achieved techniques/algorithms/programs for decompiling parts of VB EXE as a bundle of classes/procedures so that it can be easilly enhanced when someone finds something new?</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2128"></a><b>Anonymous</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 10 Feb 2008<br />Posts: 0<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Mar 06, 2003 1:44 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Well, it WOULD make things somewhat easier and convenient.  But there's the problem of VersionControl; that is, testing/debugging by others, or even propagation of a flawed version to the outside world.  Maybe each procedure/wrapper/class for the various parts of the &quot;VB Investigator&quot; should be in a separate section/thread to allow mods/updates/fixes by various supporting/contributing individuals.  That way, when everyone agrees that a particular procedure is right, it most likely will be.  At that point, make it an officially available offering. 
+<br />
+
+<br />
+Or maybe some other equivalent method could be used so that there aren't 45 different code blocks out there, of which none agree with the Master that we would have here.
+<br />
+
+<br />
+Anyone volunteer to admin THAT mess?
+<br />
+
+<br />
+Sarge</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2129"></a><b>Anonymous</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 10 Feb 2008<br />Posts: 0<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Mar 06, 2003 5:56 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Re: All-in-one?
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;Anonymous&quot;:210lsgea]Guys (and Gals),
+<br />
+Do you like the idea of making all achieved techniques/algorithms/programs for decompiling parts of VB EXE as a bundle of classes/procedures so that it can be easilly enhanced when someone finds something new?[/:210lsgea]
+<br />
+
+<br />
+
+<br />
+That would be a great idea. I support you. Keep on. When do we expect this move?</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2132"></a><b>Anonymous</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 10 Feb 2008<br />Posts: 0<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Fri Mar 14, 2003 12:17 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Re: All-in-one?
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;Anonymous&quot;:3lnmlorw]Guys (and Gals),
+<br />
+Do you like the idea of making all achieved techniques/algorithms/programs for decompiling parts of VB EXE as a bundle of classes/procedures so that it can be easilly enhanced when someone finds something new?[/:3lnmlorw]
+<br />
+
+<br />
+To some extent, we have tried to standardise the decompiling procedure by listing some of the standard structures in a vb exe file. This is really all you need (with a base understanding of file handling in your desired language) to create a vb file analyser.
+<br />
+
+<br />
+I dont believe that we should start giving out specific classes etc because we then effectively get a decompiler to the masses, and this could be a bad thing from some peoples' points of view.</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="3936"></a><b>Warning</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 03 Jan 2003<br />Posts: 4<br />Location: France</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Mon Aug 25, 2008 1:01 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Re: CommonApp 1.0 - Show &amp; Tell
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Hello,
+<br />
+
+<br />
+here is what we get after using it with the last version of VBReFormer (5.3) on the commonapp (native):
+<br />
+[url:3d0e7bo5]http&#58;//www&#46;decompiler-vb&#46;net/documentation/commonapp_output_by_vbreformer&#46;zip[/url:3d0e7bo5]
+<br />
+
+<br />
+Example:
+<br />
+[code=text:3d0e7bo5]<div class="text" id="{CB}" style="font-family: monospace;"><ol><li style="" class="li1"> </li><li style="" class="li2">Sub Main()</li><li style="" class="li1">var_pv2 = (&quot;tester called&quot;)</li><li style="" class="li2">var_pv3 = MsgBox(var_pv2, 0)</li><li style="" class="li1">Dim var_pv4 As New frmMain</li><li style="" class="li2">Set var_pv5 = var_pv4</li><li style="" class="li1">Call Load(var_pv5)</li><li style="" class="li2">Call var_pv4.Show()</li><li style="" class="li1">'var_num6 = -256 + 20 + 20</li><li style="" class="li2">End Sub</li><li style="" class="li1"> </li></ol></div></td>	</tr></table><span class="postbody">
+<br />
+
+<br />
+[code=text:3d0e7bo5]<div class="text" id="{CB}" style="font-family: monospace;"><ol><li style="" class="li1"> </li><li style="" class="li2">'   ////////////////////////////////////////////////////////</li><li style="" class="li1">'  //   VBReFormer 2008 © Sylvain Bruyere</li><li style="" class="li2">' //  Assembly: this_is_the_project_name.frmMain (Form)</li><li style="" class="li1">'////////////////////////////////////////////////////////</li><li style="" class="li2"> </li><li style="" class="li1">'Event for cmdAdd</li><li style="" class="li2">Private Sub cmdAdd_Click</li><li style="" class="li1">Set var_pv2 = Me.lstItems()</li><li style="" class="li2">Set var_pv3 = Me.txtItem()</li><li style="" class="li1">var_pv4 = var_pv3.Text()</li><li style="" class="li2">Call var_pv2.AddItem(var_pv4)</li><li style="" class="li1">'var_num6 = -52 - 12 + 12</li><li style="" class="li2">'var_num6 = 'var_num6 + 12</li><li style="" class="li1"> </li><li style="" class="li2">End Sub</li><li style="" class="li1"> </li><li style="" class="li2"> </li><li style="" class="li1">'Event for Form</li><li style="" class="li2">Private Sub Form_Load</li><li style="" class="li1">Set var_pv2 = Me.lstItems()</li><li style="" class="li2">Call var_pv2.AddItem(&quot;this item added on form load&quot;)</li><li style="" class="li1"> </li><li style="" class="li2">End Sub</li><li style="" class="li1"> </li><li style="" class="li2"> </li><li style="" class="li1">Private Sub Form_Click</li><li style="" class="li2">var_pv2 = (&quot;form was clicked&quot;)</li><li style="" class="li1">var_pv3 = MsgBox(var_pv2, 0)</li><li style="" class="li2">'var_num6 = -52 - 12 + 20</li><li style="" class="li1">'var_num6 = 'var_num6 + 20</li><li style="" class="li2"> </li><li style="" class="li1">End Sub</li><li style="" class="li2"> </li></ol></div></td>	</tr></table><span class="postbody">
+<br />
+
+<br />
+No changes has been done after decompiling, and all work perfectly (execution + compilation).
+<br />
+
+<br />
+You can see other example of complete native decompilation here: [url:3d0e7bo5]http&#58;//www&#46;decompiler-vb&#46;net/documentation/example%20book&#46;pdf[/url:3d0e7bo5] .
+<br />
+
+<br />
+The interest is that it's native decompilation.<br />_________________<br />[font=Calibri, Arial:25chimg6]<span style="font-weight: bold"><span style="color: #0040BF">Sylvain Bruyere</span></span>
+<br />
+Decompiler-VB.net Developper 
+<br />
+Microsoft Student Partner
+<br />
+&lt;!-- m --&gt;&lt;a class="postlink" href="http://www.decompiler-vb.net/"&gt;http://www.decompiler-vb.net/&lt;/a&gt;&lt;!-- m --&gt;[/font:25chimg6]</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr align="center">
+		<td class="catBottom" colspan="2" height="28"></td>
+		<td></td>
+	</tr>
+</table>
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+  <tr>
+	<td></td>
+	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="index-2.html" class="nav">VB Decompiler Forum Index</a>
+	  -> <a href="viewforumeb13.html" xx="f=13" class="nav">Common Application Programs</a></span></td>
+	<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">All times are GMT</span><br /><span class="nav"></span>
+	  </td>
+  </tr>
+  <tr>
+	<td align="left" colspan="3"><span class="nav">Page <b>1</b> of <b>1</b></span></td>
+  </tr>
+</table>
+
+<table width="100%" cellspacing="2" border="0" align="center">
+  <tr>
+	<td width="40%" valign="top" nowrap="nowrap" align="left"><span class="gensmall"></span><br />
+	  &nbsp;<br />
+	  </td>
+	<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">You <b>can</b> post new topics in this forum<br />You <b>can</b> reply to topics in this forum<br />You <b>can</b> edit your posts in this forum<br />You <b>can</b> delete your posts in this forum<br />You <b>can</b> vote in polls in this forum<br /></span></td>
+  </tr>
+</table>
+
+
+<div align="center"><span class="copyright"><br /><br />
+<!--
+	We request you retain the full copyright notice below including the link to www.phpbb.com.
+	This not only gives respect to the large amount of time given freely by the developers
+	but also helps build interest, traffic and use of phpBB 2.0. If you cannot (for good
+	reason) retain the full copyright we request you at least leave in place the
+	Powered by phpBB line, with phpBB linked to www.phpbb.com. If you refuse
+	to include even this then support on our forums may be affected.
+
+	The phpBB Group : 2002
+// -->
+Powered by <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB</a> &copy; 2001, 2005 phpBB Group<br /></span></div>
+		</td>
+	</tr>
+</table>
+
+</body>
+
+<!-- Mirrored from localhost/phpbb2/viewtopic.php?t=1725&start=0&postdays=0&postorder=asc&highlight= by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 04 Mar 2018 20:40:58 GMT -->
+</html>
+

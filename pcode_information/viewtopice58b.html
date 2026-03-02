@@ -1,0 +1,972 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html dir="ltr">
+
+<!-- Mirrored from localhost/phpbb2/viewtopic.php?t=1836&view=next by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 04 Mar 2018 20:55:54 GMT -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Style-Type" content="text/css">
+
+<link rel="top" href="index-2.html" title="VB Decompiler Forum Index" />
+<link rel="search" href="search.html" title="Search" />
+<link rel="help" href="faq.html" title="FAQ" />
+<link rel="author" href="memberlist.html" title="Memberlist" />
+<link rel="prev" href="viewtopic1373.html" xx="t=1785&amp;view=previous" title="View previous topic" />
+<link rel="next" href="viewtopice833.html" xx="t=1785&amp;view=next" title="View next topic" />
+<link rel="up" href="viewforum01c9.html" xx="f=12" title="Utilities &amp; User Contributions" />
+
+<title>VB Decompiler :: View topic - Visual Basic .NET Binary File Class</title>
+<!-- link rel="stylesheet" href="templates/subSilver/subSilver.css" type="text/css" -->
+<style type="text/css">
+<!--
+/*
+  The original subSilver Theme for phpBB version 2+
+  Created by subBlue design
+  http://www.subBlue.com
+
+  NOTE: These CSS definitions are stored within the main page body so that you can use the phpBB2
+  theme administration centre. When you have finalised your style you could cut the final CSS code
+  and place it in an external file, deleting this section to save bandwidth.
+*/
+
+/* General page style. The scroll bar colours only visible in IE5.5+ */
+body {
+	background-color: #E5E5E5;
+	scrollbar-face-color: #DEE3E7;
+	scrollbar-highlight-color: #FFFFFF;
+	scrollbar-shadow-color: #DEE3E7;
+	scrollbar-3dlight-color: #D1D7DC;
+	scrollbar-arrow-color:  #006699;
+	scrollbar-track-color: #EFEFEF;
+	scrollbar-darkshadow-color: #98AAB1;
+}
+
+/* General font families for common tags */
+font,th,td,p { font-family: Verdana, Arial, Helvetica, sans-serif }
+a:link,a:active,a:visited { color : #006699; }
+a:hover		{ text-decoration: underline; color : #DD6900; }
+hr	{ height: 0px; border: solid #D1D7DC 0px; border-top-width: 1px;}
+
+/* This is the border line & background colour round the entire page */
+.bodyline	{ background-color: #FFFFFF; border: 1px #98AAB1 solid; }
+
+/* This is the outline round the main forum tables */
+.forumline	{ background-color: #FFFFFF; border: 2px #006699 solid; }
+
+/* Main table cell colours and backgrounds */
+td.row1	{ background-color: #EFEFEF; }
+td.row2	{ background-color: #DEE3E7; }
+td.row3	{ background-color: #D1D7DC; }
+
+/*
+  This is for the table cell above the Topics, Post & Last posts on the index.php page
+  By default this is the fading out gradiated silver background.
+  However, you could replace this with a bitmap specific for each forum
+*/
+td.rowpic {
+		background-color: #FFFFFF;
+		background-image: url(templates/subSilver/images/cellpic2.jpg);
+		background-repeat: repeat-y;
+}
+
+/* Header cells - the blue and silver gradient backgrounds */
+th	{
+	color: #FFA34F; font-size: 11px; font-weight : bold;
+	background-color: #006699; height: 25px;
+	background-image: url(templates/subSilver/images/cellpic3.gif);
+}
+
+td.cat,td.catHead,td.catSides,td.catLeft,td.catRight,td.catBottom {
+			background-image: url(templates/subSilver/images/cellpic1.gif);
+			background-color:#D1D7DC; border: #FFFFFF; border-style: solid; height: 28px;
+}
+
+/*
+  Setting additional nice inner borders for the main table cells.
+  The names indicate which sides the border will be on.
+  Don't worry if you don't understand this, just ignore it :-)
+*/
+td.cat,td.catHead,td.catBottom {
+	height: 29px;
+	border-width: 0px 0px 0px 0px;
+}
+th.thHead,th.thSides,th.thTop,th.thLeft,th.thRight,th.thBottom,th.thCornerL,th.thCornerR {
+	font-weight: bold; border: #FFFFFF; border-style: solid; height: 28px;
+}
+td.row3Right,td.spaceRow {
+	background-color: #D1D7DC; border: #FFFFFF; border-style: solid;
+}
+
+th.thHead,td.catHead { font-size: 12px; border-width: 1px 1px 0px 1px; }
+th.thSides,td.catSides,td.spaceRow	 { border-width: 0px 1px 0px 1px; }
+th.thRight,td.catRight,td.row3Right	 { border-width: 0px 1px 0px 0px; }
+th.thLeft,td.catLeft	  { border-width: 0px 0px 0px 1px; }
+th.thBottom,td.catBottom  { border-width: 0px 1px 1px 1px; }
+th.thTop	 { border-width: 1px 0px 0px 0px; }
+th.thCornerL { border-width: 1px 0px 0px 1px; }
+th.thCornerR { border-width: 1px 1px 0px 0px; }
+
+/* The largest text used in the index page title and toptic title etc. */
+.maintitle	{
+	font-weight: bold; font-size: 22px; font-family: "Trebuchet MS",Verdana, Arial, Helvetica, sans-serif;
+	text-decoration: none; line-height : 120%; color : #000000;
+}
+
+/* General text */
+.gen { font-size : 12px; }
+.genmed { font-size : 11px; }
+.gensmall { font-size : 10px; }
+.gen,.genmed,.gensmall { color : #000000; }
+a.gen,a.genmed,a.gensmall { color: #006699; text-decoration: none; }
+a.gen:hover,a.genmed:hover,a.gensmall:hover	{ color: #DD6900; text-decoration: underline; }
+
+/* The register, login, search etc links at the top of the page */
+.mainmenu		{ font-size : 11px; color : #000000 }
+a.mainmenu		{ text-decoration: none; color : #006699;  }
+a.mainmenu:hover{ text-decoration: underline; color : #DD6900; }
+
+/* Forum category titles */
+.cattitle		{ font-weight: bold; font-size: 12px ; letter-spacing: 1px; color : #006699}
+a.cattitle		{ text-decoration: none; color : #006699; }
+a.cattitle:hover{ text-decoration: underline; }
+
+/* Forum title: Text and link to the forums used in: index.php */
+.forumlink		{ font-weight: bold; font-size: 12px; color : #006699; }
+a.forumlink 	{ text-decoration: none; color : #006699; }
+a.forumlink:hover{ text-decoration: underline; color : #DD6900; }
+
+/* Used for the navigation text, (Page 1,2,3 etc) and the navigation bar when in a forum */
+.nav			{ font-weight: bold; font-size: 11px; color : #000000;}
+a.nav			{ text-decoration: none; color : #006699; }
+a.nav:hover		{ text-decoration: underline; }
+
+/* titles for the topics: could specify viewed link colour too */
+.topictitle,h1,h2	{ font-weight: bold; font-size: 11px; color : #000000; }
+a.topictitle:link   { text-decoration: none; color : #006699; }
+a.topictitle:visited { text-decoration: none; color : #5493B4; }
+a.topictitle:hover	{ text-decoration: underline; color : #DD6900; }
+
+/* Name of poster in viewmsg.php and viewtopic.php and other places */
+.name			{ font-size : 11px; color : #000000;}
+
+/* Location, number of posts, post date etc */
+.postdetails		{ font-size : 10px; color : #000000; }
+
+/* The content of the posts (body of text) */
+.postbody { font-size : 12px; line-height: 18px}
+a.postlink:link	{ text-decoration: none; color : #006699 }
+a.postlink:visited { text-decoration: none; color : #5493B4; }
+a.postlink:hover { text-decoration: underline; color : #DD6900}
+
+/* Quote & Code blocks */
+.code {
+	font-family: Courier, 'Courier New', sans-serif; font-size: 11px; color: #006600;
+	background-color: #FAFAFA; border: #D1D7DC; border-style: solid;
+	border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+}
+
+.quote {
+	font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11px; color: #444444; line-height: 125%;
+	background-color: #FAFAFA; border: #D1D7DC; border-style: solid;
+	border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+}
+
+/* Copyright and bottom info */
+.copyright		{ font-size: 10px; font-family: Verdana, Arial, Helvetica, sans-serif; color: #444444; letter-spacing: -1px;}
+a.copyright		{ color: #444444; text-decoration: none;}
+a.copyright:hover { color: #000000; text-decoration: underline;}
+
+/* Form elements */
+input,textarea, select {
+	color : #000000;
+	font: normal 11px Verdana, Arial, Helvetica, sans-serif;
+	border-color : #000000;
+}
+
+/* The text input fields background colour */
+input.post, textarea.post, select {
+	background-color : #FFFFFF;
+}
+
+input { text-indent : 2px; }
+
+/* The buttons used for bbCode styling in message post */
+input.button {
+	background-color : #EFEFEF;
+	color : #000000;
+	font-size: 11px; font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+/* The main submit button option */
+input.mainoption {
+	background-color : #FAFAFA;
+	font-weight : bold;
+}
+
+/* None-bold submit button */
+input.liteoption {
+	background-color : #FAFAFA;
+	font-weight : normal;
+}
+
+/* This is the line in the posting page which shows the rollover
+  help line. This is actually a text box, but if set to be the same
+  colour as the background no one will know ;)
+*/
+.helpline { background-color: #DEE3E7; border-style: none; }
+
+/* Import the fancy styles for IE only (NS4.x doesn't use the @import function) */
+@import url("templates/subSilver/formIE.css");
+-->
+</style>
+</head>
+<body bgcolor="#E5E5E5" text="#000000" link="#006699" vlink="#5493B4">
+
+<a name="top"></a>
+
+<table width="100%" cellspacing="0" cellpadding="10" border="0" align="center">
+	<tr>
+		<td class="bodyline"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<tr>
+				<td><a href="index-2.html"><img src="templates/subSilver/images/logo_phpBB.gif" border="0" alt="VB Decompiler Forum Index" vspace="1" /></a></td>
+				<td align="center" width="100%" valign="middle"><span class="maintitle">VB Decompiler</span><br /><span class="gen">Hosted by TheAutomaters.com<br />&nbsp; </span>
+				<table cellspacing="0" cellpadding="2" border="0">
+					<tr>
+						<td align="center" valign="top" nowrap="nowrap"><span class="mainmenu">&nbsp;
+						<a href="memberlist.html" class="mainmenu"><img src="templates/subSilver/images/icon_mini_members.gif" width="12" height="13" border="0" alt="Memberlist" hspace="3" />Memberlist</a>
+						</span></td>
+					</tr>
+					<tr>
+						<td height="25" align="center" valign="top" nowrap="nowrap"><span class="mainmenu">&nbsp;</td>
+					</tr>
+				</table></td>
+			</tr>
+		</table>
+
+		<br />
+
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0">
+  <tr>
+	<td align="left" valign="bottom" colspan="2"><a class="maintitle" href="viewtopic728e.html" xx="t=1785&amp;start=0&amp;postdays=0&amp;postorder=asc&amp;highlight=">Visual Basic .NET Binary File Class</a><br />
+	  <span class="gensmall"><b></b><br />
+	  &nbsp; </span></td>
+  </tr>
+</table>
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0">
+  <tr>
+	<td></td>
+	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="index-2.html" class="nav">VB Decompiler Forum Index</a>
+	  -> <a href="viewforum01c9.html" xx="f=12" class="nav">Utilities &amp; User Contributions</a></span></td>
+  </tr>
+</table>
+
+<table class="forumline" width="100%" cellspacing="1" cellpadding="3" border="0">
+	<tr>
+		<th class="thLeft" width="150" height="26" nowrap="nowrap">Author</th>
+		<th class="thRight" nowrap="nowrap">Message</th>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2440"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Aug 07, 2004 1:26 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Visual Basic .NET Binary File Class
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">I've made a handy class to help me with decompiling stuff.
+<br />
+I think it's worth to share, thanks to MrU for the idea 
+<br />
+
+<br />
+[vbnet:1c8s7yjx]<div class="vbnet" id="{CB}" style="font-family: monospace;"><ol><li style="" class="li1"><span style="color: #FF8000;">Option</span> Explicit <span style="color: #FF8000;">On</span></li><li style="" class="li2"><span style="color: #FF8000;">Option</span> Strict <span style="color: #FF8000;">On</span></li><li style="" class="li1">&nbsp;</li><li style="" class="li2"><span style="color: #FF8000;">Public</span> <span style="color: #0600FF;">Class</span> cFile</li><li style="" class="li1">&nbsp; <span style="color: #FF8000;">Private</span> fsFile <span style="color: #FF8000;">As</span> IO.<span style="color: #0000FF;">FileStream</span></li><li style="" class="li2">&nbsp; <span style="color: #FF8000;">Private</span> brFile <span style="color: #FF8000;">As</span> IO.<span style="color: #0000FF;">BinaryReader</span></li><li style="" class="li1">&nbsp;</li><li style="" class="li2">&nbsp; <span style="color: #FF8000;">Public</span> <span style="color: #0600FF;">ReadOnly</span> <span style="color: #FF8000;">Property</span> Length<span style="color: #000000;">&#40;</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Long</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #FF8000;">Get</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; Return brFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #0000FF;">Length</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #FF8000;">Get</span></li><li style="" class="li2">&nbsp; <span style="color: #0600FF;">End</span> <span style="color: #FF8000;">Property</span></li><li style="" class="li1">&nbsp; <span style="color: #FF8000;">Public</span> <span style="color: #FF8000;">Property</span> Offset<span style="color: #000000;">&#40;</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Long</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #FF8000;">Get</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; Return brFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #0000FF;">Position</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #FF8000;">Get</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #FF8000;">Set</span><span style="color: #000000;">&#40;</span><span style="color: #FF8000;">ByVal</span> newValue <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Long</span><span style="color: #000000;">&#41;</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; brFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #0000FF;">Position</span> = newValue</li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #FF8000;">Set</span></li><li style="" class="li2">&nbsp; <span style="color: #0600FF;">End</span> <span style="color: #FF8000;">Property</span></li><li style="" class="li1">&nbsp;</li><li style="" class="li2">&nbsp; <span style="color: #FF8000;">Public</span> <span style="color: #0600FF;">Function</span> ReadByte<span style="color: #000000;">&#40;</span><span style="color: #FF8000;">Optional</span> <span style="color: #FF8000;">ByVal</span> Offset <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Long</span> = <span style="color: #FF0000;">-1</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Byte</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #0600FF;">If</span> Offset &gt; <span style="color: #FF0000;">-1</span> <span style="color: #FF8000;">Then</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; brFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #0000FF;">Position</span> = Offset</li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">If</span></li><li style="" class="li2">&nbsp; &nbsp; Return brFile.<span style="color: #0000FF;">ReadByte</span></li><li style="" class="li1">&nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Function</span></li><li style="" class="li2">&nbsp; <span style="color: #FF8000;">Public</span> <span style="color: #0600FF;">Function</span> ReadBytes<span style="color: #000000;">&#40;</span><span style="color: #FF8000;">ByVal</span> Count <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Integer</span>, <span style="color: #FF8000;">Optional</span> <span style="color: #FF8000;">ByVal</span> Offset <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Long</span> = <span style="color: #FF0000;">-1</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Byte</span><span style="color: #000000;">&#40;</span><span style="color: #000000;">&#41;</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #0600FF;">If</span> Offset &gt; <span style="color: #FF0000;">-1</span> <span style="color: #FF8000;">Then</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; brFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #0000FF;">Position</span> = Offset</li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">If</span></li><li style="" class="li2">&nbsp; &nbsp; Return brFile.<span style="color: #0000FF;">ReadBytes</span><span style="color: #000000;">&#40;</span>Count<span style="color: #000000;">&#41;</span></li><li style="" class="li1">&nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Function</span></li><li style="" class="li2">&nbsp; <span style="color: #FF8000;">Public</span> <span style="color: #0600FF;">Function</span> ReadInt16<span style="color: #000000;">&#40;</span><span style="color: #FF8000;">Optional</span> <span style="color: #FF8000;">ByVal</span> Offset <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Long</span> = <span style="color: #FF0000;">-1</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> Short</li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #0600FF;">If</span> Offset &gt; <span style="color: #FF0000;">-1</span> <span style="color: #FF8000;">Then</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; brFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #0000FF;">Position</span> = Offset</li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">If</span></li><li style="" class="li2">&nbsp; &nbsp; Return brFile.<span style="color: #0000FF;">ReadInt16</span></li><li style="" class="li1">&nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Function</span></li><li style="" class="li2">&nbsp; <span style="color: #FF8000;">Public</span> <span style="color: #0600FF;">Function</span> ReadInt32<span style="color: #000000;">&#40;</span><span style="color: #FF8000;">Optional</span> <span style="color: #FF8000;">ByVal</span> Offset <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Long</span> = <span style="color: #FF0000;">-1</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Integer</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #0600FF;">If</span> Offset &gt; <span style="color: #FF0000;">-1</span> <span style="color: #FF8000;">Then</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; brFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #0000FF;">Position</span> = Offset</li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">If</span></li><li style="" class="li2">&nbsp; &nbsp; Return brFile.<span style="color: #0000FF;">ReadInt32</span></li><li style="" class="li1">&nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Function</span></li><li style="" class="li2">&nbsp; <span style="color: #FF8000;">Public</span> <span style="color: #0600FF;">Function</span> ReadString<span style="color: #000000;">&#40;</span><span style="color: #FF8000;">Optional</span> <span style="color: #FF8000;">ByVal</span> Offset <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Long</span> = <span style="color: #FF0000;">-1</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> <span style="color: #FF8000;">String</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' change offset</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #0600FF;">If</span> Offset &gt; <span style="color: #FF0000;">-1</span> <span style="color: #FF8000;">Then</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; brFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #0000FF;">Position</span> = Offset</li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">If</span></li><li style="" class="li1">&nbsp;</li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' read the string</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' note: the string is prefixed with the length, encoded as an integer 7 bits at a time</span></li><li style="" class="li2">&nbsp; &nbsp; Return brFile.<span style="color: #0000FF;">ReadString</span><span style="color: #000000;">&#40;</span><span style="color: #000000;">&#41;</span></li><li style="" class="li1">&nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Function</span></li><li style="" class="li2">&nbsp; <span style="color: #FF8000;">Public</span> <span style="color: #0600FF;">Function</span> ReadNullTerminatedString<span style="color: #000000;">&#40;</span><span style="color: #FF8000;">Optional</span> <span style="color: #FF8000;">ByVal</span> Offset <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Long</span> = <span style="color: #FF0000;">-1</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> <span style="color: #FF8000;">String</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #0600FF;">Dim</span> bByte <span style="color: #FF8000;">As</span> Char, sString <span style="color: #FF8000;">As</span> <span style="color: #FF8000;">String</span> = <span style="color: #808080;">&quot;&quot;</span></li><li style="" class="li2">&nbsp;</li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' change offset</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #0600FF;">If</span> Offset &gt; <span style="color: #FF0000;">-1</span> <span style="color: #FF8000;">Then</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; brFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #0000FF;">Position</span> = Offset</li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">If</span></li><li style="" class="li1">&nbsp;</li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' read first byte</span></li><li style="" class="li1">&nbsp; &nbsp; bByte = brFile.<span style="color: #0000FF;">ReadChar</span><span style="color: #000000;">&#40;</span><span style="color: #000000;">&#41;</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' loop until it founds null char</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #0600FF;">While</span> <span style="color: #0600FF;">Asc</span><span style="color: #000000;">&#40;</span>bByte<span style="color: #000000;">&#41;</span> &gt; <span style="color: #FF0000;">0</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; sString &amp;= bByte</li><li style="" class="li1">&nbsp; &nbsp; &nbsp; bByte = brFile.<span style="color: #0000FF;">ReadChar</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">While</span></li><li style="" class="li1">&nbsp;</li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' return the string readed</span></li><li style="" class="li1">&nbsp; &nbsp; Return sString</li><li style="" class="li2">&nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Function</span></li><li style="" class="li1">&nbsp; <span style="color: #FF8000;">Public</span> <span style="color: #0600FF;">Function</span> ReadNullTerminatedUnicodeString<span style="color: #000000;">&#40;</span><span style="color: #FF8000;">Optional</span> <span style="color: #FF8000;">ByVal</span> Offset <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Long</span> = <span style="color: #FF0000;">-1</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> <span style="color: #FF8000;">String</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #0600FF;">Dim</span> sString <span style="color: #FF8000;">As</span> <span style="color: #FF8000;">String</span> = <span style="color: #808080;">&quot;&quot;</span></li><li style="" class="li1">&nbsp;</li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #008080; font-style: italic;">'change offset</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #0600FF;">If</span> Offset &gt; <span style="color: #FF0000;">-1</span> <span style="color: #FF8000;">Then</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; brFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #0000FF;">Position</span> = Offset</li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">If</span></li><li style="" class="li2">&nbsp;</li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' read first byte</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #0600FF;">Dim</span> bByte <span style="color: #FF8000;">As</span> Char = brFile.<span style="color: #0000FF;">ReadChar</span><span style="color: #000000;">&#40;</span><span style="color: #000000;">&#41;</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' loop until it founds null char</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #0600FF;">While</span> <span style="color: #0600FF;">Asc</span><span style="color: #000000;">&#40;</span>bByte<span style="color: #000000;">&#41;</span> &gt; <span style="color: #FF0000;">0</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; sString &amp;= bByte</li><li style="" class="li2">&nbsp; &nbsp; &nbsp; brFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #FF8000;">Seek</span><span style="color: #000000;">&#40;</span><span style="color: #FF0000;">1</span>, IO.<span style="color: #0000FF;">SeekOrigin</span>.<span style="color: #0000FF;">Current</span><span style="color: #000000;">&#41;</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; bByte = brFile.<span style="color: #0000FF;">ReadChar</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">While</span></li><li style="" class="li1">&nbsp;</li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' return the string readed</span></li><li style="" class="li1">&nbsp; &nbsp; Return sString</li><li style="" class="li2">&nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Function</span></li><li style="" class="li1">&nbsp; <span style="color: #FF8000;">Public</span> <span style="color: #0600FF;">Function</span> ReadStructure<span style="color: #000000;">&#40;</span><span style="color: #FF8000;">ByRef</span> Struct <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Object</span>, <span style="color: #FF8000;">Optional</span> <span style="color: #FF8000;">ByVal</span> Offset <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Long</span> = <span style="color: #FF0000;">-1</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Integer</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' get structure size</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #0600FF;">Dim</span> iStructLen <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Integer</span> = Runtime.<span style="color: #0000FF;">InteropServices</span>.<span style="color: #0000FF;">Marshal</span>.<span style="color: #0000FF;">SizeOf</span><span style="color: #000000;">&#40;</span>Struct<span style="color: #000000;">&#41;</span> - <span style="color: #FF0000;">4</span></li><li style="" class="li2">&nbsp;</li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' change file offset</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #0600FF;">If</span> Offset &gt; <span style="color: #FF0000;">-1</span> <span style="color: #FF8000;">Then</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; brFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #0000FF;">Position</span> = Offset</li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">If</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' read our byte array from file</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #0600FF;">Dim</span> StructData<span style="color: #000000;">&#40;</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Byte</span> = brFile.<span style="color: #0000FF;">ReadBytes</span><span style="color: #000000;">&#40;</span>iStructLen<span style="color: #000000;">&#41;</span></li><li style="" class="li1">&nbsp;</li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' allocate buffer</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #0600FF;">Dim</span> DataBuffer <span style="color: #FF8000;">As</span> IntPtr = Runtime.<span style="color: #0000FF;">InteropServices</span>.<span style="color: #0000FF;">Marshal</span>.<span style="color: #0000FF;">AllocHGlobal</span><span style="color: #000000;">&#40;</span>iStructLen<span style="color: #000000;">&#41;</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' copy our byte array to buffer</span></li><li style="" class="li1">&nbsp; &nbsp; Runtime.<span style="color: #0000FF;">InteropServices</span>.<span style="color: #0000FF;">Marshal</span>.<span style="color: #0000FF;">Copy</span><span style="color: #000000;">&#40;</span>StructData, <span style="color: #FF0000;">0</span>, DataBuffer, iStructLen<span style="color: #000000;">&#41;</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' change our structure pointer to buffer</span></li><li style="" class="li1">&nbsp; &nbsp; Struct = Runtime.<span style="color: #0000FF;">InteropServices</span>.<span style="color: #0000FF;">Marshal</span>.<span style="color: #0000FF;">PtrToStructure</span><span style="color: #000000;">&#40;</span>DataBuffer, Struct.<span style="color: #804040;">GetType</span><span style="color: #000000;">&#41;</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' free memory</span></li><li style="" class="li1">&nbsp; &nbsp; Runtime.<span style="color: #0000FF;">InteropServices</span>.<span style="color: #0000FF;">Marshal</span>.<span style="color: #0000FF;">FreeHGlobal</span><span style="color: #000000;">&#40;</span>DataBuffer<span style="color: #000000;">&#41;</span></li><li style="" class="li2">&nbsp;</li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' return bytes read</span></li><li style="" class="li2">&nbsp; &nbsp; Return iStructLen</li><li style="" class="li1">&nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Function</span></li><li style="" class="li2">&nbsp; <span style="color: #FF8000;">Public</span> <span style="color: #0600FF;">Function</span> ReadStructure<span style="color: #000000;">&#40;</span><span style="color: #FF8000;">ByRef</span> StructType <span style="color: #FF8000;">As</span> Type, <span style="color: #FF8000;">Optional</span> <span style="color: #FF8000;">ByVal</span> Offset <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Long</span> = <span style="color: #FF0000;">-1</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Object</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' get structure size</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #0600FF;">Dim</span> iStructLen <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Integer</span> = Runtime.<span style="color: #0000FF;">InteropServices</span>.<span style="color: #0000FF;">Marshal</span>.<span style="color: #0000FF;">SizeOf</span><span style="color: #000000;">&#40;</span>StructType<span style="color: #000000;">&#41;</span> - <span style="color: #FF0000;">4</span></li><li style="" class="li1">&nbsp;</li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' change file offset</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #0600FF;">If</span> Offset &gt; <span style="color: #FF0000;">-1</span> <span style="color: #FF8000;">Then</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; brFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #0000FF;">Position</span> = Offset</li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">If</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' read our byte array from file</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #0600FF;">Dim</span> StructData<span style="color: #000000;">&#40;</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Byte</span> = brFile.<span style="color: #0000FF;">ReadBytes</span><span style="color: #000000;">&#40;</span>iStructLen<span style="color: #000000;">&#41;</span></li><li style="" class="li2">&nbsp;</li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' allocate buffer</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #0600FF;">Dim</span> DataBuffer <span style="color: #FF8000;">As</span> IntPtr = Runtime.<span style="color: #0000FF;">InteropServices</span>.<span style="color: #0000FF;">Marshal</span>.<span style="color: #0000FF;">AllocHGlobal</span><span style="color: #000000;">&#40;</span>iStructLen<span style="color: #000000;">&#41;</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' copy our byte array to buffer</span></li><li style="" class="li2">&nbsp; &nbsp; Runtime.<span style="color: #0000FF;">InteropServices</span>.<span style="color: #0000FF;">Marshal</span>.<span style="color: #0000FF;">Copy</span><span style="color: #000000;">&#40;</span>StructData, <span style="color: #FF0000;">0</span>, DataBuffer, iStructLen<span style="color: #000000;">&#41;</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' get a pointer to our buffer and redirect our function pointer to there (casting it)</span></li><li style="" class="li2">&nbsp; &nbsp; ReadStructure = Runtime.<span style="color: #0000FF;">InteropServices</span>.<span style="color: #0000FF;">Marshal</span>.<span style="color: #0000FF;">PtrToStructure</span><span style="color: #000000;">&#40;</span>DataBuffer, StructType<span style="color: #000000;">&#41;</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' free memory</span></li><li style="" class="li2">&nbsp; &nbsp; Runtime.<span style="color: #0000FF;">InteropServices</span>.<span style="color: #0000FF;">Marshal</span>.<span style="color: #0000FF;">FreeHGlobal</span><span style="color: #000000;">&#40;</span>DataBuffer<span style="color: #000000;">&#41;</span></li><li style="" class="li1">&nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Function</span></li><li style="" class="li2">&nbsp;</li><li style="" class="li1">&nbsp; <span style="color: #FF8000;">Public</span> <span style="color: #0600FF;">Sub</span> <span style="color: #FF8000;">New</span><span style="color: #000000;">&#40;</span><span style="color: #FF8000;">ByVal</span> FilePath <span style="color: #FF8000;">As</span> <span style="color: #FF8000;">String</span><span style="color: #000000;">&#41;</span></li><li style="" class="li2">&nbsp; &nbsp; fsFile = <span style="color: #FF8000;">New</span> IO.<span style="color: #0000FF;">FileStream</span><span style="color: #000000;">&#40;</span>FilePath, IO.<span style="color: #0000FF;">FileMode</span>.<span style="color: #0600FF;">Open</span>, IO.<span style="color: #0000FF;">FileAccess</span>.<span style="color: #0000FF;">Read</span>, IO.<span style="color: #0000FF;">FileShare</span>.<span style="color: #0000FF;">Read</span><span style="color: #000000;">&#41;</span></li><li style="" class="li1">&nbsp; &nbsp; brFile = <span style="color: #FF8000;">New</span> IO.<span style="color: #0000FF;">BinaryReader</span><span style="color: #000000;">&#40;</span>fsFile<span style="color: #000000;">&#41;</span></li><li style="" class="li2">&nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Sub</span></li><li style="" class="li1">&nbsp; Protected Overrides <span style="color: #0600FF;">Sub</span> Finalize<span style="color: #000000;">&#40;</span><span style="color: #000000;">&#41;</span></li><li style="" class="li2">&nbsp; &nbsp; brFile.<span style="color: #0600FF;">Close</span><span style="color: #000000;">&#40;</span><span style="color: #000000;">&#41;</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #FF8000;">MyBase</span>.<span style="color: #0000FF;">Finalize</span><span style="color: #000000;">&#40;</span><span style="color: #000000;">&#41;</span></li><li style="" class="li2">&nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Sub</span></li><li style="" class="li1"><span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Class</span></li></ol></div>[/vbnet:1c8s7yjx]
+<br />
+
+<br />
+BTW: This is VB.NET <br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"><br /><br />Last edited by _aLfa_ on Sat Aug 07, 2004 1:43 pm; edited 4 times in total</span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2441"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Aug 07, 2004 3:36 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Very Nice 
+<br />
+
+<br />
+
+<br />
+I love OOP <br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2443"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Aug 07, 2004 9:26 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Class updated:
+<br />
+Added ReadBytes function to read an array of bytes from the file.
+<br />
+Added ReadNullTerminatedUnicodeString (same as ReaddNullTerminatedString, but it skips 1 byte at a time)
+<br />
+Added some comments on ReadString (the name may be confusing)
+<br />
+
+<br />
+And don't forget, if you find any additions/bugs whatever, poke me <br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2444"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Aug 07, 2004 9:32 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Class updated again:
+<br />
+I forgot to add the FileLength property <br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2445"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Aug 07, 2004 10:18 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Bug Fix:
+<br />
+SizeOf operator on ReadStructure was returning wrong size for structure (for some weird reason it was returning the real value plus 4 bytes)<br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2450"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Aug 07, 2004 1:45 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Added another ReadStructure (now you can use this one even with Option Strict On) 
+<br />
+
+<br />
+<span style="font-weight: bold">Examples:</span>
+<br />
+Public DOSHeader As IMAGE_DOS_HEADER
+<br />
+
+<br />
+<span style="font-style: italic">(Option Strict Off)</span>
+<br />
+StructLength = File.ReadStructure(DOSHeader)
+<br />
+-or-
+<br />
+DOSHeader = File.ReadStructure(DOSHeader.GetType)
+<br />
+
+<br />
+<span style="font-style: italic">(Option Strict On)</span>
+<br />
+DOSHeader = CType(File.ReadStructure(DOSHeader.GetType), IMAGE_DOS_HEADER)
+<br />
+
+<br />
+P.S.: If you don't understand something, feel free to ask <br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"><br /><br />Last edited by _aLfa_ on Sat Aug 07, 2004 1:49 pm; edited 1 time in total</span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2451"></a><b>vbgamer45</b></span><br /><span class="postdetails">Regular user<br /><!--<img src="pro_rank_03.gif" alt="Regular user" title="Regular user" border="0" /><br />--><br /><br />Joined: 07 Jul 2004<br />Posts: 93<br />Location: 127.0.0.1</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Aug 07, 2004 1:47 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Good Job keep up the good work </span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2452"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Aug 07, 2004 1:50 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Just edited the post <br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2453"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Aug 07, 2004 4:29 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;_aLfa_&quot;:3w5aoyk5]Class updated:
+<br />
+Added ReadNullTerminatedUnicodeString (same as ReaddNullTerminatedString, but it skips 1 byte at a time)
+<br />
+[/:3w5aoyk5]
+<br />
+
+<br />
+
+<br />
+Technically....a unicode string is not every other byte....Unicode is comprised of 16 bit characters(you probably know)
+<br />
+
+<br />
+there are some Unicode to Ascii conversion stuff in a .net library.
+<br />
+
+<br />
+
+<br />
+I think it is the System.Text.Encoding  Namespace.
+<br />
+
+<br />
+And here is a link on proper byte to unicode conversion 
+<br />
+
+<br />
+<!-- m --><a class="postlink" href="http://msdn.microsoft.com/library/default.asp?url=/library/en-us/cpref/html/frlrfsystemtextencodingclassconverttopic1.asp">http://msdn.microsoft.com/library/defau ... topic1.asp</a><!-- m --><br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2489"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Aug 12, 2004 5:38 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Hey i Updated your class to support writing to files as well as Unsigned Int/long
+<br />
+
+<br />
+[vbnet:9hwh66el]<div class="vbnet" id="{CB}" style="font-family: monospace;"><ol><li style="" class="li1"><span style="color: #FF8000;">Public</span> <span style="color: #0600FF;">Class</span> cFile</li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #FF8000;">Private</span> fsFile <span style="color: #FF8000;">As</span> IO.<span style="color: #0000FF;">FileStream</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #FF8000;">Private</span> brFile <span style="color: #FF8000;">As</span> IO.<span style="color: #0000FF;">BinaryReader</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #FF8000;">Private</span> bwFile <span style="color: #FF8000;">As</span> IO.<span style="color: #0000FF;">BinaryWriter</span></li><li style="" class="li1">&nbsp;</li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #FF8000;">Public</span> <span style="color: #0600FF;">ReadOnly</span> <span style="color: #FF8000;">Property</span> Length<span style="color: #000000;">&#40;</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Long</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #FF8000;">Get</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Return brFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #0000FF;">Length</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #FF8000;">Get</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #FF8000;">Property</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #FF8000;">Public</span> <span style="color: #FF8000;">Property</span> Offset<span style="color: #000000;">&#40;</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Long</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #FF8000;">Get</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Return brFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #0000FF;">Position</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #FF8000;">Get</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #FF8000;">Set</span><span style="color: #000000;">&#40;</span><span style="color: #FF8000;">ByVal</span> newValue <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Long</span><span style="color: #000000;">&#41;</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; brFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #0000FF;">Position</span> = newValue</li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; bwFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #0000FF;">Position</span> = newValue</li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #FF8000;">Set</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #FF8000;">Property</span></li><li style="" class="li2">&nbsp;</li><li style="" class="li1">&nbsp; &nbsp; </li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #FF8000;">Public</span> <span style="color: #0600FF;">Function</span> WriteByte<span style="color: #000000;">&#40;</span><span style="color: #FF8000;">ByVal</span> Value <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Byte</span>, <span style="color: #FF8000;">Optional</span> <span style="color: #FF8000;">ByVal</span> Offset <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Long</span> = <span style="color: #FF0000;">-1</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Boolean</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">Try</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">If</span> Offset &gt; <span style="color: #FF0000;">-1</span> <span style="color: #FF8000;">Then</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; bwFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #0000FF;">Position</span> = Offset</li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">If</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; bwFile.<span style="color: #0600FF;">Write</span><span style="color: #000000;">&#40;</span>Value<span style="color: #000000;">&#41;</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Return <span style="color: #0600FF;">True</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">Catch</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Return <span style="color: #0600FF;">False</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Try</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Function</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #FF8000;">Public</span> <span style="color: #0600FF;">Function</span> WriteBytes<span style="color: #000000;">&#40;</span><span style="color: #FF8000;">ByVal</span> Value <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Byte</span><span style="color: #000000;">&#40;</span><span style="color: #000000;">&#41;</span>, <span style="color: #FF8000;">Optional</span> <span style="color: #FF8000;">ByVal</span> Offset <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Long</span> = <span style="color: #FF0000;">-1</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Boolean</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">Try</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">If</span> Offset &gt; <span style="color: #FF0000;">-1</span> <span style="color: #FF8000;">Then</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; bwFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #0000FF;">Position</span> = Offset</li><li style="" class="li1">&nbsp;</li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">If</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; bwFile.<span style="color: #0600FF;">Write</span><span style="color: #000000;">&#40;</span>Value<span style="color: #000000;">&#41;</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' Me.Offset += Value.Length</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Return <span style="color: #0600FF;">True</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">Catch</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Return <span style="color: #0600FF;">False</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Try</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Function</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #FF8000;">Public</span> <span style="color: #0600FF;">Function</span> WriteInt16<span style="color: #000000;">&#40;</span><span style="color: #FF8000;">ByVal</span> Value <span style="color: #FF8000;">As</span> Int16, <span style="color: #FF8000;">Optional</span> <span style="color: #FF8000;">ByVal</span> Offset <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Long</span> = <span style="color: #FF0000;">-1</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Boolean</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">Try</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">If</span> Offset &gt; <span style="color: #FF0000;">-1</span> <span style="color: #FF8000;">Then</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; bwFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #0000FF;">Position</span> = Offset</li><li style="" class="li2">&nbsp;</li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">If</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; bwFile.<span style="color: #0600FF;">Write</span><span style="color: #000000;">&#40;</span>Value<span style="color: #000000;">&#41;</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #008080; font-style: italic;">'Me.Offset += 2</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Return <span style="color: #0600FF;">True</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">Catch</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Return <span style="color: #0600FF;">False</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Try</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Function</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #FF8000;">Public</span> <span style="color: #0600FF;">Function</span> WriteInt32<span style="color: #000000;">&#40;</span><span style="color: #FF8000;">ByVal</span> Value <span style="color: #FF8000;">As</span> Int32, <span style="color: #FF8000;">Optional</span> <span style="color: #FF8000;">ByVal</span> Offset <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Long</span> = <span style="color: #FF0000;">-1</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Boolean</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">Try</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">If</span> Offset &gt; <span style="color: #FF0000;">-1</span> <span style="color: #FF8000;">Then</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; bwFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #0000FF;">Position</span> = Offset</li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">If</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; bwFile.<span style="color: #0600FF;">Write</span><span style="color: #000000;">&#40;</span>Value<span style="color: #000000;">&#41;</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #008080; font-style: italic;">'Me.Offset += 4</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Return <span style="color: #0600FF;">True</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">Catch</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Return <span style="color: #0600FF;">False</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Try</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Function</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #FF8000;">Public</span> <span style="color: #0600FF;">Function</span> WriteUInt16<span style="color: #000000;">&#40;</span><span style="color: #FF8000;">ByVal</span> Value <span style="color: #FF8000;">As</span> UInt16, <span style="color: #FF8000;">Optional</span> <span style="color: #FF8000;">ByVal</span> Offset <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Long</span> = <span style="color: #FF0000;">-1</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Boolean</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">Try</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">If</span> Offset &gt; <span style="color: #FF0000;">-1</span> <span style="color: #FF8000;">Then</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; bwFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #0000FF;">Position</span> = Offset</li><li style="" class="li1">&nbsp;</li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">If</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; bwFile.<span style="color: #0600FF;">Write</span><span style="color: #000000;">&#40;</span>Value<span style="color: #000000;">&#41;</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #008080; font-style: italic;">'Me.Offset += 2</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Return <span style="color: #0600FF;">True</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">Catch</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Return <span style="color: #0600FF;">False</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Try</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Function</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #FF8000;">Public</span> <span style="color: #0600FF;">Function</span> WriteUInt32<span style="color: #000000;">&#40;</span><span style="color: #FF8000;">ByVal</span> Value <span style="color: #FF8000;">As</span> UInt32, <span style="color: #FF8000;">Optional</span> <span style="color: #FF8000;">ByVal</span> Offset <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Long</span> = <span style="color: #FF0000;">-1</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Boolean</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">Try</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">If</span> Offset &gt; <span style="color: #FF0000;">-1</span> <span style="color: #FF8000;">Then</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; bwFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #0000FF;">Position</span> = Offset</li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">If</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; bwFile.<span style="color: #0600FF;">Write</span><span style="color: #000000;">&#40;</span>Value<span style="color: #000000;">&#41;</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #008080; font-style: italic;">'Me.Offset += 4</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Return <span style="color: #0600FF;">True</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">Catch</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Return <span style="color: #0600FF;">False</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Try</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Function</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #FF8000;">Public</span> <span style="color: #0600FF;">Function</span> WriteString<span style="color: #000000;">&#40;</span><span style="color: #FF8000;">ByVal</span> Value <span style="color: #FF8000;">As</span> <span style="color: #FF8000;">String</span>, <span style="color: #FF8000;">Optional</span> <span style="color: #FF8000;">ByVal</span> Offset <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Long</span> = <span style="color: #FF0000;">-1</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Boolean</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">Try</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">If</span> Offset &gt; <span style="color: #FF0000;">-1</span> <span style="color: #FF8000;">Then</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; bwFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #0000FF;">Position</span> = Offset</li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; bwFile.<span style="color: #0600FF;">Write</span><span style="color: #000000;">&#40;</span>Value<span style="color: #000000;">&#41;</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">If</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Return <span style="color: #0600FF;">True</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">Catch</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Return <span style="color: #0600FF;">False</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Try</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Function</span></li><li style="" class="li1">&nbsp;</li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #FF8000;">Public</span> <span style="color: #0600FF;">Function</span> ReadByte<span style="color: #000000;">&#40;</span><span style="color: #FF8000;">Optional</span> <span style="color: #FF8000;">ByVal</span> Offset <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Long</span> = <span style="color: #FF0000;">-1</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Byte</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">If</span> Offset &gt; <span style="color: #FF0000;">-1</span> <span style="color: #FF8000;">Then</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; brFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #0000FF;">Position</span> = Offset</li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">If</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; Return brFile.<span style="color: #0000FF;">ReadByte</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Function</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #FF8000;">Public</span> <span style="color: #0600FF;">Function</span> ReadBytes<span style="color: #000000;">&#40;</span><span style="color: #FF8000;">ByVal</span> Count <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Integer</span>, <span style="color: #FF8000;">Optional</span> <span style="color: #FF8000;">ByVal</span> Offset <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Long</span> = <span style="color: #FF0000;">-1</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Byte</span><span style="color: #000000;">&#40;</span><span style="color: #000000;">&#41;</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">If</span> Offset &gt; <span style="color: #FF0000;">-1</span> <span style="color: #FF8000;">Then</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; brFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #0000FF;">Position</span> = Offset</li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">If</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; Return brFile.<span style="color: #0000FF;">ReadBytes</span><span style="color: #000000;">&#40;</span>Count<span style="color: #000000;">&#41;</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Function</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #FF8000;">Public</span> <span style="color: #0600FF;">Function</span> ReadInt16<span style="color: #000000;">&#40;</span><span style="color: #FF8000;">Optional</span> <span style="color: #FF8000;">ByVal</span> Offset <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Long</span> = <span style="color: #FF0000;">-1</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> Short</li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">If</span> Offset &gt; <span style="color: #FF0000;">-1</span> <span style="color: #FF8000;">Then</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; brFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #0000FF;">Position</span> = Offset</li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">If</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; Return brFile.<span style="color: #0000FF;">ReadInt16</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Function</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #FF8000;">Public</span> <span style="color: #0600FF;">Function</span> ReadInt32<span style="color: #000000;">&#40;</span><span style="color: #FF8000;">Optional</span> <span style="color: #FF8000;">ByVal</span> Offset <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Long</span> = <span style="color: #FF0000;">-1</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Integer</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">If</span> Offset &gt; <span style="color: #FF0000;">-1</span> <span style="color: #FF8000;">Then</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; brFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #0000FF;">Position</span> = Offset</li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">If</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; Return brFile.<span style="color: #0000FF;">ReadInt32</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Function</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #FF8000;">Public</span> <span style="color: #0600FF;">Function</span> ReadUInt16<span style="color: #000000;">&#40;</span><span style="color: #FF8000;">Optional</span> <span style="color: #FF8000;">ByVal</span> Offset <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Long</span> = <span style="color: #FF0000;">-1</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> UShort</li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">If</span> Offset &gt; <span style="color: #FF0000;">-1</span> <span style="color: #FF8000;">Then</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; brFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #0000FF;">Position</span> = Offset</li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">If</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; Return brFile.<span style="color: #0000FF;">ReadUInt16</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Function</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #FF8000;">Public</span> <span style="color: #0600FF;">Function</span> ReadUInt32<span style="color: #000000;">&#40;</span><span style="color: #FF8000;">Optional</span> <span style="color: #FF8000;">ByVal</span> Offset <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Long</span> = <span style="color: #FF0000;">-1</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> UInteger</li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">If</span> Offset &gt; <span style="color: #FF0000;">-1</span> <span style="color: #FF8000;">Then</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; brFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #0000FF;">Position</span> = Offset</li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">If</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; Return brFile.<span style="color: #0000FF;">ReadUInt32</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Function</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #FF8000;">Public</span> <span style="color: #0600FF;">Function</span> ReadString<span style="color: #000000;">&#40;</span><span style="color: #FF8000;">Optional</span> <span style="color: #FF8000;">ByVal</span> Offset <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Long</span> = <span style="color: #FF0000;">-1</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> <span style="color: #FF8000;">String</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' change offset</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">If</span> Offset &gt; <span style="color: #FF0000;">-1</span> <span style="color: #FF8000;">Then</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; brFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #0000FF;">Position</span> = Offset</li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">If</span></li><li style="" class="li1">&nbsp;</li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' read the string</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' note: the string is prefixed with the length, encoded as an integer 7 bits at a time</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; Return brFile.<span style="color: #0000FF;">ReadString</span><span style="color: #000000;">&#40;</span><span style="color: #000000;">&#41;</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Function</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #FF8000;">Public</span> <span style="color: #0600FF;">Function</span> ReadNullTerminatedString<span style="color: #000000;">&#40;</span><span style="color: #FF8000;">Optional</span> <span style="color: #FF8000;">ByVal</span> Offset <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Long</span> = <span style="color: #FF0000;">-1</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> <span style="color: #FF8000;">String</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">Dim</span> bByte <span style="color: #FF8000;">As</span> Char, sString <span style="color: #FF8000;">As</span> <span style="color: #FF8000;">String</span> = <span style="color: #808080;">&quot;&quot;</span></li><li style="" class="li2">&nbsp;</li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' change offset</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">If</span> Offset &gt; <span style="color: #FF0000;">-1</span> <span style="color: #FF8000;">Then</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; brFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #0000FF;">Position</span> = Offset</li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">If</span></li><li style="" class="li1">&nbsp;</li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' read first byte</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; bByte = brFile.<span style="color: #0000FF;">ReadChar</span><span style="color: #000000;">&#40;</span><span style="color: #000000;">&#41;</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' loop until it founds null char</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">While</span> <span style="color: #0600FF;">Asc</span><span style="color: #000000;">&#40;</span>bByte<span style="color: #000000;">&#41;</span> &gt; <span style="color: #FF0000;">0</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; sString &amp;= bByte</li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; bByte = brFile.<span style="color: #0000FF;">ReadChar</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">While</span></li><li style="" class="li1">&nbsp;</li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' return the string readed</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; Return sString</li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Function</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #FF8000;">Public</span> <span style="color: #0600FF;">Function</span> ReadNullTerminatedUnicodeString<span style="color: #000000;">&#40;</span><span style="color: #FF8000;">Optional</span> <span style="color: #FF8000;">ByVal</span> Offset <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Long</span> = <span style="color: #FF0000;">-1</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> <span style="color: #FF8000;">String</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">Dim</span> sString <span style="color: #FF8000;">As</span> <span style="color: #FF8000;">String</span> = <span style="color: #808080;">&quot;&quot;</span></li><li style="" class="li1">&nbsp;</li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #008080; font-style: italic;">'change offset</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">If</span> Offset &gt; <span style="color: #FF0000;">-1</span> <span style="color: #FF8000;">Then</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; brFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #0000FF;">Position</span> = Offset</li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">If</span></li><li style="" class="li2">&nbsp;</li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' read first byte</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">Dim</span> bByte <span style="color: #FF8000;">As</span> Char = brFile.<span style="color: #0000FF;">ReadChar</span><span style="color: #000000;">&#40;</span><span style="color: #000000;">&#41;</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' loop until it founds null char</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">While</span> <span style="color: #0600FF;">Asc</span><span style="color: #000000;">&#40;</span>bByte<span style="color: #000000;">&#41;</span> &gt; <span style="color: #FF0000;">0</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; sString &amp;= bByte</li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; brFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #FF8000;">Seek</span><span style="color: #000000;">&#40;</span><span style="color: #FF0000;">1</span>, IO.<span style="color: #0000FF;">SeekOrigin</span>.<span style="color: #0000FF;">Current</span><span style="color: #000000;">&#41;</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; bByte = brFile.<span style="color: #0000FF;">ReadChar</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">While</span></li><li style="" class="li1">&nbsp;</li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' return the string readed</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; Return sString</li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Function</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #FF8000;">Public</span> <span style="color: #0600FF;">Function</span> ReadStructure<span style="color: #000000;">&#40;</span><span style="color: #FF8000;">ByRef</span> Struct <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Object</span>, <span style="color: #FF8000;">Optional</span> <span style="color: #FF8000;">ByVal</span> Offset <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Long</span> = <span style="color: #FF0000;">-1</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Integer</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' get structure size</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">Dim</span> iStructLen <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Integer</span> = Runtime.<span style="color: #0000FF;">InteropServices</span>.<span style="color: #0000FF;">Marshal</span>.<span style="color: #0000FF;">SizeOf</span><span style="color: #000000;">&#40;</span>Struct<span style="color: #000000;">&#41;</span> - <span style="color: #FF0000;">4</span></li><li style="" class="li2">&nbsp;</li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' change file offset</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">If</span> Offset &gt; <span style="color: #FF0000;">-1</span> <span style="color: #FF8000;">Then</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; brFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #0000FF;">Position</span> = Offset</li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">If</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' read our byte array from file</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">Dim</span> StructData<span style="color: #000000;">&#40;</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Byte</span> = brFile.<span style="color: #0000FF;">ReadBytes</span><span style="color: #000000;">&#40;</span>iStructLen<span style="color: #000000;">&#41;</span></li><li style="" class="li1">&nbsp;</li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' allocate buffer</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">Dim</span> DataBuffer <span style="color: #FF8000;">As</span> IntPtr = Runtime.<span style="color: #0000FF;">InteropServices</span>.<span style="color: #0000FF;">Marshal</span>.<span style="color: #0000FF;">AllocHGlobal</span><span style="color: #000000;">&#40;</span>iStructLen<span style="color: #000000;">&#41;</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' copy our byte array to buffer</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; Runtime.<span style="color: #0000FF;">InteropServices</span>.<span style="color: #0000FF;">Marshal</span>.<span style="color: #0000FF;">Copy</span><span style="color: #000000;">&#40;</span>StructData, <span style="color: #FF0000;">0</span>, DataBuffer, iStructLen<span style="color: #000000;">&#41;</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' change our structure pointer to buffer</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; Struct = Runtime.<span style="color: #0000FF;">InteropServices</span>.<span style="color: #0000FF;">Marshal</span>.<span style="color: #0000FF;">PtrToStructure</span><span style="color: #000000;">&#40;</span>DataBuffer, Struct.<span style="color: #804040;">GetType</span><span style="color: #000000;">&#41;</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' free memory</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; Runtime.<span style="color: #0000FF;">InteropServices</span>.<span style="color: #0000FF;">Marshal</span>.<span style="color: #0000FF;">FreeHGlobal</span><span style="color: #000000;">&#40;</span>DataBuffer<span style="color: #000000;">&#41;</span></li><li style="" class="li2">&nbsp;</li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' return bytes read</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; Return iStructLen</li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Function</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #FF8000;">Public</span> <span style="color: #0600FF;">Function</span> ReadStructure<span style="color: #000000;">&#40;</span><span style="color: #FF8000;">ByRef</span> StructType <span style="color: #FF8000;">As</span> Type, <span style="color: #FF8000;">Optional</span> <span style="color: #FF8000;">ByVal</span> Offset <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Long</span> = <span style="color: #FF0000;">-1</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Object</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' get structure size</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">Dim</span> iStructLen <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Integer</span> = Runtime.<span style="color: #0000FF;">InteropServices</span>.<span style="color: #0000FF;">Marshal</span>.<span style="color: #0000FF;">SizeOf</span><span style="color: #000000;">&#40;</span>StructType<span style="color: #000000;">&#41;</span> - <span style="color: #FF0000;">4</span></li><li style="" class="li1">&nbsp;</li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' change file offset</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">If</span> Offset &gt; <span style="color: #FF0000;">-1</span> <span style="color: #FF8000;">Then</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; brFile.<span style="color: #0000FF;">BaseStream</span>.<span style="color: #0000FF;">Position</span> = Offset</li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">If</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' read our byte array from file</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">Dim</span> StructData<span style="color: #000000;">&#40;</span><span style="color: #000000;">&#41;</span> <span style="color: #FF8000;">As</span> <span style="color: #FF0000;">Byte</span> = brFile.<span style="color: #0000FF;">ReadBytes</span><span style="color: #000000;">&#40;</span>iStructLen<span style="color: #000000;">&#41;</span></li><li style="" class="li2">&nbsp;</li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' allocate buffer</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #0600FF;">Dim</span> DataBuffer <span style="color: #FF8000;">As</span> IntPtr = Runtime.<span style="color: #0000FF;">InteropServices</span>.<span style="color: #0000FF;">Marshal</span>.<span style="color: #0000FF;">AllocHGlobal</span><span style="color: #000000;">&#40;</span>iStructLen<span style="color: #000000;">&#41;</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' copy our byte array to buffer</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; Runtime.<span style="color: #0000FF;">InteropServices</span>.<span style="color: #0000FF;">Marshal</span>.<span style="color: #0000FF;">Copy</span><span style="color: #000000;">&#40;</span>StructData, <span style="color: #FF0000;">0</span>, DataBuffer, iStructLen<span style="color: #000000;">&#41;</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' get a pointer to our buffer and redirect our function pointer to there (casting it)</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; ReadStructure = Runtime.<span style="color: #0000FF;">InteropServices</span>.<span style="color: #0000FF;">Marshal</span>.<span style="color: #0000FF;">PtrToStructure</span><span style="color: #000000;">&#40;</span>DataBuffer, StructType<span style="color: #000000;">&#41;</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #008080; font-style: italic;">' free memory</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; Runtime.<span style="color: #0000FF;">InteropServices</span>.<span style="color: #0000FF;">Marshal</span>.<span style="color: #0000FF;">FreeHGlobal</span><span style="color: #000000;">&#40;</span>DataBuffer<span style="color: #000000;">&#41;</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Function</span></li><li style="" class="li2">&nbsp;</li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #FF8000;">Public</span> <span style="color: #0600FF;">Sub</span> <span style="color: #FF8000;">New</span><span style="color: #000000;">&#40;</span><span style="color: #FF8000;">ByVal</span> FilePath <span style="color: #FF8000;">As</span> <span style="color: #FF8000;">String</span><span style="color: #000000;">&#41;</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; fsFile = <span style="color: #FF8000;">New</span> IO.<span style="color: #0000FF;">FileStream</span><span style="color: #000000;">&#40;</span>FilePath, IO.<span style="color: #0000FF;">FileMode</span>.<span style="color: #0600FF;">Open</span>, IO.<span style="color: #0000FF;">FileAccess</span>.<span style="color: #0000FF;">ReadWrite</span>, IO.<span style="color: #0000FF;">FileShare</span>.<span style="color: #0000FF;">ReadWrite</span><span style="color: #000000;">&#41;</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; brFile = <span style="color: #FF8000;">New</span> IO.<span style="color: #0000FF;">BinaryReader</span><span style="color: #000000;">&#40;</span>fsFile<span style="color: #000000;">&#41;</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; bwFile = <span style="color: #FF8000;">New</span> IO.<span style="color: #0000FF;">BinaryWriter</span><span style="color: #000000;">&#40;</span>fsFile<span style="color: #000000;">&#41;</span></li><li style="" class="li1">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Sub</span></li><li style="" class="li2">&nbsp;</li><li style="" class="li1">&nbsp; &nbsp; Protected Overrides <span style="color: #0600FF;">Sub</span> Finalize<span style="color: #000000;">&#40;</span><span style="color: #000000;">&#41;</span></li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; brFile.<span style="color: #0600FF;">Close</span><span style="color: #000000;">&#40;</span><span style="color: #000000;">&#41;</span></li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #FF8000;">MyBase</span>.<span style="color: #0000FF;">Finalize</span><span style="color: #000000;">&#40;</span><span style="color: #000000;">&#41;</span></li><li style="" class="li2">&nbsp; &nbsp; <span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Sub</span></li><li style="" class="li1">&nbsp;</li><li style="" class="li2"><span style="color: #0600FF;">End</span> <span style="color: #0600FF;">Class</span></li></ol></div>[/vbnet:9hwh66el]<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2490"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Aug 12, 2004 8:04 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Why do you pretend writing to the file?
+<br />
+(in this decompiling context)<br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2492"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Aug 12, 2004 8:24 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">well....some values i the exe could potentially be hexed to the value you want...
+<br />
+
+<br />
+say a forms width is too small... just update that value in the file.
+<br />
+
+<br />
+in theory at least?
+<br />
+
+<br />
+But also...i was testing some stuff...and i needed to be able to write binary data....so yea. file dumps....etc.<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2536"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Tue Aug 24, 2004 3:49 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: to 4 or not to 4
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;_aLfa_&quot;:328qwttp]Bug Fix:
+<br />
+SizeOf operator on ReadStructure was returning wrong size for structure (for some weird reason it was returning the real value plus 4 bytes)[/:328qwttp]
+<br />
+
+<br />
+Thats weird because it is returning the correct value for me.  ie 64 bytes for IMAGE_DOS_HEADER.....it was messing me up for a while....because it was getting me weird values for e_lfanew  since it was reading from some random area in memory....
+<br />
+
+<br />
+anyways i changed my copy:
+<br />
+</span><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center"><tr> 	  <td><span class="genmed"><b>Code:</b></span></td>	</tr>	<tr>	  <td class="code">
+<br />
+Public Function ReadStructure&#40;ByRef StructType As Type, Optional ByVal Offset As Long = -1&#41; As Object
+<br />
+        ' get structure size
+<br />
+
+<br />
+        Dim iStructLen As Integer = Runtime&#46;InteropServices&#46;Marshal&#46;SizeOf&#40;StructType&#41;  - 4
+<br />
+
+<br />
+</td>	</tr></table><span class="postbody">
+<br />
+
+<br />
+to 
+<br />
+
+<br />
+</span><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center"><tr> 	  <td><span class="genmed"><b>Code:</b></span></td>	</tr>	<tr>	  <td class="code">
+<br />
+Public Function ReadStructure&#40;ByRef StructType As Type, Optional ByVal Offset As Long = -1&#41; As Object
+<br />
+        ' get structure size
+<br />
+
+<br />
+        Dim iStructLen As Integer = Runtime&#46;InteropServices&#46;Marshal&#46;SizeOf&#40;StructType&#41; 
+<br />
+
+<br />
+</td>	</tr></table><span class="postbody"><br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2900"></a><b>napalm</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 11 Dec 2003<br />Posts: 18<br />Location: UK</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Mon Sep 20, 2004 3:01 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Hello again all.. Just a note that i had problems with.. some compilers can align structures to word or dwords this could account for the 4 bytes.
+<br />
+
+<br />
+I dont program .NET so I have no idea if there are any packing attributes to structures. But its worth a look, to sort that problem.
+<br />
+
+<br />
+This would also explain why its different for MrU and for _aLfa_ as on some compilers this attribute can be set in the IDEs options.
+<br />
+
+<br />
+Nice to see the forums still alive.. and im getting back into the scene.
+<br />
+
+<br />
+Nice to see you all again (MrU, Moogman, _aLfa_, and the rest)
+<br />
+
+<br />
+Speak soon.. <br />_________________<br /><span style="font-weight: bold">~Napalm~</span>
+<br />
+
+<br />
+&quot;With insomnia, you're never really asleep;
+<br />
+you're never really awake.&quot;
+<br />
+Fight Club - 1999 - [url:hdzph3dx]http&#58;//www&#46;imdb&#46;com/title/tt0137523/[/url:hdzph3dx]</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2902"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Mon Sep 20, 2004 3:10 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">you signed up for the message board on my birthday <br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr align="center">
+		<td class="catBottom" colspan="2" height="28"></td>
+		<td></td>
+	</tr>
+</table>
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+  <tr>
+	<td></td>
+	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="index-2.html" class="nav">VB Decompiler Forum Index</a>
+	  -> <a href="viewforum01c9.html" xx="f=12" class="nav">Utilities &amp; User Contributions</a></span></td>
+	<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">All times are GMT</span><br /><span class="nav"></span>
+	  </td>
+  </tr>
+  <tr>
+	<td align="left" colspan="3"><span class="nav">Page <b>1</b> of <b>1</b></span></td>
+  </tr>
+</table>
+
+<table width="100%" cellspacing="2" border="0" align="center">
+  <tr>
+	<td width="40%" valign="top" nowrap="nowrap" align="left"><span class="gensmall"></span><br />
+	  &nbsp;<br />
+	  </td>
+	<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">You <b>can</b> post new topics in this forum<br />You <b>can</b> reply to topics in this forum<br />You <b>can</b> edit your posts in this forum<br />You <b>can</b> delete your posts in this forum<br />You <b>can</b> vote in polls in this forum<br /></span></td>
+  </tr>
+</table>
+
+
+<div align="center"><span class="copyright"><br /><br />
+<!--
+	We request you retain the full copyright notice below including the link to www.phpbb.com.
+	This not only gives respect to the large amount of time given freely by the developers
+	but also helps build interest, traffic and use of phpBB 2.0. If you cannot (for good
+	reason) retain the full copyright we request you at least leave in place the
+	Powered by phpBB line, with phpBB linked to www.phpbb.com. If you refuse
+	to include even this then support on our forums may be affected.
+
+	The phpBB Group : 2002
+// -->
+Powered by <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB</a> &copy; 2001, 2005 phpBB Group<br /></span></div>
+		</td>
+	</tr>
+</table>
+
+</body>
+
+<!-- Mirrored from localhost/phpbb2/viewtopic.php?t=1836&view=next by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 04 Mar 2018 20:55:54 GMT -->
+</html>
+

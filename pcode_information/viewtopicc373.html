@@ -1,0 +1,1500 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html dir="ltr">
+
+<!-- Mirrored from localhost/phpbb2/viewtopic.php?t=16&start=0 by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 04 Mar 2018 20:39:49 GMT -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Style-Type" content="text/css">
+
+<link rel="top" href="index-2.html" title="VB Decompiler Forum Index" />
+<link rel="search" href="search.html" title="Search" />
+<link rel="help" href="faq.html" title="FAQ" />
+<link rel="author" href="memberlist.html" title="Memberlist" />
+<link rel="prev" href="viewtopic2fbf.html" xx="t=16&amp;view=previous" title="View previous topic" />
+<link rel="next" href="viewtopicd53d.html" xx="t=16&amp;view=next" title="View next topic" />
+<link rel="up" href="viewforum12a3.html" xx="f=2" title="Structures" />
+
+<title>VB Decompiler :: View topic - Notes:  Object-&gt;ObjectType</title>
+<!-- link rel="stylesheet" href="templates/subSilver/subSilver.css" type="text/css" -->
+<style type="text/css">
+<!--
+/*
+  The original subSilver Theme for phpBB version 2+
+  Created by subBlue design
+  http://www.subBlue.com
+
+  NOTE: These CSS definitions are stored within the main page body so that you can use the phpBB2
+  theme administration centre. When you have finalised your style you could cut the final CSS code
+  and place it in an external file, deleting this section to save bandwidth.
+*/
+
+/* General page style. The scroll bar colours only visible in IE5.5+ */
+body {
+	background-color: #E5E5E5;
+	scrollbar-face-color: #DEE3E7;
+	scrollbar-highlight-color: #FFFFFF;
+	scrollbar-shadow-color: #DEE3E7;
+	scrollbar-3dlight-color: #D1D7DC;
+	scrollbar-arrow-color:  #006699;
+	scrollbar-track-color: #EFEFEF;
+	scrollbar-darkshadow-color: #98AAB1;
+}
+
+/* General font families for common tags */
+font,th,td,p { font-family: Verdana, Arial, Helvetica, sans-serif }
+a:link,a:active,a:visited { color : #006699; }
+a:hover		{ text-decoration: underline; color : #DD6900; }
+hr	{ height: 0px; border: solid #D1D7DC 0px; border-top-width: 1px;}
+
+/* This is the border line & background colour round the entire page */
+.bodyline	{ background-color: #FFFFFF; border: 1px #98AAB1 solid; }
+
+/* This is the outline round the main forum tables */
+.forumline	{ background-color: #FFFFFF; border: 2px #006699 solid; }
+
+/* Main table cell colours and backgrounds */
+td.row1	{ background-color: #EFEFEF; }
+td.row2	{ background-color: #DEE3E7; }
+td.row3	{ background-color: #D1D7DC; }
+
+/*
+  This is for the table cell above the Topics, Post & Last posts on the index.php page
+  By default this is the fading out gradiated silver background.
+  However, you could replace this with a bitmap specific for each forum
+*/
+td.rowpic {
+		background-color: #FFFFFF;
+		background-image: url(templates/subSilver/images/cellpic2.jpg);
+		background-repeat: repeat-y;
+}
+
+/* Header cells - the blue and silver gradient backgrounds */
+th	{
+	color: #FFA34F; font-size: 11px; font-weight : bold;
+	background-color: #006699; height: 25px;
+	background-image: url(templates/subSilver/images/cellpic3.gif);
+}
+
+td.cat,td.catHead,td.catSides,td.catLeft,td.catRight,td.catBottom {
+			background-image: url(templates/subSilver/images/cellpic1.gif);
+			background-color:#D1D7DC; border: #FFFFFF; border-style: solid; height: 28px;
+}
+
+/*
+  Setting additional nice inner borders for the main table cells.
+  The names indicate which sides the border will be on.
+  Don't worry if you don't understand this, just ignore it :-)
+*/
+td.cat,td.catHead,td.catBottom {
+	height: 29px;
+	border-width: 0px 0px 0px 0px;
+}
+th.thHead,th.thSides,th.thTop,th.thLeft,th.thRight,th.thBottom,th.thCornerL,th.thCornerR {
+	font-weight: bold; border: #FFFFFF; border-style: solid; height: 28px;
+}
+td.row3Right,td.spaceRow {
+	background-color: #D1D7DC; border: #FFFFFF; border-style: solid;
+}
+
+th.thHead,td.catHead { font-size: 12px; border-width: 1px 1px 0px 1px; }
+th.thSides,td.catSides,td.spaceRow	 { border-width: 0px 1px 0px 1px; }
+th.thRight,td.catRight,td.row3Right	 { border-width: 0px 1px 0px 0px; }
+th.thLeft,td.catLeft	  { border-width: 0px 0px 0px 1px; }
+th.thBottom,td.catBottom  { border-width: 0px 1px 1px 1px; }
+th.thTop	 { border-width: 1px 0px 0px 0px; }
+th.thCornerL { border-width: 1px 0px 0px 1px; }
+th.thCornerR { border-width: 1px 1px 0px 0px; }
+
+/* The largest text used in the index page title and toptic title etc. */
+.maintitle	{
+	font-weight: bold; font-size: 22px; font-family: "Trebuchet MS",Verdana, Arial, Helvetica, sans-serif;
+	text-decoration: none; line-height : 120%; color : #000000;
+}
+
+/* General text */
+.gen { font-size : 12px; }
+.genmed { font-size : 11px; }
+.gensmall { font-size : 10px; }
+.gen,.genmed,.gensmall { color : #000000; }
+a.gen,a.genmed,a.gensmall { color: #006699; text-decoration: none; }
+a.gen:hover,a.genmed:hover,a.gensmall:hover	{ color: #DD6900; text-decoration: underline; }
+
+/* The register, login, search etc links at the top of the page */
+.mainmenu		{ font-size : 11px; color : #000000 }
+a.mainmenu		{ text-decoration: none; color : #006699;  }
+a.mainmenu:hover{ text-decoration: underline; color : #DD6900; }
+
+/* Forum category titles */
+.cattitle		{ font-weight: bold; font-size: 12px ; letter-spacing: 1px; color : #006699}
+a.cattitle		{ text-decoration: none; color : #006699; }
+a.cattitle:hover{ text-decoration: underline; }
+
+/* Forum title: Text and link to the forums used in: index.php */
+.forumlink		{ font-weight: bold; font-size: 12px; color : #006699; }
+a.forumlink 	{ text-decoration: none; color : #006699; }
+a.forumlink:hover{ text-decoration: underline; color : #DD6900; }
+
+/* Used for the navigation text, (Page 1,2,3 etc) and the navigation bar when in a forum */
+.nav			{ font-weight: bold; font-size: 11px; color : #000000;}
+a.nav			{ text-decoration: none; color : #006699; }
+a.nav:hover		{ text-decoration: underline; }
+
+/* titles for the topics: could specify viewed link colour too */
+.topictitle,h1,h2	{ font-weight: bold; font-size: 11px; color : #000000; }
+a.topictitle:link   { text-decoration: none; color : #006699; }
+a.topictitle:visited { text-decoration: none; color : #5493B4; }
+a.topictitle:hover	{ text-decoration: underline; color : #DD6900; }
+
+/* Name of poster in viewmsg.php and viewtopic.php and other places */
+.name			{ font-size : 11px; color : #000000;}
+
+/* Location, number of posts, post date etc */
+.postdetails		{ font-size : 10px; color : #000000; }
+
+/* The content of the posts (body of text) */
+.postbody { font-size : 12px; line-height: 18px}
+a.postlink:link	{ text-decoration: none; color : #006699 }
+a.postlink:visited { text-decoration: none; color : #5493B4; }
+a.postlink:hover { text-decoration: underline; color : #DD6900}
+
+/* Quote & Code blocks */
+.code {
+	font-family: Courier, 'Courier New', sans-serif; font-size: 11px; color: #006600;
+	background-color: #FAFAFA; border: #D1D7DC; border-style: solid;
+	border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+}
+
+.quote {
+	font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11px; color: #444444; line-height: 125%;
+	background-color: #FAFAFA; border: #D1D7DC; border-style: solid;
+	border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+}
+
+/* Copyright and bottom info */
+.copyright		{ font-size: 10px; font-family: Verdana, Arial, Helvetica, sans-serif; color: #444444; letter-spacing: -1px;}
+a.copyright		{ color: #444444; text-decoration: none;}
+a.copyright:hover { color: #000000; text-decoration: underline;}
+
+/* Form elements */
+input,textarea, select {
+	color : #000000;
+	font: normal 11px Verdana, Arial, Helvetica, sans-serif;
+	border-color : #000000;
+}
+
+/* The text input fields background colour */
+input.post, textarea.post, select {
+	background-color : #FFFFFF;
+}
+
+input { text-indent : 2px; }
+
+/* The buttons used for bbCode styling in message post */
+input.button {
+	background-color : #EFEFEF;
+	color : #000000;
+	font-size: 11px; font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+/* The main submit button option */
+input.mainoption {
+	background-color : #FAFAFA;
+	font-weight : bold;
+}
+
+/* None-bold submit button */
+input.liteoption {
+	background-color : #FAFAFA;
+	font-weight : normal;
+}
+
+/* This is the line in the posting page which shows the rollover
+  help line. This is actually a text box, but if set to be the same
+  colour as the background no one will know ;)
+*/
+.helpline { background-color: #DEE3E7; border-style: none; }
+
+/* Import the fancy styles for IE only (NS4.x doesn't use the @import function) */
+@import url("templates/subSilver/formIE.css");
+-->
+</style>
+</head>
+<body bgcolor="#E5E5E5" text="#000000" link="#006699" vlink="#5493B4">
+
+<a name="top"></a>
+
+<table width="100%" cellspacing="0" cellpadding="10" border="0" align="center">
+	<tr>
+		<td class="bodyline"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<tr>
+				<td><a href="index-2.html"><img src="templates/subSilver/images/logo_phpBB.gif" border="0" alt="VB Decompiler Forum Index" vspace="1" /></a></td>
+				<td align="center" width="100%" valign="middle"><span class="maintitle">VB Decompiler</span><br /><span class="gen">Hosted by TheAutomaters.com<br />&nbsp; </span>
+				<table cellspacing="0" cellpadding="2" border="0">
+					<tr>
+						<td align="center" valign="top" nowrap="nowrap"><span class="mainmenu">&nbsp;
+						<a href="memberlist.html" class="mainmenu"><img src="templates/subSilver/images/icon_mini_members.gif" width="12" height="13" border="0" alt="Memberlist" hspace="3" />Memberlist</a>
+						</span></td>
+					</tr>
+					<tr>
+						<td height="25" align="center" valign="top" nowrap="nowrap"><span class="mainmenu">&nbsp;</td>
+					</tr>
+				</table></td>
+			</tr>
+		</table>
+
+		<br />
+
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0">
+  <tr>
+	<td align="left" valign="bottom" colspan="2"><a class="maintitle" href="viewtopic1557.html" xx="t=16&amp;start=0&amp;postdays=0&amp;postorder=asc&amp;highlight=">Notes:  Object-&gt;ObjectType</a><br />
+	  <span class="gensmall"><b>Goto page <b>1</b>, <a href="viewtopic8eab.html" xx="t=16&amp;postdays=0&amp;postorder=asc&amp;start=20">2</a>&nbsp;&nbsp;<a href="viewtopic8eab.html" xx="t=16&amp;postdays=0&amp;postorder=asc&amp;start=20">Next</a></b><br />
+	  &nbsp; </span></td>
+  </tr>
+</table>
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0">
+  <tr>
+	<td></td>
+	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="index-2.html" class="nav">VB Decompiler Forum Index</a>
+	  -> <a href="viewforum12a3.html" xx="f=2" class="nav">Structures</a></span></td>
+  </tr>
+</table>
+
+<table class="forumline" width="100%" cellspacing="1" cellpadding="3" border="0">
+	<tr>
+		<th class="thLeft" width="150" height="26" nowrap="nowrap">Author</th>
+		<th class="thRight" nowrap="nowrap">Message</th>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="68"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Mon Sep 30, 2002 6:11 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Notes:  Object-&gt;ObjectType
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[code=text:m3cont87]<div class="text" id="{CB}" style="font-family: monospace;"><ol><li style="" class="li1">Form: &nbsp; &nbsp; &nbsp; &nbsp; 0000 0000 0001 1000 0000 1000 0011 --&gt; &nbsp; 18083 &nbsp; &nbsp; &nbsp; </li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 0000 0000 0001 1000 0000 1010 0011 --&gt; &nbsp; 180A3</li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 0000 0000 0001 1000 0000 1100 0011 --&gt; &nbsp; 180C3 </li><li style="" class="li2">Module: &nbsp; &nbsp; &nbsp; 0000 0000 0001 1000 0000 0000 0001 --&gt; &nbsp; 18001</li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 0000 0000 0001 1000 0000 0010 0001 --&gt; &nbsp; 18021</li><li style="" class="li2">Class: &nbsp; &nbsp; &nbsp; &nbsp;0000 0001 0001 1000 0000 0000 0011 --&gt; &nbsp;118003</li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 0000 0001 0011 1000 0000 0000 0011 --&gt; &nbsp;138003</li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 0000 0000 0001 1000 0000 0010 0011 --&gt; &nbsp; 18023</li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 0000 0000 0001 1000 1000 0000 0011 --&gt; &nbsp; 18803</li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 0000 0001 0001 1000 1000 0000 0011 --&gt; &nbsp;118803</li><li style="" class="li1">UserControl: &nbsp;0000 0001 1101 1010 0000 0000 0011 --&gt; &nbsp;1DA003</li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 0000 0001 1101 1010 0000 0010 0011 --&gt; &nbsp;1DA023</li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 0000 0001 1101 1010 1000 0000 0011 --&gt; &nbsp;1DA803</li><li style="" class="li2">PropertyPage: 0000 0001 0101 1000 0000 0000 0011 --&gt; &nbsp;158003</li><li style="" class="li1">Designer: &nbsp; &nbsp; 0011 0000 0001 1000 0000 1000 0011 --&gt; 3018083</li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| &nbsp; || || &nbsp; &nbsp; | &nbsp;| &nbsp; &nbsp;| | &nbsp; &nbsp;|</li><li style="" class="li1">[Loki] &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | &nbsp; || || &nbsp; &nbsp; | &nbsp;| &nbsp; &nbsp;| | &nbsp; &nbsp;|</li><li style="" class="li2">IsDesigner ------+ &nbsp; || || &nbsp; &nbsp; | &nbsp;| &nbsp; &nbsp;| | &nbsp; &nbsp;|</li><li style="" class="li1">VB_GlobalNameSpace --+| || &nbsp; &nbsp; | &nbsp;| &nbsp; &nbsp;| | &nbsp; &nbsp;|</li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | || &nbsp; &nbsp; | &nbsp;| &nbsp; &nbsp;| | &nbsp; &nbsp;|</li><li style="" class="li1">[moog] &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| || &nbsp; &nbsp; | &nbsp;| &nbsp; &nbsp;| | &nbsp; &nbsp;|</li><li style="" class="li2">HasPublicInterface ---+ || &nbsp; &nbsp; | &nbsp;| &nbsp; &nbsp;| | &nbsp; &nbsp;|</li><li style="" class="li1">HasPublicEvents --------+| &nbsp; &nbsp; | &nbsp;| &nbsp; &nbsp;| | &nbsp; &nbsp;|</li><li style="" class="li2">IsCreatable/Visible? ----+ &nbsp; &nbsp; | &nbsp;| &nbsp; &nbsp;| | &nbsp; &nbsp;|</li><li style="" class="li1">Same as &quot;HasPublicEvents&quot; -----+ &nbsp;| &nbsp; &nbsp;| | &nbsp; &nbsp;|</li><li style="" class="li2">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| &nbsp;| &nbsp; &nbsp;| | &nbsp; &nbsp;|</li><li style="" class="li1">[_aLfa_] &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | &nbsp;| &nbsp; &nbsp;| | &nbsp; &nbsp;|</li><li style="" class="li2">UserControl (1) ---------------+ &nbsp;| &nbsp; &nbsp;| | &nbsp; &nbsp;|</li><li style="" class="li1">OCX/DLL - VB_Exposed (1) ---------+ &nbsp; &nbsp;| | &nbsp; &nbsp;|</li><li style="" class="li2">Form (1) ------------------------------+ | &nbsp; &nbsp;|</li><li style="" class="li1">VB5 (1) ---------------------------------+ &nbsp; &nbsp;|</li><li style="" class="li2">HasOptInfo (1) -------------------------------+</li><li style="" class="li1">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; |</li><li style="" class="li2">Module (0) -----------------------------------+</li></ol></div></td>	</tr></table><span class="postbody">
+<br />
+
+<br />
+Of course....as always.....all items are open for discussion (;</span>
+						<span class="gensmall"><br /><br />Last edited by MrUnleaded on Mon Aug 02, 2004 5:42 pm; edited 5 times in total</span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="70"></a><b>Anonymous</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 10 Feb 2008<br />Posts: 0<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Tue Oct 01, 2002 10:55 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Nope it cant be, because Property Pages and User Controls also have the OptionalObjectInfo since they at least have a gui node to the objects etc...
+<br />
+Nevertheless, why the extra bits set in your AND and OR bitmasks? If you AND a bit with 1, it effectively ignores it and if you OR a bit with 0, it effectively ignores it. So basically, you're default AND mask would be all 1's, but with a 0 where you want to drop it to zero and your default OR mask would be all 0's, but with a 1 where you want to force it to 1</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="71"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Tue Oct 01, 2002 2:55 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: hmm
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;moogman&quot;:273tj1el]Nope it cant be, because Property Pages and User Controls also have the OptionalObjectInfo since they at least have a gui node to the objects etc...[/:273tj1el]
+<br />
+
+<br />
+i think that is right....i will chek later today....
+<br />
+
+<br />
+[=&quot;moogman&quot;:273tj1el]Nevertheless, why the extra bits set in your AND and OR bitmasks? If you AND a bit with 1, it effectively ignores it and if you OR a bit with 0, it effectively ignores it. So basically, you're default AND mask would be all 1's, but with a 0 where you want to drop it to zero and your default OR mask would be all 0's, but with a 1 where you want to force it to 1[/:273tj1el]
+<br />
+
+<br />
+lol...i just did an AND of all the object types...and an OR of all the object types....i havent thought of a purpose for it yet..... 
+<br />
+
+<br />
+feel free to add anything you want </span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="76"></a><b>Anonymous</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 10 Feb 2008<br />Posts: 0<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Oct 03, 2002 10:22 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Well, thats how you figure out the bits basically. You AND them with, say, 0000 1000 to force all other bits to 0 and then you can compare the final answer with 0x08 (means bit it 1) and 0x00 (means bit is 0).</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="79"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Oct 03, 2002 2:52 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: ok thanx
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;moogman&quot;:1jesi8ha]Well, thats how you figure out the bits basically. You AND them with, say, 0000 1000 to force all other bits to 0 and then you can compare the final answer with 0x08 (means bit it 1) and 0x00 (means bit is 0).[/:1jesi8ha]
+<br />
+
+<br />
+alright i understand...i just got confused on it for some reason...even though i can do binary-&gt;hex conversions in my head.....</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="81"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Oct 03, 2002 6:00 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Re: ok thanx
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;MrUnleaded&quot;:1saf5r48]even though i can do binary-&amp;gt;hex conversions in my head.....[/:1saf5r48]
+<br />
+like any1 that decompiles something does <br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"><br /><br />Last edited by _aLfa_ on Mon Aug 02, 2004 5:02 pm; edited 1 time in total</span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="85"></a><b>Anonymous</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 10 Feb 2008<br />Posts: 0<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Oct 05, 2002 2:37 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody"> I still have to use my toes. Thank god I was born with only two toes eh? (Joke)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="88"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Oct 05, 2002 9:54 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody"></span><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center"><tr> 	  <td><span class="genmed"><b>Code:</b></span></td>	</tr>	<tr>	  <td class="code">form&#58;         0000 0001 1000 0000 1000 0011 --&gt;  18083
+<br />
+              0000 0001 1000 0000 1010 0011 --&gt;  180A3
+<br />
+module&#58;       0000 0001 1000 0000 0000 0001 --&gt;  18001
+<br />
+              0000 0001 1000 0000 0010 0001 --&gt;  18021
+<br />
+class&#58;        0001 0001 1000 0000 0000 0011 --&gt; 118003
+<br />
+              0001 0011 1000 0000 0000 0011 --&gt; 138003
+<br />
+              0000 0001 1000 0000 0010 0011 --&gt;  18023
+<br />
+              0000 0001 1000 1000 0000 0011 --&gt;  18803
+<br />
+              0001 0001 1000 1000 0000 0011 --&gt; 118803
+<br />
+usercontrol&#58;  0001 1101 1010 0000 0000 0011 --&gt; 1DA003
+<br />
+              0001 1101 1010 0000 0010 0011 --&gt; 1DA023
+<br />
+              0001 1101 1010 1000 0000 0011 --&gt; 1DA803
+<br />
+propertypage&#58; 0001 0101 1000 0000 0000 0011 --&gt; 158003
+<br />
+                          |  |    | |    |
+<br />
+usercontrol &#40;1&#41; ----------+  |    | |    |
+<br />
+ocx/dll &#40;1&#41; -----------------+    | |    |
+<br />
+form &#40;1&#41; -------------------------+ |    |
+<br />
+vb5 &#40;1&#41; ----------------------------+    |
+<br />
+module/HasOptInfo &#40;0&#41; -------------------+</td>	</tr></table><span class="postbody">
+<br />
+
+<br />
+some reference i use, if any1 wants to add or modify something, plz feel free, but post the change <br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"><br /><br />Last edited by _aLfa_ on Mon Aug 02, 2004 5:05 pm; edited 2 times in total</span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="157"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Fri Oct 25, 2002 8:00 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">ive updated the above table 
+<br />
+if any1 has changes or dont agree with something, plz post<br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="158"></a><b>Anonymous</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 10 Feb 2008<br />Posts: 0<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Oct 26, 2002 8:09 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">module (0) is the flag that states whether there is a OptionalObjectInfo structure. Hence it being 0 for modules (since they have no need for the extra structure - eg there are no objects/controls in a module). Maybe rename to HasOptionalObjectInfo.
+<br />
+
+<br />
+Im pretty sure that the flag &quot;user control&quot; doesnt mean just that. Maybe it means public? Or public with external events.
+<br />
+
+<br />
+I doubt that there are flags denoting whether an object is a form or a module or whatever. Although I cannot think of anything else that can represent &quot;form&quot;...</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="159"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Oct 26, 2002 8:23 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: eh?
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;moogman&quot;:4axvn07z]I doubt that there are flags denoting whether an object is a form or a module or whatever. Although I cannot think of anything else that can represent "form"...[/:4axvn07z]
+<br />
+
+<br />
+they how do you determine the object type?<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="160"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Oct 27, 2002 8:05 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">ive added the module thing again, cuz only the module dont ve optionalobjectinfo
+<br />
+
+<br />
+btw: the value between () is the value of bit <br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="163"></a><b>Anonymous</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 10 Feb 2008<br />Posts: 0<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Oct 30, 2002 11:30 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Re: eh?
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;MrUnleaded&quot;:2xq8cthg][=&quot;moogman&quot;:2xq8cthg]I doubt that there are flags denoting whether an object is a form or a module or whatever. Although I cannot think of anything else that can represent "form"...[/:2xq8cthg]
+<br />
+
+<br />
+they how do you determine the object type?[/:2xq8cthg]
+<br />
+
+<br />
+Using the GUID/UUID of course. Windows doesnt really know the difference between a form and a control. A control is of subtype "window" and a form, by definition, *is* a window. The only way you can tell is by the GUID of the window/control. In this respect, we dont care about whether it is a form/mdi form/control/your dog/kitchen sink etc. If we can get the GUID, we can get all the necessary information and therefore process them.
+<br />
+
+<br />
+Some constructive critisism: Why does it matter about the object type? What possible difference would it make if we could tell that a form is a form and not a control or a module or what. We have this HasOptionalObjectInfo flag that tells us whether we need to process the additional object info stuff, so we should all be happy 
+<br />
+
+<br />
+Im also going to add a few things that may or may not be true; Please argue...
+<br />
+</span><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center"><tr> 	  <td><span class="genmed"><b>Code:</b></span></td>	</tr>	<tr>	  <td class="code">
+<br />
+form&#58;              0000 0001 1000 0000 1000 0011 --&gt; 18083       
+<br />
+                   0000 0001 1000 0000 1010 0011 --&gt; 180A3
+<br />
+module&#58;            0000 0001 1000 0000 0000 0001 --&gt; 18001
+<br />
+                   0000 0001 1000 0000 0010 0001 --&gt; 18021
+<br />
+class&#58;             0001 0001 1000 0000 0000 0011 --&gt; 118003
+<br />
+                   0001 0011 1000 0000 0000 0011 --&gt; 138003
+<br />
+                   0000 0001 1000 0000 0010 0011 --&gt; 18023
+<br />
+                   0000 0001 1000 1000 0000 0011 --&gt; 18803
+<br />
+                   0001 0001 1000 1000 0000 0011 --&gt; 118803
+<br />
+usercontrol&#58;       0001 1101 1010 0000 0000 0011 --&gt; 1DA003
+<br />
+                   0001 1101 1010 0000 0010 0011 --&gt; 1DA023
+<br />
+                   0001 1101 1010 1000 0000 0011 --&gt; 1DA803
+<br />
+propertypage&#58;      0001 0101 1000 0000 0000 0011 --&gt; 158003
+<br />
+                      | ||     |
+<br />
+HasPublicInterface ---+ ||     |
+<br />
+HasPublicEvents --------+|     |
+<br />
+IsCreatable/Visible? ----+     |
+<br />
+Same as &quot;HasPublicEvents&quot; -----+
+<br />
+</td>	</tr></table><span class="postbody"></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="165"></a><b>sarge</b></span><br /><span class="postdetails">Moderator<br /><!--<img src="pro_rank_mod.gif" alt="Moderator" title="Moderator" border="0" /><br />--><br /><br />Joined: 24 Sep 2002<br />Posts: 194<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Oct 30, 2002 1:54 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Hmm...
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Guys;
+<br />
+Given the most recent output of the code window by Moogman, and comparing it to the recent output by _aLfa_, can the various bit definitions be combined into one code window?  It seems that Moogman's post has a lot of definitions of the bits on the left (MSB) side, while _aLfa_'s has a lot on the right (LSB) side.  Can they be combined/displayed in the same window? (Assuming you can agree on the definitions; some bits have two different definitions_
+<br />
+
+<br />
+Or are these two completely separate subjects?
+<br />
+
+<br />
+Thanks for adding the non-binary values, I was going to request that.
+<br />
+
+<br />
+Sarge</span>
+						<span class="gensmall"><br /><br />Last edited by sarge on Wed Oct 30, 2002 4:02 pm; edited 1 time in total</span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="166"></a><b>Anonymous</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 10 Feb 2008<br />Posts: 0<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Oct 30, 2002 2:31 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Yes they are the same thing and yes, I did purposely put them in a seperate window - these were only hunch++'s so for all I know, they could be total crap. It'd be easier to delete the post than edit the first version. If we can all agree on them then i'll merge them. (Or someone else can do the honours hehe).</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="167"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Oct 30, 2002 4:17 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Re: eh?
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;moogman&quot;:2gk3zudg]Using the GUID/UUID of course. [/:2gk3zudg]
+<br />
+
+<br />
+
+<br />
+Oh yea! hello.....im dumb....hehe
+<br />
+
+<br />
+[=&quot;moogman&quot;:2gk3zudg]
+<br />
+Some constructive critisism: Why does it matter about the object type? What possible difference would it make if we could tell that a form is a form and not a control or a module or what. We have this HasOptionalObjectInfo flag that tells us whether we need to process the additional object info stuff, so we should all be happy 
+<br />
+[/:2gk3zudg]
+<br />
+
+<br />
+well how else do you know if you want to output a .bas or a .frm or .cls....etc</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="168"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Oct 30, 2002 4:23 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Re: Hmm...
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;sarge&quot;:3i92ah6o]some bits have two different definitions[/:3i92ah6o]
+<br />
+
+<br />
+the only conflicting items are moog's second HasPublicEvents....and aLfa's usercontrol....
+<br />
+
+<br />
+I will merge both posts into my original post....and i am begining to think that this item deserves a name change....</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="169"></a><b>Anonymous</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 10 Feb 2008<br />Posts: 0<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Oct 31, 2002 2:06 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">For gods sakes people! We're arguing over a bitmask flag hehe.  The HasPublicEvents thing is just a hunch. I strongly doubt that there is one flag denoting a form, another denoting a usercontrol, another a module etc etc. Fair point on distinguishing bas/frm/cls etc. We can use alfa's flags to figure that out, its just i'd like to have the names changed to something non-object orientated. After all, VB exes were not intended to be decompiled right?!</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="170"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Oct 31, 2002 3:35 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;moogman&quot;:22n81r6a]For gods sakes people! We're arguing over a bitmask flag hehe.  The HasPublicEvents thing is just a hunch. I strongly doubt that there is one flag denoting a form, another denoting a usercontrol, another a module etc etc.[/:22n81r6a] 
+<br />
+
+<br />
+I agree that this is a bitmask and that it probably isnt the item that will tell you what object type it is......on the other hand.....it could be used to figure out object types....but there is more to it....
+<br />
+
+<br />
+[=&quot;moogman&quot;:22n81r6a]Fair point on distinguishing bas/frm/cls etc. We can use alfa's flags to figure that out, its just i'd like to have the names changed to something non-object orientated. After all, VB exes were not intended to be decompiled right?![/:22n81r6a]
+<br />
+
+<br />
+I agree.</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="197"></a><b>sarge</b></span><br /><span class="postdetails">Moderator<br /><!--<img src="pro_rank_mod.gif" alt="Moderator" title="Moderator" border="0" /><br />--><br /><br />Joined: 24 Sep 2002<br />Posts: 194<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Tue Nov 19, 2002 6:46 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: suggestion
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Can a leading zero be added to those hex values that have only 5 characters; (like 18083  to be 018083)  it would keep things in the same format.  Thanks
+<br />
+
+<br />
+Sarge</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2042"></a><b>sarge</b></span><br /><span class="postdetails">Moderator<br /><!--<img src="pro_rank_mod.gif" alt="Moderator" title="Moderator" border="0" /><br />--><br /><br />Joined: 24 Sep 2002<br />Posts: 194<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Dec 15, 2002 3:08 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Need to add new form type:
+<br />
+
+<br />
+<span style="color: #003fff">0000 0001 1000 0000 1100 0011 --&gt; 180C3 </span>
+<br />
+
+<br />
+Don't know what that bit does, tho.
+<br />
+
+<br />
+Sarge</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2053"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Mon Dec 16, 2002 2:30 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;sarge&quot;:t40dsil6]Need to add new form type:
+<br />
+
+<br />
+<span style="color: #003fff">0000 0001 1000 0000 1100 0011 --&gt; 180C3 </span>
+<br />
+
+<br />
+Don't know what that bit does, tho.
+<br />
+
+<br />
+Sarge[/:t40dsil6]
+<br />
+
+<br />
+ok it was added<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2853"></a><b>Loki</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 15 Sep 2004<br />Posts: 5<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Sep 15, 2004 9:26 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody"></span><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center"><tr> 	  <td><span class="genmed"><b>Code:</b></span></td>	</tr>	<tr>	  <td class="code">
+<br />
+0000 0001 1000 0000 1000 0011
+<br />
+       |       |
+<br />
+       |       +------ Corresponds to &quot;Attribute VB_Exposed&quot;
+<br />
+       |
+<br />
+       +------Corresponds to &quot;Attribute VB_GlobalNameSpace&quot;
+<br />
+</td>	</tr></table><span class="postbody">
+<br />
+
+<br />
+The Exposed-Bit is not only set in creatable (public) ctls (in private it's 0), it's also set in creatable (non-private) Classes.
+<br />
+
+<br />
+Bye,
+<br />
+Loki</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2858"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Sep 15, 2004 3:16 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Your "VB_Exposed" conflicts with _aLfa_ 's
+<br />
+
+<br />
+Which one is correct?<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2860"></a><b>Loki</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 15 Sep 2004<br />Posts: 5<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Sep 15, 2004 4:03 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">_alfa_'s is: ocx/dll (1)
+<br />
+
+<br />
+This bit is only set for exposed objects (not programs, like ocx or dll). Exposed means that the interface is accessible from other components. If you have private classes in a DLL, this bit will be set 0 for these classes.
+<br />
+
+<br />
+Not accessible (and therefore not exposed) are:
+<br />
+Forms
+<br />
+private Classes
+<br />
+private Controls
+<br />
+PropertyPages
+<br />
+Designer
+<br />
+Modules
+<br />
+
+<br />
+Accessible (and therefore exposed) are:
+<br />
+public Classes (PublicNotCreatable, MultiUse, SingleUse, GlobalMU, GlobalSU)
+<br />
+public Controls
+<br />
+UserDocuments
+<br />
+
+<br />
+A Class which is "PublicNotCreatable" can't be created from outside, but you can create it inside your DLL and expose it's interface. (PublicNotCreatable: MultiUse = True, GlobalNameSpace = False, Creatable = False, Exposed = True)
+<br />
+The interface of a Control which Property "Public" is set to FALSE isn't accessible (not exposed) from outside the OCX. But as it can be used on other (public) Controls inside this OCX, it must be creatable. ("PrivateCreatable": MultiUse = True, GlobalNameSpace = False, Creatable = True, Exposed = False)
+<br />
+Please confer my posting in this Thread: <!-- m --><a class="postlink" href="viewtopicfe9f.html" xx="t=1795">./viewtopic.php?t=1795</a><!-- m -->
+<br />
+
+<br />
+If you check the "Attribute VB_Exposed" setting in your project files and compare it to this bit, you'll see, that everywhere where "Attribute VB_Exposed" ist set to TRUE, this bit will be set in the compiled program.
+<br />
+
+<br />
+So I think that something with "Exposed" would be a better name for this bit. The same with "GlobalNameSpace": As it is set only when "Attribute VB_GlobalNameSpace" is set to TRUE in the project file, the name should depend on the naming of the project file attribute.
+<br />
+
+<br />
+But I recommend that someone checks all that first...   
+<br />
+
+<br />
+Bye
+<br />
+Loki</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2871"></a><b>Loki</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 15 Sep 2004<br />Posts: 5<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Sep 15, 2004 6:35 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Another one...   
+<br />
+
+<br />
+</span><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center"><tr> 	  <td><span class="genmed"><b>Code:</b></span></td>	</tr>	<tr>	  <td class="code">
+<br />
+0011 0000 0001 1000 0000 1000 0011
+<br />
+   |
+<br />
+   +----------IsDesigner &#40;1&#41;
+<br />
+</td>	</tr></table><span class="postbody">
+<br />
+
+<br />
+BTW, if you're wondering where I got that strange VB-Attributes from, try to open a .cls-file with notepad.
+<br />
+
+<br />
+[=&quot;MrUnleaded&quot;:kqhcugxi][=&quot;moogman&quot;:kqhcugxi]
+<br />
+Some constructive critisism: Why does it matter about the object type? What possible difference would it make if we could tell that a form is a form and not a control or a module or what. We have this HasOptionalObjectInfo flag that tells us whether we need to process the additional object info stuff, so we should all be happy 
+<br />
+[/:kqhcugxi]
+<br />
+
+<br />
+well how else do you know if you want to output a .bas or a .frm or .cls....etc
+<br />
+[/:kqhcugxi]
+<br />
+
+<br />
+If you're cycling through COM Registration Info-structures (these objects are public) and then adding the Informations from ObjectType (like GlobalNameSpace etc.) you're able to identify the type and instancing of all the public objects.
+<br />
+The rest of the objects in ObjectArray (ObjectTable) that don't have a COM Registration Info-structure must be private. You can retrieve their types by only comparing the bits in fObjectType.
+<br />
+
+<br />
+Bye,
+<br />
+Loki</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr align="center">
+		<td class="catBottom" colspan="2" height="28"></td>
+		<td></td>
+	</tr>
+</table>
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+  <tr>
+	<td></td>
+	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="index-2.html" class="nav">VB Decompiler Forum Index</a>
+	  -> <a href="viewforum12a3.html" xx="f=2" class="nav">Structures</a></span></td>
+	<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">All times are GMT</span><br /><span class="nav">Goto page <b>1</b>, <a href="viewtopic8eab.html" xx="t=16&amp;postdays=0&amp;postorder=asc&amp;start=20">2</a>&nbsp;&nbsp;<a href="viewtopic8eab.html" xx="t=16&amp;postdays=0&amp;postorder=asc&amp;start=20">Next</a></span>
+	  </td>
+  </tr>
+  <tr>
+	<td align="left" colspan="3"><span class="nav">Page <b>1</b> of <b>2</b></span></td>
+  </tr>
+</table>
+
+<table width="100%" cellspacing="2" border="0" align="center">
+  <tr>
+	<td width="40%" valign="top" nowrap="nowrap" align="left"><span class="gensmall"></span><br />
+	  &nbsp;<br />
+	  </td>
+	<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">You <b>can</b> post new topics in this forum<br />You <b>can</b> reply to topics in this forum<br />You <b>can</b> edit your posts in this forum<br />You <b>can</b> delete your posts in this forum<br />You <b>can</b> vote in polls in this forum<br /></span></td>
+  </tr>
+</table>
+
+
+<div align="center"><span class="copyright"><br /><br />
+<!--
+	We request you retain the full copyright notice below including the link to www.phpbb.com.
+	This not only gives respect to the large amount of time given freely by the developers
+	but also helps build interest, traffic and use of phpBB 2.0. If you cannot (for good
+	reason) retain the full copyright we request you at least leave in place the
+	Powered by phpBB line, with phpBB linked to www.phpbb.com. If you refuse
+	to include even this then support on our forums may be affected.
+
+	The phpBB Group : 2002
+// -->
+Powered by <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB</a> &copy; 2001, 2005 phpBB Group<br /></span></div>
+		</td>
+	</tr>
+</table>
+
+</body>
+
+<!-- Mirrored from localhost/phpbb2/viewtopic.php?t=16&start=0 by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 04 Mar 2018 20:39:49 GMT -->
+</html>
+

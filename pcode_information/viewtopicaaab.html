@@ -1,0 +1,4238 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html dir="ltr">
+
+<!-- Mirrored from localhost/phpbb2/viewtopic.php?t=2492&view=next by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 04 Mar 2018 20:55:27 GMT -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Style-Type" content="text/css">
+
+<link rel="top" href="index-2.html" title="VB Decompiler Forum Index" />
+<link rel="search" href="search.html" title="Search" />
+<link rel="help" href="faq.html" title="FAQ" />
+<link rel="author" href="memberlist.html" title="Memberlist" />
+<link rel="prev" href="viewtopicb38e.html" xx="t=1897&amp;view=previous" title="View previous topic" />
+<link rel="next" href="viewtopice0a0.html" xx="t=1897&amp;view=next" title="View next topic" />
+<link rel="up" href="viewforum8941.html" xx="f=22" title="Articles" />
+
+<title>VB Decompiler :: View topic - Disassembling Visual Basic Applications</title>
+<!-- link rel="stylesheet" href="templates/subSilver/subSilver.css" type="text/css" -->
+<style type="text/css">
+<!--
+/*
+  The original subSilver Theme for phpBB version 2+
+  Created by subBlue design
+  http://www.subBlue.com
+
+  NOTE: These CSS definitions are stored within the main page body so that you can use the phpBB2
+  theme administration centre. When you have finalised your style you could cut the final CSS code
+  and place it in an external file, deleting this section to save bandwidth.
+*/
+
+/* General page style. The scroll bar colours only visible in IE5.5+ */
+body {
+	background-color: #E5E5E5;
+	scrollbar-face-color: #DEE3E7;
+	scrollbar-highlight-color: #FFFFFF;
+	scrollbar-shadow-color: #DEE3E7;
+	scrollbar-3dlight-color: #D1D7DC;
+	scrollbar-arrow-color:  #006699;
+	scrollbar-track-color: #EFEFEF;
+	scrollbar-darkshadow-color: #98AAB1;
+}
+
+/* General font families for common tags */
+font,th,td,p { font-family: Verdana, Arial, Helvetica, sans-serif }
+a:link,a:active,a:visited { color : #006699; }
+a:hover		{ text-decoration: underline; color : #DD6900; }
+hr	{ height: 0px; border: solid #D1D7DC 0px; border-top-width: 1px;}
+
+/* This is the border line & background colour round the entire page */
+.bodyline	{ background-color: #FFFFFF; border: 1px #98AAB1 solid; }
+
+/* This is the outline round the main forum tables */
+.forumline	{ background-color: #FFFFFF; border: 2px #006699 solid; }
+
+/* Main table cell colours and backgrounds */
+td.row1	{ background-color: #EFEFEF; }
+td.row2	{ background-color: #DEE3E7; }
+td.row3	{ background-color: #D1D7DC; }
+
+/*
+  This is for the table cell above the Topics, Post & Last posts on the index.php page
+  By default this is the fading out gradiated silver background.
+  However, you could replace this with a bitmap specific for each forum
+*/
+td.rowpic {
+		background-color: #FFFFFF;
+		background-image: url(templates/subSilver/images/cellpic2.jpg);
+		background-repeat: repeat-y;
+}
+
+/* Header cells - the blue and silver gradient backgrounds */
+th	{
+	color: #FFA34F; font-size: 11px; font-weight : bold;
+	background-color: #006699; height: 25px;
+	background-image: url(templates/subSilver/images/cellpic3.gif);
+}
+
+td.cat,td.catHead,td.catSides,td.catLeft,td.catRight,td.catBottom {
+			background-image: url(templates/subSilver/images/cellpic1.gif);
+			background-color:#D1D7DC; border: #FFFFFF; border-style: solid; height: 28px;
+}
+
+/*
+  Setting additional nice inner borders for the main table cells.
+  The names indicate which sides the border will be on.
+  Don't worry if you don't understand this, just ignore it :-)
+*/
+td.cat,td.catHead,td.catBottom {
+	height: 29px;
+	border-width: 0px 0px 0px 0px;
+}
+th.thHead,th.thSides,th.thTop,th.thLeft,th.thRight,th.thBottom,th.thCornerL,th.thCornerR {
+	font-weight: bold; border: #FFFFFF; border-style: solid; height: 28px;
+}
+td.row3Right,td.spaceRow {
+	background-color: #D1D7DC; border: #FFFFFF; border-style: solid;
+}
+
+th.thHead,td.catHead { font-size: 12px; border-width: 1px 1px 0px 1px; }
+th.thSides,td.catSides,td.spaceRow	 { border-width: 0px 1px 0px 1px; }
+th.thRight,td.catRight,td.row3Right	 { border-width: 0px 1px 0px 0px; }
+th.thLeft,td.catLeft	  { border-width: 0px 0px 0px 1px; }
+th.thBottom,td.catBottom  { border-width: 0px 1px 1px 1px; }
+th.thTop	 { border-width: 1px 0px 0px 0px; }
+th.thCornerL { border-width: 1px 0px 0px 1px; }
+th.thCornerR { border-width: 1px 1px 0px 0px; }
+
+/* The largest text used in the index page title and toptic title etc. */
+.maintitle	{
+	font-weight: bold; font-size: 22px; font-family: "Trebuchet MS",Verdana, Arial, Helvetica, sans-serif;
+	text-decoration: none; line-height : 120%; color : #000000;
+}
+
+/* General text */
+.gen { font-size : 12px; }
+.genmed { font-size : 11px; }
+.gensmall { font-size : 10px; }
+.gen,.genmed,.gensmall { color : #000000; }
+a.gen,a.genmed,a.gensmall { color: #006699; text-decoration: none; }
+a.gen:hover,a.genmed:hover,a.gensmall:hover	{ color: #DD6900; text-decoration: underline; }
+
+/* The register, login, search etc links at the top of the page */
+.mainmenu		{ font-size : 11px; color : #000000 }
+a.mainmenu		{ text-decoration: none; color : #006699;  }
+a.mainmenu:hover{ text-decoration: underline; color : #DD6900; }
+
+/* Forum category titles */
+.cattitle		{ font-weight: bold; font-size: 12px ; letter-spacing: 1px; color : #006699}
+a.cattitle		{ text-decoration: none; color : #006699; }
+a.cattitle:hover{ text-decoration: underline; }
+
+/* Forum title: Text and link to the forums used in: index.php */
+.forumlink		{ font-weight: bold; font-size: 12px; color : #006699; }
+a.forumlink 	{ text-decoration: none; color : #006699; }
+a.forumlink:hover{ text-decoration: underline; color : #DD6900; }
+
+/* Used for the navigation text, (Page 1,2,3 etc) and the navigation bar when in a forum */
+.nav			{ font-weight: bold; font-size: 11px; color : #000000;}
+a.nav			{ text-decoration: none; color : #006699; }
+a.nav:hover		{ text-decoration: underline; }
+
+/* titles for the topics: could specify viewed link colour too */
+.topictitle,h1,h2	{ font-weight: bold; font-size: 11px; color : #000000; }
+a.topictitle:link   { text-decoration: none; color : #006699; }
+a.topictitle:visited { text-decoration: none; color : #5493B4; }
+a.topictitle:hover	{ text-decoration: underline; color : #DD6900; }
+
+/* Name of poster in viewmsg.php and viewtopic.php and other places */
+.name			{ font-size : 11px; color : #000000;}
+
+/* Location, number of posts, post date etc */
+.postdetails		{ font-size : 10px; color : #000000; }
+
+/* The content of the posts (body of text) */
+.postbody { font-size : 12px; line-height: 18px}
+a.postlink:link	{ text-decoration: none; color : #006699 }
+a.postlink:visited { text-decoration: none; color : #5493B4; }
+a.postlink:hover { text-decoration: underline; color : #DD6900}
+
+/* Quote & Code blocks */
+.code {
+	font-family: Courier, 'Courier New', sans-serif; font-size: 11px; color: #006600;
+	background-color: #FAFAFA; border: #D1D7DC; border-style: solid;
+	border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+}
+
+.quote {
+	font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11px; color: #444444; line-height: 125%;
+	background-color: #FAFAFA; border: #D1D7DC; border-style: solid;
+	border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+}
+
+/* Copyright and bottom info */
+.copyright		{ font-size: 10px; font-family: Verdana, Arial, Helvetica, sans-serif; color: #444444; letter-spacing: -1px;}
+a.copyright		{ color: #444444; text-decoration: none;}
+a.copyright:hover { color: #000000; text-decoration: underline;}
+
+/* Form elements */
+input,textarea, select {
+	color : #000000;
+	font: normal 11px Verdana, Arial, Helvetica, sans-serif;
+	border-color : #000000;
+}
+
+/* The text input fields background colour */
+input.post, textarea.post, select {
+	background-color : #FFFFFF;
+}
+
+input { text-indent : 2px; }
+
+/* The buttons used for bbCode styling in message post */
+input.button {
+	background-color : #EFEFEF;
+	color : #000000;
+	font-size: 11px; font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+/* The main submit button option */
+input.mainoption {
+	background-color : #FAFAFA;
+	font-weight : bold;
+}
+
+/* None-bold submit button */
+input.liteoption {
+	background-color : #FAFAFA;
+	font-weight : normal;
+}
+
+/* This is the line in the posting page which shows the rollover
+  help line. This is actually a text box, but if set to be the same
+  colour as the background no one will know ;)
+*/
+.helpline { background-color: #DEE3E7; border-style: none; }
+
+/* Import the fancy styles for IE only (NS4.x doesn't use the @import function) */
+@import url("templates/subSilver/formIE.css");
+-->
+</style>
+</head>
+<body bgcolor="#E5E5E5" text="#000000" link="#006699" vlink="#5493B4">
+
+<a name="top"></a>
+
+<table width="100%" cellspacing="0" cellpadding="10" border="0" align="center">
+	<tr>
+		<td class="bodyline"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<tr>
+				<td><a href="index-2.html"><img src="templates/subSilver/images/logo_phpBB.gif" border="0" alt="VB Decompiler Forum Index" vspace="1" /></a></td>
+				<td align="center" width="100%" valign="middle"><span class="maintitle">VB Decompiler</span><br /><span class="gen">Hosted by TheAutomaters.com<br />&nbsp; </span>
+				<table cellspacing="0" cellpadding="2" border="0">
+					<tr>
+						<td align="center" valign="top" nowrap="nowrap"><span class="mainmenu">&nbsp;
+						<a href="memberlist.html" class="mainmenu"><img src="templates/subSilver/images/icon_mini_members.gif" width="12" height="13" border="0" alt="Memberlist" hspace="3" />Memberlist</a>
+						</span></td>
+					</tr>
+					<tr>
+						<td height="25" align="center" valign="top" nowrap="nowrap"><span class="mainmenu">&nbsp;</td>
+					</tr>
+				</table></td>
+			</tr>
+		</table>
+
+		<br />
+
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0">
+  <tr>
+	<td align="left" valign="bottom" colspan="2"><a class="maintitle" href="viewtopic933d.html" xx="t=1897&amp;start=0&amp;postdays=0&amp;postorder=asc&amp;highlight=">Disassembling Visual Basic Applications</a><br />
+	  <span class="gensmall"><b></b><br />
+	  &nbsp; </span></td>
+  </tr>
+</table>
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0">
+  <tr>
+	<td></td>
+	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="index-2.html" class="nav">VB Decompiler Forum Index</a>
+	  -> <a href="viewforum8941.html" xx="f=22" class="nav">Articles</a></span></td>
+  </tr>
+</table>
+
+<table class="forumline" width="100%" cellspacing="1" cellpadding="3" border="0">
+	<tr>
+		<th class="thLeft" width="150" height="26" nowrap="nowrap">Author</th>
+		<th class="thRight" nowrap="nowrap">Message</th>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="3114"></a><b>vbgamer45</b></span><br /><span class="postdetails">Regular user<br /><!--<img src="pro_rank_03.gif" alt="Regular user" title="Regular user" border="0" /><br />--><br /><br />Joined: 07 Jul 2004<br />Posts: 93<br />Location: 127.0.0.1</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Jul 30, 2006 3:27 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Disassembling Visual Basic Applications
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[font=Courier New:3n85y0p4]********************************************************************************
+<br />
+*                   DISASSEMBLING VISUAL BASIC APPLICATIONS - II               *
+<br />
+*                                                   - Sanchit Karve            *
+<br />
+*                                                                              *
+<br />
+*                                                      born2c0de               *
+<br />
+*                                               printf&#40;&quot;I&#39;m a %XR&quot;,195936478&#41;; *
+<br />
+*                                                                              *
+<br />
+*       CONTACT ME :       born2c0de AT dreamincode DOT net                    *
+<br />
+*                                                                              *
+<br />
+********************************************************************************
+<br />
+ 
+<br />
+                         LAST UPDATED :  13 NOVEMBER 2006
+<br />
+ 
+<br />
+--------------------------------------------------------------------------------
+<br />
+                              INDEX [INDX]
+<br />
+ 
+<br />
+ 
+<br />
+I.         DISCLAIMER AND NOTICE          [DISN]
+<br />
+II.        READING THIS TUTORIAL          [RTUT]
+<br />
+III.       ASSUMPTIONS                    [ASPT]
+<br />
+IV.        REQUIRED TOOLS AND DOCS        [RQRT]
+<br />
+V.         VB AS A LANGUAGE               [VBAL]
+<br />
+VI.        INTRODUCTION                   [ITRO]
+<br />
+VII.       STRUCTURE OF A VB PROGRAM      [SVBP]
+<br />
+VIII.      OUR FIRST PROGRAM              [OFPR]
+<br />
+IX.        STRING COMPARISON              [STR1]
+<br />
+X.         DECIPHERING A KEY GENERATOR    [DKGN]
+<br />
+XI.        CONCLUSION                     [END1][/font:3n85y0p4]</span>
+						<span class="gensmall"><br /><br />Last edited by vbgamer45 on Sat Feb 16, 2008 9:35 am; edited 13 times in total</span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="3835"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Feb 16, 2008 9:37 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: I. DISCLAIMER AND NOTICE [DISN]
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[font=Courier New:3rjaqmlq]This tutorial is meant for educational purposes only.
+<br />
+
+<br />
+If the Reader chooses to break Protection Mechamisms after reading this
+<br />
+tutorial, he/she shall alone be responsible for the damages caused and not the
+<br />
+Author.
+<br />
+
+<br />
+If you wish to post portions of this tutorial on a WebSite, you are free to do
+<br />
+so as long as you abide by these rules:
+<br />
+
+<br />
+-&gt; Post the selected portion in unedited form.
+<br />
+-&gt; Mention the Author&#39;s Name,Email Address and Name of this tutorial above or
+<br />
+   below the selected text.
+<br />
+-&gt; Inform the Author.
+<br />
+
+<br />
+The Author has not copied text or any other information directly from a Source.
+<br />
+However, some information from some sources has been used to write this tutorial.
+<br />
+These Sources have been mentioned in the References Section.
+<br />
+
+<br />
+You are permitted to continue reading the tutorial only if you agree to the text
+<br />
+given above.[/font:3rjaqmlq]<br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="3836"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Feb 16, 2008 9:39 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: II. READING THIS TUTORIAL [RTUT]
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[font=Courier New:33gobve0]Each Section in this Tutorial has a specific Topic Code enclosed in square
+<br />
+brackets. This arrangement has been made so that you can jump to a specific
+<br />
+topic simply by searching for the topic code from your Browser.
+<br />
+
+<br />
+At many places in the tutorial, I&#39;ve explained a few things which are almost
+<br />
+unnecessary to know when dealing with Visual BASIC programs but I&#39;ve written
+<br />
+them for those who have a thirst for knowledge.
+<br />
+
+<br />
+The Topic Code Tags [XTRA] and [/XTRA] have been given for &quot;extra-information&quot;
+<br />
+sections and you are free to skip them.
+<br />
+Text within the [XTRA]...[/XTRA] blocks is given for extra information.
+<br />
+You can search for the Extra Information using the Topic Code.[/font:33gobve0]<br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="3837"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Feb 16, 2008 9:40 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: III. ASSUMPTIONS [ASPT]
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[font=Courier New:20u0py9q]You are required to have a basic understanding of:
+<br />
+: Visual BASIC
+<br />
+: C/C++
+<br />
+: Win31 API
+<br />
+: 80x86 Microprocessor Assembly Language.[/font:20u0py9q]<br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="3838"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Feb 16, 2008 9:41 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: IV. REQUIRED TOOLS AND DOCS [RQRT]
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[font=Courier New:237984rc]You will need the following tools to proceed with the Tutorial.
+<br />
+: COMPILER     : Visual Basic 6.0
+<br />
+: DISASSEMBLER : IDA Pro 4.x or higher
+<br />
+: DEBUGGER     : OllyDebug Ver. 1.09d or higher
+<br />
+: WINDOWS API DOCUMENTATION
+<br />
+
+<br />
+You can also use these tools for your own experiments.
+<br />
+: NuMeGa SmartCheck 6.x        -&gt; A Good VB Debugger with lots of features.
+<br />
+: VBDE version 0.85 by iorior  -&gt; gives offsets of VB procedures
+<br />
+: VBReformer                   -&gt; can change properties of VB Controls
+<br />
+
+<br />
+
+<br />
+You can refer to API Documentation from MSDN or you can use the
+<br />
+API Text Viewer Tool supplied with Visual Studio or browse
+<br />
+MSDN Online &#40;msdn.microsoft.com&#41;.
+<br />
+Certain Applications like APIViewer 2004 will also do.
+<br />
+
+<br />
+It would be advisable to have a copy of Intel&#39;s 80x86 Instruction Set Manual.
+<br />
+Intel provides this manual free of charge.
+<br />
+
+<br />
+The Software Developer&#39;s Manual consists of 3 volumes:
+<br />
+: Basic Architecture        - Order Number 243190
+<br />
+: Instruction Set Reference - Order Number 243191
+<br />
+: System Programming Guide  - Order Number 243192
+<br />
+
+<br />
+You can obtain these manuals at <!-- m --><a class="postlink" href="http://developer.intel.com/">http://developer.intel.com</a><!-- m -->
+<br />
+
+<br />
+I have given the names of the Tools that I have used. But you are free to use
+<br />
+any disassembler and debugger as long as you are comfortable using it but I
+<br />
+advice you to use the tools that I have used above. SoftIce is better than
+<br />
+OllyDebug but the latter is good enough so it doesn&#39;t matter which one you use.
+<br />
+But I strongly recommend the use of IDA Pro as it&#39;s the best disassembler that I
+<br />
+have seen so far.
+<br />
+
+<br />
+--------------------------------------------------------------------------------
+<br />
+My First Version of this Tutorial got me a lot of comments and emails from 
+<br />
+people reminding me of all the advantages of VB. They&#39;ve told me not to overlook
+<br />
+the advantages of VB and that there is a reason why VB is slow.
+<br />
+I agree with them. Looks like I was focussed on only VB&#39;s shortcomings I guess.
+<br />
+In this tutorial, I wish to get things clear and let VB get the praise it 
+<br />
+deserves.
+<br />
+--------------------------------------------------------------------------------[/font:237984rc]<br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="3839"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Feb 16, 2008 9:44 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: V. VB AS A LANGUAGE [VBAL]
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[font=Courier New:3gkq1s72]It&#39;s like they say:&quot;Everything has a reason.&quot;
+<br />
+After this section I am just going to focus on the internal details of Visual
+<br />
+BASIC and I just might say that the code generated by VB is pathetic. But before
+<br />
+I can do that, I want to ensure that you know the advantages that VB offers as 
+<br />
+well.
+<br />
+I want to do this so that the next time you are writing an application, you can 
+<br />
+decide whether or not to use Visual BASIC based on your priorities.
+<br />
+
+<br />
+Visual BASIC is a well crafted language simply because learning to write code 
+<br />
+doesn&#39;t take much time and yet VB is capable of generating Powerful Applications.
+<br />
+Many times when you don&#39;t have much time at your disposal, Visual Basic is the 
+<br />
+best way to go as you can make your App do the same work &#40;which another language
+<br />
+would let you do&#41; in a shorter amount of time without compromising much on the 
+<br />
+Application performance.
+<br />
+
+<br />
+VB&#39;s library functions are DLL function calls to MSVBM60.DLL
+<br />
+Though this doesn&#39;t help in speeding up the App, it has a lot of advantages:
+<br />
+--&gt; Core Code is written in the Runtime Files itself, making Visual BASIC 
+<br />
+    programs as small as possible.
+<br />
+--&gt; Because of this architecture, the code is extremely easy to port to other
+<br />
+    Windows Operating Systems. Consider this example.
+<br />
+--&gt; VB does a lot of work by itself. C/C++ and other languages would require you
+<br />
+    to write a lot of functions to even write a simple Windows Application.
+<br />
+
+<br />
+[ THIS IS ONLY AN EXAMPLE. IT MAY NOT BE NECESSARILY TRUE ]
+<br />
+
+<br />
+Suppose an API Function APIFunc&#40;&#41; that exists in a DLL file in Windows XP is
+<br />
+removed from Windows Vista but Microsoft decides to include an alternate
+<br />
+function and names it AlternateAPIFunc&#40;&#41; and puts it in another DLL file.
+<br />
+&#40;Assuming all parameters and return value contents are the same&#41;
+<br />
+
+<br />
+
+<br />
+We plan to write this in C.
+<br />
+Now comes the problem.
+<br />
+If we wish to use our app to work in Windows XP, we need to use the the function
+<br />
+APIFunc&#40;&#41; in our applications and if we want it to work on Windows Vista we have
+<br />
+to replace every APIFunc&#40;&#41; function call in our app to AlternateAPIFunc&#40;&#41;.
+<br />
+
+<br />
+Isn&#39;t it cumbersome and tiring?
+<br />
+
+<br />
+Now if we decide to use VB.
+<br />
+We continue to use the same code.
+<br />
+VB Functions call API Functions from the Runtime Files.
+<br />
+So nothing needs to be done because Windows XP will have a seperate set of
+<br />
+runtime files using the APIFunc&#40;&#41; Function while the Vista Runtime Files would
+<br />
+use the AlternateAPIFunc&#40;&#41; Function.
+<br />
+
+<br />
+Doesn&#39;t that make the programmers job much much easier?
+<br />
+This is based on the Java portability technique where the Runtime Files of
+<br />
+Windows OS&#39;s can be thought of like Java Virtual Machines.
+<br />
+
+<br />
+VB also includes support for Memory Handling and Stack Checks which otherwise
+<br />
+would have to be done manually by the programmer in another language.
+<br />
+
+<br />
+So What I&#39;m saying is all these features cost you on performance. But the
+<br />
+relative lag in performance is ingorable as the advantages outperform VB&#39;s
+<br />
+shortcomings.
+<br />
+
+<br />
+So what follows below is just having a look at VB&#39;s Code Generation results and
+<br />
+Runtime Files code.
+<br />
+So when I talk about some code being inefficient, remember that it is so because
+<br />
+of the advantages that VB offers.
+<br />
+
+<br />
+The topic of this tutorial concerns disassembling VB Applications and I will
+<br />
+look at only the Assembly code without being concerned of how VB is at the user
+<br />
+level.
+<br />
+
+<br />
+Once you are clear about this, go ahead.
+<br />
+Please don&#39;t mail me stating that I could not appreciate the features of VB and 
+<br />
+things like that.[/font:3gkq1s72]<br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="3840"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Feb 16, 2008 9:48 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: VI. INTRODUCTION [ITRO]
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[font=Courier New:3aqknso5]If you have disassembled programs written in C/C++ or Pascal before, you would
+<br />
+know that it is not difficult to understand what the assembly instructions are
+<br />
+trying to achieve. These Languages generate neat,well written code and hence are
+<br />
+easier to read and comprehend when they are disassembled.
+<br />
+
+<br />
+Try disassembling a program written in Visual BASIC. Most Disassemblers fail to
+<br />
+disassemble these programs because they assume that the structure of the
+<br />
+executable file is similar to that of C/C++ compiled programs.
+<br />
+Hence many people think that it is extremely difficult to disassemble and
+<br />
+understand programs written in Visual BASIC. However it is not so.
+<br />
+
+<br />
+The executable file structure is entirely different in Visual Basic programs.
+<br />
+Once we get to know how Object data, strings and functions are stored and how
+<br />
+events are implemented then comprehending Disassembled Listings of Visual Basic
+<br />
+programs gets a lot easier.
+<br />
+
+<br />
+So this tutorial does just that. Along with that it also gives ample proof to
+<br />
+show why Visual BASIC is never used by experts to write Fast and efficient code.
+<br />
+You will see in later examples why programs generated by Visual BASIC are slow.
+<br />
+
+<br />
+The Tutorial will talk about executable files compiled in Visual BASIC in
+<br />
+Native Code and not p-code.
+<br />
+
+<br />
+After reading this tutorial, you should be able to disassemble,debug and
+<br />
+understand Visual Basic Applications. You may also be able to reverse engineer
+<br />
+Protection Mechanisms written in Visual BASIC and by doing that you are putting
+<br />
+yourself to risk and not the author.
+<br />
+
+<br />
+So now that you know what to expect from this tutorial, let&#39;s go ahead.[/font:3aqknso5]<br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="3841"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Feb 16, 2008 9:50 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: VII. STRUCTURE OF A VB PROGRAM [SVBP]
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[font=Courier New:1zg7o4mv]When you open a VB Program in IDA, you&#39;ll end up with the following code.
+<br />
+
+<br />
+start:
+<br />
+                 push    offset dword_4012B4
+<br />
+                 call    ThunRTMain
+<br />
+ ; ---------------------------------------------------------------------------
+<br />
+                 dd 0, 300000h, 400000h, 0, 0E9960000h, 82E6FCDFh, 939C4C23h
+<br />
+                 dd 0EB969B2Fh, 73D5h, 0, 1, 34303230h, 72503033h, 63656A6Fh
+<br />
+                 ; etc etc etc
+<br />
+
+<br />
+
+<br />
+This doesn&#39;t make any sense does it? If you keep scrolling further you will see
+<br />
+sections of code and data. Each Section has a meaning in VB Programs and you can
+<br />
+see a general idea of a Visual BASIC program&#39;s Section Map below.
+<br />
+
+<br />
+
+<br />
+00401000:
+<br />
+... IAT &#40;First Thunk ok apis&#41;
+<br />
+
+<br />
+Next Section&#40;NS&#41;:
+<br />
+... some data
+<br />
+
+<br />
+NS:
+<br />
+... transfer area &#40;Jumps to imported functions&#41;
+<br />
+
+<br />
+NS:
+<br />
+... lots of data
+<br />
+
+<br />
+NS:
+<br />
+... local transfer area &#40;for internal event handlers&#41;
+<br />
+
+<br />
+NS:
+<br />
+... other data
+<br />
+
+<br />
+NS:
+<br />
+... code
+<br />
+
+<br />
+NS:
+<br />
+... lots of data
+<br />
+
+<br />
+NS:
+<br />
+... .data Section
+<br />
+
+<br />
+
+<br />
+
+<br />
+Let us now start analysis from the entry point of the program.
+<br />
+
+<br />
+push    offset RT_Struct
+<br />
+call    ThunRTMain
+<br />
+
+<br />
+It&#39;s C equivalent would have been:
+<br />
+ThunRTMain&#40;&amp;RT_Struct&#41;;
+<br />
+
+<br />
+A function ThunRTMain is called which accepts one parameter. We&#39;ll soon find out
+<br />
+that the parameter is a structure.
+<br />
+Simply putting a step over command on the CALL statement results in the
+<br />
+execution of the Application.
+<br />
+Wierd Isn&#39;t it?
+<br />
+For Pascal,C and C++ Programs there is always a start&#40;&#41; function that takes all
+<br />
+CommandLine Parameters,Gets ProcessThreads,Module Handles etc. We didn&#39;t see
+<br />
+anything of the sort in a Visual BASIC Program.
+<br />
+
+<br />
+But actually, VB does have a start function. The start function code is placed
+<br />
+in the ThunRTMain Function. Let&#39;s verify that by disassembling the MSVBM60.DLL
+<br />
+and viewing the ThunRTMain Function. I&#39;ve mentioned only a part of the
+<br />
+ThunRTMain Function Code.
+<br />
+
+<br />
+
+<br />
+ ThunRTMain      proc near
+<br />
+
+<br />
+ arg_0           = dword ptr  8
+<br />
+
+<br />
+                 mov     esi, [ebp+arg_0]
+<br />
+                 mov     dword_7352F7DC, esi
+<br />
+                 and     [ebp+var_4], 0
+<br />
+                 lea     eax, [ebp+StartupInfo]
+<br />
+                 push    eax             ; lpStartupInfo
+<br />
+                 lea     eax, [ebp+StartupInfo]
+<br />
+                 push    eax             ; lpStartupInfo
+<br />
+                 call    ds:GetStartupInfoA
+<br />
+                 movzx   eax, [ebp+StartupInfo.wShowWindow]
+<br />
+                 mov     dword_7352F7D8, eax
+<br />
+                 push    hModule
+<br />
+                 push    esi
+<br />
+                 mov     esi, offset dword_7352F470
+<br />
+                 mov     ecx, esi
+<br />
+                 call    sub_7342DECD
+<br />
+                 mov     [ebp+var_1C], eax
+<br />
+                 test    eax, eax
+<br />
+                 jl      short loc_7342DEC5
+<br />
+                 push    0               ; lParam
+<br />
+                 push    0               ; wParam
+<br />
+                 push    1069h           ; Msg
+<br />
+                 call    ds:GetCurrentThreadId
+<br />
+                 push    eax             ; idThread
+<br />
+                 call    ds:PostThreadMessageA
+<br />
+                 ; Other Code
+<br />
+
+<br />
+                 or      [ebp+var_4], 0FFFFFFFFh
+<br />
+                 push    0               ; uExitCode
+<br />
+                 call    ds:ExitProcess
+<br />
+                 jmp     loc_734619B3
+<br />
+
+<br />
+ loc_7342DEC5:                           ; CODE XREF: ThunRTMain+60j
+<br />
+                 push    eax
+<br />
+                 call    sub_Free_Memory
+<br />
+                 jmp     short loc_7342DEB4
+<br />
+endp
+<br />
+
+<br />
+As you can see, it does call all the Functions that the start&#40;&#41; function does in
+<br />
+C and PASCAL programs. But what about CommandLine&#40;&#41; Function from KERNEL32.DLL?
+<br />
+MSVBM60.DLL does call that function as well but that function call is placed in 
+<br />
+deeply nested function calls. You can open the Imports Window to see the
+<br />
+Imported Function and see the cross-reference to a procedure in MSVBM60.DLL
+<br />
+
+<br />
+The sub_Free_Memory procedure calls various API Functions but if you keep
+<br />
+reading the procedure, you&#39;ll soon come across the HeapFree&#40;&#41; Function which is
+<br />
+imported from kernel32.dll.
+<br />
+
+<br />
+Now I guess you now know the purpose of the ThunRTMain Function.
+<br />
+Let us now see what structure is passed to it.
+<br />
+
+<br />
+If we double-click on the RT_Struct offset, we reach an address containing
+<br />
+certain values.
+<br />
+It is a huge structure and each part needs to be seen one at a time.
+<br />
+
+<br />
+Explaining the Structure will take up a lot of time and since I want to focus on
+<br />
+the Code Constructs of Visual BASIC, I won&#39;t entirely explain the Structure
+<br />
+passed to ThunRTMain.
+<br />
+
+<br />
+We shall discuss the contents of this structure a little later.
+<br />
+
+<br />
+I would also suggest you to read the article
+<br />
+&quot;VISUAL BASIC REVERSED - A decompiling approach&quot; by Andrea Geddon as it
+<br />
+does talk about the Structure passed to ThunRTMain in detail.[/font:1zg7o4mv]<br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="3842"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Feb 16, 2008 9:53 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: VIII. OUR FIRST PROGRAM [OFPR]
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[font=Courier New:345xlxhe]Create a Form with a CommandButton. Click the CommandButton and add a simple 
+<br />
+Msgbox Code as shown below:
+<br />
+
+<br />
+Private Sub Command1_Click&#40;&#41;
+<br />
+        Msgbox &quot;Ssup&quot;
+<br />
+End Sub
+<br />
+
+<br />
+Open the Compiled EXE File with IDA Pro.
+<br />
+Click the Strings Tab to find the &quot;Ssup&quot; String.
+<br />
+Double-Click the String to find its cross-reference.
+<br />
+Scroll up to the top of the procedure.
+<br />
+You should see something like this:
+<br />
+
+<br />
+[Explanation is partly given by comments after an instruction.]
+<br />
+
+<br />
+Command1_Click  proc near
+<br />
+
+<br />
+ var_64          = dword ptr -64h
+<br />
+ var_5C          = dword ptr -5Ch
+<br />
+ var_54          = dword ptr -54h
+<br />
+ var_4C          = dword ptr -4Ch
+<br />
+ var_44          = dword ptr -44h
+<br />
+ var_3C          = dword ptr -3Ch
+<br />
+ var_34          = dword ptr -34h
+<br />
+ var_2C          = dword ptr -2Ch
+<br />
+ var_24          = dword ptr -24h
+<br />
+ var_14          = dword ptr -14h
+<br />
+ var_C           = dword ptr -0Ch
+<br />
+ var_8           = dword ptr -8     ; Destructor Object
+<br />
+ var_4           = dword ptr -4
+<br />
+ form_object     = dword ptr  8
+<br />
+
+<br />
+                 push    ebp                  ; These two instructions
+<br />
+                 mov     ebp, esp             ; open the Stack Frame.
+<br />
+                 sub     esp, 0Ch             ; Allocates 12 bytes on stack
+<br />
+                 push    &#40;offset exception_handler+1&#41;; Starts Exception Handler
+<br />
+                 mov     eax, large fs:0
+<br />
+                 push    eax
+<br />
+                 mov     large fs:0, esp
+<br />
+                 sub     esp, 88h             ; Allocates 136 bytes on stack
+<br />
+                 push    ebx
+<br />
+                 push    esi                  ; Saves Values of Registers
+<br />
+                 push    edi
+<br />
+
+<br />
+                                              ; Loads the Destructor
+<br />
+                 mov     [ebp+var_C], esp
+<br />
+                 mov     [ebp+var_8], offset destructor
+<br />
+
+<br />
+                                             ; Allocating Dynamic Resources
+<br />
+                 mov     eax, [ebp+form_object]
+<br />
+                 mov     ecx, eax
+<br />
+                 and     ecx, 1
+<br />
+                 mov     [ebp+var_4], ecx
+<br />
+                 and     al, 0FEh
+<br />
+                 push    eax
+<br />
+                 mov     [ebp+form_object], eax
+<br />
+                 mov     edx, [eax]
+<br />
+                 call    dword ptr [edx+4] ; Calls MSVBM60.Zombie_AddRef
+<br />
+                 mov     ecx, 80020004h
+<br />
+                 xor     esi, esi
+<br />
+                 mov     [ebp+var_4C], ecx
+<br />
+                 mov     eax, 0Ah
+<br />
+                 mov     [ebp+var_3C], ecx
+<br />
+                 mov     [ebp+var_2C], ecx
+<br />
+                 mov     [ebp+var_34], esi
+<br />
+                 mov     [ebp+var_44], esi
+<br />
+                 mov     [ebp+var_54], esi
+<br />
+                 mov     [ebp+var_64], esi
+<br />
+                 lea     edx, [ebp+var_64]
+<br />
+                 lea     ecx, [ebp+var_24]
+<br />
+                 mov     [ebp+var_24], esi
+<br />
+                 mov     [ebp+var_54], eax
+<br />
+                 mov     [ebp+var_44], eax
+<br />
+                 mov     [ebp+var_34], eax
+<br />
+                 mov     [ebp+var_5C], offset aSsup ; &quot;Ssup&quot;
+<br />
+                 mov     [ebp+var_64], 8
+<br />
+                 call    ds:__vbaVarDup
+<br />
+                 lea     eax, [ebp+var_54]
+<br />
+                 lea     ecx, [ebp+var_44]
+<br />
+                 push    eax
+<br />
+                 lea     edx, [ebp+var_34]
+<br />
+                 push    ecx
+<br />
+                 push    edx
+<br />
+                 lea     eax, [ebp+var_24]
+<br />
+                 push    esi
+<br />
+                 push    eax
+<br />
+                 call    ds:rtcMsgBox          ; Calls the MsgBox Function
+<br />
+                 lea     ecx, [ebp+var_54]
+<br />
+                 lea     edx, [ebp+var_44]
+<br />
+                 push    ecx
+<br />
+                 lea     eax, [ebp+var_34]
+<br />
+                 push    edx
+<br />
+                 lea     ecx, [ebp+var_24]
+<br />
+                 push    eax
+<br />
+                 push    ecx
+<br />
+                 push    4
+<br />
+                 call    ds:__vbaFreeVarList
+<br />
+                 add     esp, 14h
+<br />
+                 mov     [ebp+var_4], esi
+<br />
+                 push    offset continue_after_jump
+<br />
+                 jmp     short fake_a_call_instr
+<br />
+
+<br />
+                 lea     edx, [ebp+var_54]
+<br />
+                 lea     eax, [ebp+var_44]
+<br />
+                 push    edx
+<br />
+                 lea     ecx, [ebp+var_34]
+<br />
+                 push    eax
+<br />
+                 lea     edx, [ebp+var_24]
+<br />
+                 push    ecx
+<br />
+                 push    edx
+<br />
+                 push    4
+<br />
+                 call    ds:__vbaFreeVarList
+<br />
+                 add     esp, 14h
+<br />
+                 retn
+<br />
+ ; ---------------------------------------------------------------------------
+<br />
+
+<br />
+ fake_a_call_instr:
+<br />
+                 retn
+<br />
+ ; ---------------------------------------------------------------------------
+<br />
+
+<br />
+ continue_after_jump:
+<br />
+                 mov     eax, [ebp+arg_0]
+<br />
+                 push    eax
+<br />
+                 mov     ecx, [eax]
+<br />
+                 call    dword ptr [ecx+8]  ; Calls MSVBM60.Zombie_Release
+<br />
+                 mov     eax, [ebp+var_4]
+<br />
+                 mov     ecx, [ebp+var_14]
+<br />
+                 pop     edi
+<br />
+                 pop     esi
+<br />
+                 mov     large fs:0, ecx
+<br />
+                 pop     ebx
+<br />
+                 mov     esp, ebp
+<br />
+                 pop     ebp                 ; Closes Stack Frame
+<br />
+                 retn    4
+<br />
+Command1_Click  endp
+<br />
+
+<br />
+
+<br />
+Simply by looking at the entire procedure you can&#39;t exactly figure out what the
+<br />
+hell happens when the whole subroutine is executed. If you know Assembly well
+<br />
+and have had the patience to read through the code, you should notice a few neat
+<br />
+things in the code.
+<br />
+
+<br />
+[XTRA]
+<br />
+
+<br />
+Before I begin explaining the procedure, I want to teach you how to recognise a
+<br />
+procedure in Visual BASIC. They can be called Procedure Signatures.
+<br />
+1&#41; A Procedure has the open and close Stack Frame instructions.
+<br />
+2&#41; The First Procedure in a VB Program is always preceded by
+<br />
+   12 0xCC Bytes &#40;which corresponds to the INT 3 Instruction&#41; followed by
+<br />
+    4 &#39;T&#39; bytes &#40;0xE9&#41; followed by 12 0xCC bytes.
+<br />
+3&#41; Procedures other than the first are preceded by 10 NOP&#40;0x90&#41; Instructions.
+<br />
+
+<br />
+: 1&#41; STACK FRAME:
+<br />
+
+<br />
+The Open/Close Stack Frame Instructions are even found in C/C++ and Pascal
+<br />
+programs and hence can be termed as a universal method of determining procedures.
+<br />
+However that is not always the case.
+<br />
+
+<br />
+--&gt; Many compilers just JMP instructions to fake a Call Instruction. This Jump
+<br />
+    is at times a CALL to a procedure. IDA Pro does not detect such
+<br />
+    CALL &#39;emulating&#39; instructions but OllyDebug does recognise such
+<br />
+    code patterns.
+<br />
+
+<br />
+--&gt; Visual C++ allows the programmer to write naked functions. Naked functions
+<br />
+    mean that the compiler does not allocate space for its arguments nor does it
+<br />
+    include the stack open and close frame instructions.
+<br />
+
+<br />
+But since we are dealing with Visual BASIC, we can ignore the second case. You
+<br />
+will see an example of the first case shortly.
+<br />
+
+<br />
+
+<br />
+: 2&#41; THE 0xCC BYTE
+<br />
+
+<br />
+The 0xCC Byte is used to Generate the INT 3 Exception, which is known as the
+<br />
+&quot;CALL TO INTERRUPT&quot; Procedure. It is used by Debuggers such as OllyDebug and
+<br />
+SoftIce to set software Breakpoints. Debuggers insert the 0xCC byte before the
+<br />
+instruction which it wants to set a breakpoint on. As soon as the INT 3
+<br />
+Instruction is executed, Control is passed onto the Debuggers Exception Handler.
+<br />
+
+<br />
+Here is the description taken directly from Intel&#39;s Software Developers Manual
+<br />
+Volume 2 : Instruction Set Reference.
+<br />
+&quot;The INT 3 instruction generates a special one byte opcode &#40;CC&#41; that is intended
+<br />
+for calling the debug exception handler. &#40;This one byte form is valuable because
+<br />
+it can be used to replace the first byte of any instruction with a breakpoint,
+<br />
+including other one byte instructions, without over-writing other code&#41;. To
+<br />
+further support its function as a debug breakpoint, the interrupt generated with
+<br />
+the CC opcode also differs from the regular software interrupts as follows:
+<br />
+• Interrupt redirection does not happen when in VME mode; the interrupt is
+<br />
+  handled by a protected-mode handler.
+<br />
+• The virtual-8086 mode IOPL checks do not occur. The interrupt is taken without
+<br />
+  faulting at any IOPL level.&quot;
+<br />
+
+<br />
+That&#39;s how debuggers work. That&#39;s also the concept of certain anti-debugging
+<br />
+techniques. Since the 0xCC code is injected by Debuggers before an instruction,
+<br />
+the CRC &#40;Cyclic Redundancy Check&#41; Value of the code also changes. Some
+<br />
+Antidebugging techniques encrypt the program with a key which is the CRC value
+<br />
+of the program. When a program is being debugged, its CRC value changes and with
+<br />
+the result the program doesn&#39;t get decrypted.
+<br />
+Such methods are effective in stopping amateur wannabe hackers from
+<br />
+understanding their code but its not foolproof and an expert hacker can get past
+<br />
+this technique with ease.
+<br />
+
+<br />
+So much for what &#39;0xCC&#39; is. But why is it placed before the First Procedure in
+<br />
+VB Programs?
+<br />
+I&#39;ve found no answer to that so far. This wastes a lot of space in a program.
+<br />
+
+<br />
+If you try to disassemble a Console Program written in Visual C++, you&#39;ll find
+<br />
+many instructions which set parts of the stack to the &#39;0xCC&#39; value. You will
+<br />
+also find 0xCC bytes scattered across the disassembled listing.
+<br />
+
+<br />
+If only Visual Studio was Open Source, we could have seen the code generation
+<br />
+code and come up with an answer and improve the code generation code too.
+<br />
+I hope you also realise why Open Source is slowly gaining momentum.
+<br />
+
+<br />
+
+<br />
+3&#41; The 0x90 Byte
+<br />
+
+<br />
+Here is the description taken directly from Intel&#39;s Software Developers Manual
+<br />
+Volume 2 : Instruction Set Reference.
+<br />
+
+<br />
+&quot;Performs no operation. This instruction is a one-byte instruction that takes up
+<br />
+space in the instruction stream but does not affect the machine context,
+<br />
+except the EIP register.
+<br />
+The NOP instruction is an alias mnemonic for the XCHG EAX, EAX instruction.&quot;
+<br />
+
+<br />
+This byte is injected into serial generation/checking procedures by amateur
+<br />
+hackers where the protection mechanism is weak. This is known as bit-hacking.
+<br />
+Sadly enough, bit-hacking STILL works for defeating plenty of today&#39;s Commercial
+<br />
+Applications. Guess they never realised the importance for code-security.
+<br />
+
+<br />
+While writing programs in Assembly Language, if you use Forward Referencing in a
+<br />
+few situations or use a wrong Jump Instruction to jump to certain addresses,
+<br />
+chances are quite bright that the Assembler will fill in some bytes with the NOP
+<br />
+instruction.
+<br />
+As a result, having the presence of the 0x90 Instruction in your code is
+<br />
+considered bad programming.
+<br />
+
+<br />
+But again, I see no reason why the 0x90 Byte is present in Visual BASIC.
+<br />
+Removing such entries will reduce the executable size drastically.
+<br />
+
+<br />
+Programs like VBDE rely on such Procedure Signatures to identify where a
+<br />
+procedure is present.
+<br />
+
+<br />
+[/XTRA]
+<br />
+
+<br />
+Let us start by analyzing the procedure in portions.
+<br />
+First the Procedure opens the Stack Frame. Then it allocates 12 Bytes on the 
+<br />
+stack for the Destructor and other variables. &#40; We shall see the Destructor in
+<br />
+detail after a short while. &#41;
+<br />
+Then it allocates Dynamic Resources and calls the Zombie_AddRef Function.
+<br />
+
+<br />
+Zombie is a state in which the only valid consumer action on a COM object is
+<br />
+generally to release that object.
+<br />
+
+<br />
+Here is the description of the use of Zombie_Addref and Zombie_Release Functions 
+<br />
+from MSDN.
+<br />
+
+<br />
+[XTRA]
+<br />
+The first three methods in a COM interface are required to be the same for all
+<br />
+COM interfaces. These are the methods of the IUnknown interface:
+<br />
+QueryInterface, AddRef, and Release.
+<br />
+
+<br />
+The QueryInterface method takes an interface ID &#40;an IID&#41; and returns the
+<br />
+requested COM interface on the same object. The set of interface IDs
+<br />
+accessible via QueryInterface is the same from every interface on the object.
+<br />
+
+<br />
+
+<br />
+Each interface has a nominal reference count associated with it.
+<br />
+When a piece of code receives an interface, it should assume the reference count
+<br />
+is notionally 1 unless it has other knowledge.
+<br />
+
+<br />
+AddRef increments the count, Release decrements it.
+<br />
+
+<br />
+When the client has made one more call to Release than to
+<br />
+AddRef &#40;meaning that the nominal count is zero&#41;, then it must assume that the
+<br />
+interface pointer is invalid. The provider of the interface may choose to
+<br />
+invalidate the interface pointer at that point &#40;or not&#41;, but not before.
+<br />
+Some implementations have more relaxed behavior &#40;for example, sharing
+<br />
+reference counts for all interfaces and/or only invalidating interface pointers
+<br />
+when the object is freed&#41;, but such behavior is not required, and should
+<br />
+certainly not be depended on. Although AddRef and Release return a ULONG, the
+<br />
+value returned is not required to have any meaning. Client code should not
+<br />
+depend in any way on the value returned. It exists solely for debugging code
+<br />
+to use, typically to return the new object reference count.
+<br />
+
+<br />
+The reference-counting rules are very simple. When a client calls a member
+<br />
+function and passes one or more interface pointers:
+<br />
+
+<br />
+The callee should AddRef its interface parameters if it wants them to stay around after it has gone.
+<br />
+
+<br />
+
+<br />
+The caller should Release the callee&#39;s returned interfaces when it
+<br />
+is done with them.
+<br />
+A straightforward consequence of the above rules is that QueryInterface does
+<br />
+an implicit AddRef on the returned interface, as do the
+<br />
+application programming interfaces &#40;APIs&#41; that create objects,
+<br />
+such as CoCreateInstance.
+<br />
+[/XTRA]
+<br />
+
+<br />
+After reading the text above, you would understand why the AddRef and Release
+<br />
+Functions are present.
+<br />
+
+<br />
+What does the Zombie_AddRef Function do? It Takes the Object Reference.
+<br />
+In this function the parent object &#40;in this case Form&#41; is passed as a parameter
+<br />
+and uses AddRef to increment reference count of the object &#40;instantiation&#41;.
+<br />
+Since COM objects are responsible for their lifetime, the resources they use are
+<br />
+allocated until the reference count is 0, when it reaches 0 the objects enter
+<br />
+zombie state &amp; can be deallocated to free resources.
+<br />
+Refer COM object management documentation for more detailed information.
+<br />
+
+<br />
+Right after the call of the Zombie_AddRef Function there are MOV instructions
+<br />
+which assigns values to many variables. That follows a reference to the &quot;Ssup&quot;
+<br />
+string followed by a call to the rtcMsgbox procedure.
+<br />
+
+<br />
+Why does it seem so wierd? Shouldn&#39;t it simply call the rtcMsgbox Function?
+<br />
+No, because it is a requirement to call QueryInterface,AddRef and Release 
+<br />
+functions in Applications using COM Technology.
+<br />
+
+<br />
+Now about the rtcMsgbox function.
+<br />
+Intuition tells us that no matter what the function does, it will end up calling
+<br />
+the MessageBoxA or the MessageBoxW Function. So let&#39;s set a breakpoint on the
+<br />
+MessageBoxA and MessageBoxW Functions.
+<br />
+
+<br />
+To do that, start OllyDebug and load the Executable file by pressing F3.
+<br />
+After the program is loaded, press Alt+E to open the Executable Modules Window.
+<br />
+Double click USER32.DLL to open the disassembled listing of the User32.dll file.
+<br />
+From there press Ctrl+N to open the Imports/Exports Window. Then Scroll over
+<br />
+till you see the MessageBoxA and MessageBoxW Functions. Click them one at a time
+<br />
+and press F2 to set a breakpoint.
+<br />
+
+<br />
+Now press F9 to run the program. The Application should open. Click the 
+<br />
+CommandButton. Now instead of the Debugger halting at a breakpoint of MessageBox,
+<br />
+the MessageBox comes up without any halt to the Debugger.
+<br />
+
+<br />
+Why does this happen? Does this mean that rtcMsgBox has a seperate copy of the
+<br />
+MessageBox code within itself? Though it seems like a possible reason, it is
+<br />
+unlikely to happen as Microsoft Developers built the Windows API so that they
+<br />
+could be reused for performance. So that means that some API Function is called 
+<br />
+which displays the MessageBox.
+<br />
+So let us try another experiment. In the same Imports/Exports Section of
+<br />
+User32.dll we see 2 more MessageBox functions which are MessageBoxIndirectA and
+<br />
+MessageBoxIndirectW. Let&#39;s try setting a breakpoint on both these Messages.
+<br />
+
+<br />
+After the breakpoint is set, press F9, and click the Command Button.
+<br />
+This time, the Debugger halts at the MessageBoxIndirectA function.
+<br />
+Interesting isn&#39;t it? All Visual BASIC Applications which use the Msgbox&#40;&#41;
+<br />
+Function are actually calls to MessageBoxIndirectA and not MessageBox as thought.
+<br />
+
+<br />
+This is an important characteristic. So the Next time you set a breakpoint on 
+<br />
+the MessageBox function and the debugger halts at a breakpoint, you can be
+<br />
+pretty sure that someone has used the MessageBox&#40;&#41; API Directly by consulting
+<br />
+the API Text Viewer for the VB Declaration.
+<br />
+
+<br />
+Let us now see the prototype of the MessageBoxIndirect&#40;&#41; API Function.
+<br />
+
+<br />
+Private Declare Function MessageBoxIndirect Lib &quot;user32&quot; Alias
+<br />
+&quot;MessageBoxIndirectA&quot; &#40;lpMsgBoxParams As MSGBOXPARAMS&#41; As Long
+<br />
+
+<br />
+Only One Parameter? So then how is the Message Body and Title passed to the
+<br />
+Function? For that we&#39;ll need to see the declaration of the MSGBOXPARAMS
+<br />
+Structure.
+<br />
+
+<br />
+Private Type MSGBOXPARAMS
+<br />
+	cbSize As Long
+<br />
+	hwndOwner As Long
+<br />
+	hInstance As Long
+<br />
+	lpszText As String
+<br />
+	lpszCaption As String
+<br />
+	dwStyle As Long
+<br />
+	lpszIcon As String
+<br />
+	dwContextHelpId As Long
+<br />
+	lpfnMsgBoxCallback As Long
+<br />
+	dwLanguageId As Long
+<br />
+End Type
+<br />
+
+<br />
+This suggests that the required parameters are assigned to variables and the
+<br />
+reference to that object is passed to that function.
+<br />
+So That suggests that the many MOV instructions found before the rtcMsgbox call
+<br />
+are used to initialise the MSGBOXPARAMS Structure.
+<br />
+
+<br />
+To confirm our doubt, let&#39;s compare the MOV instructions with the code found
+<br />
+before the MessageBoxIndirect function is called.
+<br />
+
+<br />
+
+<br />
+  mov     edx, [eax]
+<br />
+  mov     [ebp+hWnd.lpszText], ecx
+<br />
+  mov     ecx, [eax+8]
+<br />
+  mov     eax, [eax+0Ch]
+<br />
+  push    esi
+<br />
+  push    ebx
+<br />
+  test    ah, 40h
+<br />
+  mov     [ebp+hWnd.hInstance], edi
+<br />
+  mov     [ebp+hWnd.lpszIcon], edi
+<br />
+  mov     [ebp+hWnd.lpfnMsgBoxCallback], edi
+<br />
+  mov     [ebp+hWnd.cbSize], 28h
+<br />
+  mov     [ebp+hWnd.hwndOwner], edx
+<br />
+  mov     [ebp+hWnd.lpszCaption], ecx
+<br />
+  mov     [ebp+hWnd.dwStyle], eax
+<br />
+  mov     [ebp+hWnd.dwLanguageId], edi
+<br />
+  jz      short loc_734A6133
+<br />
+  mov     [ebp+hWnd.lpfnMsgBoxCallback], offset sub_734A6098
+<br />
+
+<br />
+loc_734A6133:
+<br />
+
+<br />
+  mov     esi, ds:MessageBoxIndirectA
+<br />
+  lea     eax, [ebp+hWnd]
+<br />
+  push    eax             ; LPMSGBOXPARAMSA
+<br />
+  call    esi ; MessageBoxIndirectA
+<br />
+
+<br />
+Interesting to see that....Isn&#39;t it?
+<br />
+
+<br />
+Next comes the __vbaFreeVarList Function. From its name we can see that it
+<br />
+deallocates the address of a certain number of variables. This function actually
+<br />
+does no work except call the __vbaFreeVar Function multiple number of times.
+<br />
+
+<br />
+Let us see how both functions work.
+<br />
+
+<br />
+__vbaFreeVar              : Frees a Temporary Variable.
+<br />
+
+<br />
+__vbaFreeVar accepts only 1 Argument, which is the address of the variable to be
+<br />
+deleted. This argument is ALWAYS passed through ECX.
+<br />
+Uses the API Function __imp_SysFreeString&#40;&#41;[Ordinal Number 6] from OLEAUT32.DLL
+<br />
+that carries out the actual deallocation of a variable.
+<br />
+
+<br />
+
+<br />
+
+<br />
+__vbaFreeVarList          : Frees Temporary Variables.
+<br />
+
+<br />
+Have a look at this Snippet:
+<br />
+
+<br />
+                 lea     ecx, [ebp+var_54]  ; Variable 1 stored in ecx
+<br />
+                 lea     edx, [ebp+var_44]  ; Variable 2 =&gt; edx
+<br />
+                 push    ecx                ; Variable 1 pushed
+<br />
+                 lea     eax, [ebp+var_34]  ; Variable 3 =&gt; eax
+<br />
+                 push    edx                ; Variable 2 pushed
+<br />
+                 lea     ecx, [ebp+var_24]  ; Variable 4 =&gt; ecx
+<br />
+                 push    eax                ; Variable 3 pushed
+<br />
+                 push    ecx                ; Variable 4 pushed
+<br />
+                 push    4                  ; Free 4 Temp. Variables
+<br />
+                 call    ds:__vbaFreeVarList
+<br />
+
+<br />
+The code is pretty easy to understand. This function frees temporary variables
+<br />
+that are passed as arguments to it.Interestingly each memory location is
+<br />
+16 bytes wide.
+<br />
+This is an interesting function as it can accept variable arguments.
+<br />
+It&#39;s equivalent function call in C would be:
+<br />
+__vbaFreeVarList&#40;4,&amp;var_24,&amp;var_34,&amp;var_44,&amp;var_54&#41;;
+<br />
+
+<br />
+where its declaration would be:
+<br />
+
+<br />
+int __vbaFreeVarList&#40;int NUMBER_OF_VARIABLES_TO_FREE,&lt;addresses of the vars&gt;...&#41;
+<br />
+{
+<br />
+   // CODE
+<br />
+}
+<br />
+
+<br />
+If we analyse the code of __vbaFreeVarList, we actually find multiple calls of
+<br />
+__vbaFreeVar. Have a look at the source code of __vbaFreeVarList.
+<br />
+
+<br />
+                 public __vbaFreeVarList
+<br />
+__vbaFreeVarList proc near
+<br />
+
+<br />
+ arg_0           = dword ptr  4
+<br />
+ arg_4           = dword ptr  8
+<br />
+ arg_8           = dword ptr  0Ch
+<br />
+
+<br />
+                 mov     ecx, [esp+arg_4]     ; Address of Variable to delete
+<br />
+                 push    esi                  ; Saves value of esi
+<br />
+                 lea     esi, [esp+4+arg_8]   ; esi = Address of Next Variable
+<br />
+                 call    __vbaFreeVar         ; function call
+<br />
+                 mov     eax, [esp+arg_4]     ; eax gets value of num of
+<br />
+                                              ; variables to be freed
+<br />
+                 cmp     eax, 1               ; If eax&lt;=1 then
+<br />
+                 jbe     short freed_all_vars ; jump to end of function.
+<br />
+                 push    edi                  ; Value of edi is saved on stack
+<br />
+                 lea     edi, [eax-1]         ; edi=eax-1
+<br />
+
+<br />
+             ; THIS IS A WHILE LOOP :  while&#40;edi&#41;{ /*CODE*/ }
+<br />
+ loop_start:
+<br />
+                 mov     ecx, [esi]          ; ecx=Address of Variable to Delete
+<br />
+                 add     esi, 4              ; esi = Address of Next Variable
+<br />
+                 call    __vbaFreeVar        ; function call
+<br />
+                 dec     edi                 ; edi--;
+<br />
+                 jnz     short loop_start    ; Jump to beginning of the loop if
+<br />
+                                             ; edi is not ZERO.
+<br />
+                                             ; Well Written Code.No need for a
+<br />
+                                             ; CMP Instruction as DEC
+<br />
+                                             ; Instruction affects the ZERO Flag
+<br />
+                 pop     edi                 ; Value of edi is restored.
+<br />
+
+<br />
+ freed_all_vars:
+<br />
+                 pop     esi                 ; Value of esi is restored.
+<br />
+                 retn                        ; Return to the calling function
+<br />
+ENGINE:7352009D __vbaFreeVarList endp
+<br />
+
+<br />
+As you can see, __vbaFreeVarList uses a while loop to free each variable one by
+<br />
+one using the __vbaFreeVar Function.
+<br />
+Notice that the address of the variable to be freed is stored in ECX always.
+<br />
+You can disassemble the __vbaFreeVar Function to confirm that.
+<br />
+
+<br />
+
+<br />
+Now let us see what happens when after the MessageBox is shown.
+<br />
+This is the most interesting part.
+<br />
+
+<br />
+After the MessageBox is displayed, a clean up code is executed that deallocates 
+<br />
+all the variables used in the entire procedure. Have a look at these statements
+<br />
+in the Command1_Click&#40;&#41; Code.
+<br />
+
+<br />
+
+<br />
+                 push    offset continue_after_jump
+<br />
+                 jmp     short fake_a_call_instr
+<br />
+ ; ---------------------------------------------------------------------------
+<br />
+
+<br />
+ fake_a_call_instr:
+<br />
+                 retn
+<br />
+ ; ---------------------------------------------------------------------------
+<br />
+
+<br />
+ continue_after_jump:
+<br />
+                     ; code
+<br />
+
+<br />
+
+<br />
+This is the &#39;CALL-Simulation&#39; instruction. If you recall, before a call function
+<br />
+is executed, the processor pushes the location of the instructions which are
+<br />
+supposed to receive control after execution of a function is over.
+<br />
+VB instead of issuing a call instruction simulates it using the push, jmp and
+<br />
+retn instructions. It is small sections of code like this that reduce Visual 
+<br />
+BASIC&#39;s efficiency and performance.
+<br />
+
+<br />
+
+<br />
+Let us still see why this is done.
+<br />
+
+<br />
+The CALL-Simulation Instruction calls the MSVBM60.Zombie_Release function.
+<br />
+This is the destructor code. Doesn&#39;t that remind you of something?
+<br />
+The instruction
+<br />
+    mov     [ebp+var_8], offset destructor
+<br />
+contains the offset of the destructor code. But is this so?
+<br />
+Double-click on the &#39;offset destructor&#39; text and you&#39;ll land up here.
+<br />
+
+<br />
+destructor      dd 80005h, offset loc_401A7E, 0, offset loc_401A85, 102825FFh
+<br />
+
+<br />
+Hmm...this contains more offsets? By simply double-clicking the offsets you land 
+<br />
+up at the destructor code again. That&#39;s why the CALL simulation code is used so
+<br />
+that the destructor code looks like its an inline function.
+<br />
+
+<br />
+If you&#39;re more curious, you can also double-click the &#39;exception_handler&#39; text 
+<br />
+to see where that leads to.
+<br />
+
+<br />
+Well, after a long journey into the Command1_Click&#40;&#41; Procedure, we&#39;re finally 
+<br />
+done analyzing it.
+<br />
+
+<br />
+From this point onwards, I shall explain only the important section of code 
+<br />
+rather than explain such intricate details once again.
+<br />
+
+<br />
+Let us proceed further.
+<br />
+This Time let us create a Visual BASIC Application using only a module.
+<br />
+We shall use the Main Subroutine.
+<br />
+
+<br />
+Use this code:
+<br />
+
+<br />
+Sub Main&#40;&#41;
+<br />
+    MsgBox &quot;Ssup&quot;
+<br />
+End Sub
+<br />
+
+<br />
+What you will realise that the Procedure code is an exact copy of the code we
+<br />
+dealt with earlier. This means that Form Procedures and Module Procedures are
+<br />
+treated alike. This also means that the Command Button code procedure had no
+<br />
+chance of using any information of the Form Object.[/font:345xlxhe]<br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="3843"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Feb 16, 2008 10:11 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: IX. STRING COMPARISON [STR1]
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[font=Courier New:31zlmlog]Create a form without any controls. The code in the form module is as follows:
+<br />
+
+<br />
+Private Sub Form_Load&#40;&#41;
+<br />
+    If &quot;Sanchit&quot; &lt;&gt; InputBox&#40;&quot;ssup&quot;&#41; Then
+<br />
+        MsgBox &quot;wrong&quot;
+<br />
+    Else
+<br />
+        MsgBox &quot;Right&quot;
+<br />
+    End If
+<br />
+End Sub
+<br />
+
+<br />
+
+<br />
+The resultant code is shown below &#40;after stripping irrelevant instructions&#41;
+<br />
+
+<br />
+
+<br />
+Form_Load       proc near
+<br />
+
+<br />
+                ; Variables and Arguments shown
+<br />
+
+<br />
+
+<br />
+        push    ebp
+<br />
+        mov     ebp, esp
+<br />
+        sub     esp, 0Ch
+<br />
+        push    &#40;offset vba_exception_handler+1&#41;
+<br />
+        mov     eax, large fs:0
+<br />
+        push    eax
+<br />
+        mov     large fs:0, esp
+<br />
+        sub     esp, 0F0h
+<br />
+        push    ebx
+<br />
+        push    esi
+<br />
+        push    edi
+<br />
+        mov     [ebp+var_C], esp
+<br />
+        mov     [ebp+var_8], offset destructor
+<br />
+        mov     eax, [ebp+arg_0]
+<br />
+        mov     ecx, eax
+<br />
+        and     ecx, 1
+<br />
+        mov     [ebp+var_4], ecx
+<br />
+        and     al, 0FEh
+<br />
+        push    eax
+<br />
+        mov     [ebp+arg_0], eax
+<br />
+        mov     edx, [eax]
+<br />
+        call    dword ptr [edx+4] ; Zombie_AddRef&#40;&#41;
+<br />
+        xor     eax, eax
+<br />
+        mov     ebx, 80020004h
+<br />
+        mov     edi, 0Ah
+<br />
+        
+<br />
+        ; code...
+<br />
+
+<br />
+        lea     edx, [ebp+var_98]
+<br />
+        lea     ecx, [ebp+var_28]
+<br />
+
+<br />
+        ; MOV [var],register Instructions
+<br />
+
+<br />
+        mov     [ebp+var_90], offset aSsup ; &quot;ssup&quot;
+<br />
+        mov     [ebp+var_98], 8
+<br />
+        call    ds:__vbaVarDup
+<br />
+        lea     eax, [ebp+var_88]
+<br />
+        push    offset aSanchit ; &quot;Sanchit&quot;
+<br />
+
+<br />
+        lea     ecx, [ebp+var_78]
+<br />
+        push    eax
+<br />
+        lea     edx, [ebp+var_68]
+<br />
+        push    ecx
+<br />
+        lea     eax, [ebp+var_58]
+<br />
+        push    edx
+<br />
+        lea     ecx, [ebp+var_48]
+<br />
+        push    eax
+<br />
+        lea     edx, [ebp+var_38]
+<br />
+        push    ecx
+<br />
+        lea     eax, [ebp+var_28]
+<br />
+        push    edx
+<br />
+        push    eax
+<br />
+
+<br />
+        call    ds:rtcInputBox
+<br />
+        mov     edx, eax
+<br />
+        lea     ecx, [ebp+var_18]
+<br />
+        call    ds:__vbaStrMove
+<br />
+        push    eax
+<br />
+        call    ds:__vbaStrCmp
+<br />
+        mov     esi, eax
+<br />
+        lea     ecx, [ebp+var_18]
+<br />
+        neg     esi
+<br />
+        sbb     esi, esi
+<br />
+        neg     esi
+<br />
+        neg     esi
+<br />
+        call    ds:__vbaFreeStr
+<br />
+        lea     ecx, [ebp+var_88]
+<br />
+        lea     edx, [ebp+var_78]
+<br />
+        push    ecx
+<br />
+        lea     eax, [ebp+var_68]
+<br />
+        push    edx
+<br />
+        lea     ecx, [ebp+var_58]
+<br />
+        push    eax
+<br />
+        lea     edx, [ebp+var_48]
+<br />
+        push    ecx
+<br />
+        push    edx
+<br />
+        lea     eax, [ebp+var_38]
+<br />
+        lea     ecx, [ebp+var_28]
+<br />
+        push    eax
+<br />
+        push    ecx
+<br />
+        push    7
+<br />
+        call    ds:__vbaFreeVarList
+<br />
+        add     esp, 20h
+<br />
+        mov     [ebp+var_50], ebx
+<br />
+        test    si, si
+<br />
+        mov     [ebp+var_58], edi
+<br />
+        mov     [ebp+var_40], ebx
+<br />
+        mov     [ebp+var_48], edi
+<br />
+        mov     [ebp+var_30], ebx
+<br />
+        mov     [ebp+var_38], edi
+<br />
+        jz      short jump_if_right
+<br />
+        lea     edx, [ebp+var_98]
+<br />
+        lea     ecx, [ebp+var_28]
+<br />
+        mov     [ebp+var_90], offset aWrong ; &quot;wrong&quot;
+<br />
+        mov     [ebp+var_98], 8
+<br />
+        call    ds:__vbaVarDup
+<br />
+        lea     edx, [ebp+var_58]
+<br />
+        lea     eax, [ebp+var_48]
+<br />
+        push    edx
+<br />
+        lea     ecx, [ebp+var_38]
+<br />
+        push    eax
+<br />
+        push    ecx
+<br />
+        lea     edx, [ebp+var_28]
+<br />
+        push    0
+<br />
+        push    edx
+<br />
+        call    ds:rtcMsgBox
+<br />
+        lea     eax, [ebp+var_58]
+<br />
+        lea     ecx, [ebp+var_48]
+<br />
+        push    eax
+<br />
+        lea     edx, [ebp+var_38]
+<br />
+        push    ecx
+<br />
+        lea     eax, [ebp+var_28]
+<br />
+        push    edx
+<br />
+        push    eax
+<br />
+        jmp     short free_up_resources
+<br />
+ ; ---------------------------------------------------------------------------
+<br />
+jump_if_right:
+<br />
+
+<br />
+        lea     edx, [ebp+var_98]
+<br />
+        lea     ecx, [ebp+var_28]
+<br />
+        mov     [ebp+var_90], offset aRight ; &quot;Right&quot;
+<br />
+        mov     [ebp+var_98], 8
+<br />
+        call    ds:__vbaVarDup
+<br />
+        lea     ecx, [ebp+var_58]
+<br />
+        lea     edx, [ebp+var_48]
+<br />
+        push    ecx
+<br />
+        lea     eax, [ebp+var_38]
+<br />
+        push    edx
+<br />
+        push    eax
+<br />
+        lea     ecx, [ebp+var_28]
+<br />
+        push    0
+<br />
+        push    ecx
+<br />
+        call    ds:rtcMsgBox
+<br />
+        lea     edx, [ebp+var_58]
+<br />
+        lea     eax, [ebp+var_48]
+<br />
+        push    edx
+<br />
+        lea     ecx, [ebp+var_38]
+<br />
+        push    eax
+<br />
+        lea     edx, [ebp+var_28]
+<br />
+        push    ecx
+<br />
+        push    edx
+<br />
+
+<br />
+free_up_resources:
+<br />
+
+<br />
+        push    4
+<br />
+        call    ds:__vbaFreeVarList
+<br />
+        add     esp, 14h
+<br />
+        mov     [ebp+var_4], 0
+<br />
+        push    offset call_emulate
+<br />
+        jmp     short jump_as_a_call
+<br />
+; ---------------------------------------------------------------------------
+<br />
+        lea     ecx, [ebp+var_18]
+<br />
+        call    ds:__vbaFreeStr
+<br />
+        lea     eax, [ebp+var_88]
+<br />
+        lea     ecx, [ebp+var_78]
+<br />
+        push    eax
+<br />
+        lea     edx, [ebp+var_68]
+<br />
+        push    ecx
+<br />
+        lea     eax, [ebp+var_58]
+<br />
+        push    edx
+<br />
+        lea     ecx, [ebp+var_48]
+<br />
+        push    eax
+<br />
+        lea     edx, [ebp+var_38]
+<br />
+        push    ecx
+<br />
+        lea     eax, [ebp+var_28]
+<br />
+        push    edx
+<br />
+        push    eax
+<br />
+        push    7
+<br />
+        call    ds:__vbaFreeVarList
+<br />
+        add     esp, 20h
+<br />
+        retn
+<br />
+; ---------------------------------------------------------------------------
+<br />
+jump_as_a_call:
+<br />
+
+<br />
+        retn
+<br />
+; ---------------------------------------------------------------------------
+<br />
+call_emulate:
+<br />
+
+<br />
+        mov     eax, [ebp+arg_0]
+<br />
+        push    eax
+<br />
+        mov     ecx, [eax]
+<br />
+        call    dword ptr [ecx+8] ; Zombie_Release&#40;&#41;
+<br />
+        mov     eax, [ebp+var_4]
+<br />
+        mov     ecx, [ebp+var_14]
+<br />
+        pop     edi
+<br />
+        pop     esi
+<br />
+        mov     large fs:0, ecx
+<br />
+        pop     ebx
+<br />
+        mov     esp, ebp
+<br />
+        pop     ebp
+<br />
+        retn    4
+<br />
+Form_Load       endp
+<br />
+
+<br />
+Let us first see the Prototype of the InputBox Function
+<br />
+Function InputBox&#40;Prompt As String, Title As String, Default as String , _
+<br />
+         xpos As Long , ypos As Long, helpfile As String ,context As Long &#41; _
+<br />
+         As String
+<br />
+
+<br />
+
+<br />
+If we disassemble the MSVBM60.DLL File and scroll over to the rtcInputBox
+<br />
+function, we can confirm this from the prototype that IDA provides us.
+<br />
+
+<br />
+Most of the code is irrelevant to us but the important chunk of code of the
+<br />
+function &#40;which took me quite some time to find&#41; is given below:
+<br />
+
+<br />
+                 push    edi         ; Context Pushed
+<br />
+                 push    ebx         ; HelpFile Pushed
+<br />
+                 push    [ebp+arg_8] ; ypos Pushed
+<br />
+                 push    [ebp+arg_C] ; xpos Pushed
+<br />
+                 push    eax         ; Default pushed
+<br />
+                 push    ecx         ; Title Pushed
+<br />
+                 push    edx         ; Prompt pushed
+<br />
+
+<br />
+
+<br />
+                 call    sub_7349DC68    ; Function that causes Inputbox
+<br />
+                                 ; At this point EAX contains the entered string
+<br />
+
+<br />
+                 push    [ebp+arg_4]     ; BSTR
+<br />
+                 mov     edi, eax
+<br />
+                 call    esi ; __imp_SysFreeString
+<br />
+                 push    [ebp+arg_0]     ; BSTR
+<br />
+                 call    esi ; __imp_SysFreeString
+<br />
+                 push    [ebp+var_4]     ; BSTR
+<br />
+                 call    esi ; __imp_SysFreeString
+<br />
+                 push    [ebp+var_1C]    ; BSTR
+<br />
+                 call    esi ; __imp_SysFreeString
+<br />
+                 mov     eax, edi        ; Sets EAX to the Return Value
+<br />
+                 pop     edi
+<br />
+                 pop     esi
+<br />
+                 pop     ebx
+<br />
+                 leave                   ; Close Stack Frame
+<br />
+                 retn    1Ch             ; Returns from here
+<br />
+
+<br />
+
+<br />
+In the first portion of the code, the push instructions push all the seven
+<br />
+parameters to the function that creates the InputBox Dialogbox. I know that with
+<br />
+the current example that I&#39;m disassembling, it&#39;s not quite possible to believe
+<br />
+that all the push instructions stand for what I&#39;ve mentioned. So what you can do
+<br />
+is disassemble the following code given below and set a breakpoint on the PUSH
+<br />
+instructions in the MSVBM60.DLL File using OllyDebug or SoftIce.
+<br />
+
+<br />
+str1 = InputBox&#40;&quot;This is prompt&quot;,&quot;This is Title&quot;,&quot;Default-Val&quot;,10,20, _
+<br />
+                                                 &quot;c:\help.hlp&quot;,1&#41;
+<br />
+
+<br />
+With this you can actually verify the contents of the push instruction to
+<br />
+confirm what I&#39;ve written.
+<br />
+
+<br />
+Now, after the call instruction you can see a PUSH instruction pushing the
+<br />
+contents of a variable. This is a parameter for the SysFreeString Function.
+<br />
+
+<br />
+Next is a MOV instruction transferring the contents of the EAX register into EDI.
+<br />
+EAX at this point of time contains the address of the String that we filled in
+<br />
+the Text Box. This is done to save the value of EAX.
+<br />
+
+<br />
+Then the SysFreeString Function is called. This function takes 1 argument which
+<br />
+is the string that needs to be deallocated. This function does not return any
+<br />
+value after execution.
+<br />
+
+<br />
+Did you notice something?
+<br />
+If the SysFreeString Function does not return any value, then why were the
+<br />
+contents of EAX saved in EDI? And why is there a need to have a MOV EAX , EDI
+<br />
+instruction?
+<br />
+This might have been done on purpose to ensure that the original value of EAX is
+<br />
+not lost but maybe the developers didn&#39;t realize that it wasn&#39;t required in this
+<br />
+case. Whatever be the reason, it is a waste of precious bytes.
+<br />
+
+<br />
+Anyway, the original contents of the registers are restored, the stack frame is
+<br />
+closed &#40;with LEAVE&#41; and the function returns after adding 0x1C bytes to ESP.
+<br />
+
+<br />
+Now let&#39;s have a look at this code portion.
+<br />
+
+<br />
+        call    ds:rtcInputBox
+<br />
+        mov     edx, eax
+<br />
+        lea     ecx, [ebp+var_18]
+<br />
+        call    ds:__vbaStrMove
+<br />
+        push    eax
+<br />
+        call    ds:__vbaStrCmp
+<br />
+        mov     esi, eax
+<br />
+        lea     ecx, [ebp+var_18]
+<br />
+        neg     esi
+<br />
+        sbb     esi, esi
+<br />
+        neg     esi
+<br />
+        neg     esi
+<br />
+        call    ds:__vbaFreeStr
+<br />
+
+<br />
+
+<br />
+After the call of rtcInputBox, EAX contains the entered string in the Text Box
+<br />
+of the InputBox dialog. The address of this string is moved to EDX.
+<br />
+
+<br />
+Is this done to save the contents of the String for the compare function?
+<br />
+As obvious as it may seem, it is really not like that. Let us see.
+<br />
+
+<br />
+The __vbaStrMove function moves a String from one place in memory to another
+<br />
+place. On Analysis of the function code it is found that this function accepts
+<br />
+two arguments and returns one value as shown below:
+<br />
+
+<br />
+
+<br />
+PARAMETERS:
+<br />
+
+<br />
+EDX : Source String
+<br />
+ECX : Destination
+<br />
+
+<br />
+RETURNS : Source String. Sets EAX to EDI &#40;which holds value of EDX&#41;
+<br />
+
+<br />
+Now we see that by setting the value of EAX to EDX, we are setting the entered
+<br />
+string as a SOURCE string to be copied into another location. This is neat.
+<br />
+
+<br />
+Now the Source String is pushed again and the __vbaStrCmp Function is called.
+<br />
+This on first glance looks wierd again. It seems that the StrCmp Function
+<br />
+accepts only one argument. Then what does it compare it with?
+<br />
+
+<br />
+If you scroll above you will find a push instruction that pushes the address of
+<br />
+the string &quot;Sanchit&quot; &#40; push    offset aSanchit ; &quot;Sanchit&quot; &#41;
+<br />
+
+<br />
+Such cases remind us that unlike code generated by Pascal and C/C++ compilers,
+<br />
+Visual BASIC functions can have it&#39;s arguments pushed anywhere and not right
+<br />
+before the function call.
+<br />
+Keep this thing in mind when you set out to disassemble your own Visual BASIC
+<br />
+programs.
+<br />
+
+<br />
+Now after the Comparing function returns its value via the EAX register, it is
+<br />
+copied to ESI.
+<br />
+
+<br />
+Then the LEA instruction is used to load the address of a variable in the ECX
+<br />
+register. Now since we are aware of VB&#39;s tricks we know that this is a parameter
+<br />
+to the __vbaFreeStr function. You should notice that the same variable which
+<br />
+held the value of the entered string is now being passed to this function to
+<br />
+deallocate it as its not required after the comparison has been done.
+<br />
+
+<br />
+Now let&#39;s talk about this code fragment:
+<br />
+
+<br />
+        neg     esi
+<br />
+        sbb     esi, esi
+<br />
+        neg     esi
+<br />
+        neg     esi
+<br />
+        call    ds:__vbaFreeStr
+<br />
+
+<br />
+The NEG statement&#39;s actual use is to change the sign of a number for example,
+<br />
+from 3 to -3.
+<br />
+
+<br />
+But this one has an indirect use. This Instruction affects many flags. But the
+<br />
+one it is meant for is the Carry Flag &#40;CF&#41; which is used in the next SBB
+<br />
+Instruction.If ESI is equal to 0 then CF is reset to 0 and otherwise is set to 1.
+<br />
+
+<br />
+Now the SBB Instruction stands for  Subtraction with Borrow. In this case it can
+<br />
+be translated to this:
+<br />
+ESI = ESI - &#40;ESI + CF&#41;;
+<br />
+
+<br />
+This is where the previous NEG instruction comes into picture.
+<br />
+
+<br />
+The next two NEG instructions are of no use. You can take this as another
+<br />
+example to show why VB code is slow.
+<br />
+Following this is the __vbaFreeStr Function which deallocates space for a string
+<br />
+variable.
+<br />
+
+<br />
+Now you might wonder that if comparison has been performed, then why isn&#39;t there
+<br />
+any JUMP instruction?
+<br />
+If you keep reading the code you will find the TEST and JUMP Instructions after
+<br />
+the seven variables used have been cleared. These instructions are found
+<br />
+together in C/C++ and Pascal programs but in Visual BASIC this isn&#39;t always the
+<br />
+case.
+<br />
+
+<br />
+That&#39;s why Visual BASIC programs take up more time for analysis compared to C
+<br />
+and Pascal programs.
+<br />
+
+<br />
+I&#39;m not discussing the rest of the code as it has been covered in the previous
+<br />
+section.
+<br />
+
+<br />
+Now let&#39;s discuss a Hack-tip.
+<br />
+This type of String Comparision protection is used in many popular Shareware
+<br />
+Applications.
+<br />
+Removing such protection isn&#39;t much of a job and I&#39;ll discuss a cleaner way to
+<br />
+hack this protection. &#40;Refers to programs written in Visual BASIC&#41;
+<br />
+
+<br />
+Remember the two useless NEG instructions before the __vbaFreeStr Function call?
+<br />
+Since these instructions are of no practical use, we can replace these two bytes
+<br />
+with XOR ESI, ESI which consumes only 2 bytes. That way the TEST instruction
+<br />
+would always result in ZERO making control jump always to the Msgbox&#40;&quot;Right&quot;&#41;
+<br />
+code.
+<br />
+
+<br />
+A lot of Hackers use such &#39;useless&#39; code to implement such hacking techniques.
+<br />
+It is considered smart hacking instead of simply NOPing the bytes.[/font:31zlmlog]<br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="3844"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Feb 16, 2008 10:14 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: X. DECIPHERING A KEY GENERATOR [DKGN]
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[font=Courier New:2oqg28s5]Let us now attempt to understand a simple key generation routine written in 
+<br />
+Visual BASIC. Here is the code.
+<br />
+
+<br />
+&#39; Create TextBox with Name as txtname
+<br />
+&#39; Create TextBox with Name as txtserial
+<br />
+&#39; Create CommandButon with Name as cmdverify
+<br />
+
+<br />
+Option Explicit
+<br />
+Private Sub cmdverify_Click&#40;&#41;
+<br />
+
+<br />
+    Dim n As String         &#39; Name
+<br />
+    Dim s As String         &#39; User entered serial
+<br />
+    Dim v_serial As String  &#39; Actual Serial
+<br />
+    Dim tmp1 As Long
+<br />
+    Dim i As Byte
+<br />
+
+<br />
+
+<br />
+    n = txtname.Text
+<br />
+    s = txtserial.Text
+<br />
+    tmp1 = 0
+<br />
+
+<br />
+    For i = 1 To Len&#40;n&#41;
+<br />
+        tmp1 = tmp1 + Asc&#40;Mid&#40;n, i, 1&#41;&#41;
+<br />
+        tmp1 = tmp1 * i
+<br />
+    Next i
+<br />
+    v_serial = Hex&#40;tmp1&#41;
+<br />
+
+<br />
+    If s = v_serial Then
+<br />
+        MsgBox &quot;Correct&quot;
+<br />
+    Else
+<br />
+        MsgBox &quot;Incorrect&quot;
+<br />
+    End If
+<br />
+
+<br />
+End Sub
+<br />
+
+<br />
+As you can see, this is really a simple Keygenerator. And you&#39;ll be surprised to 
+<br />
+learn that a similar protection code is used in a Shareware Application that 
+<br />
+exists even today.
+<br />
+So let&#39;s disassemble this file and see what VB generates out of our code.
+<br />
+The code mentioned below is that of the Click&#40;&#41; Event of the cmdverify Button.
+<br />
+
+<br />
+
+<br />
+cmdverify_click	proc near
+<br />
+
+<br />
+len_entered_name= byte ptr -0C0h
+<br />
+var_temp2	= dword	ptr -80h
+<br />
+msgbox_text	= dword	ptr -78h
+<br />
+var_70		= dword	ptr -70h
+<br />
+var_68		= dword	ptr -68h    ; I&#39;ve Simplified the Variable Names
+<br />
+var_60		= dword	ptr -60h    ; for Easier Understanding of their use.
+<br />
+var_58		= dword	ptr -58h
+<br />
+var_50		= dword	ptr -50h
+<br />
+var_48		= dword	ptr -48h
+<br />
+var_temp	= dword	ptr -40h
+<br />
+var_38_use_unknown= dword ptr -38h
+<br />
+var_30		= dword	ptr -30h
+<br />
+address_having_user_input_content= dword ptr -2Ch
+<br />
+serial_no_destination_address= dword ptr -28h
+<br />
+address_for_entered_serial= dword ptr -24h
+<br />
+keygen_sum	= dword	ptr -20h
+<br />
+address_for_entered_name= dword	ptr -1Ch
+<br />
+saved_loop_counter= dword ptr -18h
+<br />
+var_14		= dword	ptr -14h
+<br />
+var_C		= dword	ptr -0Ch
+<br />
+var_8		= dword	ptr -8
+<br />
+var_4		= dword	ptr -4
+<br />
+arg_0		= dword	ptr  8
+<br />
+
+<br />
+push	ebp
+<br />
+mov	ebp, esp        ; Opening Stack Frame
+<br />
+sub	esp, 0Ch
+<br />
+push	offset vba_exception_handler
+<br />
+mov	eax, large fs:0
+<br />
+push	eax
+<br />
+mov	large fs:0, esp
+<br />
+sub	esp, 0BCh
+<br />
+push	ebx
+<br />
+push	esi
+<br />
+push	edi
+<br />
+mov	[ebp+var_C], esp
+<br />
+mov	[ebp+var_8], offset destructor
+<br />
+mov	esi, [ebp+arg_0]
+<br />
+mov	eax, esi
+<br />
+and	eax, 1
+<br />
+mov	[ebp+var_4], eax
+<br />
+and	esi, 0FFFFFFFEh
+<br />
+push	esi
+<br />
+mov	[ebp+arg_0], esi
+<br />
+mov	ecx, [esi]
+<br />
+call	dword ptr [ecx+4]
+<br />
+mov	edx, [esi]
+<br />
+xor	edi, edi	; edi =	0
+<br />
+push	esi
+<br />
+mov	[ebp+address_for_entered_name],	edi
+<br />
+mov	[ebp+keygen_sum], edi
+<br />
+mov	[ebp+address_for_entered_serial], edi
+<br />
+mov	[ebp+serial_no_destination_address], edi
+<br />
+mov	[ebp+address_having_user_input_content], edi
+<br />
+mov	[ebp+var_30], edi
+<br />
+mov	[ebp+var_temp],	edi
+<br />
+mov	[ebp+var_50], edi ; Initializing all variables to ZERO
+<br />
+mov	[ebp+var_60], edi
+<br />
+mov	[ebp+var_70], edi
+<br />
+mov	[ebp+var_temp2], edi
+<br />
+call	dword ptr [edx+2FCh]
+<br />
+push	eax
+<br />
+lea	eax, [ebp+var_30]
+<br />
+push	eax
+<br />
+call	ds:__vbaObjSet
+<br />
+mov	ebx, eax
+<br />
+lea	edx, [ebp+address_having_user_input_content] ; Load Effective Address
+<br />
+push	edx
+<br />
+push	ebx
+<br />
+mov	ecx, [ebx]
+<br />
+call	dword ptr [ecx+0A0h] ; Call MSVBM60.7347Fd34
+<br />
+			; Calls	a function that	allocates memory
+<br />
+cmp	eax, edi	; Compare Two Operands
+<br />
+fnclex			; Clear	Exceptions &#40;no wait&#41;
+<br />
+jge	short jump_if_no_exception
+<br />
+                        ; If &#40;SF==0F&#41; ie. No	Exceptions Pending, goto
+<br />
+			; main section of code
+<br />
+push	0A0h
+<br />
+push	offset not_sure_what_this_is
+<br />
+push	ebx
+<br />
+push	eax
+<br />
+call	ds:__vbaHresultCheckObj
+<br />
+
+<br />
+jump_if_no_exception:
+<br />
+
+<br />
+mov	edx, [ebp+address_having_user_input_content]
+<br />
+              ; Now edx contains entered name&#40;Source String&#41;
+<br />
+lea	ecx, [ebp+address_for_entered_name]
+<br />
+              ; ecx gets an address.&#40;Destination String&#41;
+<br />
+mov	[ebp+address_having_user_input_content], edi
+<br />
+       ; Clear out user-entered-name from stack with NULL as edi contains NULL
+<br />
+call	ds:__vbaStrMove	; Copies String	from EDX to ECX
+<br />
+mov	ebx, ds:__vbaFreeObj
+<br />
+lea	ecx, [ebp+var_30] ; Address of object to clear
+<br />
+call	ebx ; __vbaFreeObj ; Clears memory allocated by	some object.
+<br />
+			; fills	address	with null
+<br />
+			; and returns 0	&#40;Deallocation SUCCESSFUL&#41;
+<br />
+mov	eax, [esi]	; eax points to	address	4032EC which is	blank
+<br />
+push	esi
+<br />
+call	dword ptr [eax+300h] ; Goto 73520D1C Address in	MSVBM60.Dll
+<br />
+lea	ecx, [ebp+var_30] ; ecx	gets address which was previously deallocated
+<br />
+push	eax
+<br />
+push	ecx
+<br />
+call	ds:__vbaObjSet	; Initialises some object.
+<br />
+		;
+<br />
+		; Result of function:
+<br />
+		; Eax value has	been copied in the stack address of ecx
+<br />
+		; No change in eax value;Shows that call has been made to a Sub
+<br />
+mov	esi, eax	; Saves	address	of eax
+<br />
+lea	eax, [ebp+address_having_user_input_content] ; eax gets	stack address
+<br />
+push	eax		; and pushed as	parameter
+<br />
+push	esi		; along	with original value of eax
+<br />
+mov	edx, [esi]
+<br />
+call	dword ptr [edx+0A0h] ; Calls a Memory Allocation Subroutine
+<br />
+			; Return Value 0 &#40;NO_ERROR&#41;
+<br />
+cmp	eax, edi	; IF&#40; 0	== 0 &#40;edi is zero as well&#41; &#41;
+<br />
+fnclex			; Clear	Exceptions without wait
+<br />
+jge	short jump_if_no_exception2 ; Jump if Greater or Equal &#40;SF=OF&#41;
+<br />
+push	0A0h
+<br />
+push	offset not_sure_what_this_is
+<br />
+push	esi
+<br />
+push	eax
+<br />
+call	ds:__vbaHresultCheckObj
+<br />
+
+<br />
+jump_if_no_exception2:
+<br />
+mov	edx, [ebp+address_having_user_input_content]
+<br />
+        ; edx = User entered Serial &#40;Source&#41;
+<br />
+lea	ecx, [ebp+address_for_entered_serial] ;	Destination Address
+<br />
+mov	[ebp+address_having_user_input_content], edi ;Erases the text from stack
+<br />
+		; since	edi is 0
+<br />
+		; This strMove code is different from the previous one
+<br />
+		; encountered. Previously, strmove was used to COPY
+<br />
+		; the contents of a string.
+<br />
+		; This time, it&#39;s being used to REPLACE/MOVE the contents
+<br />
+		; of a string from 1 location to another.
+<br />
+		;
+<br />
+		; That is interesting. Strmove doing 2 different things.
+<br />
+call	ds:__vbaStrMove
+<br />
+lea	ecx, [ebp+var_30] ; Address to be freed
+<br />
+call	ebx ; __vbaFreeObj ; and freed
+<br />
+			; ie. address is filled	with NULL
+<br />
+			; and return value is 0	&#40;SUCCESSFUL&#41;
+<br />
+
+<br />
+mov	ecx, [ebp+address_for_entered_name] ;Gets user-entered-string from stack
+<br />
+mov	[ebp+keygen_sum], edi ;	Nulls a	Stack Address.
+<br />
+
+<br />
+			; Possible Initialisation of variable
+<br />
+push	ecx		; Pushes Entered-Name
+<br />
+call	ds:__vbaLenBstr	; Calls	the Len	Function.
+<br />
+			; Interesting how the function works.
+<br />
+mov	ecx, eax	; ecx =	Len&#40;entered_name&#41;
+<br />
+call	ds:__vbaUI1I4	; Checks if Length of String &lt;=255 characters.
+<br />
+			; If so, uses appropriate functions to get actual length
+<br />
+			; or display overflow errors.
+<br />
+mov	ecx, 1		; ecx=1
+<br />
+			; Takes	5 bytes.
+<br />
+			; This Improvised code takes 3 bytes only:
+<br />
+			; 2 bytes : xor	ecx,ecx
+<br />
+			; 1 byte  : inc	ecx
+<br />
+mov	[ebp+len_entered_name],	al ; Stores Length of entered_name in stack.
+<br />
+			; After	studying the below function,
+<br />
+			; you&#39;ll realise why al and not ah,ax or eax was used
+<br />
+call	ds:__vbaUI1I2	; Uses ecx value to check same thing as
+<br />
+			; __vbaUI14 does
+<br />
+			; If ecx &gt;255 then same	procedure is done
+<br />
+mov	edi, ds:__vbaFreeVarList
+<br />
+mov	bl, al		; bl=1
+<br />
+mov	byte ptr [ebp+saved_loop_counter], bl ;	Sets the variable to 1
+<br />
+			; We&#39;ll see why this value is saved in the stack
+<br />
+			; once we study	the loop
+<br />
+loop_begin:				
+<br />
+cmp	bl, [ebp+len_entered_name] ; Checks if bl &lt;= Len&#40;entered_name&#41;
+<br />
+ja	jump_end_of_loop ; If bl &gt; Len&#40;entered_name&#41; then jump out of loop
+<br />
+mov	esi, [ebp+saved_loop_counter] ;	Sets ESI to Saved Loop Counter
+<br />
+lea	edx, [ebp+address_for_entered_name]
+<br />
+        ;Gets address where entered name is located
+<br />
+lea	eax, [ebp+var_temp] ; Gets address of a	variable with NULL content
+<br />
+and	esi, 0FFh	; esi &amp;= 0xFF;
+<br />
+mov	[ebp+msgbox_text], edx ; msgbox_text = **&#40;edx&#41;;
+<br />
+			; **edx	happens	to be the entered_name
+<br />
+push	eax		; Argument 4 of	Mid&#40;&#41;
+<br />
+			; PUSHES BLANK VARIABLE
+<br />
+lea	ecx, [ebp+var_temp2] ; Gets address of a variable with NULL content
+<br />
+push	esi		; Argument 3 of	Mid&#40;&#41;
+<br />
+			; Pushes SAVED LOOP COUNTER
+<br />
+lea	edx, [ebp+var_50] ; Gets address of a variable with NULL content
+<br />
+push	ecx		; Argument 2 of	Mid&#40;&#41;
+<br />
+			; PUSHES BLANK VARIABLE
+<br />
+push	edx		; Argument 1 of	Mid&#40;&#41;
+<br />
+			; PUSHES BLANK VARIABLE
+<br />
+mov	[ebp+var_38_use_unknown], 1
+<br />
+mov	[ebp+var_temp],	2
+<br />
+mov	[ebp+var_temp2], 4008h
+<br />
+call	ds:rtcMidCharVar ; Stores the extracted	piece of string	in an
+<br />
+			; unknown location.
+<br />
+lea	eax, [ebp+var_50] ; Has	value 8
+<br />
+lea	ecx, [ebp+address_having_user_input_content] ; Load Effective Address
+<br />
+push	eax		; Pushes 8
+<br />
+push	ecx		; Pushes empty variable
+<br />
+call	ds:__vbaStrVarVal ; Gets the unknown location where the	extracted
+<br />
+			; string was put and returns the address.
+<br />
+push	eax		; Pushes address of extracted character.
+<br />
+call	ds:rtcAnsiValueBstr ; Asc&#40;eax&#41;
+<br />
+			; Now AX contains ASCII	Value
+<br />
+movsx	edx, ax		; Extends AX into EDX
+<br />
+mov	eax, [ebp+keygen_sum]
+<br />
+lea	ecx, [ebp+address_having_user_input_content] ; Load Effective Address
+<br />
+add	edx, eax	; Adds value of	keygen_sum to the ASCII	Value
+<br />
+			; of the current character extracted and stores
+<br />
+			; result of addition into edx.
+<br />
+jo	jump_overflow	; Jump if Sum results in Overflow.
+<br />
+			; VB doing Exception Checks....Nice.
+<br />
+mov	[ebp+keygen_sum], edx ;	Stores the sum back into the keygen_sum	variable
+<br />
+call	ds:__vbaFreeStr
+<br />
+lea	eax, [ebp+var_50] ; Load Effective Address
+<br />
+lea	ecx, [ebp+var_temp] ; Load Effective Address
+<br />
+push	eax
+<br />
+push	ecx
+<br />
+push	2
+<br />
+call	edi ; __vbaFreeVarList
+<br />
+add	esp, 0Ch	; Add
+<br />
+imul	esi, [ebp+keygen_sum] ;	Multiplies Keygen_sum with the Loop Counter
+<br />
+			; and stores result in esi.
+<br />
+mov	al, 1		; Sets AL to 1
+<br />
+jo	jump_overflow	; Jump if Multiplication results in overflow
+<br />
+add	al, bl		; Adds 1 to Loop_counter stored	in BL
+<br />
+			; INC bl would have been a better way
+<br />
+			; since	implementation of incrementing loop counter
+<br />
+			; would	cost only 1 byte compared to current 4 bytes.
+<br />
+mov	[ebp+keygen_sum], esi ;	Stores Result of Multiplication	into keygen_sum
+<br />
+jb	jump_overflow	; Checks if loop counter increment doesn&#39;t cause an
+<br />
+			; exception.
+<br />
+mov	bl, al		; Sets Loop Counter value stored in al to bl
+<br />
+mov	byte ptr [ebp+saved_loop_counter], bl ;	Saves Loop Counter in Variable
+<br />
+		jmp	loop_begin	; Back to the loop
+<br />
+; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+<br />
+
+<br />
+jump_end_of_loop:
+<br />
+lea	eax, [ebp+var_temp2] ; Load Effective Address
+<br />
+lea	ecx, [ebp+var_temp] ; Load Effective Address
+<br />
+lea	edx, [ebp+keygen_sum] ;	Gets Final Serial Number
+<br />
+push	eax
+<br />
+push	ecx
+<br />
+mov	[ebp+msgbox_text], edx
+<br />
+mov	[ebp+var_temp2], 4003h
+<br />
+call	ds:rtcHexVarFromVar
+<br />
+lea	edx, [ebp+var_temp] ; Load Effective Address
+<br />
+push	edx
+<br />
+call	ds:__vbaStrVarMove ; Returns Hex&#40;String&#41; in EAX
+<br />
+mov	edx, eax	; Hex&#40;Serial&#41; is the Source
+<br />
+lea	ecx, [ebp+serial_no_destination_address] ;ECX contains the Dest. Address
+<br />
+call	ds:__vbaStrMove
+<br />
+lea	ecx, [ebp+var_temp] ; Gets Var Address
+<br />
+call	ds:__vbaFreeVar	; Frees	it
+<br />
+mov	eax, [ebp+address_for_entered_serial] ;	Gets Address of	Serial in EAX
+<br />
+mov	ecx, [ebp+serial_no_destination_address] ; Gets	Address	of Valid Serial
+<br />
+push	eax		; Pushes entered_serial
+<br />
+push	ecx		; Pushes real Serial
+<br />
+call	ds:__vbaStrCmp
+<br />
+test	eax, eax	; Checks Return	value of comparison
+<br />
+mov	ecx, 80020004h
+<br />
+mov	eax, 0Ah
+<br />
+mov	[ebp+var_68], ecx
+<br />
+mov	[ebp+var_70], eax
+<br />
+mov	[ebp+var_58], ecx
+<br />
+mov	[ebp+var_60], eax
+<br />
+mov	[ebp+var_48], ecx
+<br />
+mov	[ebp+var_50], eax
+<br />
+jnz	short jump_incorrect_serial ; Jump if Incorrect	Serial
+<br />
+lea	edx, [ebp+var_temp2] ; Gets Destination	Address
+<br />
+lea	ecx, [ebp+var_temp] ; Gets Source Address
+<br />
+mov	[ebp+msgbox_text], offset aCorrect ; &quot;Correct&quot;
+<br />
+mov	[ebp+var_temp2], 8
+<br />
+call	ds:__vbaVarDup	; No idea
+<br />
+lea	edx, [ebp+var_70] ; Load Effective Address
+<br />
+lea	eax, [ebp+var_60] ; Load Effective Address
+<br />
+push	edx
+<br />
+lea	ecx, [ebp+var_50] ; Load Effective Address
+<br />
+push	eax
+<br />
+push	ecx
+<br />
+lea	edx, [ebp+var_temp] ; Load Effective Address
+<br />
+push	0
+<br />
+push	edx
+<br />
+call	ds:rtcMsgBox	; Call Msgbox&#40;&#41;
+<br />
+lea	eax, [ebp+var_70] ; Load Effective Address
+<br />
+lea	ecx, [ebp+var_60] ; Load Effective Address
+<br />
+push	eax
+<br />
+lea	edx, [ebp+var_50] ; Load Effective Address
+<br />
+push	ecx
+<br />
+lea	eax, [ebp+var_temp] ; Load Effective Address
+<br />
+push	edx
+<br />
+push	eax
+<br />
+jmp	short jump_end_function	; Jump
+<br />
+; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+<br />
+
+<br />
+jump_incorrect_serial:
+<br />
+lea	edx, [ebp+var_temp2] ; Load Effective Address
+<br />
+lea	ecx, [ebp+var_temp] ; Load Effective Address
+<br />
+mov	[ebp+msgbox_text], offset aIncorrect ; &quot;Incorrect&quot;
+<br />
+mov	[ebp+var_temp2], 8
+<br />
+call	ds:__vbaVarDup
+<br />
+lea	ecx, [ebp+var_70] ; Load Effective Address
+<br />
+lea	edx, [ebp+var_60] ; Load Effective Address
+<br />
+push	ecx
+<br />
+lea	eax, [ebp+var_50] ; Load Effective Address
+<br />
+push	edx
+<br />
+push	eax
+<br />
+lea	ecx, [ebp+var_temp] ; Load Effective Address
+<br />
+push	0
+<br />
+push	ecx
+<br />
+call	ds:rtcMsgBox
+<br />
+lea	edx, [ebp+var_70] ; Load Effective Address
+<br />
+lea	eax, [ebp+var_60] ; Load Effective Address
+<br />
+push	edx
+<br />
+lea	ecx, [ebp+var_50] ; Load Effective Address
+<br />
+push	eax
+<br />
+lea	edx, [ebp+var_temp] ; Load Effective Address
+<br />
+push	ecx
+<br />
+push	edx
+<br />
+
+<br />
+jump_end_function:
+<br />
+push	4
+<br />
+call	edi ; __vbaFreeVarList
+<br />
+add	esp, 14h
+<br />
+mov	[ebp+var_4], 0
+<br />
+
+<br />
+loc_401FE8:
+<br />
+push	offset loc_402033 ; A CALL INSTRUCTION SIMULATION
+<br />
+jmp	short free_and_then_simulate_call ; Jump
+<br />
+; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+<br />
+
+<br />
+loc_401FEF:
+<br />
+lea	ecx, [ebp+address_having_user_input_content] ; Load Effective Address
+<br />
+call	ds:__vbaFreeStr	
+<br />
+lea	ecx, [ebp+var_30] ; Load Effective Address
+<br />
+call	ds:__vbaFreeObj	
+<br />
+lea	eax, [ebp+var_70] ; Load Effective Address
+<br />
+lea	ecx, [ebp+var_60] ; Load Effective Address
+<br />
+push	eax
+<br />
+lea	edx, [ebp+var_50] ; Load Effective Address
+<br />
+push	ecx
+<br />
+lea	eax, [ebp+var_temp] ; Load Effective Address
+<br />
+push	edx
+<br />
+push	eax
+<br />
+push	4
+<br />
+call	ds:__vbaFreeVarList 
+<br />
+add	esp, 14h	; Add
+<br />
+retn			; Return Near from Procedure
+<br />
+; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+<br />
+
+<br />
+free_and_then_simulate_call:
+<br />
+
+<br />
+mov	esi, ds:__vbaFreeStr ; Used Variables are cleared
+<br />
+ea	ecx, [ebp+address_for_entered_name] ; Load Effective Address
+<br />
+call	esi ; __vbaFreeStr 
+<br />
+lea	ecx, [ebp+address_for_entered_serial] ;	Load Effective Address
+<br />
+call	esi ; __vbaFreeStr 
+<br />
+lea	ecx, [ebp+serial_no_destination_address] ; Load	Effective Address
+<br />
+call	esi ; __vbaFreeStr
+<br />
+retn
+<br />
+; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+<br />
+
+<br />
+loc_402033:
+<br />
+mov	eax, [ebp+arg_0]
+<br />
+push	eax
+<br />
+mov	ecx, [eax]
+<br />
+call	dword ptr [ecx+8] ; Call Zombie_Release&#40;&#41;
+<br />
+mov	eax, [ebp+var_4]
+<br />
+mov	ecx, [ebp+var_14]
+<br />
+pop	edi
+<br />
+pop	esi
+<br />
+mov	large fs:0, ecx
+<br />
+pop	ebx
+<br />
+mov	esp, ebp
+<br />
+pop	ebp
+<br />
+retn	4		; Return Near from Procedure
+<br />
+cmdverify_click	endp
+<br />
+
+<br />
+; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+<br />
+
+<br />
+jump_overflow:
+<br />
+
+<br />
+call	ds:__vbaErrorOverflow
+<br />
+nop
+<br />
+nop
+<br />
+nop
+<br />
+nop
+<br />
+nop			; No Operation
+<br />
+nop
+<br />
+nop
+<br />
+nop
+<br />
+
+<br />
+loc_402060:
+<br />
+sahf
+<br />
+sahf
+<br />
+sahf			; Store	AH into	Flags Register
+<br />
+sahf
+<br />
+
+<br />
+
+<br />
+The code is really long, and a little confusing.
+<br />
+I&#39;ve commented almost every line so that it would be self-explanatory.
+<br />
+The Best way to see how this works would be to read this line by line as you are 
+<br />
+single stepping the program from the Debugger.[/font:2oqg28s5]<br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="3845"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Feb 16, 2008 10:15 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: XI. CONCLUSION [END1]
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[font=Courier New:3mo212jj]As you saw earlier, once you understand the disassembled code, it is not that 
+<br />
+difficult to write a key generating algorithm that would generate a valid key 
+<br />
+for the program given above.
+<br />
+So don&#39;t be under the impression that just because something has been written in 
+<br />
+VB, it will be impossible to crack it.
+<br />
+
+<br />
+It is difficult, but not impossible. But there are techniques that can be used 
+<br />
+to make code analysis much more difficult in Visual BASIC, and these techniques 
+<br />
+shall be discussed in the next update of this tutorial.
+<br />
+
+<br />
+Hope you&#39;ve like this tutorial as well. I&#39;ve rushed through on this one, so I&#39;m 
+<br />
+expecting loads of errors to have crept in. Please bring them to my notice so I 
+<br />
+can make changes in the next update.
+<br />
+
+<br />
+I&#39;ll be back with the Next Update Soon.
+<br />
+Actually, this is the last of the updates.
+<br />
+
+<br />
+From now on, I&#39;ll be writing sequels to my tutorials, so that information won&#39;t 
+<br />
+be repeated everytime. Each part will continue where the previous one left off.
+<br />
+Think of it as a new chapter of a book.
+<br />
+
+<br />
+It&#39;s for the same reason that I&#39;ve skipped a few topics from this *update*.
+<br />
+It&#39;ll be more organized from the next part.
+<br />
+
+<br />
+Enjoy.[/font:3mo212jj]<br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr align="center">
+		<td class="catBottom" colspan="2" height="28"></td>
+		<td></td>
+	</tr>
+</table>
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+  <tr>
+	<td></td>
+	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="index-2.html" class="nav">VB Decompiler Forum Index</a>
+	  -> <a href="viewforum8941.html" xx="f=22" class="nav">Articles</a></span></td>
+	<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">All times are GMT</span><br /><span class="nav"></span>
+	  </td>
+  </tr>
+  <tr>
+	<td align="left" colspan="3"><span class="nav">Page <b>1</b> of <b>1</b></span></td>
+  </tr>
+</table>
+
+<table width="100%" cellspacing="2" border="0" align="center">
+  <tr>
+	<td width="40%" valign="top" nowrap="nowrap" align="left"><span class="gensmall"></span><br />
+	  &nbsp;<br />
+	  </td>
+	<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">You <b>can</b> post new topics in this forum<br />You <b>can</b> reply to topics in this forum<br />You <b>can</b> edit your posts in this forum<br />You <b>can</b> delete your posts in this forum<br />You <b>can</b> vote in polls in this forum<br /></span></td>
+  </tr>
+</table>
+
+
+<div align="center"><span class="copyright"><br /><br />
+<!--
+	We request you retain the full copyright notice below including the link to www.phpbb.com.
+	This not only gives respect to the large amount of time given freely by the developers
+	but also helps build interest, traffic and use of phpBB 2.0. If you cannot (for good
+	reason) retain the full copyright we request you at least leave in place the
+	Powered by phpBB line, with phpBB linked to www.phpbb.com. If you refuse
+	to include even this then support on our forums may be affected.
+
+	The phpBB Group : 2002
+// -->
+Powered by <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB</a> &copy; 2001, 2005 phpBB Group<br /></span></div>
+		</td>
+	</tr>
+</table>
+
+</body>
+
+<!-- Mirrored from localhost/phpbb2/viewtopic.php?t=2492&view=next by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 04 Mar 2018 20:55:27 GMT -->
+</html>
+

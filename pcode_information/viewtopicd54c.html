@@ -1,0 +1,2592 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html dir="ltr">
+
+<!-- Mirrored from localhost/phpbb2/viewtopic.php?t=1860&view=next by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 04 Mar 2018 20:55:46 GMT -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Style-Type" content="text/css">
+
+<link rel="top" href="index-2.html" title="VB Decompiler Forum Index" />
+<link rel="search" href="search.html" title="Search" />
+<link rel="help" href="faq.html" title="FAQ" />
+<link rel="author" href="memberlist.html" title="Memberlist" />
+<link rel="prev" href="viewtopiccb60.html" xx="t=1887&amp;view=previous" title="View previous topic" />
+<link rel="next" href="viewtopic50b9.html" xx="t=1887&amp;view=next" title="View next topic" />
+<link rel="up" href="viewforume774.html" xx="f=5" title="The Code" />
+
+<title>VB Decompiler :: View topic - PCode crc ?</title>
+<!-- link rel="stylesheet" href="templates/subSilver/subSilver.css" type="text/css" -->
+<style type="text/css">
+<!--
+/*
+  The original subSilver Theme for phpBB version 2+
+  Created by subBlue design
+  http://www.subBlue.com
+
+  NOTE: These CSS definitions are stored within the main page body so that you can use the phpBB2
+  theme administration centre. When you have finalised your style you could cut the final CSS code
+  and place it in an external file, deleting this section to save bandwidth.
+*/
+
+/* General page style. The scroll bar colours only visible in IE5.5+ */
+body {
+	background-color: #E5E5E5;
+	scrollbar-face-color: #DEE3E7;
+	scrollbar-highlight-color: #FFFFFF;
+	scrollbar-shadow-color: #DEE3E7;
+	scrollbar-3dlight-color: #D1D7DC;
+	scrollbar-arrow-color:  #006699;
+	scrollbar-track-color: #EFEFEF;
+	scrollbar-darkshadow-color: #98AAB1;
+}
+
+/* General font families for common tags */
+font,th,td,p { font-family: Verdana, Arial, Helvetica, sans-serif }
+a:link,a:active,a:visited { color : #006699; }
+a:hover		{ text-decoration: underline; color : #DD6900; }
+hr	{ height: 0px; border: solid #D1D7DC 0px; border-top-width: 1px;}
+
+/* This is the border line & background colour round the entire page */
+.bodyline	{ background-color: #FFFFFF; border: 1px #98AAB1 solid; }
+
+/* This is the outline round the main forum tables */
+.forumline	{ background-color: #FFFFFF; border: 2px #006699 solid; }
+
+/* Main table cell colours and backgrounds */
+td.row1	{ background-color: #EFEFEF; }
+td.row2	{ background-color: #DEE3E7; }
+td.row3	{ background-color: #D1D7DC; }
+
+/*
+  This is for the table cell above the Topics, Post & Last posts on the index.php page
+  By default this is the fading out gradiated silver background.
+  However, you could replace this with a bitmap specific for each forum
+*/
+td.rowpic {
+		background-color: #FFFFFF;
+		background-image: url(templates/subSilver/images/cellpic2.jpg);
+		background-repeat: repeat-y;
+}
+
+/* Header cells - the blue and silver gradient backgrounds */
+th	{
+	color: #FFA34F; font-size: 11px; font-weight : bold;
+	background-color: #006699; height: 25px;
+	background-image: url(templates/subSilver/images/cellpic3.gif);
+}
+
+td.cat,td.catHead,td.catSides,td.catLeft,td.catRight,td.catBottom {
+			background-image: url(templates/subSilver/images/cellpic1.gif);
+			background-color:#D1D7DC; border: #FFFFFF; border-style: solid; height: 28px;
+}
+
+/*
+  Setting additional nice inner borders for the main table cells.
+  The names indicate which sides the border will be on.
+  Don't worry if you don't understand this, just ignore it :-)
+*/
+td.cat,td.catHead,td.catBottom {
+	height: 29px;
+	border-width: 0px 0px 0px 0px;
+}
+th.thHead,th.thSides,th.thTop,th.thLeft,th.thRight,th.thBottom,th.thCornerL,th.thCornerR {
+	font-weight: bold; border: #FFFFFF; border-style: solid; height: 28px;
+}
+td.row3Right,td.spaceRow {
+	background-color: #D1D7DC; border: #FFFFFF; border-style: solid;
+}
+
+th.thHead,td.catHead { font-size: 12px; border-width: 1px 1px 0px 1px; }
+th.thSides,td.catSides,td.spaceRow	 { border-width: 0px 1px 0px 1px; }
+th.thRight,td.catRight,td.row3Right	 { border-width: 0px 1px 0px 0px; }
+th.thLeft,td.catLeft	  { border-width: 0px 0px 0px 1px; }
+th.thBottom,td.catBottom  { border-width: 0px 1px 1px 1px; }
+th.thTop	 { border-width: 1px 0px 0px 0px; }
+th.thCornerL { border-width: 1px 0px 0px 1px; }
+th.thCornerR { border-width: 1px 1px 0px 0px; }
+
+/* The largest text used in the index page title and toptic title etc. */
+.maintitle	{
+	font-weight: bold; font-size: 22px; font-family: "Trebuchet MS",Verdana, Arial, Helvetica, sans-serif;
+	text-decoration: none; line-height : 120%; color : #000000;
+}
+
+/* General text */
+.gen { font-size : 12px; }
+.genmed { font-size : 11px; }
+.gensmall { font-size : 10px; }
+.gen,.genmed,.gensmall { color : #000000; }
+a.gen,a.genmed,a.gensmall { color: #006699; text-decoration: none; }
+a.gen:hover,a.genmed:hover,a.gensmall:hover	{ color: #DD6900; text-decoration: underline; }
+
+/* The register, login, search etc links at the top of the page */
+.mainmenu		{ font-size : 11px; color : #000000 }
+a.mainmenu		{ text-decoration: none; color : #006699;  }
+a.mainmenu:hover{ text-decoration: underline; color : #DD6900; }
+
+/* Forum category titles */
+.cattitle		{ font-weight: bold; font-size: 12px ; letter-spacing: 1px; color : #006699}
+a.cattitle		{ text-decoration: none; color : #006699; }
+a.cattitle:hover{ text-decoration: underline; }
+
+/* Forum title: Text and link to the forums used in: index.php */
+.forumlink		{ font-weight: bold; font-size: 12px; color : #006699; }
+a.forumlink 	{ text-decoration: none; color : #006699; }
+a.forumlink:hover{ text-decoration: underline; color : #DD6900; }
+
+/* Used for the navigation text, (Page 1,2,3 etc) and the navigation bar when in a forum */
+.nav			{ font-weight: bold; font-size: 11px; color : #000000;}
+a.nav			{ text-decoration: none; color : #006699; }
+a.nav:hover		{ text-decoration: underline; }
+
+/* titles for the topics: could specify viewed link colour too */
+.topictitle,h1,h2	{ font-weight: bold; font-size: 11px; color : #000000; }
+a.topictitle:link   { text-decoration: none; color : #006699; }
+a.topictitle:visited { text-decoration: none; color : #5493B4; }
+a.topictitle:hover	{ text-decoration: underline; color : #DD6900; }
+
+/* Name of poster in viewmsg.php and viewtopic.php and other places */
+.name			{ font-size : 11px; color : #000000;}
+
+/* Location, number of posts, post date etc */
+.postdetails		{ font-size : 10px; color : #000000; }
+
+/* The content of the posts (body of text) */
+.postbody { font-size : 12px; line-height: 18px}
+a.postlink:link	{ text-decoration: none; color : #006699 }
+a.postlink:visited { text-decoration: none; color : #5493B4; }
+a.postlink:hover { text-decoration: underline; color : #DD6900}
+
+/* Quote & Code blocks */
+.code {
+	font-family: Courier, 'Courier New', sans-serif; font-size: 11px; color: #006600;
+	background-color: #FAFAFA; border: #D1D7DC; border-style: solid;
+	border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+}
+
+.quote {
+	font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11px; color: #444444; line-height: 125%;
+	background-color: #FAFAFA; border: #D1D7DC; border-style: solid;
+	border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+}
+
+/* Copyright and bottom info */
+.copyright		{ font-size: 10px; font-family: Verdana, Arial, Helvetica, sans-serif; color: #444444; letter-spacing: -1px;}
+a.copyright		{ color: #444444; text-decoration: none;}
+a.copyright:hover { color: #000000; text-decoration: underline;}
+
+/* Form elements */
+input,textarea, select {
+	color : #000000;
+	font: normal 11px Verdana, Arial, Helvetica, sans-serif;
+	border-color : #000000;
+}
+
+/* The text input fields background colour */
+input.post, textarea.post, select {
+	background-color : #FFFFFF;
+}
+
+input { text-indent : 2px; }
+
+/* The buttons used for bbCode styling in message post */
+input.button {
+	background-color : #EFEFEF;
+	color : #000000;
+	font-size: 11px; font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+/* The main submit button option */
+input.mainoption {
+	background-color : #FAFAFA;
+	font-weight : bold;
+}
+
+/* None-bold submit button */
+input.liteoption {
+	background-color : #FAFAFA;
+	font-weight : normal;
+}
+
+/* This is the line in the posting page which shows the rollover
+  help line. This is actually a text box, but if set to be the same
+  colour as the background no one will know ;)
+*/
+.helpline { background-color: #DEE3E7; border-style: none; }
+
+/* Import the fancy styles for IE only (NS4.x doesn't use the @import function) */
+@import url("templates/subSilver/formIE.css");
+-->
+</style>
+</head>
+<body bgcolor="#E5E5E5" text="#000000" link="#006699" vlink="#5493B4">
+
+<a name="top"></a>
+
+<table width="100%" cellspacing="0" cellpadding="10" border="0" align="center">
+	<tr>
+		<td class="bodyline"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<tr>
+				<td><a href="index-2.html"><img src="templates/subSilver/images/logo_phpBB.gif" border="0" alt="VB Decompiler Forum Index" vspace="1" /></a></td>
+				<td align="center" width="100%" valign="middle"><span class="maintitle">VB Decompiler</span><br /><span class="gen">Hosted by TheAutomaters.com<br />&nbsp; </span>
+				<table cellspacing="0" cellpadding="2" border="0">
+					<tr>
+						<td align="center" valign="top" nowrap="nowrap"><span class="mainmenu">&nbsp;
+						<a href="memberlist.html" class="mainmenu"><img src="templates/subSilver/images/icon_mini_members.gif" width="12" height="13" border="0" alt="Memberlist" hspace="3" />Memberlist</a>
+						</span></td>
+					</tr>
+					<tr>
+						<td height="25" align="center" valign="top" nowrap="nowrap"><span class="mainmenu">&nbsp;</td>
+					</tr>
+				</table></td>
+			</tr>
+		</table>
+
+		<br />
+
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0">
+  <tr>
+	<td align="left" valign="bottom" colspan="2"><a class="maintitle" href="viewtopic83de.html" xx="t=1887&amp;start=0&amp;postdays=0&amp;postorder=asc&amp;highlight=">PCode crc ?</a><br />
+	  <span class="gensmall"><b></b><br />
+	  &nbsp; </span></td>
+  </tr>
+</table>
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0">
+  <tr>
+	<td></td>
+	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="index-2.html" class="nav">VB Decompiler Forum Index</a>
+	  -> <a href="viewforume774.html" xx="f=5" class="nav">The Code</a></span></td>
+  </tr>
+</table>
+
+<table class="forumline" width="100%" cellspacing="1" cellpadding="3" border="0">
+	<tr>
+		<th class="thLeft" width="150" height="26" nowrap="nowrap">Author</th>
+		<th class="thRight" nowrap="nowrap">Message</th>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="3087"></a><b>smariobros</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 10 Mar 2006<br />Posts: 4<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Fri Mar 10, 2006 5:39 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: PCode crc ?
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Hi people,
+<br />
+
+<br />
+first of all sorry for my bad english, i'm from Brazil
+<br />
+
+<br />
+Is there some type of integrity checking in the initialization of
+<br />
+VB's exe ?
+<br />
+I have a program in VB5, and it's in PCode
+<br />
+I patched one byte of the pcode, but when i started the program again, it open and before a few seconds it close with no error msg
+<br />
+
+<br />
+The code that i Patched is a cmp with a value of 255:
+<br />
+
+<br />
+0052EC15     F4              F4 &lt;- cmp
+<br />
+0052EC16     FF              FF &lt;- 255
+<br />
+0052EC17     C6             C6 &lt;- pointer to the variable ?
+<br />
+0052EC18     1D             1C &lt;- jmp if false ? is that correct ?
+<br />
+0052EC19     4F              4F
+<br />
+0052EC1A     01             01
+<br />
+0052EC1B     00             00
+<br />
+0052EC1C     07             07
+<br />
+
+<br />
+I changed the value to 00
+<br />
+
+<br />
+Thanks for the pacience
+<br />
+
+<br />
+smariobros<br />_________________<br />&lt;!-- m --&gt;&lt;a class="postlink" href="http://matheusmetal.x-br.com/stigma29a"&gt;http://matheusmetal.x-br.com/stigma29a&lt;/a&gt;&lt;!-- m --&gt;</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="3088"></a><b>golem</b></span><br /><span class="postdetails">Often here<br /><!--<img src="pro_rank_02.gif" alt="Often here" title="Often here" border="0" /><br />--><br /><br />Joined: 18 Nov 2002<br />Posts: 73<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Mar 11, 2006 4:17 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Is that correct?
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Hey SMB. 
+<br />
+
+<br />
+Yes and no.
+<br />
+
+<br />
+What you are attempting to do is in theory (and for some in practice  ) quite valid.  Unfortunately, the opcode sequence/parameters are incorrect.
+<br />
+
+<br />
+For example, opcodes 1C/1D/1E branch, but have a two byte parameter, which suggests the sequence you are showing is not parsed/aligned correctly. 
+<br />
+
+<br />
+A hex dump is a lot easier to work with (I'm fluent in VB5/VB6 PCode hex , but I will take this stab at you code snippet.
+<br />
+
+<br />
+(variable was loaded here)
+<br />
+0052EC15 F4 &lt;- I2Byte
+<br />
+0052EC16 FF = 255 (or true  )
+<br />
+0052EC17 C6 &lt;- EqI2 ('=')
+<br />
+0052EC18 1D 4F 01&lt;- jmp true (1C = jmp false/1D jmp true/1E jump!  )
+<br />
+                to offset h01F4 from BOS (beginning of subroutine)
+<br />
+0052EC1B 00 00 &lt;- this does not compute. Should be start of next code statement that you are branching around. 
+<br />
+0052EC1C 07 07     Sometimes you find that type of flotsam at the end of a subroutine where junk creeps in.
+<br />
+
+<br />
+The sequence for this type of comparison is typically
+<br />
+
+<br />
+  1)da variable
+<br />
+  2)numeric value&lt;-- your 0052EC15 is here
+<br />
+  3)comparison operator&lt;-- 0052EC17
+<br />
+  4)branching &lt;-- 0052EC18
+<br />
+
+<br />
+Expand your submitted code window. </span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="3089"></a><b>smariobros</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 10 Mar 2006<br />Posts: 4<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Mon Mar 13, 2006 12:02 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">thanks, here is the code with the opcodes (i get it with the VB Decompiler)
+<br />
+the other code I get with the Olly Dbg   
+<br />
+
+<br />
+  loc_52EB58: OnErrorGoto 0
+<br />
+  loc_52EB5D: FLdRfVar var_90
+<br />
+  loc_52EB60: FLdPrThis
+<br />
+  loc_52EB61: VCallAd frmRegistro.chkTempoCancFita
+<br />
+  loc_52EB64: FStAdFunc var_8C
+<br />
+  loc_52EB67: FLdPr var_8C
+<br />
+  loc_52EB6A: Get TextBox.Text  &lt;-- here the first string
+<br />
+  loc_52EB6F: ILdRf var_90
+<br />
+  loc_52EB72: LitStr &quot;&quot;
+<br />
+  loc_52EB75: EqStr
+<br />
+  loc_52EB77: FFree1Str var_90
+<br />
+  loc_52EB7A: FFree1Ad var_8C
+<br />
+  loc_52EB7D: BranchF loc_52EBB1
+<br />
+  loc_52EB82: LitVar_Missing var_110
+<br />
+  loc_52EB85: LitVar_Missing var_F0
+<br />
+  loc_52EB88: LitVar_Missing var_D0
+<br />
+  loc_52EB8B: LitI4 64
+<br />
+  loc_52EB90: LitVarStr var_A0, &quot;Insira o Número de Série.&quot;
+<br />
+  loc_52EB95: FStVarCopyObj var_B0
+<br />
+  loc_52EB98: FLdRfVar var_B0
+<br />
+  loc_52EB9B: ImpAdCallFPR4 MSVBVM50.DLL.rtcMsgBox
+<br />
+  loc_52EBAD: ExitProcHresult
+<br />
+  loc_52EBAE: Branch loc_52EC04
+<br />
+  loc_52EBB1: ' Referenced from: 52EB7D
+<br />
+  loc_52EBB3: FLdRfVar var_90
+<br />
+  loc_52EBB6: FLdPrThis
+<br />
+  loc_52EBB7: VCallAd frmRegistro.chkTempoCancFita
+<br />
+  loc_52EBBA: FStAdFunc var_8C
+<br />
+  loc_52EBBD: FLdPr var_8C
+<br />
+  loc_52EBC0: Get TextBox.Text    &lt;-- here the second string
+<br />
+  loc_52EBC5: ILdRf var_90
+<br />
+  loc_52EBC8: LitStr &quot;&quot;
+<br />
+  loc_52EBCB: EqStr
+<br />
+  loc_52EBCD: FFree1Str var_90
+<br />
+  loc_52EBD0: FFree1Ad var_8C
+<br />
+  loc_52EBD3: BranchF loc_52EC04
+<br />
+  loc_52EBD8: LitVar_Missing var_110
+<br />
+  loc_52EBDB: LitVar_Missing var_F0
+<br />
+  loc_52EBDE: LitVar_Missing var_D0
+<br />
+  loc_52EBE1: LitI4 64
+<br />
+  loc_52EBE6: LitVarStr var_A0, &quot;Digite o Código Chave.&quot;
+<br />
+  loc_52EBEB: FStVarCopyObj var_B0
+<br />
+  loc_52EBEE: FLdRfVar var_B0
+<br />
+  loc_52EBF1: ImpAdCallFPR4 MSVBVM50.DLL.rtcMsgBox
+<br />
+  loc_52EC03: ExitProcHresult
+<br />
+  loc_52EC04: ' Referenced from: 52EBAE
+<br />
+  loc_52EC04: ' Referenced from: 52EBD3
+<br />
+  loc_52EC08: ThisVCallHresult 0
+<br />
+  loc_52EC0F: FLdPr arg_8
+<br />
+  loc_52EC12: MemLdI2 arg_3E
+<br />
+  loc_52EC15: LitI2_Byte 255    &lt;-- i was trying to change this
+<br />
+  loc_52EC17: EqI2
+<br />
+  loc_52EC18: BranchF loc_52ECA3   &lt;-- or this
+<br />
+  loc_52EC1D: ThisVCallHresult 0
+<br />
+  loc_52EC24: LitVarStr var_C0, &quot;CódigoInstalStr&quot;
+<br />
+  loc_52EC29: PopAdLdVar
+<br />
+  loc_52EC2A: LitVarStr var_A0, &quot;Opções&quot;
+<br />
+  loc_52EC2F: PopAdLdVar
+<br />
+  loc_52EC30: LitStr &quot;Videosis&quot;
+<br />
+  loc_52EC33: ImpAdCallFPR4 MSVBVM50.DLL.rtcDeleteSetting
+<br />
+  loc_52EC3A: ThisVCallHresult 0
+<br />
+  loc_52EC41: LitI2_Byte 255
+<br />
+  loc_52EC43: ImpAdStI2
+<br />
+  loc_52EC48: ILdRf arg_8
+<br />
+  loc_52EC4B: FStAdNoPop
+<br />
+  loc_52EC4F: ImpAdLdRf unk_41D1E2
+<br />
+  loc_52EC52: NewIfNullPr
+<br />
+  loc_52EC55: GetTypeInfo
+<br />
+  loc_52EC5A: FFree1Ad var_8C
+<br />
+  loc_52EC5F: ImpAdCallFPR4 MSVBVM50.DLL.rtcDoEvents
+<br />
+  loc_52EC66: LitStr &quot;Parabéns! Você agora é mais um(a) usuário(a) do VideoSis!&quot;  &lt;-- Congratulation and registered here
+<br />
+  loc_52EC69: LitStr vbCrLf
+<br />
+  loc_52EC6C: ConcatStr
+<br />
+  loc_52EC6D: FStStrNoPop var_90
+<br />
+  loc_52EC70: LitStr &quot;Desfrute de todos os seus recursos e lucre com ele.&quot;
+<br />
+  loc_52EC73: ConcatStr
+<br />
+  loc_52EC74: FStStr var_88
+<br />
+  loc_52EC77: FFree1Str var_90
+<br />
+  loc_52EC7C: LitVar_Missing var_F0
+<br />
+  loc_52EC7F: LitVar_Missing var_D0
+<br />
+  loc_52EC82: LitVar_Missing var_B0
+<br />
+  loc_52EC85: LitI4 64
+<br />
+  loc_52EC8A: FLdRfVar var_88
+<br />
+  loc_52EC8D: CVarRef
+<br />
+  loc_52EC92: ImpAdCallFPR4 MSVBVM50.DLL.rtcMsgBox
+<br />
+  loc_52ECA0: Branch loc_52EDF9
+<br />
+  loc_52ECA3: ' Referenced from: 52EC18
+<br />
+  loc_52ECA7: FLdPr arg_8
+<br />
+  loc_52ECAA: MemLdUI1h
+<br />
+  loc_52ECAE: CI2UI1
+<br />
+  loc_52ECB0: LitI2_Byte 1
+<br />
+  loc_52ECB2: AddI2
+<br />
+  loc_52ECB3: CUI1I2
+<br />
+  loc_52ECB5: FLdPr arg_8
+<br />
+  loc_52ECB8: MemStUI1
+<br />
+  loc_52ECBE: FLdPr arg_8
+<br />
+  loc_52ECC1: MemLdUI1h
+<br />
+  loc_52ECC5: CI2UI1
+<br />
+  loc_52ECC7: LitI2_Byte 3
+<br />
+  loc_52ECC9: LtI2
+<br />
+  loc_52ECCA: BranchF loc_52ED36
+<br />
+  loc_52ECCF: FLdPr arg_8
+<br />
+  loc_52ECD2: MemLdUI1h
+<br />
+  loc_52ECD6: CStrI2
+<br />
+  loc_52ECD8: FStStrNoPop var_90
+<br />
+  loc_52ECDB: LitStr &quot;NumMostrouReg&quot;
+<br />
+  loc_52ECDE: LitStr &quot;Opções&quot;
+<br />
+  loc_52ECE1: LitStr &quot;Videosis&quot;
+<br />
+  loc_52ECE4: ImpAdCallFPR4 MSVBVM50.DLL.rtcSaveSetting
+<br />
+  loc_52ECE9: FFree1Str var_90
+<br />
+  loc_52ECEE: LitVar_Missing var_110
+<br />
+  loc_52ECF1: LitVar_Missing var_F0
+<br />
+  loc_52ECF4: LitVarStr var_C0, &quot;Registro&quot;
+<br />
+  loc_52ECF9: FStVarCopyObj var_D0
+<br />
+  loc_52ECFC: FLdRfVar var_D0
+<br />
+  loc_52ECFF: LitI4 48
+<br />
+  loc_52ED04: LitVarStr var_A0, &quot;Código Incorreto, tente novamente!&quot; &lt;-- ops, psw error
+<br />
+  loc_52ED09: FStVarCopyObj var_B0
+<br />
+  loc_52ED0C: FLdRfVar var_B0
+<br />
+  loc_52ED0F: ImpAdCallFPR4 MSVBVM50.DLL.rtcMsgBox
+<br />
+  loc_52ED21: FLdPrThis
+<br />
+  loc_52ED22: VCallAd frmRegistro.chkTempoCancFita
+<br />
+  loc_52ED25: FStAdFunc var_8C
+<br />
+  loc_52ED28: FLdPr var_8C
+<br />
+  loc_52ED2B: TextBox.Setfocus
+<br />
+  loc_52ED30: FFree1Ad var_8C
+<br />
+  loc_52ED33: Branch loc_52EDF7
+<br />
+  loc_52ED36: ' Referenced from: 52ECCA
+<br />
+  loc_52ED3A: LitVarStr var_C0, &quot;NumMostrouReg&quot;
+<br />
+  loc_52ED3F: PopAdLdVar
+<br />
+  loc_52ED40: LitVarStr var_A0, &quot;Opções&quot;
+<br />
+  loc_52ED45: PopAdLdVar
+<br />
+  loc_52ED46: LitStr &quot;Videosis&quot;
+<br />
+  loc_52ED49: ImpAdCallFPR4 MSVBVM50.DLL.rtcDeleteSetting
+<br />
+  loc_52ED50: LitVarStr var_C0, &quot;CódigoInstalStr&quot;
+<br />
+  loc_52ED55: PopAdLdVar
+<br />
+  loc_52ED56: LitVarStr var_A0, &quot;Opções&quot;
+<br />
+  loc_52ED5B: PopAdLdVar
+<br />
+  loc_52ED5C: LitStr &quot;Videosis&quot;
+<br />
+  loc_52ED5F: ImpAdCallFPR4 MSVBVM50.DLL.rtcDeleteSetting
+<br />
+  loc_52ED66: LitStr &quot;Seu número de tentativas esgotou!&quot; &lt;-- if tried 3 times, change the key to validate password
+<br />
+  loc_52ED69: LitStr &quot;&quot;
+<br />
+  loc_52ED6C: ConcatStr
+<br />
+  loc_52ED6D: FStStrNoPop var_90
+<br />
+  loc_52ED70: LitStr &quot;Você pode contatar-nos novamente para rever seu código de instalação.&quot;
+<br />
+  loc_52ED73: ConcatStr
+<br />
+  loc_52ED74: FStStrNoPop var_114
+<br />
+  loc_52ED77: LitStr &quot;&quot;
+<br />
+  loc_52ED7A: ConcatStr
+<br />
+  loc_52ED7B: FStStrNoPop var_118
+<br />
+  loc_52ED7E: LitStr &quot;&quot;
+<br />
+  loc_52ED81: ConcatStr
+<br />
+  loc_52ED82: FStStrNoPop var_11C
+<br />
+  loc_52ED85: LitStr &quot;Atenção: este software é protegido por leis de direito&quot;
+<br />
+  loc_52ED88: ConcatStr
+<br />
+  loc_52ED89: FStStrNoPop var_120
+<br />
+  loc_52ED8C: LitStr &quot;&quot;
+<br />
+  loc_52ED8F: ConcatStr
+<br />
+  loc_52ED90: FStStrNoPop var_124
+<br />
+  loc_52ED93: LitStr &quot;autoral. Reprodução ou distribuição não autorizada deste&quot;
+<br />
+  loc_52ED96: ConcatStr
+<br />
+  loc_52ED97: FStStrNoPop var_128
+<br />
+  loc_52ED9A: LitStr &quot;&quot;
+<br />
+  loc_52ED9D: ConcatStr
+<br />
+  loc_52ED9E: FStStrNoPop var_12C
+<br />
+  loc_52EDA1: LitStr &quot;software, ou qualquer parte dele, podem resultar em&quot;
+<br />
+  loc_52EDA4: ConcatStr
+<br />
+  loc_52EDA5: FStStrNoPop var_130
+<br />
+  loc_52EDA8: LitStr &quot;&quot;
+<br />
+  loc_52EDAB: ConcatStr
+<br />
+  loc_52EDAC: FStStrNoPop var_134
+<br />
+  loc_52EDAF: LitStr &quot;penalidades civis e criminais severas.&quot;
+<br />
+  loc_52EDB2: ConcatStr
+<br />
+  loc_52EDB3: FStStr var_88
+<br />
+  loc_52EDCF: LitVar_Missing var_F0
+<br />
+  loc_52EDD2: LitVar_Missing var_D0
+<br />
+  loc_52EDD5: LitVar_Missing var_B0
+<br />
+  loc_52EDD8: LitI4 48
+<br />
+  loc_52EDDD: FLdRfVar var_88
+<br />
+  loc_52EDE0: CVarRef
+<br />
+  loc_52EDE5: ImpAdCallFPR4 MSVBVM50.DLL.rtcMsgBox
+<br />
+  loc_52EDF5: End
+<br />
+  loc_52EDF7: ' Referenced from: 52ED33
+<br />
+  loc_52EDF9: ' Referenced from: 52ECA0
+<br />
+  loc_52EDFD: ExitProcHresult
+<br />
+
+<br />
+
+<br />
+But this soft have a strange protection that I think is placed in the vb dll
+<br />
+
+<br />
+if I modify only the checksum of the optional header of the PE, the program crashes the same way it crash when I modify the opcode byte   
+<br />
+
+<br />
+I think that I have to change the byte of the opcode and calculate the new checksum of the file, but I don't know how to   
+<br />
+
+<br />
+Thanks again Golem for the help
+<br />
+
+<br />
+smariobros<br />_________________<br />&lt;!-- m --&gt;&lt;a class="postlink" href="http://matheusmetal.x-br.com/stigma29a"&gt;http://matheusmetal.x-br.com/stigma29a&lt;/a&gt;&lt;!-- m --&gt;</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="3090"></a><b>golem</b></span><br /><span class="postdetails">Often here<br /><!--<img src="pro_rank_02.gif" alt="Often here" title="Often here" border="0" /><br />--><br /><br />Joined: 18 Nov 2002<br />Posts: 73<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Mon Mar 13, 2006 2:54 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Almost there...
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Hey SMB. 
+<br />
+
+<br />
+I find this CRC idea rather curious. It's one of those Hmm... moments. More about that later. 
+<br />
+
+<br />
+I hate to be a pain, but could you modify your code window to include the raw bytes? If it was in a pure hex dump, would be ideal or alternatively...
+<br />
+
+<br />
+For example.
+<br />
+
+<br />
+loc_52EC15: F4 FF - LitI2_Byte 255 &lt;-- i was trying to change this 
+<br />
+loc_52EC17: C6 - EqI2 
+<br />
+loc_52EC18: 1C F4 01 BranchF loc_52ECA3 &lt;-- or this
+<br />
+
+<br />
+We each are kind of married to our methodologies...  And as good as the tool you are using actually happens to be, all of the published tools have deficiencies I think could best be summarized as not showing/dealing with 'scope' information (plus another whole bunch of patented golem nonsense  ).
+<br />
+
+<br />
+If I can see the raw hex of the subroutine it only takes me a couple of seconds to read the entire subroutine, whereas with this most recent display, I have to do a double translation.
+<br />
+
+<br />
+Hey... I'm lazy! (And in dealing with decompilers attention to detail is everything.  )
+<br />
+
+<br />
+Thanks SMB. </span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="3091"></a><b>smariobros</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 10 Mar 2006<br />Posts: 4<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Mon Mar 13, 2006 3:13 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">hehe no problem, here is the raw bytes of this subrotine in the OllyDbg
+<br />
+
+<br />
+
+<br />
+
+<br />
+0052EB58     4B             DB 4B                                    ;  CHAR 'K'
+<br />
+0052EB59     FF             DB FF
+<br />
+0052EB5A     FF             DB FF
+<br />
+0052EB5B     00             DB 00
+<br />
+0052EB5C     25             DB 25                                    ;  CHAR '%'
+<br />
+0052EB5D   . 04 70          ADD AL,70
+<br />
+0052EB5F   . FF21           JMP DWORD PTR DS:[ECX]
+<br />
+0052EB61     0F             DB 0F
+<br />
+0052EB62     00             DB 00
+<br />
+0052EB63     03             DB 03
+<br />
+0052EB64     19             DB 19
+<br />
+0052EB65     74             DB 74                                    ;  CHAR 't'
+<br />
+0052EB66     FF             DB FF
+<br />
+0052EB67     08             DB 08
+<br />
+0052EB68     74             DB 74                                    ;  CHAR 't'
+<br />
+0052EB69     FF             DB FF
+<br />
+0052EB6A     0D             DB 0D
+<br />
+0052EB6B     A0             DB A0
+<br />
+0052EB6C     00             DB 00
+<br />
+0052EB6D     08             DB 08
+<br />
+0052EB6E     00             DB 00
+<br />
+0052EB6F     6C             DB 6C                                    ;  CHAR 'l'
+<br />
+0052EB70     70             DB 70                                    ;  CHAR 'p'
+<br />
+0052EB71     FF             DB FF
+<br />
+0052EB72     1B             DB 1B
+<br />
+0052EB73     0C             DB 0C
+<br />
+0052EB74     00             DB 00
+<br />
+0052EB75     FB             DB FB
+<br />
+0052EB76     30             DB 30                                    ;  CHAR '0'
+<br />
+0052EB77     2F             DB 2F                                    ;  CHAR '/'
+<br />
+0052EB78     70             DB 70                                    ;  CHAR 'p'
+<br />
+0052EB79     FF             DB FF
+<br />
+0052EB7A     1A             DB 1A
+<br />
+0052EB7B     74             DB 74                                    ;  CHAR 't'
+<br />
+0052EB7C     FF             DB FF
+<br />
+0052EB7D     1C             DB 1C
+<br />
+0052EB7E     5D             DB 5D                                    ;  CHAR ']'
+<br />
+0052EB7F     00             DB 00
+<br />
+0052EB80     00             DB 00
+<br />
+0052EB81     2B             DB 2B                                    ;  CHAR '+'
+<br />
+0052EB82     27             DB 27                                    ;  CHAR '''
+<br />
+0052EB83     F0             DB F0
+<br />
+0052EB84     FE             DB FE
+<br />
+0052EB85     27             DB 27                                    ;  CHAR '''
+<br />
+0052EB86     10             DB 10
+<br />
+0052EB87   . FF27           JMP DWORD PTR DS:[EDI]
+<br />
+0052EB89     30             DB 30                                    ;  CHAR '0'
+<br />
+0052EB8A     FF             DB FF
+<br />
+0052EB8B     F5             DB F5
+<br />
+0052EB8C     40             DB 40                                    ;  CHAR '@'
+<br />
+0052EB8D     00             DB 00
+<br />
+0052EB8E     00             DB 00
+<br />
+0052EB8F     00             DB 00
+<br />
+0052EB90     3A             DB 3A                                    ;  CHAR ':'
+<br />
+0052EB91     60             DB 60                                    ;  CHAR '`'
+<br />
+0052EB92     FF             DB FF
+<br />
+0052EB93     0D             DB 0D
+<br />
+0052EB94     00             DB 00
+<br />
+0052EB95     4E             DB 4E                                    ;  CHAR 'N'
+<br />
+0052EB96     50             DB 50                                    ;  CHAR 'P'
+<br />
+0052EB97     FF             DB FF
+<br />
+0052EB98     04             DB 04
+<br />
+0052EB99     50             DB 50                                    ;  CHAR 'P'
+<br />
+0052EB9A     FF             DB FF
+<br />
+0052EB9B     0A             DB 0A
+<br />
+0052EB9C     0B             DB 0B
+<br />
+0052EB9D     00             DB 00
+<br />
+0052EB9E     14             DB 14
+<br />
+0052EB9F     00             DB 00
+<br />
+0052EBA0     36             DB 36                                    ;  CHAR '6'
+<br />
+0052EBA1     08             DB 08
+<br />
+0052EBA2     00             DB 00
+<br />
+0052EBA3     50             DB 50                                    ;  CHAR 'P'
+<br />
+0052EBA4     FF             DB FF
+<br />
+0052EBA5     30             DB 30                                    ;  CHAR '0'
+<br />
+0052EBA6     FF             DB FF
+<br />
+0052EBA7     10             DB 10
+<br />
+0052EBA8     FF             DB FF
+<br />
+0052EBA9     F0             DB F0
+<br />
+0052EBAA     FE             DB FE
+<br />
+0052EBAB     00             DB 00
+<br />
+0052EBAC     03             DB 03
+<br />
+0052EBAD     13             DB 13
+<br />
+0052EBAE     1E             DB 1E
+<br />
+0052EBAF     B0             DB B0
+<br />
+0052EBB0     00             DB 00
+<br />
+0052EBB1     00             DB 00
+<br />
+0052EBB2     25             DB 25                                    ;  CHAR '%'
+<br />
+0052EBB3   . 04 70          ADD AL,70
+<br />
+0052EBB5   . FF21           JMP DWORD PTR DS:[ECX]
+<br />
+0052EBB7     0F             DB 0F
+<br />
+0052EBB8     04             DB 04
+<br />
+0052EBB9     03             DB 03
+<br />
+0052EBBA     19             DB 19
+<br />
+0052EBBB     74             DB 74                                    ;  CHAR 't'
+<br />
+0052EBBC     FF             DB FF
+<br />
+0052EBBD     08             DB 08
+<br />
+0052EBBE     74             DB 74                                    ;  CHAR 't'
+<br />
+0052EBBF     FF             DB FF
+<br />
+0052EBC0     0D             DB 0D
+<br />
+0052EBC1     A0             DB A0
+<br />
+0052EBC2     00             DB 00
+<br />
+0052EBC3     08             DB 08
+<br />
+0052EBC4     00             DB 00
+<br />
+0052EBC5     6C             DB 6C                                    ;  CHAR 'l'
+<br />
+0052EBC6     70             DB 70                                    ;  CHAR 'p'
+<br />
+0052EBC7     FF             DB FF
+<br />
+0052EBC8     1B             DB 1B
+<br />
+0052EBC9     0C             DB 0C
+<br />
+0052EBCA     00             DB 00
+<br />
+0052EBCB     FB             DB FB
+<br />
+0052EBCC     30             DB 30                                    ;  CHAR '0'
+<br />
+0052EBCD     2F             DB 2F                                    ;  CHAR '/'
+<br />
+0052EBCE     70             DB 70                                    ;  CHAR 'p'
+<br />
+0052EBCF     FF             DB FF
+<br />
+0052EBD0     1A             DB 1A
+<br />
+0052EBD1     74             DB 74                                    ;  CHAR 't'
+<br />
+0052EBD2     FF             DB FF
+<br />
+0052EBD3     1C             DB 1C
+<br />
+0052EBD4     B0             DB B0
+<br />
+0052EBD5     00             DB 00
+<br />
+0052EBD6     00             DB 00
+<br />
+0052EBD7     2B             DB 2B                                    ;  CHAR '+'
+<br />
+0052EBD8     27             DB 27                                    ;  CHAR '''
+<br />
+0052EBD9     F0             DB F0
+<br />
+0052EBDA     FE             DB FE
+<br />
+0052EBDB     27             DB 27                                    ;  CHAR '''
+<br />
+0052EBDC     10             DB 10
+<br />
+0052EBDD   . FF27           JMP DWORD PTR DS:[EDI]
+<br />
+0052EBDF     30             DB 30                                    ;  CHAR '0'
+<br />
+0052EBE0     FF             DB FF
+<br />
+0052EBE1     F5             DB F5
+<br />
+0052EBE2     40             DB 40                                    ;  CHAR '@'
+<br />
+0052EBE3     00             DB 00
+<br />
+0052EBE4     00             DB 00
+<br />
+0052EBE5     00             DB 00
+<br />
+0052EBE6     3A             DB 3A                                    ;  CHAR ':'
+<br />
+0052EBE7     60             DB 60                                    ;  CHAR '`'
+<br />
+0052EBE8     FF             DB FF
+<br />
+0052EBE9     0E             DB 0E
+<br />
+0052EBEA     00             DB 00
+<br />
+0052EBEB     4E             DB 4E                                    ;  CHAR 'N'
+<br />
+0052EBEC     50             DB 50                                    ;  CHAR 'P'
+<br />
+0052EBED     FF             DB FF
+<br />
+0052EBEE     04             DB 04
+<br />
+0052EBEF     50             DB 50                                    ;  CHAR 'P'
+<br />
+0052EBF0     FF             DB FF
+<br />
+0052EBF1     0A             DB 0A
+<br />
+0052EBF2     0B             DB 0B
+<br />
+0052EBF3     00             DB 00
+<br />
+0052EBF4     14             DB 14
+<br />
+0052EBF5     00             DB 00
+<br />
+0052EBF6     36             DB 36                                    ;  CHAR '6'
+<br />
+0052EBF7     08             DB 08
+<br />
+0052EBF8     00             DB 00
+<br />
+0052EBF9     50             DB 50                                    ;  CHAR 'P'
+<br />
+0052EBFA     FF             DB FF
+<br />
+0052EBFB     30             DB 30                                    ;  CHAR '0'
+<br />
+0052EBFC     FF             DB FF
+<br />
+0052EBFD     10             DB 10
+<br />
+0052EBFE     FF             DB FF
+<br />
+0052EBFF     F0             DB F0
+<br />
+0052EC00     FE             DB FE
+<br />
+0052EC01     00             DB 00
+<br />
+0052EC02     03             DB 03
+<br />
+0052EC03     13             DB 13
+<br />
+0052EC04     00             DB 00
+<br />
+0052EC05     02             DB 02
+<br />
+0052EC06     00             DB 00
+<br />
+0052EC07     07             DB 07
+<br />
+0052EC08     10             DB 10
+<br />
+0052EC09     10             DB 10
+<br />
+0052EC0A     07             DB 07
+<br />
+0052EC0B     0F             DB 0F
+<br />
+0052EC0C     00             DB 00
+<br />
+0052EC0D     00             DB 00
+<br />
+0052EC0E     0E             DB 0E
+<br />
+0052EC0F     08             DB 08
+<br />
+0052EC10     08             DB 08
+<br />
+0052EC11     00             DB 00
+<br />
+0052EC12     89             DB 89
+<br />
+0052EC13     3E             DB 3E                                    ;  CHAR '&gt;'
+<br />
+0052EC14     00             DB 00
+<br />
+0052EC15     F4             DB F4
+<br />
+0052EC16     FF             DB FF
+<br />
+0052EC17     C6             DB C6
+<br />
+0052EC18     1C             DB 1C    &lt;&lt;&lt;&lt;&lt;&lt; HERE IS THE JMP &gt;&gt;&gt;&gt;&gt;&gt;&gt;
+<br />
+0052EC19     4F             DB 4F                                    ;  CHAR 'O'
+<br />
+0052EC1A     01             DB 01
+<br />
+0052EC1B     00             DB 00
+<br />
+0052EC1C     07             DB 07
+<br />
+0052EC1D     10             DB 10
+<br />
+0052EC1E     20             DB 20                                    ;  CHAR ' '
+<br />
+0052EC1F     07             DB 07
+<br />
+0052EC20     0F             DB 0F
+<br />
+0052EC21     00             DB 00
+<br />
+0052EC22     00             DB 00
+<br />
+0052EC23     16             DB 16
+<br />
+0052EC24     3A             DB 3A                                    ;  CHAR ':'
+<br />
+0052EC25     40             DB 40                                    ;  CHAR '@'
+<br />
+0052EC26     FF             DB FF
+<br />
+0052EC27     10             DB 10
+<br />
+0052EC28     00             DB 00
+<br />
+0052EC29     25             DB 25                                    ;  CHAR '%'
+<br />
+0052EC2A     3A             DB 3A                                    ;  CHAR ':'
+<br />
+0052EC2B     60             DB 60                                    ;  CHAR '`'
+<br />
+0052EC2C     FF             DB FF
+<br />
+0052EC2D     11             DB 11
+<br />
+0052EC2E     00             DB 00
+<br />
+0052EC2F     25             DB 25                                    ;  CHAR '%'
+<br />
+0052EC30     1B             DB 1B
+<br />
+0052EC31     12             DB 12
+<br />
+0052EC32     00             DB 00
+<br />
+0052EC33     0A             DB 0A
+<br />
+0052EC34     13             DB 13
+<br />
+0052EC35     00             DB 00
+<br />
+0052EC36     24             DB 24                                    ;  CHAR '$'
+<br />
+0052EC37     00             DB 00
+<br />
+0052EC38     00             DB 00
+<br />
+0052EC39     07             DB 07
+<br />
+0052EC3A     10             DB 10
+<br />
+0052EC3B     4C             DB 4C                                    ;  CHAR 'L'
+<br />
+0052EC3C     07             DB 07
+<br />
+0052EC3D     0F             DB 0F
+<br />
+0052EC3E     00             DB 00
+<br />
+0052EC3F     00             DB 00
+<br />
+0052EC40     07             DB 07
+<br />
+0052EC41     F4             DB F4
+<br />
+0052EC42     FF             DB FF
+<br />
+0052EC43     7A             DB 7A                                    ;  CHAR 'z'
+<br />
+0052EC44     14             DB 14
+<br />
+0052EC45     00             DB 00
+<br />
+0052EC46     00             DB 00
+<br />
+0052EC47     17             DB 17
+<br />
+0052EC48     6C             DB 6C                                    ;  CHAR 'l'
+<br />
+0052EC49     08             DB 08
+<br />
+0052EC4A     00             DB 00
+<br />
+0052EC4B     FD             DB FD
+<br />
+0052EC4C     9C             DB 9C
+<br />
+0052EC4D     74             DB 74                                    ;  CHAR 't'
+<br />
+0052EC4E     FF             DB FF
+<br />
+0052EC4F     05             DB 05
+<br />
+0052EC50     01             DB 01
+<br />
+0052EC51     00             DB 00
+<br />
+0052EC52     24             DB 24                                    ;  CHAR '$'
+<br />
+0052EC53     02             DB 02
+<br />
+0052EC54     00             DB 00
+<br />
+0052EC55     0D             DB 0D
+<br />
+0052EC56     10             DB 10
+<br />
+0052EC57     00             DB 00
+<br />
+0052EC58     03             DB 03
+<br />
+0052EC59     00             DB 00
+<br />
+0052EC5A     1A             DB 1A
+<br />
+0052EC5B     74             DB 74                                    ;  CHAR 't'
+<br />
+0052EC5C     FF             DB FF
+<br />
+0052EC5D     00             DB 00
+<br />
+0052EC5E     07             DB 07
+<br />
+0052EC5F     0A             DB 0A
+<br />
+0052EC60     15             DB 15
+<br />
+0052EC61     00             DB 00
+<br />
+0052EC62     00             DB 00
+<br />
+0052EC63     00             DB 00
+<br />
+0052EC64     00             DB 00
+<br />
+0052EC65     16             DB 16
+<br />
+0052EC66     1B             DB 1B
+<br />
+0052EC67     16             DB 16
+<br />
+0052EC68     00             DB 00
+<br />
+0052EC69     1B             DB 1B
+<br />
+0052EC6A     17             DB 17
+<br />
+0052EC6B     00             DB 00
+<br />
+0052EC6C     2A             DB 2A                                    ;  CHAR '*'
+<br />
+0052EC6D     23             DB 23                                    ;  CHAR '#'
+<br />
+0052EC6E     70             DB 70                                    ;  CHAR 'p'
+<br />
+0052EC6F     FF             DB FF
+<br />
+0052EC70     1B             DB 1B
+<br />
+0052EC71     18             DB 18
+<br />
+0052EC72     00             DB 00
+<br />
+0052EC73     2A             DB 2A                                    ;  CHAR '*'
+<br />
+0052EC74     31             DB 31                                    ;  CHAR '1'
+<br />
+0052EC75     78             DB 78                                    ;  CHAR 'x'
+<br />
+0052EC76     FF             DB FF
+<br />
+0052EC77     2F             DB 2F                                    ;  CHAR '/'
+<br />
+0052EC78     70             DB 70                                    ;  CHAR 'p'
+<br />
+0052EC79     FF             DB FF
+<br />
+0052EC7A     00             DB 00
+<br />
+0052EC7B     26             DB 26                                    ;  CHAR '&amp;'
+<br />
+0052EC7C     27             DB 27                                    ;  CHAR '''
+<br />
+0052EC7D     10             DB 10
+<br />
+0052EC7E   . FF27           JMP DWORD PTR DS:[EDI]
+<br />
+0052EC80     30             DB 30                                    ;  CHAR '0'
+<br />
+0052EC81   . FF27           JMP DWORD PTR DS:[EDI]
+<br />
+0052EC83     50             DB 50                                    ;  CHAR 'P'
+<br />
+0052EC84     FF             DB FF
+<br />
+0052EC85     F5             DB F5
+<br />
+0052EC86     40             DB 40                                    ;  CHAR '@'
+<br />
+0052EC87     00             DB 00
+<br />
+0052EC88     00             DB 00
+<br />
+0052EC89     00             DB 00
+<br />
+0052EC8A     04             DB 04
+<br />
+0052EC8B     78             DB 78                                    ;  CHAR 'x'
+<br />
+0052EC8C     FF             DB FF
+<br />
+0052EC8D     4D             DB 4D                                    ;  CHAR 'M'
+<br />
+0052EC8E     60             DB 60                                    ;  CHAR '`'
+<br />
+0052EC8F     FF             DB FF
+<br />
+0052EC90     08             DB 08
+<br />
+0052EC91     40             DB 40                                    ;  CHAR '@'
+<br />
+0052EC92     0A             DB 0A
+<br />
+0052EC93     0B             DB 0B
+<br />
+0052EC94     00             DB 00
+<br />
+0052EC95     14             DB 14
+<br />
+0052EC96     00             DB 00
+<br />
+0052EC97     36             DB 36                                    ;  CHAR '6'
+<br />
+0052EC98     06             DB 06
+<br />
+0052EC99     00             DB 00
+<br />
+0052EC9A     50             DB 50                                    ;  CHAR 'P'
+<br />
+0052EC9B     FF             DB FF
+<br />
+0052EC9C     30             DB 30                                    ;  CHAR '0'
+<br />
+0052EC9D     FF             DB FF
+<br />
+0052EC9E     10             DB 10
+<br />
+0052EC9F     FF             DB FF
+<br />
+0052ECA0     1E             DB 1E
+<br />
+0052ECA1     A5             DB A5
+<br />
+0052ECA2     02             DB 02
+<br />
+0052ECA3     00             DB 00
+<br />
+0052ECA4     02             DB 02
+<br />
+0052ECA5     00             DB 00
+<br />
+0052ECA6     17             DB 17
+<br />
+0052ECA7     08             DB 08
+<br />
+0052ECA8     08             DB 08
+<br />
+0052ECA9     00             DB 00
+<br />
+0052ECAA     FD             DB FD
+<br />
+0052ECAB   . 70 40 00       ASCII &quot;p@&quot;,0
+<br />
+0052ECAE     FC             DB FC
+<br />
+0052ECAF     14             DB 14
+<br />
+0052ECB0     F4             DB F4
+<br />
+0052ECB1     01             DB 01
+<br />
+0052ECB2     A9             DB A9
+<br />
+0052ECB3     FC             DB FC
+<br />
+0052ECB4     0D             DB 0D
+<br />
+0052ECB5     08             DB 08
+<br />
+0052ECB6     08             DB 08
+<br />
+0052ECB7     00             DB 00
+<br />
+0052ECB8     FD             DB FD
+<br />
+0052ECB9     80             DB 80
+<br />
+0052ECBA     40             DB 40                                    ;  CHAR '@'
+<br />
+0052ECBB     00             DB 00
+<br />
+0052ECBC     00             DB 00
+<br />
+0052ECBD     11             DB 11
+<br />
+0052ECBE     08             DB 08
+<br />
+0052ECBF     08             DB 08
+<br />
+0052ECC0     00             DB 00
+<br />
+0052ECC1     FD             DB FD
+<br />
+0052ECC2   . 70 40 00       ASCII &quot;p@&quot;,0
+<br />
+0052ECC5     FC             DB FC
+<br />
+0052ECC6     14             DB 14
+<br />
+0052ECC7     F4             DB F4
+<br />
+0052ECC8     03             DB 03
+<br />
+0052ECC9     D0             DB D0
+<br />
+0052ECCA     1C             DB 1C
+<br />
+0052ECCB     E2             DB E2
+<br />
+0052ECCC     01             DB 01
+<br />
+0052ECCD     00             DB 00
+<br />
+0052ECCE     1F             DB 1F
+<br />
+0052ECCF     08             DB 08
+<br />
+0052ECD0     08             DB 08
+<br />
+0052ECD1     00             DB 00
+<br />
+0052ECD2     FD             DB FD
+<br />
+0052ECD3   . 70 40 00       ASCII &quot;p@&quot;,0
+<br />
+0052ECD6     FB             DB FB
+<br />
+0052ECD7     FC             DB FC
+<br />
+0052ECD8     23             DB 23                                    ;  CHAR '#'
+<br />
+0052ECD9     70             DB 70                                    ;  CHAR 'p'
+<br />
+0052ECDA     FF             DB FF
+<br />
+0052ECDB     1B             DB 1B
+<br />
+0052ECDC     19             DB 19
+<br />
+0052ECDD     00             DB 00
+<br />
+0052ECDE     1B             DB 1B
+<br />
+0052ECDF     11             DB 11
+<br />
+0052ECE0     00             DB 00
+<br />
+0052ECE1     1B             DB 1B
+<br />
+0052ECE2     12             DB 12
+<br />
+0052ECE3     00             DB 00
+<br />
+0052ECE4     0A             DB 0A
+<br />
+0052ECE5     1A             DB 1A
+<br />
+0052ECE6     00             DB 00
+<br />
+0052ECE7     10             DB 10
+<br />
+0052ECE8     00             DB 00
+<br />
+0052ECE9     2F             DB 2F                                    ;  CHAR '/'
+<br />
+0052ECEA     70             DB 70                                    ;  CHAR 'p'
+<br />
+0052ECEB     FF             DB FF
+<br />
+0052ECEC     00             DB 00
+<br />
+0052ECED     33             DB 33                                    ;  CHAR '3'
+<br />
+0052ECEE     27             DB 27                                    ;  CHAR '''
+<br />
+0052ECEF     F0             DB F0
+<br />
+0052ECF0     FE             DB FE
+<br />
+0052ECF1     27             DB 27                                    ;  CHAR '''
+<br />
+0052ECF2     10             DB 10
+<br />
+0052ECF3     FF             DB FF
+<br />
+0052ECF4     3A             DB 3A                                    ;  CHAR ':'
+<br />
+0052ECF5     40             DB 40                                    ;  CHAR '@'
+<br />
+0052ECF6     FF             DB FF
+<br />
+0052ECF7     1B             DB 1B
+<br />
+0052ECF8     00             DB 00
+<br />
+0052ECF9     4E             DB 4E                                    ;  CHAR 'N'
+<br />
+0052ECFA     30             DB 30                                    ;  CHAR '0'
+<br />
+0052ECFB     FF             DB FF
+<br />
+0052ECFC     04             DB 04
+<br />
+0052ECFD     30             DB 30                                    ;  CHAR '0'
+<br />
+0052ECFE     FF             DB FF
+<br />
+0052ECFF     F5             DB F5
+<br />
+0052ED00     30             DB 30                                    ;  CHAR '0'
+<br />
+0052ED01     00             DB 00
+<br />
+0052ED02     00             DB 00
+<br />
+0052ED03     00             DB 00
+<br />
+0052ED04     3A             DB 3A                                    ;  CHAR ':'
+<br />
+0052ED05     60             DB 60                                    ;  CHAR '`'
+<br />
+0052ED06     FF             DB FF
+<br />
+0052ED07     1C             DB 1C
+<br />
+0052ED08     00             DB 00
+<br />
+0052ED09     4E             DB 4E                                    ;  CHAR 'N'
+<br />
+0052ED0A     50             DB 50                                    ;  CHAR 'P'
+<br />
+0052ED0B     FF             DB FF
+<br />
+0052ED0C     04             DB 04
+<br />
+0052ED0D     50             DB 50                                    ;  CHAR 'P'
+<br />
+0052ED0E     FF             DB FF
+<br />
+0052ED0F     0A             DB 0A
+<br />
+0052ED10     0B             DB 0B
+<br />
+0052ED11     00             DB 00
+<br />
+0052ED12     14             DB 14
+<br />
+0052ED13     00             DB 00
+<br />
+0052ED14     36             DB 36                                    ;  CHAR '6'
+<br />
+0052ED15     08             DB 08
+<br />
+0052ED16     00             DB 00
+<br />
+0052ED17     50             DB 50                                    ;  CHAR 'P'
+<br />
+0052ED18     FF             DB FF
+<br />
+0052ED19     30             DB 30                                    ;  CHAR '0'
+<br />
+0052ED1A     FF             DB FF
+<br />
+0052ED1B     10             DB 10
+<br />
+0052ED1C     FF             DB FF
+<br />
+0052ED1D     F0             DB F0
+<br />
+0052ED1E     FE             DB FE
+<br />
+0052ED1F     00             DB 00
+<br />
+0052ED20     14             DB 14
+<br />
+0052ED21     21             DB 21                                    ;  CHAR '!'
+<br />
+0052ED22     0F             DB 0F
+<br />
+0052ED23     04             DB 04
+<br />
+0052ED24     03             DB 03
+<br />
+0052ED25     19             DB 19
+<br />
+0052ED26     74             DB 74                                    ;  CHAR 't'
+<br />
+0052ED27     FF             DB FF
+<br />
+0052ED28     08             DB 08
+<br />
+0052ED29     74             DB 74                                    ;  CHAR 't'
+<br />
+0052ED2A     FF             DB FF
+<br />
+0052ED2B     0D             DB 0D
+<br />
+0052ED2C     04             DB 04
+<br />
+0052ED2D     02             DB 02
+<br />
+0052ED2E     08             DB 08
+<br />
+0052ED2F     00             DB 00
+<br />
+0052ED30     1A             DB 1A
+<br />
+0052ED31     74             DB 74                                    ;  CHAR 't'
+<br />
+0052ED32     FF             DB FF
+<br />
+0052ED33     1E             DB 1E
+<br />
+0052ED34     A3             DB A3
+<br />
+0052ED35     02             DB 02
+<br />
+0052ED36     00             DB 00
+<br />
+0052ED37     02             DB 02
+<br />
+0052ED38     00             DB 00
+<br />
+0052ED39     16             DB 16
+<br />
+0052ED3A     3A             DB 3A                                    ;  CHAR ':'
+<br />
+0052ED3B     40             DB 40                                    ;  CHAR '@'
+<br />
+0052ED3C     FF             DB FF
+<br />
+0052ED3D     19             DB 19
+<br />
+0052ED3E     00             DB 00
+<br />
+0052ED3F     25             DB 25                                    ;  CHAR '%'
+<br />
+0052ED40     3A             DB 3A                                    ;  CHAR ':'
+<br />
+0052ED41     60             DB 60                                    ;  CHAR '`'
+<br />
+0052ED42     FF             DB FF
+<br />
+0052ED43     11             DB 11
+<br />
+0052ED44     00             DB 00
+<br />
+0052ED45     25             DB 25                                    ;  CHAR '%'
+<br />
+0052ED46     1B             DB 1B
+<br />
+0052ED47     12             DB 12
+<br />
+0052ED48     00             DB 00
+<br />
+0052ED49     0A             DB 0A
+<br />
+0052ED4A     13             DB 13
+<br />
+0052ED4B     00             DB 00
+<br />
+0052ED4C     24             DB 24                                    ;  CHAR '$'
+<br />
+0052ED4D     00             DB 00
+<br />
+0052ED4E     00             DB 00
+<br />
+0052ED4F     16             DB 16
+<br />
+0052ED50     3A             DB 3A                                    ;  CHAR ':'
+<br />
+0052ED51     40             DB 40                                    ;  CHAR '@'
+<br />
+0052ED52     FF             DB FF
+<br />
+0052ED53     10             DB 10
+<br />
+0052ED54     00             DB 00
+<br />
+0052ED55     25             DB 25                                    ;  CHAR '%'
+<br />
+0052ED56     3A             DB 3A                                    ;  CHAR ':'
+<br />
+0052ED57     60             DB 60                                    ;  CHAR '`'
+<br />
+0052ED58     FF             DB FF
+<br />
+0052ED59     11             DB 11
+<br />
+0052ED5A     00             DB 00
+<br />
+0052ED5B     25             DB 25                                    ;  CHAR '%'
+<br />
+0052ED5C     1B             DB 1B
+<br />
+0052ED5D     12             DB 12
+<br />
+0052ED5E     00             DB 00
+<br />
+0052ED5F     0A             DB 0A
+<br />
+0052ED60     13             DB 13
+<br />
+0052ED61     00             DB 00
+<br />
+0052ED62     24             DB 24                                    ;  CHAR '$'
+<br />
+0052ED63     00             DB 00
+<br />
+0052ED64     00             DB 00
+<br />
+0052ED65     69             DB 69                                    ;  CHAR 'i'
+<br />
+0052ED66     1B             DB 1B
+<br />
+0052ED67     1D             DB 1D
+<br />
+0052ED68     00             DB 00
+<br />
+0052ED69     1B             DB 1B
+<br />
+0052ED6A     1E             DB 1E
+<br />
+0052ED6B     00             DB 00
+<br />
+0052ED6C     2A             DB 2A                                    ;  CHAR '*'
+<br />
+0052ED6D     23             DB 23                                    ;  CHAR '#'
+<br />
+0052ED6E     70             DB 70                                    ;  CHAR 'p'
+<br />
+0052ED6F     FF             DB FF
+<br />
+0052ED70     1B             DB 1B
+<br />
+0052ED71     1F             DB 1F
+<br />
+0052ED72     00             DB 00
+<br />
+0052ED73     2A             DB 2A                                    ;  CHAR '*'
+<br />
+0052ED74     23             DB 23                                    ;  CHAR '#'
+<br />
+0052ED75     EC             DB EC
+<br />
+0052ED76     FE             DB FE
+<br />
+0052ED77     1B             DB 1B
+<br />
+0052ED78     1E             DB 1E
+<br />
+0052ED79     00             DB 00
+<br />
+0052ED7A     2A             DB 2A                                    ;  CHAR '*'
+<br />
+0052ED7B     23             DB 23                                    ;  CHAR '#'
+<br />
+0052ED7C     E8             DB E8
+<br />
+0052ED7D     FE             DB FE
+<br />
+0052ED7E     1B             DB 1B
+<br />
+0052ED7F     1E             DB 1E
+<br />
+0052ED80     00             DB 00
+<br />
+0052ED81     2A             DB 2A                                    ;  CHAR '*'
+<br />
+0052ED82     23             DB 23                                    ;  CHAR '#'
+<br />
+0052ED83     E4             DB E4
+<br />
+0052ED84     FE             DB FE
+<br />
+0052ED85     1B             DB 1B
+<br />
+0052ED86     20             DB 20                                    ;  CHAR ' '
+<br />
+0052ED87     00             DB 00
+<br />
+0052ED88     2A             DB 2A                                    ;  CHAR '*'
+<br />
+0052ED89     23             DB 23                                    ;  CHAR '#'
+<br />
+0052ED8A     E0             DB E0
+<br />
+0052ED8B     FE             DB FE
+<br />
+0052ED8C     1B             DB 1B
+<br />
+0052ED8D     1E             DB 1E
+<br />
+0052ED8E     00             DB 00
+<br />
+0052ED8F     2A             DB 2A                                    ;  CHAR '*'
+<br />
+0052ED90     23             DB 23                                    ;  CHAR '#'
+<br />
+0052ED91     DC             DB DC
+<br />
+0052ED92     FE             DB FE
+<br />
+0052ED93     1B             DB 1B
+<br />
+0052ED94     21             DB 21                                    ;  CHAR '!'
+<br />
+0052ED95     00             DB 00
+<br />
+0052ED96     2A             DB 2A                                    ;  CHAR '*'
+<br />
+0052ED97     23             DB 23                                    ;  CHAR '#'
+<br />
+0052ED98     D8             DB D8
+<br />
+0052ED99     FE             DB FE
+<br />
+0052ED9A     1B             DB 1B
+<br />
+0052ED9B     1E             DB 1E
+<br />
+0052ED9C     00             DB 00
+<br />
+0052ED9D     2A             DB 2A                                    ;  CHAR '*'
+<br />
+0052ED9E     23             DB 23                                    ;  CHAR '#'
+<br />
+0052ED9F     D4             DB D4
+<br />
+0052EDA0     FE             DB FE
+<br />
+0052EDA1     1B             DB 1B
+<br />
+0052EDA2     22             DB 22                                    ;  CHAR '&quot;'
+<br />
+0052EDA3     00             DB 00
+<br />
+0052EDA4     2A             DB 2A                                    ;  CHAR '*'
+<br />
+0052EDA5     23             DB 23                                    ;  CHAR '#'
+<br />
+0052EDA6     D0             DB D0
+<br />
+0052EDA7     FE             DB FE
+<br />
+0052EDA8     1B             DB 1B
+<br />
+0052EDA9     1E             DB 1E
+<br />
+0052EDAA     00             DB 00
+<br />
+0052EDAB     2A             DB 2A                                    ;  CHAR '*'
+<br />
+0052EDAC     23             DB 23                                    ;  CHAR '#'
+<br />
+0052EDAD     CC             INT3
+<br />
+0052EDAE     FE             DB FE
+<br />
+0052EDAF     1B             DB 1B
+<br />
+0052EDB0     23             DB 23                                    ;  CHAR '#'
+<br />
+0052EDB1     00             DB 00
+<br />
+0052EDB2     2A             DB 2A                                    ;  CHAR '*'
+<br />
+0052EDB3     31             DB 31                                    ;  CHAR '1'
+<br />
+0052EDB4     78             DB 78                                    ;  CHAR 'x'
+<br />
+0052EDB5     FF             DB FF
+<br />
+0052EDB6     32             DB 32                                    ;  CHAR '2'
+<br />
+0052EDB7     14             DB 14
+<br />
+0052EDB8     00             DB 00
+<br />
+0052EDB9     70             DB 70                                    ;  CHAR 'p'
+<br />
+0052EDBA     FF             DB FF
+<br />
+0052EDBB     EC             DB EC
+<br />
+0052EDBC     FE             DB FE
+<br />
+0052EDBD     E8             DB E8
+<br />
+0052EDBE     FE             DB FE
+<br />
+0052EDBF     E4             DB E4
+<br />
+0052EDC0     FE             DB FE
+<br />
+0052EDC1     E0             DB E0
+<br />
+0052EDC2     FE             DB FE
+<br />
+0052EDC3     DC             DB DC
+<br />
+0052EDC4     FE             DB FE
+<br />
+0052EDC5     D8             DB D8
+<br />
+0052EDC6     FE             DB FE
+<br />
+0052EDC7     D4             DB D4
+<br />
+0052EDC8     FE             DB FE
+<br />
+0052EDC9     D0             DB D0
+<br />
+0052EDCA     FE             DB FE
+<br />
+0052EDCB     CC             INT3
+<br />
+0052EDCC     FE             DB FE
+<br />
+0052EDCD     00             DB 00
+<br />
+0052EDCE     26             DB 26                                    ;  CHAR '&amp;'
+<br />
+0052EDCF     27             DB 27                                    ;  CHAR '''
+<br />
+0052EDD0     10             DB 10
+<br />
+0052EDD1   . FF27           JMP DWORD PTR DS:[EDI]
+<br />
+0052EDD3     30             DB 30                                    ;  CHAR '0'
+<br />
+0052EDD4   . FF27           JMP DWORD PTR DS:[EDI]
+<br />
+0052EDD6     50             DB 50                                    ;  CHAR 'P'
+<br />
+0052EDD7     FF             DB FF
+<br />
+0052EDD8     F5             DB F5
+<br />
+0052EDD9     30             DB 30                                    ;  CHAR '0'
+<br />
+0052EDDA     00             DB 00
+<br />
+0052EDDB     00             DB 00
+<br />
+0052EDDC     00             DB 00
+<br />
+0052EDDD     04             DB 04
+<br />
+0052EDDE     78             DB 78                                    ;  CHAR 'x'
+<br />
+0052EDDF     FF             DB FF
+<br />
+0052EDE0     4D             DB 4D                                    ;  CHAR 'M'
+<br />
+0052EDE1     60             DB 60                                    ;  CHAR '`'
+<br />
+0052EDE2     FF             DB FF
+<br />
+0052EDE3     08             DB 08
+<br />
+0052EDE4     40             DB 40                                    ;  CHAR '@'
+<br />
+0052EDE5     0A             DB 0A
+<br />
+0052EDE6     0B             DB 0B
+<br />
+0052EDE7     00             DB 00
+<br />
+0052EDE8     14             DB 14
+<br />
+0052EDE9     00             DB 00
+<br />
+0052EDEA     36             DB 36                                    ;  CHAR '6'
+<br />
+0052EDEB     06             DB 06
+<br />
+0052EDEC     00             DB 00
+<br />
+0052EDED     50             DB 50                                    ;  CHAR 'P'
+<br />
+0052EDEE     FF             DB FF
+<br />
+0052EDEF     30             DB 30                                    ;  CHAR '0'
+<br />
+0052EDF0     FF             DB FF
+<br />
+0052EDF1     10             DB 10
+<br />
+0052EDF2     FF             DB FF
+<br />
+0052EDF3     00             DB 00
+<br />
+0052EDF4     04             DB 04
+<br />
+0052EDF5     FC             DB FC
+<br />
+0052EDF6     C8             DB C8
+<br />
+0052EDF7     00             DB 00
+<br />
+0052EDF8     02             DB 02
+<br />
+0052EDF9     00             DB 00
+<br />
+0052EDFA     02             DB 02
+<br />
+0052EDFB     00             DB 00
+<br />
+0052EDFC     00             DB 00
+<br />
+0052EDFD     13             DB 13
+<br />
+
+<br />
+
+<br />
+I changed the value in 0052EC16 to False, it works but only after the program starts ( I attached Olly to the process and changed the byte )
+<br />
+I think that the CheckSum of the program is checked in the start of the program
+<br />
+thanks for the help Golem<br />_________________<br />&lt;!-- m --&gt;&lt;a class="postlink" href="http://matheusmetal.x-br.com/stigma29a"&gt;http://matheusmetal.x-br.com/stigma29a&lt;/a&gt;&lt;!-- m --&gt;</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="3093"></a><b>golem</b></span><br /><span class="postdetails">Often here<br /><!--<img src="pro_rank_02.gif" alt="Often here" title="Often here" border="0" /><br />--><br /><br />Joined: 18 Nov 2002<br />Posts: 73<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Mar 16, 2006 2:52 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Ooops.
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">I didn't give you a very good example of a hex dump. My preferred format is something like this, cuz you can more easily see the BOS (most offsets are calculated from the beginning of the subroutine   ). It also avoids some of the confusion caused by bytes being viewed as 'jumps' when they are in fact references to local/temporary variables.
+<br />
+
+<br />
+The only real limitation to this technique is that you also need to have a listing of the module literal tables (which fall in the range of 00-&gt;Module.Lit_Cnt. (which your tools are providing)), which contains string literals, rtc@ calls, etc.
+<br />
+
+<br />
+         00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F  
+<br />
+                                 4B FF FF 00 25 04 70 FF
+<br />
+0052EB60 21 0F 00 0E 19 74 FF 08 74 FF 0D A0 00 08 00 6C
+<br />
+0052EB70 70 FF 1B 0C 00 FB 30 2F 70 FF 1A 74 FF 1C 5D 00
+<br />
+0052EB80 00 2B 27 F0 FE 27 10 ff 27 30 FF F5 40 00 00 00
+<br />
+0052EB90 3A 60 FF 0D 00 4E 50 FF 04 50 FF 0A 0B 00 14 00
+<br />
+0052EBA0 36 08 00 50 FF 30 FF 10 FF F0 FE 00 03 13 1E B0
+<br />
+0052EBB0 00 00 25 04 70 FF 21 0F 04 03 19 74 FF 08 74 FF
+<br />
+0052EBC0 0D A0 00 08 00 6C 70 FF 1B 0C 00 FB 30 2F 70 FF
+<br />
+0052EBD0 1A 74 FF 1C B0 00 00 2B 2F F0 FE 27 10 FF 27 30
+<br />
+0052EBE0 FF F5 40 00 00 00 3A 60 FF 0E 00 4E 50 FF 04 50
+<br />
+0052EBF0 FF 0A 0B 00 14 00 36 08 00 50 FF 30 FF 10 FF F0
+<br />
+0052EC00 FE 00 03 13 00 02 00 07 10 10 07 0F 00 00 0E 08
+<br />
+0052EC10 08 00 89 3E 00 F4 FF C6 1C 4F 01 00 07 10 20 07
+<br />
+0052EC20 0F 00 00 16 3A 40 FF 10 00 25 3A 60 FF 11 00 25
+<br />
+0052EC30 1B 12 00 0A 13 00 24 00 00 07 10 4C 07 0F 00 00
+<br />
+0052EC40 07 F4 FF 7A 14 00 00 17 6C 08 00 FD 9C 74 FF 0F
+<br />
+0052EC50 01 00 24 02 00 0D 10 00 03 00 1A 74 FF 00 07 0A
+<br />
+0052EC60 15 00 00 00 00 16 1B 16 00 1B 17 00 2A 23 70 FF
+<br />
+0052EC70 1B 18 00 2A 31 78 FF 2F 70 FF 00 26 27 10 FF 27
+<br />
+0052EC80 30 FF 27 50 FF F5 40 00 00 00 04 78 FF 4D 60 FF
+<br />
+0052EC90 08 40 0A 0B 00 14 00 36 06 00 50 FF 30 FF 10 FF
+<br />
+0052ECA0 1E A5 02 00 02 00 17 08 08 00 FD 70 40 00 FC 14
+<br />
+0052ECB0 F4 01 A9 FC 0D 08 08 00 FD 80 40 00 00 11 08 08
+<br />
+0052ECC0 00 FD 70 40 00 FC 14 F4 03 D0 1C E2 01 00 1F 08
+<br />
+0052ECD0 08 00 FD 70 40 00 FB FC 23 70 FF 1B 19 00 1B 11
+<br />
+0052ECE0 00 1B 12 00 0A 1A 00 10 00 2F 70 FF 00 03 27 F0
+<br />
+0052ECF0 FE 27 10 FF 3A 40 FF 1B 00 4E 30 FF 04 30 FF F5
+<br />
+0052ED00 30 00 00 00 3A 60 FF 1C 00 4E 50 FF 04 50 FF 0A
+<br />
+0052ED10 0B 00 14 00 36 08 00 50 FF 30 FF 10 FF FE F0 00
+<br />
+0052ED20 14 21 0F 04 03 19 74 FF 08 74 FF 0D 04 02 08 00
+<br />
+0052ED30 1A 74 FF 1E A3 02 00 02 00 16 3A 40 FF 19 00 25
+<br />
+0052ED40 3A 60 FF 11 00 25 1B 12 00 0A 00 24 00 00 00 16
+<br />
+0052ED50 3A 40 FF 10 00 25 3A 60 FF 11 00 25 1B 12 00 0A
+<br />
+0052ED60 13 00 24 00 00 69 1B 1D 00 1B 1E 00 2A 23 70 FF
+<br />
+0052ED70 1B 1F 00 2A 23 EC FE 1B 1E 00 2A 23 E8 FE 1B 1E
+<br />
+0052ED80 00 2A 23 E4 FE 1B 20 00 2A 23 E0 FE 1B 1E 00 2A
+<br />
+0052ED90 23 DC FE 1B 21 00 2A 23 D8 FE 1B 1E 00 2A 23 D4
+<br />
+0052EDA0 FE 1B 22 00 2A 23 D0 FE 1B 1E 00 2A 23 CC FE 1B
+<br />
+0052EDB0 23 00 2A 31 78 FF 32 14 00 70 FF EC FE E8 FE E4
+<br />
+0052EDC0 FE E0 FE DC FE D8 FE D4 FE D0 FE CC FE 00 26 27
+<br />
+0052EDD0 10 27 FF 30 27 FF 50 FF F5 30 00 00 00 04 78 FF
+<br />
+0052EDE0 4D 60 FF 08 40 0A 0B 00 14 00 36 06 00 50 FF 30
+<br />
+0052EDF0 FF 10 FF 00 04 FC C8 00 02 00 02 00 00 13
+<br />
+
+<br />
+Naturally, it lines up better with a fixed font. 
+<br />
+
+<br />
+Ok, that thing with the zeroes as leading tokens means that On Error has been turned on. A kind of artificial mode to seperate the 'statements', for resume at hxxxxx purposes. 
+<br />
+
+<br />
+I'll put this back to code (maybe today). Are you patching this thing in memory? I usually just patch the static Exe file. Even if a rudimentary CRC is performed by the application (VB5/6 doesn't really do this per se (for integrity checksum purposes   ), say by Xoring the program, a datafile, or a given piece of either the program/datafiles, the program still has to come back and give a thumbs up or down, and that verification usually occurs in a separate routine.  
+<br />
+
+<br />
+With the ultimate question being where that decision is made (or is this just a serving up of the results).</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="3094"></a><b>smariobros</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 10 Mar 2006<br />Posts: 4<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Mar 16, 2006 6:15 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">I was patching this exe in memory and worked fine, but when I make the patch permanent in the program it crash in the next time I fire it up   
+<br />
+I think that the problem was the checksum 'cause i changed only it and the program crashes in the same way!
+<br />
+Is Microsoft checking the integrity of the vb program too?
+<br />
+The only processes that i know that Windows check the checksum is the drivers and dlls   
+<br />
+I found a way to make the patch, but creating other exe that load the real program with CreateProcess, and then after the initialization it changes the value with WriteProcessMemory   it is not the best method, but worked very well
+<br />
+
+<br />
+Thanks for the patience Golem,
+<br />
+
+<br />
+smariobros<br />_________________<br />&lt;!-- m --&gt;&lt;a class="postlink" href="http://matheusmetal.x-br.com/stigma29a"&gt;http://matheusmetal.x-br.com/stigma29a&lt;/a&gt;&lt;!-- m --&gt;</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="3096"></a><b>golem</b></span><br /><span class="postdetails">Often here<br /><!--<img src="pro_rank_02.gif" alt="Often here" title="Often here" border="0" /><br />--><br /><br />Joined: 18 Nov 2002<br />Posts: 73<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Mar 16, 2006 10:00 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: That makes sense...
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">&gt;he program it crash in the next time I fire it up 
+<br />
+That's symptomatic of the applications integrity checking. 
+<br />
+
+<br />
+VB5/6 doesn't crash based on a checksum error... It usually just crashes cuz of a bad/nonsense patch. 
+<br />
+
+<br />
+You really got me curious. Especially, when I saw the End token at the end of the subroutine. So I located a demo install of this somewhat intriguing utility and was rewarded with several finds... An rtc@ call I've never run across, a forms control that I haven't run into before, a token that I had never actually seen used, not to mention a routine in the Instalar exe that performs Xors on an input string in a do loop.
+<br />
+
+<br />
+So, you are on the right track. Just shooting from the hip, you want to look for the Xor tokens FB11, FB12, FB13, FB17... But my memory might not be what it once was. 
+<br />
+
+<br />
+&gt;Thanks for the patience Golem
+<br />
+Don't worry about it... I'm as happy as a pig in mud, or more accurately a golem with some new opcodes. </span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr align="center">
+		<td class="catBottom" colspan="2" height="28"></td>
+		<td></td>
+	</tr>
+</table>
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+  <tr>
+	<td></td>
+	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="index-2.html" class="nav">VB Decompiler Forum Index</a>
+	  -> <a href="viewforume774.html" xx="f=5" class="nav">The Code</a></span></td>
+	<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">All times are GMT</span><br /><span class="nav"></span>
+	  </td>
+  </tr>
+  <tr>
+	<td align="left" colspan="3"><span class="nav">Page <b>1</b> of <b>1</b></span></td>
+  </tr>
+</table>
+
+<table width="100%" cellspacing="2" border="0" align="center">
+  <tr>
+	<td width="40%" valign="top" nowrap="nowrap" align="left"><span class="gensmall"></span><br />
+	  &nbsp;<br />
+	  </td>
+	<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">You <b>can</b> post new topics in this forum<br />You <b>can</b> reply to topics in this forum<br />You <b>can</b> edit your posts in this forum<br />You <b>can</b> delete your posts in this forum<br />You <b>can</b> vote in polls in this forum<br /></span></td>
+  </tr>
+</table>
+
+
+<div align="center"><span class="copyright"><br /><br />
+<!--
+	We request you retain the full copyright notice below including the link to www.phpbb.com.
+	This not only gives respect to the large amount of time given freely by the developers
+	but also helps build interest, traffic and use of phpBB 2.0. If you cannot (for good
+	reason) retain the full copyright we request you at least leave in place the
+	Powered by phpBB line, with phpBB linked to www.phpbb.com. If you refuse
+	to include even this then support on our forums may be affected.
+
+	The phpBB Group : 2002
+// -->
+Powered by <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB</a> &copy; 2001, 2005 phpBB Group<br /></span></div>
+		</td>
+	</tr>
+</table>
+
+</body>
+
+<!-- Mirrored from localhost/phpbb2/viewtopic.php?t=1860&view=next by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 04 Mar 2018 20:55:46 GMT -->
+</html>
+

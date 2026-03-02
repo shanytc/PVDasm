@@ -1,0 +1,924 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html dir="ltr">
+
+<!-- Mirrored from localhost/phpbb2/viewtopic.php?t=1810&start=0&postdays=0&postorder=asc&highlight= by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 04 Mar 2018 20:55:43 GMT -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Style-Type" content="text/css">
+
+<link rel="top" href="index-2.html" title="VB Decompiler Forum Index" />
+<link rel="search" href="search.html" title="Search" />
+<link rel="help" href="faq.html" title="FAQ" />
+<link rel="author" href="memberlist.html" title="Memberlist" />
+<link rel="prev" href="viewtopic15e9.html" xx="t=1810&amp;view=previous" title="View previous topic" />
+<link rel="next" href="viewtopic6c3f.html" xx="t=1810&amp;view=next" title="View next topic" />
+<link rel="up" href="viewforum12a3.html" xx="f=2" title="Structures" />
+
+<title>VB Decompiler :: View topic - &quot;Structured&quot; Programming report</title>
+<!-- link rel="stylesheet" href="templates/subSilver/subSilver.css" type="text/css" -->
+<style type="text/css">
+<!--
+/*
+  The original subSilver Theme for phpBB version 2+
+  Created by subBlue design
+  http://www.subBlue.com
+
+  NOTE: These CSS definitions are stored within the main page body so that you can use the phpBB2
+  theme administration centre. When you have finalised your style you could cut the final CSS code
+  and place it in an external file, deleting this section to save bandwidth.
+*/
+
+/* General page style. The scroll bar colours only visible in IE5.5+ */
+body {
+	background-color: #E5E5E5;
+	scrollbar-face-color: #DEE3E7;
+	scrollbar-highlight-color: #FFFFFF;
+	scrollbar-shadow-color: #DEE3E7;
+	scrollbar-3dlight-color: #D1D7DC;
+	scrollbar-arrow-color:  #006699;
+	scrollbar-track-color: #EFEFEF;
+	scrollbar-darkshadow-color: #98AAB1;
+}
+
+/* General font families for common tags */
+font,th,td,p { font-family: Verdana, Arial, Helvetica, sans-serif }
+a:link,a:active,a:visited { color : #006699; }
+a:hover		{ text-decoration: underline; color : #DD6900; }
+hr	{ height: 0px; border: solid #D1D7DC 0px; border-top-width: 1px;}
+
+/* This is the border line & background colour round the entire page */
+.bodyline	{ background-color: #FFFFFF; border: 1px #98AAB1 solid; }
+
+/* This is the outline round the main forum tables */
+.forumline	{ background-color: #FFFFFF; border: 2px #006699 solid; }
+
+/* Main table cell colours and backgrounds */
+td.row1	{ background-color: #EFEFEF; }
+td.row2	{ background-color: #DEE3E7; }
+td.row3	{ background-color: #D1D7DC; }
+
+/*
+  This is for the table cell above the Topics, Post & Last posts on the index.php page
+  By default this is the fading out gradiated silver background.
+  However, you could replace this with a bitmap specific for each forum
+*/
+td.rowpic {
+		background-color: #FFFFFF;
+		background-image: url(templates/subSilver/images/cellpic2.jpg);
+		background-repeat: repeat-y;
+}
+
+/* Header cells - the blue and silver gradient backgrounds */
+th	{
+	color: #FFA34F; font-size: 11px; font-weight : bold;
+	background-color: #006699; height: 25px;
+	background-image: url(templates/subSilver/images/cellpic3.gif);
+}
+
+td.cat,td.catHead,td.catSides,td.catLeft,td.catRight,td.catBottom {
+			background-image: url(templates/subSilver/images/cellpic1.gif);
+			background-color:#D1D7DC; border: #FFFFFF; border-style: solid; height: 28px;
+}
+
+/*
+  Setting additional nice inner borders for the main table cells.
+  The names indicate which sides the border will be on.
+  Don't worry if you don't understand this, just ignore it :-)
+*/
+td.cat,td.catHead,td.catBottom {
+	height: 29px;
+	border-width: 0px 0px 0px 0px;
+}
+th.thHead,th.thSides,th.thTop,th.thLeft,th.thRight,th.thBottom,th.thCornerL,th.thCornerR {
+	font-weight: bold; border: #FFFFFF; border-style: solid; height: 28px;
+}
+td.row3Right,td.spaceRow {
+	background-color: #D1D7DC; border: #FFFFFF; border-style: solid;
+}
+
+th.thHead,td.catHead { font-size: 12px; border-width: 1px 1px 0px 1px; }
+th.thSides,td.catSides,td.spaceRow	 { border-width: 0px 1px 0px 1px; }
+th.thRight,td.catRight,td.row3Right	 { border-width: 0px 1px 0px 0px; }
+th.thLeft,td.catLeft	  { border-width: 0px 0px 0px 1px; }
+th.thBottom,td.catBottom  { border-width: 0px 1px 1px 1px; }
+th.thTop	 { border-width: 1px 0px 0px 0px; }
+th.thCornerL { border-width: 1px 0px 0px 1px; }
+th.thCornerR { border-width: 1px 1px 0px 0px; }
+
+/* The largest text used in the index page title and toptic title etc. */
+.maintitle	{
+	font-weight: bold; font-size: 22px; font-family: "Trebuchet MS",Verdana, Arial, Helvetica, sans-serif;
+	text-decoration: none; line-height : 120%; color : #000000;
+}
+
+/* General text */
+.gen { font-size : 12px; }
+.genmed { font-size : 11px; }
+.gensmall { font-size : 10px; }
+.gen,.genmed,.gensmall { color : #000000; }
+a.gen,a.genmed,a.gensmall { color: #006699; text-decoration: none; }
+a.gen:hover,a.genmed:hover,a.gensmall:hover	{ color: #DD6900; text-decoration: underline; }
+
+/* The register, login, search etc links at the top of the page */
+.mainmenu		{ font-size : 11px; color : #000000 }
+a.mainmenu		{ text-decoration: none; color : #006699;  }
+a.mainmenu:hover{ text-decoration: underline; color : #DD6900; }
+
+/* Forum category titles */
+.cattitle		{ font-weight: bold; font-size: 12px ; letter-spacing: 1px; color : #006699}
+a.cattitle		{ text-decoration: none; color : #006699; }
+a.cattitle:hover{ text-decoration: underline; }
+
+/* Forum title: Text and link to the forums used in: index.php */
+.forumlink		{ font-weight: bold; font-size: 12px; color : #006699; }
+a.forumlink 	{ text-decoration: none; color : #006699; }
+a.forumlink:hover{ text-decoration: underline; color : #DD6900; }
+
+/* Used for the navigation text, (Page 1,2,3 etc) and the navigation bar when in a forum */
+.nav			{ font-weight: bold; font-size: 11px; color : #000000;}
+a.nav			{ text-decoration: none; color : #006699; }
+a.nav:hover		{ text-decoration: underline; }
+
+/* titles for the topics: could specify viewed link colour too */
+.topictitle,h1,h2	{ font-weight: bold; font-size: 11px; color : #000000; }
+a.topictitle:link   { text-decoration: none; color : #006699; }
+a.topictitle:visited { text-decoration: none; color : #5493B4; }
+a.topictitle:hover	{ text-decoration: underline; color : #DD6900; }
+
+/* Name of poster in viewmsg.php and viewtopic.php and other places */
+.name			{ font-size : 11px; color : #000000;}
+
+/* Location, number of posts, post date etc */
+.postdetails		{ font-size : 10px; color : #000000; }
+
+/* The content of the posts (body of text) */
+.postbody { font-size : 12px; line-height: 18px}
+a.postlink:link	{ text-decoration: none; color : #006699 }
+a.postlink:visited { text-decoration: none; color : #5493B4; }
+a.postlink:hover { text-decoration: underline; color : #DD6900}
+
+/* Quote & Code blocks */
+.code {
+	font-family: Courier, 'Courier New', sans-serif; font-size: 11px; color: #006600;
+	background-color: #FAFAFA; border: #D1D7DC; border-style: solid;
+	border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+}
+
+.quote {
+	font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11px; color: #444444; line-height: 125%;
+	background-color: #FAFAFA; border: #D1D7DC; border-style: solid;
+	border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+}
+
+/* Copyright and bottom info */
+.copyright		{ font-size: 10px; font-family: Verdana, Arial, Helvetica, sans-serif; color: #444444; letter-spacing: -1px;}
+a.copyright		{ color: #444444; text-decoration: none;}
+a.copyright:hover { color: #000000; text-decoration: underline;}
+
+/* Form elements */
+input,textarea, select {
+	color : #000000;
+	font: normal 11px Verdana, Arial, Helvetica, sans-serif;
+	border-color : #000000;
+}
+
+/* The text input fields background colour */
+input.post, textarea.post, select {
+	background-color : #FFFFFF;
+}
+
+input { text-indent : 2px; }
+
+/* The buttons used for bbCode styling in message post */
+input.button {
+	background-color : #EFEFEF;
+	color : #000000;
+	font-size: 11px; font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+/* The main submit button option */
+input.mainoption {
+	background-color : #FAFAFA;
+	font-weight : bold;
+}
+
+/* None-bold submit button */
+input.liteoption {
+	background-color : #FAFAFA;
+	font-weight : normal;
+}
+
+/* This is the line in the posting page which shows the rollover
+  help line. This is actually a text box, but if set to be the same
+  colour as the background no one will know ;)
+*/
+.helpline { background-color: #DEE3E7; border-style: none; }
+
+/* Import the fancy styles for IE only (NS4.x doesn't use the @import function) */
+@import url("templates/subSilver/formIE.css");
+-->
+</style>
+</head>
+<body bgcolor="#E5E5E5" text="#000000" link="#006699" vlink="#5493B4">
+
+<a name="top"></a>
+
+<table width="100%" cellspacing="0" cellpadding="10" border="0" align="center">
+	<tr>
+		<td class="bodyline"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<tr>
+				<td><a href="index-2.html"><img src="templates/subSilver/images/logo_phpBB.gif" border="0" alt="VB Decompiler Forum Index" vspace="1" /></a></td>
+				<td align="center" width="100%" valign="middle"><span class="maintitle">VB Decompiler</span><br /><span class="gen">Hosted by TheAutomaters.com<br />&nbsp; </span>
+				<table cellspacing="0" cellpadding="2" border="0">
+					<tr>
+						<td align="center" valign="top" nowrap="nowrap"><span class="mainmenu">&nbsp;
+						<a href="memberlist.html" class="mainmenu"><img src="templates/subSilver/images/icon_mini_members.gif" width="12" height="13" border="0" alt="Memberlist" hspace="3" />Memberlist</a>
+						</span></td>
+					</tr>
+					<tr>
+						<td height="25" align="center" valign="top" nowrap="nowrap"><span class="mainmenu">&nbsp;</td>
+					</tr>
+				</table></td>
+			</tr>
+		</table>
+
+		<br />
+
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0">
+  <tr>
+	<td align="left" valign="bottom" colspan="2"><a class="maintitle" href="viewtopicd779.html" xx="t=1810&amp;start=0&amp;postdays=0&amp;postorder=asc&amp;highlight=">&quot;Structured&quot; Programming report</a><br />
+	  <span class="gensmall"><b></b><br />
+	  &nbsp; </span></td>
+  </tr>
+</table>
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0">
+  <tr>
+	<td></td>
+	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="index-2.html" class="nav">VB Decompiler Forum Index</a>
+	  -> <a href="viewforum12a3.html" xx="f=2" class="nav">Structures</a></span></td>
+  </tr>
+</table>
+
+<table class="forumline" width="100%" cellspacing="1" cellpadding="3" border="0">
+	<tr>
+		<th class="thLeft" width="150" height="26" nowrap="nowrap">Author</th>
+		<th class="thRight" nowrap="nowrap">Message</th>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2672"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Aug 29, 2004 6:08 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: &quot;Structured&quot; Programming report
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">I've finnaly used the structures in action, and can make some report  ....
+<br />
+
+<br />
+My first attempt to use the current Header/ComRegData/ComRegInfo structures was a <span style="color: #ff00a3">complete</span> and <span style="color: #d100ff">utter</span> ......
+<br />
+
+<br />
+
+<br />
+
+<br />
+
+<br />
+
+<br />
+..... success
+<br />
+
+<br />
+
+<br />
+Yes, folks, it wa a piece of cake!  Congrats to all concerned, it is a fine piece of work, yea and verily, amen!       
+<br />
+
+<br />
+<span style="text-decoration: underline">Report 1</span>
+<br />
+
+<br />
+I have that DllVBHeader function, it loads VB dll, returns memory header address.
+<br />
+
+<br />
+I plug address into pointers of type VBHEADER, COMREGDATA, etc and if they work (your structures, I mean  )  I should be able to do VB proud by doing THIS:
+<br />
+</span><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center"><tr> 	  <td><span class="genmed"><b>Code:</b></span></td>	</tr>	<tr>	  <td class="code">
+<br />
+   pHeader = GetVBHeader&#40;hModuleDll&#41;
+<br />
+
+<br />
+   dHeader&#46;Pointer = pHeader
+<br />
+   MsgBox CSTring&#40;vbHeader&#40;0&#41;&#46;oProjectTitle + pHeader&#41;
+<br />
+
+<br />
+   pReg = vbHeader&#40;0&#41;&#46;aCOMRegData
+<br />
+   dRegData&#46;Pointer = pReg
+<br />
+   MsgBox CSTring&#40;pReg + vbRegData&#40;0&#41;&#46;oNTSProjectName&#41;
+<br />
+</td>	</tr></table><span class="postbody">
+<br />
+
+<br />
+And it worked first time, that always cheers me up, I was impressed ... spot on, guys'n'gal!   
+<br />
+
+<br />
+
+<br />
+<span style="text-decoration: underline">ComRegData</span>
+<br />
+There are "ghosts" in the heap in my COMregdata block. Is this block itself a heap image? I suppose that makes sense, but they haven't taken  out the garbage, it seems:
+<br />
+</span><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center"><tr> 	  <td><span class="genmed"><b>Code:</b></span></td>	</tr>	<tr>	  <td class="code">
+<br />
+   170013B4&#58;  00000068    COMregdata   1st Info block at = &gt; 41C
+<br />
+   170013B8&#58;  00000030    offset to Proj name =&gt; 3E4
+<br />
+   170013BC&#58;  00000060              Help dir  =&gt; 414
+<br />
+   170013C0&#58;  00000040              Descn     =&gt; 3F4
+<br />
+   170013C4&#58;  5BC504B5    CLSID  &#123;5bc504b5-09da-4f7f-b01c-e89ebc261ef8&#41;
+<br />
+   170013C8&#58;  4F7F09DA          
+<br />
+   170013CC&#58;  9EE81CB0            
+<br />
+   170013D0&#58;  F81E26BC    CLSID end
+<br />
+   170013D4&#58;  00000000    LCID
+<br />
+   170013D8&#58;  00020000    Version info &#40;6 bytes?&#41;
+<br />
+   170013DC&#58;  72440000    ghost in the heap?  &quot;DrMemo&quot;
+<br />
+   170013E0&#58;  6F6D654D
+<br />
+   170013E4&#58;  654D7244    Proj Name   &lt;&lt; 3E4 &quot;DrMemory&quot;  
+<br />
+   170013E8&#58;  79726F6D
+<br />
+   170013EC&#58;  65666600    junk&#40;heap!&#41;  &quot;fferent&quot;
+<br />
+   170013F0&#58;  746E6572
+<br />
+   170013F4&#58;  73696854    Description &lt;&lt; 3F4     
+<br />
+   170013F8&#58;  70706120      &quot;This app does diddly-squat!&quot;
+<br />
+   170013FC&#58;  656F6420
+<br />
+   17001400&#58;  69642073
+<br />
+   17001404&#58;  796C6464
+<br />
+   17001408&#58;  7571732D
+<br />
+   1700140C&#58;  00217461
+<br />
+   17001410&#58;  6F632D6E    junk&#40;heap&#41; &quot;n-co&quot;, &quot;patible&quot; 
+<br />
+   17001414&#58;  74617000
+<br />
+   17001418&#58;  656C6269
+<br />
+</td>	</tr></table><span class="postbody">
+<br />
+
+<br />
+The "heap junk" items, "DrMemo", "n-co", were part of an ancient bed of text laid down by a previous compilation, in which I got one of those "not version-compatible" dialog boxes ...
+<br />
+
+<br />
+But this came from the PE - the DLL file really did get compiled like that, and it works fine -  you'd think it'd take the garbage out before handing it to the linker, very untidy... 
+<br />
+
+<br />
+What do you think?  
+<br />
+
+<br />
+I found one obvious mistake in there, I see, the project descn should read "This DLL does diddly-squat!", not "This app" 
+<br />
+
+<br />
+
+<br />
+<span style="text-decoration: underline">Thunk Count</span>
+<br />
+
+<br />
+This is odd, consistently it's E9, or 233.  4 times that is 3A4, but my BORG listing says there are 232 - and the entry point immediately follows it, and that is definitely offset 3A0.
+<br />
+
+<br />
+Am I expecting the wrong thing here?
+<br />
+
+<br />
+
+<br />
+Cheers</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2673"></a><b>ionescu007</b></span><br /><span class="postdetails">Sometimes here<br /><!--<img src="pro_rank_01.gif" alt="Sometimes here" title="Sometimes here" border="0" /><br />--><br /><br />Joined: 21 Aug 2004<br />Posts: 33<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Aug 29, 2004 7:02 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Hi,
+<br />
+
+<br />
+Yes the structure is copied from the heap and the heap isn't initailized with HEAP_ZERO_MEMORY so that's why you get garbage.
+<br />
+
+<br />
+As for your Thunk Count problem...I really don't understand what you mean..sorry. What's 0x3A4 and 0x3A0? And what's BORG listing?
+<br />
+
+<br />
+Best regards,
+<br />
+Alex Ionescu
+<br />
+Kernel Developer, ReactOS
+<br />
+President, Relsoft Technologies</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2676"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Aug 29, 2004 8:12 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Hi Alex
+<br />
+
+<br />
+BORG is a popular freeware disassembler. It'll do full a msvbvm60 listing in about 10-15 minutes. For freeware, excellent...
+<br />
+
+<br />
+The opening code segment begins with a table, with a mixture of function pointers, some other stuff as well,  and right at the end, the 5 "jumpaway thunks" (transferring external callers of DllRegisterServer, etc)...
+<br />
+
+<br />
+Isn't this the Thunk table opening the show?
+<br />
+</span><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center"><tr> 	  <td><span class="genmed"><b>Code:</b></span></td>	</tr>	<tr>	  <td class="code">
+<br />
+; Borg Disassembler v2&#46;27 &#58; F&#58;\MathImagicsNT\MathImagics\Dr Memory\Memory\Project1&#46;dll
+<br />
+;
+<br />
+;             Created by Borg Disassembler
+<br />
+;                   written by Cronos
+<br />
+
+<br />
+1000&#58;17001000 ;-----------------------------------------------------------------------
+<br />
+1000&#58;17001000 ;Segment &#58; 1000h     Offset &#58; 17001000h     Size &#58; 4000h
+<br />
+1000&#58;17001000 ;32-bit Code
+<br />
+1000&#58;17001000 ;-----------------------------------------------------------------------
+<br />
+1000&#58;17001000 LoadTypeLibEx&#58;                         XREFS First&#58; 1000&#58;17003914 Number &#58; 2
+<br />
+1000&#58;17001000 d57ea077             dd     77a07ed5h
+<br />
+1000&#58;17001004 00000000             dd     00h
+<br />
+1000&#58;17001008 GetModuleFileNameA&#58;                    XREFS First&#58; 1000&#58;17003897 Number &#58; 1
+<br />
+1000&#58;17001008 0c86e877             dd     77e8860ch
+<br />
+&#46;&#46;&#46;&#46;&#46;&#46;&#46;&#46;&#46;&#46;&#46;&#46;&#46;
+<br />
+1000&#58;17001024 __vbaHresultCheck&#58;                     XREFS First&#58; 1000&#58;17003930 Number &#58; 2
+<br />
+1000&#58;17001024 cb060e66             dd     660e06cbh
+<br />
+1000&#58;17001028 __vbaLenBstr&#58;                          XREFS First&#58; 1000&#58;17003866 Number &#58; 1
+<br />
+1000&#58;17001028 ce490266             dd     660249ceh
+<br />
+
+<br />
+1000&#58;17001382 _MSVBVM60&#58;&#58;ord_101&#58;
+<br />
+1000&#58;17001382 ff25e8100017         jmp    dword ptr &#91;MSVBVM60&#58;&#58;ord_101&#93;
+<br />
+1000&#58;17001388 _MSVBVM60&#58;&#58;ord_104&#58;
+<br />
+1000&#58;17001388 ff25f4100017         jmp    dword ptr &#91;MSVBVM60&#58;&#58;ord_104&#93;
+<br />
+1000&#58;1700138e _MSVBVM60&#58;&#58;ord_103&#58;
+<br />
+1000&#58;1700138e ff25f0100017         jmp    dword ptr &#91;MSVBVM60&#58;&#58;ord_103&#93;
+<br />
+1000&#58;17001394 _MSVBVM60&#58;&#58;ord_102&#58;
+<br />
+1000&#58;17001394 ff25ec100017         jmp    dword ptr &#91;MSVBVM60&#58;&#58;ord_102&#93;
+<br />
+1000&#58;1700139a _MSVBVM60&#58;&#58;ord_105&#58;
+<br />
+1000&#58;1700139a ff25f8100017         jmp    dword ptr &#91;MSVBVM60&#58;&#58;ord_105&#93;
+<br />
+
+<br />
+1000&#58;170013a0 vbStart&#58;
+<br />
+1000&#58;170013a0 5a                   pop    edx
+<br />
+1000&#58;170013a1 6844640017           push   offset loc_17006444
+<br />
+1000&#58;170013a6 6848640017           push   offset loc_17006448
+<br />
+1000&#58;170013ab 52                   push   edx
+<br />
+1000&#58;170013ac e9e9ffffff           jmp    _MSVBVM60&#58;&#58;ord_105
+<br />
+</td>	</tr></table><span class="postbody">
+<br />
+
+<br />
+There are exactly E8 words in this table or 3A0 bytes ...
+<br />
+
+<br />
+Cheers
+<br />
+Dr M</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2680"></a><b>ionescu007</b></span><br /><span class="postdetails">Sometimes here<br /><!--<img src="pro_rank_01.gif" alt="Sometimes here" title="Sometimes here" border="0" /><br />--><br /><br />Joined: 21 Aug 2004<br />Posts: 33<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Mon Aug 30, 2004 10:22 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Totally unrelated . What you're sseing is the IAT. The Thunk Table is internal to VB and worthless.
+<br />
+
+<br />
+Best regards,
+<br />
+Alex Ionescu
+<br />
+Kernel Developer, ReactOS
+<br />
+President, Relsoft Technologies</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2683"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Tue Aug 31, 2004 1:28 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Well, an IAT <span style="font-style: italic">is</span> a "thunk" table, so I asumed that was it, and the number of entries was so close 
+<br />
+
+<br />
+So, what is the "internal Thunk Table" then???</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2685"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Tue Aug 31, 2004 1:32 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Oh, I nearly forgot!   
+<br />
+
+<br />
+
+<br />
+Did you see my VB pointers in that report?</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2686"></a><b>ionescu007</b></span><br /><span class="postdetails">Sometimes here<br /><!--<img src="pro_rank_01.gif" alt="Sometimes here" title="Sometimes here" border="0" /><br />--><br /><br />Joined: 21 Aug 2004<br />Posts: 33<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Tue Aug 31, 2004 1:36 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">I can't really erxplain what the tHunk table is, I haven't looked at it too much. It's something really weird and doesn't even seem to be used at all. You can set it to 0x10 and reduce memory usage significantly and your app should still work.
+<br />
+
+<br />
+You're looking at a __vbaS for a DLL, so the VB pointers pushed are different.I don't know what they are yet.
+<br />
+
+<br />
+Best regards,
+<br />
+Alex Ionescu
+<br />
+Kernel Developer, ReactOS
+<br />
+President, Relsoft Technologies</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2690"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Tue Aug 31, 2004 2:07 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">No, no, I meant the IMPLEMENTATION of my pointers - don't be fooled by the (0) indexing you see in my code sample above,  those are managed pointers -  there are no local instances of any of the structures, no data copying (other than to get your CSTRING's converted, that can't be helped;) )
+<br />
+
+<br />
+Cheers</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2693"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Tue Aug 31, 2004 2:12 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">And, cutest of all, you can even do the initial thunks needed to initialise the pointers without CopyMemory (indeed, any api, not even a TypeLib)
+<br />
+
+<br />
+It's quite audacious ....</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr align="center">
+		<td class="catBottom" colspan="2" height="28"></td>
+		<td></td>
+	</tr>
+</table>
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+  <tr>
+	<td></td>
+	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="index-2.html" class="nav">VB Decompiler Forum Index</a>
+	  -> <a href="viewforum12a3.html" xx="f=2" class="nav">Structures</a></span></td>
+	<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">All times are GMT</span><br /><span class="nav"></span>
+	  </td>
+  </tr>
+  <tr>
+	<td align="left" colspan="3"><span class="nav">Page <b>1</b> of <b>1</b></span></td>
+  </tr>
+</table>
+
+<table width="100%" cellspacing="2" border="0" align="center">
+  <tr>
+	<td width="40%" valign="top" nowrap="nowrap" align="left"><span class="gensmall"></span><br />
+	  &nbsp;<br />
+	  </td>
+	<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">You <b>can</b> post new topics in this forum<br />You <b>can</b> reply to topics in this forum<br />You <b>can</b> edit your posts in this forum<br />You <b>can</b> delete your posts in this forum<br />You <b>can</b> vote in polls in this forum<br /></span></td>
+  </tr>
+</table>
+
+
+<div align="center"><span class="copyright"><br /><br />
+<!--
+	We request you retain the full copyright notice below including the link to www.phpbb.com.
+	This not only gives respect to the large amount of time given freely by the developers
+	but also helps build interest, traffic and use of phpBB 2.0. If you cannot (for good
+	reason) retain the full copyright we request you at least leave in place the
+	Powered by phpBB line, with phpBB linked to www.phpbb.com. If you refuse
+	to include even this then support on our forums may be affected.
+
+	The phpBB Group : 2002
+// -->
+Powered by <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB</a> &copy; 2001, 2005 phpBB Group<br /></span></div>
+		</td>
+	</tr>
+</table>
+
+</body>
+
+<!-- Mirrored from localhost/phpbb2/viewtopic.php?t=1810&start=0&postdays=0&postorder=asc&highlight= by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 04 Mar 2018 20:55:43 GMT -->
+</html>
+

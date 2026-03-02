@@ -1,0 +1,2142 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html dir="ltr">
+
+<!-- Mirrored from localhost/phpbb2/viewtopic.php?f=2&t=2 by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 04 Mar 2018 20:55:44 GMT -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Style-Type" content="text/css">
+
+<link rel="top" href="index-2.html" title="VB Decompiler Forum Index" />
+<link rel="search" href="search.html" title="Search" />
+<link rel="help" href="faq.html" title="FAQ" />
+<link rel="author" href="memberlist.html" title="Memberlist" />
+<link rel="prev" href="viewtopic4bf3.html" xx="t=2&amp;view=previous" title="View previous topic" />
+<link rel="next" href="viewtopicd0cc.html" xx="t=2&amp;view=next" title="View next topic" />
+<link rel="up" href="viewforum12a3.html" xx="f=2" title="Structures" />
+
+<title>VB Decompiler :: View topic - VB Header (Start Here)</title>
+<!-- link rel="stylesheet" href="templates/subSilver/subSilver.css" type="text/css" -->
+<style type="text/css">
+<!--
+/*
+  The original subSilver Theme for phpBB version 2+
+  Created by subBlue design
+  http://www.subBlue.com
+
+  NOTE: These CSS definitions are stored within the main page body so that you can use the phpBB2
+  theme administration centre. When you have finalised your style you could cut the final CSS code
+  and place it in an external file, deleting this section to save bandwidth.
+*/
+
+/* General page style. The scroll bar colours only visible in IE5.5+ */
+body {
+	background-color: #E5E5E5;
+	scrollbar-face-color: #DEE3E7;
+	scrollbar-highlight-color: #FFFFFF;
+	scrollbar-shadow-color: #DEE3E7;
+	scrollbar-3dlight-color: #D1D7DC;
+	scrollbar-arrow-color:  #006699;
+	scrollbar-track-color: #EFEFEF;
+	scrollbar-darkshadow-color: #98AAB1;
+}
+
+/* General font families for common tags */
+font,th,td,p { font-family: Verdana, Arial, Helvetica, sans-serif }
+a:link,a:active,a:visited { color : #006699; }
+a:hover		{ text-decoration: underline; color : #DD6900; }
+hr	{ height: 0px; border: solid #D1D7DC 0px; border-top-width: 1px;}
+
+/* This is the border line & background colour round the entire page */
+.bodyline	{ background-color: #FFFFFF; border: 1px #98AAB1 solid; }
+
+/* This is the outline round the main forum tables */
+.forumline	{ background-color: #FFFFFF; border: 2px #006699 solid; }
+
+/* Main table cell colours and backgrounds */
+td.row1	{ background-color: #EFEFEF; }
+td.row2	{ background-color: #DEE3E7; }
+td.row3	{ background-color: #D1D7DC; }
+
+/*
+  This is for the table cell above the Topics, Post & Last posts on the index.php page
+  By default this is the fading out gradiated silver background.
+  However, you could replace this with a bitmap specific for each forum
+*/
+td.rowpic {
+		background-color: #FFFFFF;
+		background-image: url(templates/subSilver/images/cellpic2.jpg);
+		background-repeat: repeat-y;
+}
+
+/* Header cells - the blue and silver gradient backgrounds */
+th	{
+	color: #FFA34F; font-size: 11px; font-weight : bold;
+	background-color: #006699; height: 25px;
+	background-image: url(templates/subSilver/images/cellpic3.gif);
+}
+
+td.cat,td.catHead,td.catSides,td.catLeft,td.catRight,td.catBottom {
+			background-image: url(templates/subSilver/images/cellpic1.gif);
+			background-color:#D1D7DC; border: #FFFFFF; border-style: solid; height: 28px;
+}
+
+/*
+  Setting additional nice inner borders for the main table cells.
+  The names indicate which sides the border will be on.
+  Don't worry if you don't understand this, just ignore it :-)
+*/
+td.cat,td.catHead,td.catBottom {
+	height: 29px;
+	border-width: 0px 0px 0px 0px;
+}
+th.thHead,th.thSides,th.thTop,th.thLeft,th.thRight,th.thBottom,th.thCornerL,th.thCornerR {
+	font-weight: bold; border: #FFFFFF; border-style: solid; height: 28px;
+}
+td.row3Right,td.spaceRow {
+	background-color: #D1D7DC; border: #FFFFFF; border-style: solid;
+}
+
+th.thHead,td.catHead { font-size: 12px; border-width: 1px 1px 0px 1px; }
+th.thSides,td.catSides,td.spaceRow	 { border-width: 0px 1px 0px 1px; }
+th.thRight,td.catRight,td.row3Right	 { border-width: 0px 1px 0px 0px; }
+th.thLeft,td.catLeft	  { border-width: 0px 0px 0px 1px; }
+th.thBottom,td.catBottom  { border-width: 0px 1px 1px 1px; }
+th.thTop	 { border-width: 1px 0px 0px 0px; }
+th.thCornerL { border-width: 1px 0px 0px 1px; }
+th.thCornerR { border-width: 1px 1px 0px 0px; }
+
+/* The largest text used in the index page title and toptic title etc. */
+.maintitle	{
+	font-weight: bold; font-size: 22px; font-family: "Trebuchet MS",Verdana, Arial, Helvetica, sans-serif;
+	text-decoration: none; line-height : 120%; color : #000000;
+}
+
+/* General text */
+.gen { font-size : 12px; }
+.genmed { font-size : 11px; }
+.gensmall { font-size : 10px; }
+.gen,.genmed,.gensmall { color : #000000; }
+a.gen,a.genmed,a.gensmall { color: #006699; text-decoration: none; }
+a.gen:hover,a.genmed:hover,a.gensmall:hover	{ color: #DD6900; text-decoration: underline; }
+
+/* The register, login, search etc links at the top of the page */
+.mainmenu		{ font-size : 11px; color : #000000 }
+a.mainmenu		{ text-decoration: none; color : #006699;  }
+a.mainmenu:hover{ text-decoration: underline; color : #DD6900; }
+
+/* Forum category titles */
+.cattitle		{ font-weight: bold; font-size: 12px ; letter-spacing: 1px; color : #006699}
+a.cattitle		{ text-decoration: none; color : #006699; }
+a.cattitle:hover{ text-decoration: underline; }
+
+/* Forum title: Text and link to the forums used in: index.php */
+.forumlink		{ font-weight: bold; font-size: 12px; color : #006699; }
+a.forumlink 	{ text-decoration: none; color : #006699; }
+a.forumlink:hover{ text-decoration: underline; color : #DD6900; }
+
+/* Used for the navigation text, (Page 1,2,3 etc) and the navigation bar when in a forum */
+.nav			{ font-weight: bold; font-size: 11px; color : #000000;}
+a.nav			{ text-decoration: none; color : #006699; }
+a.nav:hover		{ text-decoration: underline; }
+
+/* titles for the topics: could specify viewed link colour too */
+.topictitle,h1,h2	{ font-weight: bold; font-size: 11px; color : #000000; }
+a.topictitle:link   { text-decoration: none; color : #006699; }
+a.topictitle:visited { text-decoration: none; color : #5493B4; }
+a.topictitle:hover	{ text-decoration: underline; color : #DD6900; }
+
+/* Name of poster in viewmsg.php and viewtopic.php and other places */
+.name			{ font-size : 11px; color : #000000;}
+
+/* Location, number of posts, post date etc */
+.postdetails		{ font-size : 10px; color : #000000; }
+
+/* The content of the posts (body of text) */
+.postbody { font-size : 12px; line-height: 18px}
+a.postlink:link	{ text-decoration: none; color : #006699 }
+a.postlink:visited { text-decoration: none; color : #5493B4; }
+a.postlink:hover { text-decoration: underline; color : #DD6900}
+
+/* Quote & Code blocks */
+.code {
+	font-family: Courier, 'Courier New', sans-serif; font-size: 11px; color: #006600;
+	background-color: #FAFAFA; border: #D1D7DC; border-style: solid;
+	border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+}
+
+.quote {
+	font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11px; color: #444444; line-height: 125%;
+	background-color: #FAFAFA; border: #D1D7DC; border-style: solid;
+	border-left-width: 1px; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px
+}
+
+/* Copyright and bottom info */
+.copyright		{ font-size: 10px; font-family: Verdana, Arial, Helvetica, sans-serif; color: #444444; letter-spacing: -1px;}
+a.copyright		{ color: #444444; text-decoration: none;}
+a.copyright:hover { color: #000000; text-decoration: underline;}
+
+/* Form elements */
+input,textarea, select {
+	color : #000000;
+	font: normal 11px Verdana, Arial, Helvetica, sans-serif;
+	border-color : #000000;
+}
+
+/* The text input fields background colour */
+input.post, textarea.post, select {
+	background-color : #FFFFFF;
+}
+
+input { text-indent : 2px; }
+
+/* The buttons used for bbCode styling in message post */
+input.button {
+	background-color : #EFEFEF;
+	color : #000000;
+	font-size: 11px; font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+/* The main submit button option */
+input.mainoption {
+	background-color : #FAFAFA;
+	font-weight : bold;
+}
+
+/* None-bold submit button */
+input.liteoption {
+	background-color : #FAFAFA;
+	font-weight : normal;
+}
+
+/* This is the line in the posting page which shows the rollover
+  help line. This is actually a text box, but if set to be the same
+  colour as the background no one will know ;)
+*/
+.helpline { background-color: #DEE3E7; border-style: none; }
+
+/* Import the fancy styles for IE only (NS4.x doesn't use the @import function) */
+@import url("templates/subSilver/formIE.css");
+-->
+</style>
+</head>
+<body bgcolor="#E5E5E5" text="#000000" link="#006699" vlink="#5493B4">
+
+<a name="top"></a>
+
+<table width="100%" cellspacing="0" cellpadding="10" border="0" align="center">
+	<tr>
+		<td class="bodyline"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<tr>
+				<td><a href="index-2.html"><img src="templates/subSilver/images/logo_phpBB.gif" border="0" alt="VB Decompiler Forum Index" vspace="1" /></a></td>
+				<td align="center" width="100%" valign="middle"><span class="maintitle">VB Decompiler</span><br /><span class="gen">Hosted by TheAutomaters.com<br />&nbsp; </span>
+				<table cellspacing="0" cellpadding="2" border="0">
+					<tr>
+						<td align="center" valign="top" nowrap="nowrap"><span class="mainmenu">&nbsp;
+						<a href="memberlist.html" class="mainmenu"><img src="templates/subSilver/images/icon_mini_members.gif" width="12" height="13" border="0" alt="Memberlist" hspace="3" />Memberlist</a>
+						</span></td>
+					</tr>
+					<tr>
+						<td height="25" align="center" valign="top" nowrap="nowrap"><span class="mainmenu">&nbsp;</td>
+					</tr>
+				</table></td>
+			</tr>
+		</table>
+
+		<br />
+
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0">
+  <tr>
+	<td align="left" valign="bottom" colspan="2"><a class="maintitle" href="viewtopic1bf3.html" xx="t=2&amp;start=0&amp;postdays=0&amp;postorder=asc&amp;highlight=">VB Header (Start Here)</a><br />
+	  <span class="gensmall"><b>Goto page <b>1</b>, <a href="viewtopic1a4d.html" xx="t=2&amp;postdays=0&amp;postorder=asc&amp;start=20">2</a>&nbsp;&nbsp;<a href="viewtopic1a4d.html" xx="t=2&amp;postdays=0&amp;postorder=asc&amp;start=20">Next</a></b><br />
+	  &nbsp; </span></td>
+  </tr>
+</table>
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0">
+  <tr>
+	<td></td>
+	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="index-2.html" class="nav">VB Decompiler Forum Index</a>
+	  -> <a href="viewforum12a3.html" xx="f=2" class="nav">Structures</a></span></td>
+  </tr>
+</table>
+
+<table class="forumline" width="100%" cellspacing="1" cellpadding="3" border="0">
+	<tr>
+		<th class="thLeft" width="150" height="26" nowrap="nowrap">Author</th>
+		<th class="thRight" nowrap="nowrap">Message</th>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Sep 21, 2002 2:19 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: VB Header (Start Here)
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[vb:3m0q0g22]<div class="vb" id="{CB}" style="font-family: monospace;"><ol><li style="" class="li1"><span style="color: #0000ff;">Type</span> VBHeader</li><li style="" class="li2">  lSignature <span style="color: #0000ff;">As</span> <span style="color: #0000ff;">Long</span>             <span style="color: #008000;">' 0x00 (000d)  &quot;VB5!&quot; identifier</span></li><li style="" class="li1">  iRuntimeBuild <span style="color: #0000ff;">As</span> <span style="color: #0000ff;">Integer</span>       <span style="color: #008000;">' 0x04 (004d)</span></li><li style="" class="li2">  sLanguageDLLName<span style="color: #000000;">&#40;</span><span style="color: #000000;">13</span><span style="color: #000000;">&#41;</span> <span style="color: #0000ff;">As</span> Byte   <span style="color: #008000;">' 0x06 (006d)  0x2A=Default else NTS</span></li><li style="" class="li1">  sSecLangDLLName<span style="color: #000000;">&#40;</span><span style="color: #000000;">13</span><span style="color: #000000;">&#41;</span> <span style="color: #0000ff;">As</span> Byte    <span style="color: #008000;">' 0x14 (020d)  0x7F=Default else NTS</span></li><li style="" class="li2">  iRuntimeDLLVersion <span style="color: #0000ff;">As</span> <span style="color: #0000ff;">Integer</span>  <span style="color: #008000;">' 0x22 (034d)</span></li><li style="" class="li1">  lLanguageID <span style="color: #0000ff;">As</span> <span style="color: #0000ff;">Long</span>            <span style="color: #008000;">' 0x24 (036d)</span></li><li style="" class="li2">  lSecLanguageID <span style="color: #0000ff;">As</span> <span style="color: #0000ff;">Long</span>         <span style="color: #008000;">' 0x28 (040d)  (when Lang. DLL exists)</span></li><li style="" class="li1">  aSubMain <span style="color: #0000ff;">As</span> <span style="color: #0000ff;">Long</span>               <span style="color: #008000;">' 0x2C (044d)  If 0 then it's a load form</span></li><li style="" class="li2">  aProjectInfo <span style="color: #0000ff;">As</span> <span style="color: #0000ff;">Long</span>           <span style="color: #008000;">' 0x30 (048d)</span></li><li style="" class="li1">  fMDLIntObjs <span style="color: #0000ff;">As</span> <span style="color: #0000ff;">Long</span>            <span style="color: #008000;">' 0x34 (052d)</span></li><li style="" class="li2">  fMDLIntObjs2 <span style="color: #0000ff;">As</span> <span style="color: #0000ff;">Long</span>           <span style="color: #008000;">' 0x38 (056d)</span></li><li style="" class="li1">  lThreadFlags <span style="color: #0000ff;">As</span> <span style="color: #0000ff;">Long</span>           <span style="color: #008000;">' 0x3C (060d)</span></li><li style="" class="li2">  lThreadCount <span style="color: #0000ff;">As</span> <span style="color: #0000ff;">Long</span>           <span style="color: #008000;">' 0x40 (064d)</span></li><li style="" class="li1">  iGUIObjectCount <span style="color: #0000ff;">As</span> <span style="color: #0000ff;">Integer</span>     <span style="color: #008000;">' 0x44 (068d)  Number of Forms/UserControls/etc...</span></li><li style="" class="li2">  iComponentCount <span style="color: #0000ff;">As</span> <span style="color: #0000ff;">Integer</span>     <span style="color: #008000;">' 0x46 (070d)  Number of ActiveX components (eg. WinSock)</span></li><li style="" class="li1">  lThunkCount <span style="color: #0000ff;">As</span> <span style="color: #0000ff;">Long</span>            <span style="color: #008000;">' 0x48 (072d)</span></li><li style="" class="li2">  aGUIObjectArray <span style="color: #0000ff;">As</span> <span style="color: #0000ff;">Long</span>        <span style="color: #008000;">' 0x4C (076d)</span></li><li style="" class="li1">  aComponentArray <span style="color: #0000ff;">As</span> <span style="color: #0000ff;">Long</span>        <span style="color: #008000;">' 0x50 (080d)</span></li><li style="" class="li2">  aCOMRegData <span style="color: #0000ff;">As</span> <span style="color: #0000ff;">Long</span>            <span style="color: #008000;">' 0x54 (084d)</span></li><li style="" class="li1">  oProjectExename <span style="color: #0000ff;">As</span> <span style="color: #0000ff;">Long</span>        <span style="color: #008000;">' 0x58 (088d)</span></li><li style="" class="li2">  oProjectTitle <span style="color: #0000ff;">As</span> <span style="color: #0000ff;">Long</span>          <span style="color: #008000;">' 0x5C (092d)</span></li><li style="" class="li1">  oHelpFile <span style="color: #0000ff;">As</span> <span style="color: #0000ff;">Long</span>              <span style="color: #008000;">' 0x60 (096d)</span></li><li style="" class="li2">  oProjectName <span style="color: #0000ff;">As</span> <span style="color: #0000ff;">Long</span>           <span style="color: #008000;">' 0x64 (100d)</span></li><li style="" class="li1">                                 <span style="color: #008000;">' 0x68 (104d) &lt;-- Structure Size</span></li><li style="" class="li2"><span style="color: #0000ff;">End</span> <span style="color: #0000ff;">Type</span></li></ol></div>[/vb:3m0q0g22]
+<br />
+
+<br />
+<span style="font-weight: bold">Thread flags:</span>[code=text:3m0q0g22]<div class="text" id="{CB}" style="font-family: monospace;"><ol><li style="" class="li1">+-------+----------------+--------------------------------------------------------+</li><li style="" class="li2">| Value | Name           | Description                                            |</li><li style="" class="li1">+-------+----------------+--------------------------------------------------------+</li><li style="" class="li2">|  0x01 | ApartmentModel | Specifies multi-threading using an apartment model     |</li><li style="" class="li1">|  0x02 | RequireLicense | Specifies to do license validation (OCX only)          |</li><li style="" class="li2">|  0x04 | Unattended     | Specifies that no GUI elements should be initialized   |</li><li style="" class="li1">|  0x08 | SingleThreaded | Specifies that the image is single-threaded            |</li><li style="" class="li2">|  0x10 | Retained       | Specifies to keep the file in memory (Unattended only) |</li><li style="" class="li1">+-------+----------------+--------------------------------------------------------+</li></ol></div></td>	</tr></table><span class="postbody">
+<br />
+Eg.: A value of 0x15 specifies a multi-threaded, memory-resident ActiveX Object with no GUI
+<br />
+
+<br />
+<span style="font-weight: bold">MDL Internal Object flags:</span>[code=text:3m0q0g22]<div class="text" id="{CB}" style="font-family: monospace;"><ol><li style="" class="li1">+---------+------------+---------------+</li><li style="" class="li2">| Ctrl ID |      Value | Object Name   |</li><li style="" class="li1">+---------+------------+---------------+</li><li style="" class="li2">|                           First Flag |</li><li style="" class="li1">+---------+------------+---------------+</li><li style="" class="li2">|    0x00 | 0x00000001 | PictureBox    |</li><li style="" class="li1">|    0x01 | 0x00000002 | Label         |</li><li style="" class="li2">|    0x02 | 0x00000004 | TextBox       |</li><li style="" class="li1">|    0x03 | 0x00000008 | Frame         |</li><li style="" class="li2">|    0x04 | 0x00000010 | CommandButton |</li><li style="" class="li1">|    0x05 | 0x00000020 | CheckBox      |</li><li style="" class="li2">|    0x06 | 0x00000040 | OptionButton  |</li><li style="" class="li1">|    0x07 | 0x00000080 | ComboBox      |</li><li style="" class="li2">|    0x08 | 0x00000100 | ListBox       |</li><li style="" class="li1">|    0x09 | 0x00000200 | HScrollBar    |</li><li style="" class="li2">|    0x0A | 0x00000400 | VScrollBar    |</li><li style="" class="li1">|    0x0B | 0x00000800 | Timer         |</li><li style="" class="li2">|    0x0C | 0x00001000 | Print         |</li><li style="" class="li1">|    0x0D | 0x00002000 | Form          |</li><li style="" class="li2">|    0x0E | 0x00004000 | Screen        |</li><li style="" class="li1">|    0x0F | 0x00008000 | Clipboard     |</li><li style="" class="li2">|    0x10 | 0x00010000 | Drive         |</li><li style="" class="li1">|    0x11 | 0x00020000 | Dir           |</li><li style="" class="li2">|    0x12 | 0x00040000 | FileListBox   |</li><li style="" class="li1">|    0x13 | 0x00080000 | Menu          |</li><li style="" class="li2">|    0x14 | 0x00100000 | MDIForm       |</li><li style="" class="li1">|    0x15 | 0x00200000 | App           |</li><li style="" class="li2">|    0x16 | 0x00400000 | Shape         |</li><li style="" class="li1">|    0x17 | 0x00800000 | Line          |</li><li style="" class="li2">|    0x18 | 0x01000000 | Image         |</li><li style="" class="li1">|    0x19 | 0x02000000 | Unsupported   |</li><li style="" class="li2">|    0x1A | 0x04000000 | Unsupported   |</li><li style="" class="li1">|    0x1B | 0x08000000 | Unsupported   |</li><li style="" class="li2">|    0x1C | 0x10000000 | Unsupported   |</li><li style="" class="li1">|    0x1D | 0x20000000 | Unsupported   |</li><li style="" class="li2">|    0x1E | 0x40000000 | Unsupported   |</li><li style="" class="li1">|    0x1F | 0x80000000 | Unsupported   |</li><li style="" class="li2">+---------+------------+---------------+</li><li style="" class="li1">|                          Second Flag |</li><li style="" class="li2">+---------+------------+---------------+</li><li style="" class="li1">|    0x20 | 0x00000001 | Unsupported   |</li><li style="" class="li2">|    0x21 | 0x00000002 | Unsupported   |</li><li style="" class="li1">|    0x22 | 0x00000004 | Unsupported   |</li><li style="" class="li2">|    0x23 | 0x00000008 | Unsupported   |</li><li style="" class="li1">|    0x24 | 0x00000010 | Unsupported   |</li><li style="" class="li2">|    0x25 | 0x00000020 | DataQuery     |</li><li style="" class="li1">|    0x26 | 0x00000040 | OLE           |</li><li style="" class="li2">|    0x27 | 0x00000080 | Unsupported   |</li><li style="" class="li1">|    0x28 | 0x00000100 | UserControl   |</li><li style="" class="li2">|    0x29 | 0x00000200 | PropertyPage  |</li><li style="" class="li1">|    0x2A | 0x00000400 | Document      |</li><li style="" class="li2">|    0x2B | 0x00000800 | Unsupported   |</li><li style="" class="li1">+---------+------------+---------------+</li></ol></div></td>	</tr></table><span class="postbody">
+<br />
+Eg.: A value of 0x30F000 (the so called &quot;static binary constant on most sites&quot;) actually means to initialize the Printer, Form, Screen and ClipBoard objects (0xF000) as well as the Drive/Dir objects (0x30000). This is the default on VB projects because those objects can always be accessed from a module (ie. they are not graphic, except Forms, wich can always be created)
+<br />
+
+<br />
+<span style="font-weight: bold">Child structures:</span>
+<br />
+<a href="viewtopic341b.html" xx="p=20">Project Info</a> 
+<br />
+<a href="viewtopic0d03.html" xx="f=2&amp;t=1800">GUI Object</a> 
+<br />
+<a href="viewtopic3865.html" xx="f=2&amp;t=1802">Component</a> 
+<br />
+
+<br />
+Greetings to MoogMan for the first template of this structure.
+<br />
+Greetings to Alexandru Ionescu for discovering some of this structure items.
+<br />
+
+<br />
+<span style="font-weight: bold">Note:</span>
+<br />
+This structure is syncronized with the structure database. If editing this structure please update the structure database as well. Thank you.</span>
+						<span class="gensmall"><br /><br />Last edited by MrUnleaded on Mon Sep 06, 2004 12:03 am; edited 11 times in total</span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="8"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Sep 21, 2002 11:04 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: i would tweak it a little
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody"></span><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center"><tr> 	  <td><span class="genmed"><b>Code:</b></span></td>	</tr>	<tr>	  <td class="code">Private Type tVBHeader
+<br />
+  &#46;&#46;&#46;
+<br />
+   flag1                  As Integer     '04h 04d
+<br />
+     'Seems constant for each machine, _
+<br />
+      even after reformat etc&#46; Changing _
+<br />
+      values do not effect working status of an exe&#46;
+<br />
+  &#46;&#46;&#46;
+<br />
+  BackupLanguageDLL       As String * 14 '14h 20d
+<br />
+    'Backup Language DLL name&#46; _
+<br />
+     0x7F meaning default or null terminated string&#46; _
+<br />
+     Changing values do not effect working status of an exe&#46;
+<br />
+  &#46;&#46;&#46;
+<br />
+   flag2                  As Integer     '34h 52d
+<br />
+     'Something that changes with the primary form _
+<br />
+      changes - ie no form/bare form/form with controls&#46; _
+<br />
+      Maybe binary or single hex &#91;nibble&#93; values? _
+<br />
+      Changing values dont effect working status of an exe&#46;
+<br />
+   
+<br />
+   flag3                  As Integer     '36h 54d
+<br />
+     'Most seem to be 0x30, 0x00&#46; _
+<br />
+      Maybe binary or single hex &#91;nibble&#93; values? _
+<br />
+      Changing values dont effect working status of an exe&#46;
+<br />
+      
+<br />
+   flag4                  As Long        '38h 56d
+<br />
+     'Maybe binary or single hex &#91;nibble&#93; values? _
+<br />
+      Changing values dont effect working status of an exe&#46;
+<br />
+  
+<br />
+  ThreadSpace             As Long        '3Ch 60d
+<br />
+    'Thread space&#46; Changing values do effect working _
+<br />
+     status of an exe to some extent&#46; Some values work, _
+<br />
+     some dont, others make the whole program crash&#46;
+<br />
+     
+<br />
+   flag6                 As Long        '40h 64d
+<br />
+     'Something count?
+<br />
+  &#46;&#46;&#46;
+<br />
+   flag8                  As Byte        '48h 72d
+<br />
+     'Maybe this is max&#46; allocatable memory? _
+<br />
+      Low values seem to crash&#46; Changing values do effect _
+<br />
+      working status of an exe&#46;
+<br />
+   
+<br />
+   flag9                  As Byte        '49h 73d
+<br />
+     'The bigger the number, the longer the wait and more _
+<br />
+      memory used before program starts functioning as _
+<br />
+      normal&#46; Allocated memory? Obviously, the working _
+<br />
+      status of an exe is effected by this flag&#46;
+<br />
+   
+<br />
+   aProjectDescription     As Long        '54h 84d
+<br />
+   &#46;&#46;&#46;
+<br />
+End Type</td>	</tr></table><span class="postbody">
+<br />
+
+<br />
+keep up the good work 
+<br />
+
+<br />
+[Edit: Removed unnecessary items from the struct as MrU asked ]<br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"><br /><br />Last edited by _aLfa_ on Sun Aug 01, 2004 11:39 pm; edited 1 time in total</span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="9"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Sep 21, 2002 8:35 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Re: i would tweak it a little
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;_aLfa_&quot;:3ezf6ifz]keep up the good work [/:3ezf6ifz]
+<br />
+
+<br />
+hey can u try to edit out similar data and only submit modifications?
+<br />
+
+<br />
+it would be easier that way </span>
+						<span class="gensmall"><br /><br />Last edited by MrUnleaded on Mon Jan 05, 2004 2:27 am; edited 1 time in total</span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="11"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Sep 21, 2002 11:28 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Re: i would tweak it a little
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;MrUnleaded&quot;:14relgfc]hey can u try to edit out similar data and only submit modifications?
+<br />
+
+<br />
+it would be easier that way [/:14relgfc]
+<br />
+sorry for the incovenience
+<br />
+ill do that in later posts <br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="51"></a><b>Anonymous</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 10 Feb 2008<br />Posts: 0<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Sep 28, 2002 12:58 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Add on:
+<br />
+
+<br />
+</span><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center"><tr> 	  <td><span class="genmed"><b>Code:</b></span></td>	</tr>	<tr>	  <td class="code">
+<br />
+    Unknown11 As Long                                   '       Unknown
+<br />
+    Unknown12 As Long                                   '       Unknown
+<br />
+    Unknown13 As Long                                   '       Unknown
+<br />
+    Unknown14 As Long                                   '       Unknown
+<br />
+</td>	</tr></table><span class="postbody">
+<br />
+
+<br />
+To the end. This is to, again, modify the structures so they're tight against each other - by the end of this, I want *every byte* covered </span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="53"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Sep 28, 2002 9:45 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: will do
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;moogman&quot;:18mvy6rs]by the end of this, I want *every byte* covered [/:18mvy6rs]
+<br />
+
+<br />
+
+<br />
+I agree 
+<br />
+
+<br />
+If anyone strongly disagrees let me know and why</span>
+						<span class="gensmall"><br /><br />Last edited by MrUnleaded on Mon Jan 05, 2004 2:27 am; edited 1 time in total</span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="177"></a><b>sarge</b></span><br /><span class="postdetails">Moderator<br /><!--<img src="pro_rank_mod.gif" alt="Moderator" title="Moderator" border="0" /><br />--><br /><br />Joined: 24 Sep 2002<br />Posts: 194<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Nov 13, 2002 1:54 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: typo?
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">If 0x4a is an integer, it includes 0x4a and 0x4b.  Where is 0x4c and 0x4d?  The next shown address is 0x4e.  Or is 0x4a really a long?
+<br />
+
+<br />
+Sarge</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="178"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Nov 13, 2002 3:39 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Re: typo?
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;sarge&quot;:3az2x46v]If 0x4a is an integer, it includes 0x4a and 0x4b.  Where is 0x4c and 0x4d?  The next shown address is 0x4e.  Or is 0x4a really a long?
+<br />
+
+<br />
+Sarge[/:3az2x46v]
+<br />
+
+<br />
+
+<br />
+aww yes i seee what you are saying....give me some time and ill check it out.....hopefully it is a long so that i dont have to redo the hex addresses  </span>
+						<span class="gensmall"><br /><br />Last edited by MrUnleaded on Mon Jan 05, 2004 2:28 am; edited 1 time in total</span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="179"></a><b>Anonymous</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 10 Feb 2008<br />Posts: 0<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Fri Nov 15, 2002 12:28 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Also,
+<br />
+
+<br />
+   Unknown7 As Integer          ' 0x40 (64d)     
+<br />
+   Unknown8 As Integer          ' 0x40 (64d) 
+<br />
+
+<br />
+With both the same addresses? :/</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="180"></a><b>sarge</b></span><br /><span class="postdetails">Moderator<br /><!--<img src="pro_rank_mod.gif" alt="Moderator" title="Moderator" border="0" /><br />--><br /><br />Joined: 24 Sep 2002<br />Posts: 194<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Fri Nov 15, 2002 1:52 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Yep
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Yeh, I saw that too,....just wasn't too sure how much &quot;noise&quot; I can/should really make about these little typos.  Oh, well, I guess it all comes out in the wash.
+<br />
+
+<br />
+sarge</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="181"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Fri Nov 15, 2002 3:26 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Re: Yep
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;sarge&quot;:1sspd37h]Yeh, I saw that too,....just wasn't too sure how much "noise" I can/should really make about these little typos.  Oh, well, I guess it all comes out in the wash.
+<br />
+
+<br />
+sarge[/:1sspd37h]
+<br />
+
+<br />
+
+<br />
+thats what i get for trusting moog hehe   
+<br />
+
+<br />
+
+<br />
+moog you may want to make the same changes here:
+<br />
+<!-- m --><a class="postlink" href="http://extra.decompiler.com/structures/vbheader.html">http://extra.decompiler.com/structures/vbheader.html</a><!-- m --><br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"><br /><br />Last edited by MrUnleaded on Mon Jan 05, 2004 2:29 am; edited 1 time in total</span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="182"></a><b>Anonymous</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 10 Feb 2008<br />Posts: 0<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Fri Nov 15, 2002 6:50 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Ok, I cant count in hex. My bad. The definitions should be ok though</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="183"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Mon Nov 18, 2002 3:42 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: ok i think this is right?
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;moogman&quot;:2jiu5k04]Ok, I cant count in hex. My bad. The definitions should be ok though[/:2jiu5k04]
+<br />
+
+<br />
+well i cant convert from hex-&gt;dec......well at least not quickly..... 
+<br />
+
+<br />
+
+<br />
+
+<br />
+but yea... i updated the offsets....i hope they are correct this time <br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"><br /><br />Last edited by MrUnleaded on Mon Jan 05, 2004 2:29 am; edited 1 time in total</span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="211"></a><b>sarge</b></span><br /><span class="postdetails">Moderator<br /><!--<img src="pro_rank_mod.gif" alt="Moderator" title="Moderator" border="0" /><br />--><br /><br />Joined: 24 Sep 2002<br />Posts: 194<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Nov 20, 2002 2:21 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: More questions
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">1. Offset 0x14 is 0x7E in CommonApp; does that mean anything special, as opposed to the default of 0x7F?
+<br />
+
+<br />
+2. I can't reconcile offset 0x54 with aProjectDescription.  The offset of the ProjectDescription text in CommonApp is 0x10B5; yet the pointer at 0x54 is 0x106C, which points to a NULL, not the ProjectDescription text.   This NULL is the start of a series of four offsets that eventually point to various text datas, including the ProjectDescription.  Shouldn't the name of offset 0x54 be changed to reflect this mini-structure, and this mini-structure be documented, thus including the real aProjectDescription and other texts?  (Well, you did say you wanted &quot;every byte&quot;--so here's a few more)
+<br />
+
+<br />
+By the way, this is true for VB6, but I think not for VB5...do we need to start to make this distinction in our structs?
+<br />
+
+<br />
+Sarge</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="213"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Nov 20, 2002 6:14 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Re: More questions
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;sarge&quot;:3bep50vv]1. Offset 0x14 is 0x7E in CommonApp; does that mean anything special, as opposed to the default of 0x7F?
+<br />
+[/:3bep50vv]
+<br />
+i need a little notebook to keep track of all these itemschanges....
+<br />
+
+<br />
+maybe the default is 0x7F.....im not sure ill check on it....
+<br />
+
+<br />
+[=&quot;sarge&quot;:3bep50vv]
+<br />
+2. I can't reconcile offset 0x54 with aProjectDescription.  The offset of the ProjectDescription text in CommonApp is 0x10B5; yet the pointer at 0x54 is 0x106C, which points to a NULL, not the ProjectDescription text.   This NULL is the start of a series of four offsets that eventually point to various text datas, including the ProjectDescription.  Shouldn't the name of offset 0x54 be changed to reflect this mini-structure, and this mini-structure be documented, thus including the real aProjectDescription and other texts?  (Well, you did say you wanted "every byte"--so here's a few more)
+<br />
+[/:3bep50vv]
+<br />
+
+<br />
+hmm i also had a problem with that....i figured out how to do it though...i will post it if i remember....
+<br />
+
+<br />
+[=&quot;sarge&quot;:3bep50vv]
+<br />
+By the way, this is true for VB6, but I think not for VB5...do we need to start to make this distinction in our structs?
+<br />
+
+<br />
+Sarge[/:3bep50vv]
+<br />
+
+<br />
+perhaps....i guess it depends on how different the structs are from each other.....i dont have VB5 so it makes it a little difficult for me to compare....<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"><br /><br />Last edited by MrUnleaded on Mon Jan 05, 2004 2:30 am; edited 1 time in total</span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="1867"></a><b>sarge</b></span><br /><span class="postdetails">Moderator<br /><!--<img src="pro_rank_mod.gif" alt="Moderator" title="Moderator" border="0" /><br />--><br /><br />Joined: 24 Sep 2002<br />Posts: 194<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Nov 21, 2002 1:46 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Offset table
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">I also do not have VB5; perhaps some of the newer members here know that from a previous MB...
+<br />
+
+<br />
+
+<br />
+I have done some more checking.  It appears, in general, that two of the offsets are text locations, another is sometimes an offset to what appears to be ANOTHER table of offsets, and the other one is as-yet-unknown.  I'll continue testing and see what I find.  Of course, if there's anyone out there who has this info, please let us know.
+<br />
+
+<br />
+sarge</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="1923"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Tue Dec 03, 2002 11:25 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: updates
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">i have updated this struct...most notable is the change from &quot;aProjectDescription&quot; to &quot;Address1&quot;
+<br />
+
+<br />
+Also all &quot;Unknown&quot;s were renamed as &quot;Flag&quot;s  
+<br />
+
+<br />
+btw An unknown comes in four flavors....AddressX,ConstX,NullX,FlagX[when none other apply]<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2160"></a><b>Anonymous</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 10 Feb 2008<br />Posts: 0<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Jul 03, 2003 9:48 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: VC Tip
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">I'm VC programmer and i've found some troubles with the structure posted here due to VC's struct memory alignment... In fact, the real length of the fields LangDLLName and UnkString is 14... Using Byte struct alignment:
+<br />
+
+<br />
+</span><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center"><tr> 	  <td><span class="genmed"><b>Code:</b></span></td>	</tr>	<tr>	  <td class="code">typedef struct tagVBHEADER &#123;
+<br />
+  &#46;&#46;&#46;
+<br />
+  BYTE    LangDLLName&#91;14&#93;;
+<br />
+  BYTE    UnkString1&#91;14&#93;;
+<br />
+  &#46;&#46;&#46;
+<br />
+&#125; VBHEADER;</td>	</tr></table><span class="postbody">
+<br />
+
+<br />
+Hope this will be useful to someone...</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2164"></a><b>sarge</b></span><br /><span class="postdetails">Moderator<br /><!--<img src="pro_rank_mod.gif" alt="Moderator" title="Moderator" border="0" /><br />--><br /><br />Joined: 24 Sep 2002<br />Posts: 194<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Fri Jul 04, 2003 1:28 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Hmm, how about this...
+<br />
+the difference is one bye...is that the 0x00 termination byte?  VB counts string lengths different than VC?
+<br />
+
+<br />
+just a thought!
+<br />
+
+<br />
+sarge</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2165"></a><b>sarge</b></span><br /><span class="postdetails">Moderator<br /><!--<img src="pro_rank_mod.gif" alt="Moderator" title="Moderator" border="0" /><br />--><br /><br />Joined: 24 Sep 2002<br />Posts: 194<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Fri Jul 04, 2003 1:32 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Login
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Attn Moderator:
+<br />
+
+<br />
+It is normal that I have to re-login for every message I post?
+<br />
+
+<br />
+That gets old real fast.
+<br />
+
+<br />
+Sarge</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2168"></a><b>Anonymous</b></span><br /><span class="postdetails">New User<br /><!--<img src="pro_rank_00.gif" alt="New User" title="New User" border="0" /><br />--><br /><br />Joined: 10 Feb 2008<br />Posts: 0<br /></span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Jul 20, 2003 6:17 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;sarge&quot;:ecdhgabf]Hmm, how about this...
+<br />
+the difference is one bye...is that the 0x00 termination byte?  VB counts string lengths different than VC?
+<br />
+
+<br />
+just a thought!
+<br />
+
+<br />
+sarge[/:ecdhgabf]
+<br />
+
+<br />
+Yes, they are equivalent...
+<br />
+
+<br />
+BYTE    LangDLLName[14]; 
+<br />
+==
+<br />
+LangDLLName(13) As Byte</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2507"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Aug 21, 2004 10:36 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">I do agree with Ionescu view of this structure, except the notation because we are VB programers, not C programers (just kidding).
+<br />
+Anyway what do you think of updating this structure with his new/fixed data, and yes I've tested it myself without errors so far <br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2513"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sat Aug 21, 2004 7:13 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">I say go for it. If we have no definition for something....worse thing thast can happen is it is wrong...and when we rely on that...we will figure that out....so go for it.
+<br />
+
+<br />
+btw, good work Ionescu<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2514"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Aug 22, 2004 10:26 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">OK, I changed the structure to the new info we got and added the flags tables.
+<br />
+I won't stick with hungarian notation for the moment, because to be honest I prefer 'our' notation, anyway Ionescu stick with ur notation because it's quite professional <br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2515"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Aug 22, 2004 5:27 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">An extract from my forthcoming bestseller: <span style="font-style: italic">Software Engineering for Axolotls</span> 
+<br />
+
+<br />
+APPENDIX B:  <span style="font-weight: bold">LEXICON</span>
+<br />
+
+<br />
+<span style="font-style: italic">Section 7: Programming Standards and Conventions</span>
+<br />
+
+<br />
+<span style="text-decoration: underline">POLISH NOTATION:</span>   Nested expression parsing method, aka "Reverse Polish"  <span style="font-weight: bold">1.</span> Indexed entry: <span style="font-style: italic">Section 11.3 SILK PURSES</span>
+<br />
+
+<br />
+<span style="text-decoration: underline">HUNGARIAN NOTATION:</span>   VisualBasic variable-naming convention  <span style="font-weight: bold">1.</span> Indexed entry:  <span style="font-style: italic">Section 11.4 SOW'S EARS</span>      <span style="font-weight: bold">2.</span> Citations index returned (11) entries:  First = <span style="font-style: italic">Dog's Breakfast</span> ... accessing citations database .....
+<br />
+
+<br />
+...
+<br />
+
+<br />
+...
+<br />
+
+<br />
+<span style="color: #ff00a3">error</span> ...  reality checksum failure! ... service reset
+<br />
+
+<br />
+
+<br />
+<span style="font-style: italic">Sorry, but this request failed at the server end - you may need to reboot your brain</span>
+<br />
+
+<br />
+</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2516"></a><b>ionescu007</b></span><br /><span class="postdetails">Sometimes here<br /><!--<img src="pro_rank_01.gif" alt="Sometimes here" title="Sometimes here" border="0" /><br />--><br /><br />Joined: 21 Aug 2004<br />Posts: 33<br /></span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Sun Aug 22, 2004 10:42 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Polish Notation (and reverse) = Method of entering arithmetic computations on a scientific calculator, using a stack-based method.
+<br />
+
+<br />
+Hungarian Notation = Standard (although quite the source of flame wars between programmers) notation used in programming where a prefix specifies the type of the appended variable name. Not a Visual Basic convention per-se, but simply used in VB because most other language it too.
+<br />
+
+<br />
+In regards to "it's profesional" and "VB programmers don't use it", that's quite false. Everytime you name your form "frmMain" and a label "lblTime" you're using Hungarian Notation. Your variable is Main, the type is frm -&gt; Form. So it's quite false to say VB doesn't use it. Furthermore, all MSDN documentation (and last time I used VB, I called APIs quite a lot) uses Hungarian Notation, and there's even a MSKB article on the proper variable naming in VB. I just think most people out there know by now that "lp" is long-pointer and "sz" is Zero-Terminated String. Then again, I'm not going to start a flame war on notation lol. You have a very nice guideline document specifying it so that won't cause confusion. I've updated the PDF and posted a new post, btw.</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2522"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Mon Aug 23, 2004 9:36 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">This is not a war :p
+<br />
+
+<br />
+But it's not common that VB programmers use that notation, because that notation is widely used in C comunity, and as you said we use things more readable like 'frm' for form or 'nts' for null terminated string 
+<br />
+
+<br />
+Anyway everyone has his style of doing things, and please keep your style because it's always good to have various point-of-views and heads thinking.<br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2524"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Mon Aug 23, 2004 11:57 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[:3ozhzxqb]
+<br />
+because that notation is widely used in the C community
+<br />
+[/:3ozhzxqb]
+<br />
+
+<br />
+Well, that explains it, then!      
+<br />
+
+<br />
+The MSDN "C" coding conventions produce the most ghastly and indecipherable bloatsource I've ever had the misfortune of having to decipher  - and having been at this game for 30+ years now, I have dealt with a fairly comprehensive catalog of programming languages.
+<br />
+
+<br />
+The issue of <span style="font-weight: bold">naming</span> will always be subjective, and hence the cause of much "robust" discussion ......
+<br />
+
+<br />
+One difference between systems programming and applications programming is that you spend much more time going over other people's code.
+<br />
+
+<br />
+The prime objective in any such task is "How does this code work?" - the only comparison that matters is how long it takes on average to understand a page of code written in any given language and style.
+<br />
+
+<br />
+This will clearly vary from person to person.  My loathing of MSDN SDK C code is not a prejudice against C per se, it's simply a reflection of how long it takes me to read it and how much I get out of it compared to other languages ...  I find ASM easier to decipher than that stuff .... 
+<br />
+
+<br />
+Hungarian per se is not a major problem, it's the fact that it usually comes with bloated names! 
+<br />
+
+<br />
+When I take over the world, Presidential Edict #3 will be:
+<br />
+
+<br />
+<span style="font-weight: bold"><span style="font-style: italic">The use of variable names longer than 16 characters is henceforth a criminal offence!</span></span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2525"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Mon Aug 23, 2004 12:13 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Perhaps this suggestion will be less controversial!  The second thing I do to any imported structure is press F7 in my PFedit32 window and my keyboard macro makes this simple but effective change:
+<br />
+
+<br />
+</span><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center"><tr> 	  <td><span class="genmed"><b>Code:</b></span></td>	</tr>	<tr>	  <td class="code">Private Type tProjectInfo                   ' Loc    Size
+<br />
+   Signature              As Long           '  00       4
+<br />
+   ObjectTable            As Long           '  04       4
+<br />
+   Null1                  As Long           '  08       4
+<br />
+   StartOfCode            As Long           '  0C       4   
+<br />
+   EndOfCode              As Long           '  10    	4  
+<br />
+   Flag1                  As Long           '  14    	4  
+<br />
+   ThreadSpace            As Long           '  18    	4  
+<br />
+   VBAExceptionhandler    As Long           '  1C    	4  
+<br />
+   NativeCode             As Long           '  20    	4  
+<br />
+   ProjectLocation        As Integer        '  24    	2 *  
+<br />
+   Flag2                  As Integer        '  26    	2 * 
+<br />
+   Flag3                  As Integer        '  28    	2 *
+<br />
+   OriginalPathName&#40;521&#41;  As Byte           '  2A     20A *   
+<br />
+   ExternalTable          As Long           ' 234       4   
+<br />
+   ExternalCount          As Long           ' 238       4   
+<br />
+   End Type                                 ' 23C                            </td>	</tr></table><span class="postbody">
+<br />
+
+<br />
+Forget my removal of leading vowels (that's the first step and has to be done, if at all, before the alignment)
+<br />
+
+<br />
+The fact that the IDE faithfully preserves this alignment and does not automatically screw it for you is one of it's more endearing features, IMHO 
+<br />
+
+<br />
+The "*" is just a tag that lets me instantly identify any item that isn't a standard unit size.
+<br />
+
+<br />
+I've got a little VB function that will apply it to any existing source file, if anybody wants it, although it takes just 15 minutes to write one....   it has an option to go the extra yard and fold lines where the identifier is too long to fit at the alignment point specified:
+<br />
+</span><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center"><tr> 	  <td><span class="genmed"><b>Code:</b></span></td>	</tr>	<tr>	  <td class="code">
+<br />
+   Flag3                  As Integer        '  28    	2 *
+<br />
+   OriginalPathName&#40;0 to 521&#41; _
+<br />
+                          As Byte           '  2A     20A *   
+<br />
+   ExternalTable          As Long           ' 234       4   
+<br />
+</td>	</tr></table><span class="postbody"></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2528"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Mon Aug 23, 2004 3:47 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">[=&quot;Dr Memory&quot;:rcd2hp4b]Perhaps this suggestion will be less controversial!  The second thing I do to any imported structure is press F7 in my PFedit32 window and my keyboard macro makes this simple but effective change:
+<br />
+
+<br />
+</span><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center"><tr> 	  <td><span class="genmed"><b>Code:</b></span></td>	</tr>	<tr>	  <td class="code">Private Type tProjectInfo                   ' Loc    Size
+<br />
+   Signature              As Long           '  00       4
+<br />
+   ObjectTable            As Long           '  04       4
+<br />
+   Null1                  As Long           '  08       4
+<br />
+   StartOfCode            As Long           '  0C       4   
+<br />
+   EndOfCode              As Long           '  10    	4  
+<br />
+   Flag1                  As Long           '  14    	4  
+<br />
+   ThreadSpace            As Long           '  18    	4  
+<br />
+   VBAExceptionhandler    As Long           '  1C    	4  
+<br />
+   NativeCode             As Long           '  20    	4  
+<br />
+   ProjectLocation        As Integer        '  24    	2 *  
+<br />
+   Flag2                  As Integer        '  26    	2 * 
+<br />
+   Flag3                  As Integer        '  28    	2 *
+<br />
+   OriginalPathName&#40;521&#41;  As Byte           '  2A     20A *   
+<br />
+   ExternalTable          As Long           ' 234       4   
+<br />
+   ExternalCount          As Long           ' 238       4   
+<br />
+   End Type                                 ' 23C                            </td>	</tr></table><span class="postbody">
+<br />
+
+<br />
+Forget my removal of leading vowels (that's the first step and has to be done, if at all, before the alignment)
+<br />
+
+<br />
+The fact that the IDE faithfully preserves this alignment and does not automatically screw it for you is one of it's more endearing features, IMHO 
+<br />
+
+<br />
+The "*" is just a tag that lets me instantly identify any item that isn't a standard unit size.
+<br />
+
+<br />
+I've got a little VB function that will apply it to any existing source file, if anybody wants it, although it takes just 15 minutes to write one....   it has an option to go the extra yard and fold lines where the identifier is too long to fit at the alignment point specified:
+<br />
+</span><table width="90%" cellspacing="1" cellpadding="3" border="0" align="center"><tr> 	  <td><span class="genmed"><b>Code:</b></span></td>	</tr>	<tr>	  <td class="code">
+<br />
+   Flag3                  As Integer        '  28    	2 *
+<br />
+   OriginalPathName&#40;0 to 521&#41; _
+<br />
+                          As Byte           '  2A     20A *   
+<br />
+   ExternalTable          As Long           ' 234       4   
+<br />
+</td>	</tr></table><span class="postbody">[/:rcd2hp4b]
+<br />
+
+<br />
+
+<br />
+I dont think that myself or aLfa(or any one else) wants to spend the time to go through all the structures and repost them...it takes enough to keep them semi-updated 
+<br />
+
+<br />
+plus anyways we have better things to do.....like writing a function to make sure the variables are lined up in the right column....and if not add a line break so it all works out  <br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2529"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Mon Aug 23, 2004 4:28 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">/me slaps MrUnleaded
+<br />
+Sarcastic bitch <br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2530"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Mon Aug 23, 2004 5:02 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">lol  Yea but seriously.....i wish i had enough time to do that <br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2531"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Mon Aug 23, 2004 5:06 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Stop wanking, etc...
+<br />
+You eventually may get time <br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2534"></a><b>Dr Memory</b></span><br /><span class="postdetails">Expert<br /><!--<img src="pro_rank_05.gif" alt="Expert" title="Expert" border="0" /><br />--><br /><br />Joined: 16 Aug 2004<br />Posts: 147<br />Location: Surrey, UK</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Mon Aug 23, 2004 7:08 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">That must have been a Hungarian joke, I didn't get it!   
+<br />
+
+<br />
+Have it your way, I'll just observe in passing that once you've aligned a structure the first time, keeping it that way is a fairly trivial exercise...
+<br />
+
+<br />
+
+<br />
+
+<br />
+If I post any sample code, I'll mark them clearly "Warning: May contain traces of peanuts and aligned structures.  This product may not function correctly in Hungary. "     </span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="2733"></a><b>MrUnleaded</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 385<br />Location: California</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Sep 02, 2004 6:24 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Re: aGUIObjectInfoArray
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Regarding aGUIObjectInfoArray ....I am a little confused...
+<br />
+
+<br />
+should it be aGUIObjectInfoArray or aGUIObjectArray ?<br />_________________<br /><span style="font-weight: bold">-MrU</span></span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row2"><span class="name"><a name="2734"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row2" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Thu Sep 02, 2004 8:03 am
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: 
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Fixed <br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row2" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row2" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td width="150" align="left" valign="top" class="row1"><span class="name"><a name="3858"></a><b>_aLfa_</b></span><br /><span class="postdetails">Site Admin<br /><!--<img src="pro_rank_admin.gif" alt="Site Admin" title="Site Admin" border="0" /><br />--><br /><br />Joined: 21 Sep 2002<br />Posts: 233<br />Location: Aveiro, Portugal</span><br /></td>
+		<td class="row1" width="100%" height="28" valign="top">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="100%">
+						<span class="postdetails">
+							Posted: Wed Feb 20, 2008 3:46 pm
+							<span class="gen">&nbsp;</span>&nbsp; &nbsp;Post subject: Re: VB Header (Start Here)
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2"><hr /></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="postbody">Oh dear... The last edit of this structure? Maybe yes, maybe not...
+<br />
+
+<br />
+Anyway, I've changed &quot;iFormCount&quot; to &quot;iGUIObjectCount&quot; because &quot;aGUIObjectArray&quot; also points to UserControls, PropertyPages and other kind of stuff besides Forms.
+<br />
+I've also removed the &quot;iPadding&quot; because you will get overlaps if you compile with VB5. &quot;oProjectDescription&quot; usually offsets at 0x68 which is the new structure size at the moment.
+<br />
+
+<br />
+I've added some descriptions, eventually I'll add more in the future.
+<br />
+
+<br />
+And at last but not the least, I've changed the layout a bit, hopefuly for the better (;<br />_________________<br /><span style="font-style: italic">One thing only I know, and that is that I know nothing.</span> (Socrates)</span>
+						<span class="gensmall"></span>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="row1" width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">Back to top</a></span></td>
+		<td class="row1" width="100%" height="28" valign="bottom" nowrap="nowrap"></td>
+	</tr>
+	<tr>
+		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
+		<td></td>
+	</tr>
+	<tr align="center">
+		<td class="catBottom" colspan="2" height="28"></td>
+		<td></td>
+	</tr>
+</table>
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+  <tr>
+	<td></td>
+	<td align="left" valign="middle" width="100%"><span class="nav">&nbsp;&nbsp;&nbsp;<a href="index-2.html" class="nav">VB Decompiler Forum Index</a>
+	  -> <a href="viewforum12a3.html" xx="f=2" class="nav">Structures</a></span></td>
+	<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">All times are GMT</span><br /><span class="nav">Goto page <b>1</b>, <a href="viewtopic1a4d.html" xx="t=2&amp;postdays=0&amp;postorder=asc&amp;start=20">2</a>&nbsp;&nbsp;<a href="viewtopic1a4d.html" xx="t=2&amp;postdays=0&amp;postorder=asc&amp;start=20">Next</a></span>
+	  </td>
+  </tr>
+  <tr>
+	<td align="left" colspan="3"><span class="nav">Page <b>1</b> of <b>2</b></span></td>
+  </tr>
+</table>
+
+<table width="100%" cellspacing="2" border="0" align="center">
+  <tr>
+	<td width="40%" valign="top" nowrap="nowrap" align="left"><span class="gensmall"></span><br />
+	  &nbsp;<br />
+	  </td>
+	<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">You <b>can</b> post new topics in this forum<br />You <b>can</b> reply to topics in this forum<br />You <b>can</b> edit your posts in this forum<br />You <b>can</b> delete your posts in this forum<br />You <b>can</b> vote in polls in this forum<br /></span></td>
+  </tr>
+</table>
+
+
+<div align="center"><span class="copyright"><br /><br />
+<!--
+	We request you retain the full copyright notice below including the link to www.phpbb.com.
+	This not only gives respect to the large amount of time given freely by the developers
+	but also helps build interest, traffic and use of phpBB 2.0. If you cannot (for good
+	reason) retain the full copyright we request you at least leave in place the
+	Powered by phpBB line, with phpBB linked to www.phpbb.com. If you refuse
+	to include even this then support on our forums may be affected.
+
+	The phpBB Group : 2002
+// -->
+Powered by <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB</a> &copy; 2001, 2005 phpBB Group<br /></span></div>
+		</td>
+	</tr>
+</table>
+
+</body>
+
+<!-- Mirrored from localhost/phpbb2/viewtopic.php?f=2&t=2 by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 04 Mar 2018 20:55:44 GMT -->
+</html>
+
