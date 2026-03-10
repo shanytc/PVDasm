@@ -1,1 +1,0 @@
-These are executable files and their source code and can be used to compare results for disassembling or decompiling. 
