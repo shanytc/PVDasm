@@ -284,6 +284,7 @@
     <ClCompile Include="CDisasmColor.cpp" />
     <ClCompile Include="CDisasmData.cpp" />
     <ClCompile Include="Chip8.cpp" />
+    <ClCompile Include="VBPCode.cpp" />
     <ClCompile Include="Disasm.cpp" />
     <ClCompile Include="Disasm_Options.cpp" />
     <ClCompile Include="Dsasm_Functions.cpp" />
@@ -304,6 +305,8 @@
   <ItemGroup>
     <ClInclude Include="CDisasmData.h" />
     <ClInclude Include="Chip8.h" />
+    <ClInclude Include="VBPCode.h" />
+    <ClInclude Include="VBOpcodeTable.h" />
     <ClInclude Include="Disasm.h" />
     <ClInclude Include="Functions.h" />
     <ClInclude Include="HexEditor.h" />

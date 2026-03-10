@@ -70,11 +70,17 @@
 #define x86_PC			"80x86 (32Bit) Proccessor: PC"
 #define x87_PC			"80x87 (62Bit) Proccessor: PC"
 #define CPU_chip8		"Chip8/SCHIP Processor"
+#define CPU_vbpcode5	"VB5 P-Code Processor"
+#define CPU_vbpcode6	"VB6 P-Code Processor"
+#define VB5_PCODE_FORMAT "Visual Basic 5 P-Code"
+#define VB6_PCODE_FORMAT "Visual Basic 6 P-Code"
 
 #define x86			0
 #define chip8		1
 #define x87			2
 #define x86_16Bit	3
+#define vbpcode5	4
+#define vbpcode6	5
 
 #define MY_MSG 101
 #define PV_TRUE  1
@@ -186,7 +192,9 @@ typedef struct Options{
     bool AutoDB;				// Convert 0000 Opcode to DB 0
     bool FirstPass;				// Enable FirstPass Analyze
 	bool Signatures;			// Enable API Parameter Signatures
-    
+	bool VBPCodeMode;			// True when a VB5/VB6 P-Code binary is loaded
+	int  VBVersion;				// VB runtime version: 5 or 6 (0 = not detected)
+
 } DISASM_OPTIONS;
 
 typedef struct FunctioInformation{
