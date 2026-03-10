@@ -1637,6 +1637,15 @@ static DWORD DllRvaToFileOffset(BYTE *fileBase, DWORD rva)
 	return rva; // fallback: assume identity mapping
 }
 
+// File-scope struct used by RebuildIAT() and RebuildIAT_ScanUnreferenced()
+struct ImportScanEntry {
+	DWORD ftRVA;
+	int functionCount;
+	char dllName[MAX_PATH];
+	bool isPackerSuspect;
+	int packerScore;
+};
+
 // ========================================================
 // ==== Raw IAT Reconstruction (destroyed descriptors) ====
 // ========================================================
@@ -2225,6 +2234,594 @@ static void RebuildIAT_RawFallback(HWND hWnd)
 }
 
 // ========================================================
+// ==== Scan for unreferenced IAT groups (Scylla-style) ===
+// ========================================================
+static void RebuildIAT_ScanUnreferenced(
+	HWND hWnd,
+	DWORD *pWriteOffset,
+	DWORD spaceEnd,
+	ImportScanEntry *importScan,
+	int importScanCount,
+	PIMAGE_IMPORT_DESCRIPTOR importDesc)
+{
+	/*
+	   When ALL import descriptors are packer-suspect, the real IAT may exist
+	   elsewhere in the PE but no descriptor references it. This function scans
+	   all sections for contiguous groups of resolved addresses (Scylla-style),
+	   filters out groups already referenced by packer descriptors, identifies
+	   DLLs via export table matching, and writes new import descriptors +
+	   hint/name entries into header slack space.
+	*/
+
+	char *pfile = FileMappedData;
+	char InfoText[512];
+	DWORD NumberOfSections = 0;
+	DWORD SizeOfImage = 0;
+	DWORD SizeOfHeaders = 0;
+
+	if(LoadedPe==TRUE){
+		NumberOfSections = nt_header->FileHeader.NumberOfSections;
+		SizeOfImage = nt_header->OptionalHeader.SizeOfImage;
+		SizeOfHeaders = nt_header->OptionalHeader.SizeOfHeaders;
+	}
+	else if(LoadedPe64==TRUE){
+		NumberOfSections = nt_header64->FileHeader.NumberOfSections;
+		SizeOfImage = nt_header64->OptionalHeader.SizeOfImage;
+		SizeOfHeaders = nt_header64->OptionalHeader.SizeOfHeaders;
+	}
+
+	OutDebug(hWnd,"");
+	OutDebug(hWnd,"IAT Rebuild Phase 6: Scanning all sections for unreferenced IAT groups...");
+
+	// =====================================================
+	// Phase S-A: Scan sections for resolved address groups
+	// =====================================================
+	struct IATGroup {
+		DWORD startRVA;
+		DWORD count;
+	};
+	#define MAX_SCAN_GROUPS 32
+	IATGroup groups[MAX_SCAN_GROUPS];
+	int numGroups = 0;
+
+	IMAGE_SECTION_HEADER *sec;
+	if(LoadedPe==TRUE){
+		sec = (IMAGE_SECTION_HEADER *)((UCHAR *)(&(nt_header->OptionalHeader))+sizeof(IMAGE_OPTIONAL_HEADER));
+	}
+	else{
+		sec = (IMAGE_SECTION_HEADER *)((UCHAR *)(&(nt_header64->OptionalHeader))+sizeof(IMAGE_OPTIONAL_HEADER64));
+	}
+
+	IMAGE_SECTION_HEADER *scanSec = sec;
+	for(DWORD s = 0; s < NumberOfSections && numGroups < MAX_SCAN_GROUPS; s++){
+		DWORD secStart = scanSec->VirtualAddress;
+		DWORD secEnd = secStart + scanSec->Misc.VirtualSize;
+		if(secEnd > (DWORD)hFileSize) secEnd = (DWORD)hFileSize;
+		if(secStart >= (DWORD)hFileSize || secEnd <= secStart){
+			scanSec = (IMAGE_SECTION_HEADER *)((UCHAR *)(scanSec)+sizeof(IMAGE_SECTION_HEADER));
+			continue;
+		}
+
+		if(LoadedPe==TRUE){
+			// PE32: scan as DWORD array
+			DWORD *data = (DWORD*)(pfile + secStart);
+			DWORD numDwords = (secEnd - secStart) / sizeof(DWORD);
+			DWORD groupStart = 0;
+			DWORD groupCount = 0;
+			bool inGroup = false;
+
+			for(DWORD i = 0; i < numDwords && numGroups < MAX_SCAN_GROUPS; i++){
+				DWORD val = data[i];
+				if(val > SizeOfImage && val > 0x10000){
+					if(!inGroup){
+						groupStart = i;
+						groupCount = 0;
+						inGroup = true;
+					}
+					groupCount++;
+				}
+				else{
+					if(inGroup && groupCount >= 2){
+						DWORD grpRVA = secStart + groupStart * sizeof(DWORD);
+						if(grpRVA >= SizeOfHeaders){
+							groups[numGroups].startRVA = grpRVA;
+							groups[numGroups].count = groupCount;
+							numGroups++;
+						}
+					}
+					inGroup = false;
+					groupCount = 0;
+				}
+			}
+			// Handle group at end of section
+			if(inGroup && groupCount >= 2 && numGroups < MAX_SCAN_GROUPS){
+				DWORD grpRVA = secStart + groupStart * sizeof(DWORD);
+				if(grpRVA >= SizeOfHeaders){
+					groups[numGroups].startRVA = grpRVA;
+					groups[numGroups].count = groupCount;
+					numGroups++;
+				}
+			}
+		}
+		else if(LoadedPe64==TRUE){
+			// PE64: scan as QWORD array
+			ULONGLONG *data = (ULONGLONG*)(pfile + secStart);
+			DWORD numQwords = (secEnd - secStart) / sizeof(ULONGLONG);
+			DWORD groupStart = 0;
+			DWORD groupCount = 0;
+			bool inGroup = false;
+
+			for(DWORD i = 0; i < numQwords && numGroups < MAX_SCAN_GROUPS; i++){
+				ULONGLONG val = data[i];
+				if(val > SizeOfImage && val > 0x10000){
+					if(!inGroup){
+						groupStart = i;
+						groupCount = 0;
+						inGroup = true;
+					}
+					groupCount++;
+				}
+				else{
+					if(inGroup && groupCount >= 2){
+						DWORD grpRVA = secStart + groupStart * sizeof(ULONGLONG);
+						if(grpRVA >= SizeOfHeaders){
+							groups[numGroups].startRVA = grpRVA;
+							groups[numGroups].count = groupCount;
+							numGroups++;
+						}
+					}
+					inGroup = false;
+					groupCount = 0;
+				}
+			}
+			if(inGroup && groupCount >= 2 && numGroups < MAX_SCAN_GROUPS){
+				DWORD grpRVA = secStart + groupStart * sizeof(ULONGLONG);
+				if(grpRVA >= SizeOfHeaders){
+					groups[numGroups].startRVA = grpRVA;
+					groups[numGroups].count = groupCount;
+					numGroups++;
+				}
+			}
+		}
+
+		scanSec = (IMAGE_SECTION_HEADER *)((UCHAR *)(scanSec)+sizeof(IMAGE_SECTION_HEADER));
+	}
+
+	wsprintf(InfoText,"IAT Rebuild Phase 6: Found %d candidate IAT groups", numGroups);
+	OutDebug(hWnd,InfoText);
+
+	if(numGroups == 0){
+		OutDebug(hWnd,"IAT Rebuild Phase 6: No unreferenced IAT groups found.");
+		return;
+	}
+
+	for(int g = 0; g < numGroups; g++){
+		wsprintf(InfoText,"IAT Rebuild Phase 6:   Group %d: RVA=%08X, %d entries", g, groups[g].startRVA, groups[g].count);
+		OutDebug(hWnd,InfoText);
+	}
+
+	// =====================================================
+	// Phase S-B: Filter out packer-referenced groups
+	// =====================================================
+	for(int g = 0; g < numGroups; g++){
+		for(int i = 0; i < importScanCount; i++){
+			if(groups[g].startRVA == importScan[i].ftRVA){
+				wsprintf(InfoText,"IAT Rebuild Phase 6:   Group %d at RVA %08X already referenced by packer descriptor, removing",
+					g, groups[g].startRVA);
+				OutDebug(hWnd,InfoText);
+				// Remove by shifting remaining groups down
+				for(int j = g; j < numGroups - 1; j++){
+					groups[j] = groups[j+1];
+				}
+				numGroups--;
+				g--; // re-check this index
+				break;
+			}
+		}
+	}
+
+	if(numGroups == 0){
+		OutDebug(hWnd,"IAT Rebuild Phase 6: All groups are already referenced by packer descriptors.");
+		return;
+	}
+
+	wsprintf(InfoText,"IAT Rebuild Phase 6: %d unreferenced groups remain after filtering", numGroups);
+	OutDebug(hWnd,InfoText);
+
+	// =====================================================
+	// Phase S-C: Identify DLLs via export table matching
+	// =====================================================
+	static const char *commonDlls[] = {
+		"msvbvm60.dll", "msvbvm50.dll", "kernel32.dll", "user32.dll",
+		"gdi32.dll", "advapi32.dll", "ole32.dll", "oleaut32.dll",
+		"msvcrt.dll", "ntdll.dll", "kernelbase.dll", "comctl32.dll",
+		"shell32.dll", "ws2_32.dll", "comdlg32.dll", "shlwapi.dll",
+		"version.dll"
+	};
+	#define NUM_SCAN_DLLS 17
+
+	struct ScanGroupInfo {
+		char dllName[MAX_PATH];
+		DWORD_PTR dllBase;
+		bool identified;
+		BYTE *dllFileBase;
+		HANDLE hDllMapping;
+		HANDLE hDllFile;
+		DWORD exportDirRVA;
+		DWORD exportDirSize;
+		IMAGE_EXPORT_DIRECTORY *exportDir;
+		DWORD *functions;
+		DWORD *names;
+		WORD *ordinals;
+	};
+	ScanGroupInfo groupInfo[MAX_SCAN_GROUPS];
+	memset(groupInfo, 0, sizeof(groupInfo));
+
+	for(int g = 0; g < numGroups; g++){
+		for(int d = 0; d < NUM_SCAN_DLLS; d++){
+			HANDLE hDllFile = INVALID_HANDLE_VALUE;
+			char dllFilePath[MAX_PATH];
+
+			if(LoadedPe==TRUE){
+				char winDir[MAX_PATH];
+				GetWindowsDirectoryA(winDir, MAX_PATH);
+				wsprintf(dllFilePath, "%s\\SysWOW64\\%s", winDir, commonDlls[d]);
+				hDllFile = CreateFileA(dllFilePath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
+			}
+			if(hDllFile == INVALID_HANDLE_VALUE){
+				char sysDir[MAX_PATH];
+				GetSystemDirectoryA(sysDir, MAX_PATH);
+				wsprintf(dllFilePath, "%s\\%s", sysDir, commonDlls[d]);
+				hDllFile = CreateFileA(dllFilePath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
+			}
+			if(hDllFile == INVALID_HANDLE_VALUE) continue;
+
+			HANDLE hDllMapping = CreateFileMappingA(hDllFile, NULL, PAGE_READONLY, 0, 0, NULL);
+			if(!hDllMapping){ CloseHandle(hDllFile); continue; }
+			BYTE *dllFileBase = (BYTE*)MapViewOfFile(hDllMapping, FILE_MAP_READ, 0, 0, 0);
+			if(!dllFileBase){ CloseHandle(hDllMapping); CloseHandle(hDllFile); continue; }
+
+			// Validate PE
+			if(*(WORD*)dllFileBase != IMAGE_DOS_SIGNATURE){
+				UnmapViewOfFile(dllFileBase); CloseHandle(hDllMapping); CloseHandle(hDllFile); continue;
+			}
+			LONG dllLfanew = *(LONG*)(dllFileBase + 0x3C);
+			if(*(DWORD*)(dllFileBase + dllLfanew) != IMAGE_NT_SIGNATURE){
+				UnmapViewOfFile(dllFileBase); CloseHandle(hDllMapping); CloseHandle(hDllFile); continue;
+			}
+
+			BYTE *dllOptHeader = dllFileBase + dllLfanew + 24;
+			WORD dllMagic = *(WORD*)dllOptHeader;
+			DWORD expRVA, expSize;
+			if(dllMagic == 0x20B){ expRVA = *(DWORD*)(dllOptHeader+112); expSize = *(DWORD*)(dllOptHeader+116); }
+			else{ expRVA = *(DWORD*)(dllOptHeader+96); expSize = *(DWORD*)(dllOptHeader+100); }
+
+			if(expRVA == 0 || expSize == 0){
+				UnmapViewOfFile(dllFileBase); CloseHandle(hDllMapping); CloseHandle(hDllFile); continue;
+			}
+
+			IMAGE_EXPORT_DIRECTORY *expDir = (IMAGE_EXPORT_DIRECTORY*)(dllFileBase + DllRvaToFileOffset(dllFileBase, expRVA));
+			DWORD *dllFunctions = (DWORD*)(dllFileBase + DllRvaToFileOffset(dllFileBase, expDir->AddressOfFunctions));
+
+			// Base detection: try each non-forwarded export against first group entry
+			bool matched = false;
+			DWORD_PTR bestBase = 0;
+			int bestVerified = 0;
+
+			if(LoadedPe==TRUE){
+				DWORD *groupAddrs = (DWORD*)(pfile + groups[g].startRVA);
+				for(DWORD e = 0; e < expDir->NumberOfFunctions; e++){
+					if(dllFunctions[e] == 0) continue;
+					if(dllFunctions[e] >= expRVA && dllFunctions[e] < expRVA + expSize) continue;
+
+					DWORD_PTR testBase = groupAddrs[0] - dllFunctions[e];
+					if((testBase & 0xFFFF) != 0) continue;
+
+					int verified = 0;
+					for(DWORD t = 0; t < groups[g].count; t++){
+						DWORD testRVA = (DWORD)(groupAddrs[t] - testBase);
+						for(DWORD v = 0; v < expDir->NumberOfFunctions; v++){
+							if(dllFunctions[v] == testRVA){
+								verified++;
+								break;
+							}
+						}
+					}
+
+					if(verified > bestVerified){
+						bestVerified = verified;
+						bestBase = testBase;
+					}
+					if((DWORD)bestVerified == groups[g].count) break;
+				}
+			}
+			else if(LoadedPe64==TRUE){
+				ULONGLONG *groupAddrs = (ULONGLONG*)(pfile + groups[g].startRVA);
+				for(DWORD e = 0; e < expDir->NumberOfFunctions; e++){
+					if(dllFunctions[e] == 0) continue;
+					if(dllFunctions[e] >= expRVA && dllFunctions[e] < expRVA + expSize) continue;
+
+					ULONGLONG testBase = groupAddrs[0] - dllFunctions[e];
+					if((testBase & 0xFFFF) != 0) continue;
+
+					int verified = 0;
+					for(DWORD t = 0; t < groups[g].count; t++){
+						DWORD testRVA = (DWORD)(groupAddrs[t] - testBase);
+						for(DWORD v = 0; v < expDir->NumberOfFunctions; v++){
+							if(dllFunctions[v] == testRVA){
+								verified++;
+								break;
+							}
+						}
+					}
+
+					if(verified > bestVerified){
+						bestVerified = verified;
+						bestBase = (DWORD_PTR)testBase;
+					}
+					if((DWORD)bestVerified == groups[g].count) break;
+				}
+			}
+
+			if(bestVerified > 0 && (DWORD)bestVerified >= (groups[g].count + 1) / 2){
+				groupInfo[g].identified = true;
+				strcpy(groupInfo[g].dllName, commonDlls[d]);
+				groupInfo[g].dllBase = bestBase;
+				groupInfo[g].dllFileBase = dllFileBase;
+				groupInfo[g].hDllMapping = hDllMapping;
+				groupInfo[g].hDllFile = hDllFile;
+				groupInfo[g].exportDirRVA = expRVA;
+				groupInfo[g].exportDirSize = expSize;
+				groupInfo[g].exportDir = expDir;
+				groupInfo[g].functions = dllFunctions;
+				groupInfo[g].names = (DWORD*)(dllFileBase + DllRvaToFileOffset(dllFileBase, expDir->AddressOfNames));
+				groupInfo[g].ordinals = (WORD*)(dllFileBase + DllRvaToFileOffset(dllFileBase, expDir->AddressOfNameOrdinals));
+
+				wsprintf(InfoText,"IAT Rebuild Phase 6: Group %d -> %s (base=%08X, matched %d/%d)",
+					g, commonDlls[d], (DWORD)bestBase, bestVerified, groups[g].count);
+				OutDebug(hWnd,InfoText);
+				matched = true;
+			}
+
+			if(!matched){
+				UnmapViewOfFile(dllFileBase);
+				CloseHandle(hDllMapping);
+				CloseHandle(hDllFile);
+			}
+			else{
+				break;
+			}
+		}
+
+		if(!groupInfo[g].identified){
+			wsprintf(InfoText,"IAT Rebuild Phase 6: Group %d could not be identified", g);
+			OutDebug(hWnd,InfoText);
+		}
+	}
+
+	int identifiedCount = 0;
+	for(int g = 0; g < numGroups; g++){
+		if(groupInfo[g].identified) identifiedCount++;
+	}
+
+	if(identifiedCount == 0){
+		OutDebug(hWnd,"IAT Rebuild Phase 6: No DLLs could be identified. Scanner failed.");
+		return;
+	}
+
+	wsprintf(InfoText,"IAT Rebuild Phase 6: Identified %d/%d groups", identifiedCount, numGroups);
+	OutDebug(hWnd,InfoText);
+
+	// =====================================================
+	// Phase S-D: Build new import table in header slack
+	// =====================================================
+	DWORD writeOffset = *pWriteOffset;
+
+	// Layout: descriptors first, then DLL names and hint/name entries
+	DWORD descriptorArraySize = (identifiedCount + 1) * sizeof(IMAGE_IMPORT_DESCRIPTOR);
+
+	if(writeOffset + descriptorArraySize >= spaceEnd){
+		OutDebug(hWnd,"IAT Rebuild Phase 6: Not enough space for import descriptors.");
+		goto cleanup;
+	}
+
+	{
+		DWORD descriptorStart = writeOffset;
+		// Zero out the descriptor area
+		memset(pfile + descriptorStart, 0, descriptorArraySize);
+		IMAGE_IMPORT_DESCRIPTOR *newDescs = (IMAGE_IMPORT_DESCRIPTOR*)(pfile + descriptorStart);
+		writeOffset += descriptorArraySize;
+
+		int totalResolved = 0;
+		int totalUnresolved = 0;
+		int descIndex = 0;
+
+		for(int g = 0; g < numGroups; g++){
+			if(!groupInfo[g].identified) continue;
+
+			// Write DLL name string
+			DWORD dllNameLen = (DWORD)strlen(groupInfo[g].dllName);
+			if(writeOffset + dllNameLen + 1 >= spaceEnd){
+				wsprintf(InfoText,"IAT Rebuild Phase 6: Out of space writing DLL name for group %d", g);
+				OutDebug(hWnd,InfoText);
+				break;
+			}
+
+			DWORD dllNameRVA = writeOffset;
+			memcpy(pfile + writeOffset, groupInfo[g].dllName, dllNameLen + 1);
+			writeOffset += dllNameLen + 1;
+			writeOffset = (writeOffset + 1) & ~1; // WORD-align
+
+			// Fill in the import descriptor
+			newDescs[descIndex].OriginalFirstThunk = 0;
+			newDescs[descIndex].TimeDateStamp = 0;
+			newDescs[descIndex].ForwarderChain = 0;
+			newDescs[descIndex].Name = dllNameRVA;
+			newDescs[descIndex].FirstThunk = groups[g].startRVA;
+
+			wsprintf(InfoText,"IAT Rebuild Phase 6: Descriptor %d: %s, FirstThunk=%08X",
+				descIndex, groupInfo[g].dllName, groups[g].startRVA);
+			OutDebug(hWnd,InfoText);
+
+			// Resolve each function in this group and write hint/name entries
+			for(DWORD t = 0; t < groups[g].count; t++){
+				DWORD addr;
+				if(LoadedPe==TRUE){
+					addr = *(DWORD*)(pfile + groups[g].startRVA + t * sizeof(DWORD));
+				}
+				else{
+					addr = (DWORD)(*(ULONGLONG*)(pfile + groups[g].startRVA + t * sizeof(ULONGLONG)) - groupInfo[g].dllBase);
+					// For PE64, expRVA is already the offset we need
+					// Re-read the raw value for export matching
+					ULONGLONG rawVal = *(ULONGLONG*)(pfile + groups[g].startRVA + t * sizeof(ULONGLONG));
+					addr = (DWORD)(rawVal - groupInfo[g].dllBase);
+				}
+
+				DWORD expRVA_func;
+				if(LoadedPe==TRUE){
+					expRVA_func = (DWORD)(addr - groupInfo[g].dllBase);
+				}
+				else{
+					expRVA_func = addr; // already computed above for PE64
+				}
+
+				char *funcName = NULL;
+				for(DWORD e = 0; e < groupInfo[g].exportDir->NumberOfFunctions; e++){
+					if(groupInfo[g].functions[e] == expRVA_func){
+						for(DWORD n = 0; n < groupInfo[g].exportDir->NumberOfNames; n++){
+							if(groupInfo[g].ordinals[n] == e){
+								funcName = (char*)(groupInfo[g].dllFileBase + DllRvaToFileOffset(groupInfo[g].dllFileBase, groupInfo[g].names[n]));
+								break;
+							}
+						}
+						break;
+					}
+				}
+
+				if(funcName != NULL){
+					DWORD nameLen = (DWORD)strlen(funcName);
+					DWORD entrySize = sizeof(WORD) + nameLen + 1;
+					entrySize = (entrySize + 1) & ~1; // WORD-align
+
+					if(writeOffset + entrySize < spaceEnd){
+						*(WORD*)(pfile + writeOffset) = 0; // hint = 0
+						memcpy(pfile + writeOffset + sizeof(WORD), funcName, nameLen + 1);
+
+						// Overwrite the IAT thunk with RVA of hint/name entry
+						if(LoadedPe==TRUE){
+							*(DWORD*)(pfile + groups[g].startRVA + t * sizeof(DWORD)) = writeOffset;
+						}
+						else{
+							*(ULONGLONG*)(pfile + groups[g].startRVA + t * sizeof(ULONGLONG)) = writeOffset;
+						}
+
+						wsprintf(InfoText,"  %s!%s", groupInfo[g].dllName, funcName);
+						OutDebug(hWnd,InfoText);
+						totalResolved++;
+						writeOffset += entrySize;
+					}
+				}
+				else{
+					// Write placeholder for unresolved
+					char placeholder[64];
+					wsprintf(placeholder, "Unresolved_%08X", addr);
+					DWORD nameLen = (DWORD)strlen(placeholder);
+					DWORD entrySize = sizeof(WORD) + nameLen + 1;
+					entrySize = (entrySize + 1) & ~1;
+
+					if(writeOffset + entrySize < spaceEnd){
+						*(WORD*)(pfile + writeOffset) = 0;
+						memcpy(pfile + writeOffset + sizeof(WORD), placeholder, nameLen + 1);
+
+						if(LoadedPe==TRUE){
+							*(DWORD*)(pfile + groups[g].startRVA + t * sizeof(DWORD)) = writeOffset;
+						}
+						else{
+							*(ULONGLONG*)(pfile + groups[g].startRVA + t * sizeof(ULONGLONG)) = writeOffset;
+						}
+
+						wsprintf(InfoText,"  %s!%s (unresolved)", groupInfo[g].dllName, placeholder);
+						OutDebug(hWnd,InfoText);
+						writeOffset += entrySize;
+					}
+					totalUnresolved++;
+				}
+			}
+
+			// Write a zero terminator after the last thunk so ShowImports/loader stops
+			if(LoadedPe==TRUE){
+				DWORD termOff = groups[g].startRVA + groups[g].count * sizeof(DWORD);
+				if(termOff + sizeof(DWORD) <= (DWORD)hFileSize){
+					*(DWORD*)(pfile + termOff) = 0;
+				}
+			}
+			else{
+				DWORD termOff = groups[g].startRVA + groups[g].count * sizeof(ULONGLONG);
+				if(termOff + sizeof(ULONGLONG) <= (DWORD)hFileSize){
+					*(ULONGLONG*)(pfile + termOff) = 0;
+				}
+			}
+
+			descIndex++;
+		}
+
+		// =====================================================
+		// Phase S-E: Update DataDirectory and zero packer descriptors
+		// =====================================================
+		if(LoadedPe==TRUE){
+			nt_header->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress = descriptorStart;
+			nt_header->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].Size = descriptorArraySize;
+		}
+		else if(LoadedPe64==TRUE){
+			nt_header64->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress = descriptorStart;
+			nt_header64->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].Size = descriptorArraySize;
+		}
+
+		wsprintf(InfoText,"IAT Rebuild Phase 6: Updated DataDirectory[1]: RVA=%08X, Size=%08X", descriptorStart, descriptorArraySize);
+		OutDebug(hWnd,InfoText);
+
+		// Zero out ALL old packer descriptors so the loader ignores them
+		{
+			PIMAGE_IMPORT_DESCRIPTOR zeroDesc = importDesc;
+			int zeroed = 0;
+			while((BYTE*)zeroDesc < (BYTE*)pfile + hFileSize - sizeof(IMAGE_IMPORT_DESCRIPTOR)){
+				if(zeroDesc->TimeDateStamp == 0 && zeroDesc->Name == 0)
+					break;
+				zeroDesc->Name = 0;
+				zeroDesc->FirstThunk = 0;
+				zeroDesc->OriginalFirstThunk = 0;
+				zeroDesc->TimeDateStamp = 0;
+				zeroDesc->ForwarderChain = 0;
+				zeroed++;
+				zeroDesc++;
+			}
+			wsprintf(InfoText,"IAT Rebuild Phase 6: Zeroed %d old packer descriptors", zeroed);
+			OutDebug(hWnd,InfoText);
+		}
+
+		*pWriteOffset = writeOffset;
+
+		OutDebug(hWnd,"");
+		wsprintf(InfoText,"IAT Rebuild Phase 6: Scanner complete - %d groups, %d identified", numGroups, identifiedCount);
+		OutDebug(hWnd,InfoText);
+		wsprintf(InfoText,"IAT Rebuild Phase 6: %d functions resolved, %d unresolved", totalResolved, totalUnresolved);
+		OutDebug(hWnd,InfoText);
+	}
+
+	// =====================================================
+	// Phase S-F: Cleanup
+	// =====================================================
+cleanup:
+	for(int g = 0; g < numGroups; g++){
+		if(groupInfo[g].identified){
+			UnmapViewOfFile(groupInfo[g].dllFileBase);
+			CloseHandle(groupInfo[g].hDllMapping);
+			CloseHandle(groupInfo[g].hDllFile);
+		}
+	}
+}
+
+// ========================================================
 // ============ Rebuild IAT (Import Address Table) ========
 // ========================================================
 void RebuildIAT(HWND hWnd)
@@ -2379,13 +2976,6 @@ void RebuildIAT(HWND hWnd)
 	// Pre-scan import descriptors to detect packer-injected imports.
 	// Packers often add a small import table (e.g., 4 kernel32 functions)
 	// at an unusual RVA far from the real imports.
-	struct ImportScanEntry {
-		DWORD ftRVA;
-		int functionCount;
-		char dllName[MAX_PATH];
-		bool isPackerSuspect;
-		int packerScore;
-	};
 	ImportScanEntry importScan[32];
 	int importScanCount = 0;
 	int packerSuspectCount = 0;
@@ -3874,6 +4464,15 @@ void RebuildIAT(HWND hWnd)
 		OutDebug(hWnd,"IAT Rebuild: NOTE - Unresolved thunks are forwarded exports whose target");
 		OutDebug(hWnd,"  DLLs on disk differ from the dump source. Use ImpREC on the live process");
 		OutDebug(hWnd,"  or provide matching DLL files to resolve remaining imports.");
+	}
+
+	// =====================================================
+	// Phase 6: Scan for unreferenced IAT groups
+	// =====================================================
+	if(packerSuspectCount > 0 && packerSuspectCount == importScanCount){
+		OutDebug(hWnd,"IAT Rebuild: All imports are packer-suspect. Scanning for real IAT...");
+		RebuildIAT_ScanUnreferenced(hWnd, &writeOffset, spaceEnd,
+			importScan, importScanCount, importDesc);
 	}
 }
 
