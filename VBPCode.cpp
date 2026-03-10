@@ -131,8 +131,11 @@ BOOL DetectVBRuntime(const BYTE* pFileData, DWORD_PTR fileSize, int* pVersion)
     if (importDir.VirtualAddress == 0 || importDir.Size == 0)
         return FALSE;
 
+    DWORD imgBase = nt->OptionalHeader.ImageBase;
+
+    // Import directory fields are RVAs, add ImageBase to convert to VA
     DWORD_PTR impOff = VBVAToFileOffset(pFileData, fileSize,
-                                         importDir.VirtualAddress);
+                                         importDir.VirtualAddress + imgBase);
     if (impOff == (DWORD_PTR)-1)
         return FALSE;
 
@@ -141,7 +144,7 @@ BOOL DetectVBRuntime(const BYTE* pFileData, DWORD_PTR fileSize, int* pVersion)
 
     while (impOff + sizeof(IMAGE_IMPORT_DESCRIPTOR) <= fileSize && imp->Name != 0)
     {
-        DWORD_PTR nameOff = VBVAToFileOffset(pFileData, fileSize, imp->Name);
+        DWORD_PTR nameOff = VBVAToFileOffset(pFileData, fileSize, imp->Name + imgBase);
         if (nameOff != (DWORD_PTR)-1 && nameOff < fileSize) {
             const char* dll = (const char*)(pFileData + nameOff);
             char upper[64] = {0};
