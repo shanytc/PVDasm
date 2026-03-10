@@ -64,6 +64,7 @@ void	Update					( char *MapData,HWND hWndParent,HINSTANCE hInst );
 void	ShowPeData				( HWND hWnd										);
 void	UpdatePE				( HWND hWnd										);
 void	RebuildPE				( HWND hWnd										);
+void	RebuildIAT				( HWND hWnd										);
 void	Update_Pe_Directories	( HWND hWnd										);
 void	ShowImports				( HWND hWnd										); // Show imported funtions from dlls.
 void	ShowExports				( HWND hWnd										); // Show exe function exports.
