@@ -1638,6 +1638,593 @@ static DWORD DllRvaToFileOffset(BYTE *fileBase, DWORD rva)
 }
 
 // ========================================================
+// ==== Raw IAT Reconstruction (destroyed descriptors) ====
+// ========================================================
+static void RebuildIAT_RawFallback(HWND hWnd)
+{
+	/*
+	   Function:
+	   ---------
+	   "RebuildIAT_RawFallback"
+
+	   When import descriptors are destroyed (DataDirectory[1] points to
+	   garbage/zeroed memory), reconstruct the entire import table from
+	   the raw IAT (DataDirectory[12]).
+
+	   The raw IAT contains resolved function addresses grouped by DLL,
+	   separated by zero DWORDs. We walk these groups, identify which DLL
+	   each belongs to via export table matching, resolve function names,
+	   write new import descriptors + hint/name entries to PE header slack,
+	   and update DataDirectory[1].
+
+	   PE32 only for initial implementation.
+	*/
+
+	char *pfile = FileMappedData;
+	char InfoText[512];
+	DWORD NumberOfSections = 0;
+	DWORD SizeOfImage = 0;
+
+	OutDebug(hWnd,"");
+	OutDebug(hWnd,"IAT Rebuild: Import descriptors are destroyed, attempting raw IAT reconstruction...");
+
+	// =====================================================
+	// Phase A: Read IAT from DataDirectory[12]
+	// =====================================================
+	DWORD iatRVA = 0, iatSize = 0;
+	if(LoadedPe==TRUE){
+		iatRVA = nt_header->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IAT].VirtualAddress;
+		iatSize = nt_header->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IAT].Size;
+		NumberOfSections = nt_header->FileHeader.NumberOfSections;
+		SizeOfImage = nt_header->OptionalHeader.SizeOfImage;
+	}
+	else if(LoadedPe64==TRUE){
+		iatRVA = nt_header64->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IAT].VirtualAddress;
+		iatSize = nt_header64->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IAT].Size;
+		NumberOfSections = nt_header64->FileHeader.NumberOfSections;
+		SizeOfImage = nt_header64->OptionalHeader.SizeOfImage;
+	}
+
+	// SizeOfImage may be corrupted by the packer. Use file size as the reliable
+	// threshold for detecting resolved runtime addresses (DLL addresses are always
+	// much larger than the PE file size in a memory dump).
+	DWORD addrThreshold = (DWORD)hFileSize;
+	wsprintf(InfoText,"IAT Rebuild: SizeOfImage=%08X, FileSize=%08X, using threshold=%08X",
+		SizeOfImage, (DWORD)hFileSize, addrThreshold);
+	OutDebug(hWnd,InfoText);
+
+	// If DataDirectory[12] is also destroyed, scan for IAT at common locations.
+	// For VB6/Win32 executables, the IAT is typically at the start of the first section (0x1000).
+	if(!iatRVA || !iatSize || iatRVA + iatSize > (DWORD)hFileSize){
+		OutDebug(hWnd,"IAT Rebuild: DataDirectory[12] (IAT) is missing or invalid, scanning for IAT...");
+
+		// Get first section's VirtualAddress (after rebuild, file offset == RVA)
+		IMAGE_SECTION_HEADER *scanSec;
+		if(LoadedPe==TRUE){
+			scanSec = (IMAGE_SECTION_HEADER *)((UCHAR *)(&(nt_header->OptionalHeader))+sizeof(IMAGE_OPTIONAL_HEADER));
+		}
+		else{
+			scanSec = (IMAGE_SECTION_HEADER *)((UCHAR *)(&(nt_header64->OptionalHeader))+sizeof(IMAGE_OPTIONAL_HEADER64));
+		}
+
+		// Scan from the start of each section looking for groups of resolved addresses
+		// (values > addrThreshold, meaning they're runtime addresses from a memory dump)
+		bool found = false;
+		for(DWORD s = 0; s < NumberOfSections && !found; s++){
+			DWORD secStart = scanSec->VirtualAddress;
+			DWORD secEnd = secStart + scanSec->Misc.VirtualSize;
+			if(secEnd > (DWORD)hFileSize) secEnd = (DWORD)hFileSize;
+
+			// Walk the section as DWORDs looking for resolved address groups
+			if(secEnd > secStart + sizeof(DWORD) * 4){
+				DWORD *data = (DWORD*)(pfile + secStart);
+				DWORD numDwords = (secEnd - secStart) / sizeof(DWORD);
+
+				// Look for a sequence of high values (resolved addresses) followed by zero
+				int consecutiveHigh = 0;
+				DWORD scanStart = 0;
+				for(DWORD i = 0; i < numDwords && i < 2048; i++){
+					if(data[i] > addrThreshold && data[i] > 0x10000){
+						if(consecutiveHigh == 0) scanStart = i;
+						consecutiveHigh++;
+					}
+					else if(data[i] == 0 && consecutiveHigh >= 3){
+						// Found a group of resolved addresses followed by zero - this looks like IAT
+						iatRVA = secStart + scanStart * sizeof(DWORD);
+						// Scan forward to find the extent (until we hit non-IAT data)
+						DWORD iatEnd = secStart;
+						for(DWORD j = scanStart; j < numDwords && j < 4096; j++){
+							if(data[j] == 0){
+								// Could be a group separator or end of IAT
+								// Check if there's another group after this
+								if(j + 1 < numDwords && data[j+1] > addrThreshold && data[j+1] > 0x10000){
+									iatEnd = secStart + (j + 1) * sizeof(DWORD);
+									continue; // More groups follow
+								}
+								else{
+									iatEnd = secStart + (j + 1) * sizeof(DWORD);
+									break;
+								}
+							}
+							iatEnd = secStart + (j + 1) * sizeof(DWORD);
+						}
+						iatSize = iatEnd - iatRVA;
+						found = true;
+						break;
+					}
+					else{
+						consecutiveHigh = 0;
+					}
+				}
+			}
+			scanSec = (IMAGE_SECTION_HEADER *)((UCHAR *)(scanSec)+sizeof(IMAGE_SECTION_HEADER));
+		}
+
+		if(!found){
+			OutDebug(hWnd,"IAT Rebuild: Could not locate IAT data in any section. Reconstruction failed.");
+			return;
+		}
+
+		wsprintf(InfoText,"IAT Rebuild: Found IAT data at RVA %08X, estimated size %08X", iatRVA, iatSize);
+		OutDebug(hWnd,InfoText);
+	}
+	else{
+		wsprintf(InfoText,"IAT Rebuild: Raw IAT at RVA %08X, size %08X", iatRVA, iatSize);
+		OutDebug(hWnd,InfoText);
+	}
+
+	// Validate final IAT bounds
+	if(iatRVA + iatSize > (DWORD)hFileSize){
+		iatSize = (DWORD)hFileSize - iatRVA;
+	}
+
+	wsprintf(InfoText,"IAT Rebuild: Using IAT at RVA %08X, size %08X", iatRVA, iatSize);
+	OutDebug(hWnd,InfoText);
+
+	// =====================================================
+	// Phase B: Group IAT entries by DLL
+	// =====================================================
+	// Walk the IAT as an array of DWORDs (PE32).
+	// Non-zero entries are resolved function addresses.
+	// A zero entry separates DLL groups.
+	struct IATGroup {
+		DWORD startRVA;   // RVA of first thunk in this group
+		DWORD count;      // number of thunks
+	};
+	#define MAX_IAT_GROUPS 32
+	IATGroup groups[MAX_IAT_GROUPS];
+	int numGroups = 0;
+
+	{
+		DWORD *iatArray = (DWORD*)(pfile + iatRVA);
+		DWORD numEntries = iatSize / sizeof(DWORD);
+		DWORD groupStart = 0;
+		bool inGroup = false;
+		DWORD groupCount = 0;
+
+		for(DWORD i = 0; i < numEntries && numGroups < MAX_IAT_GROUPS; i++){
+			DWORD val = iatArray[i];
+			// Resolved addresses are > addrThreshold (file size) and > 0x10000
+			if(val != 0 && val > addrThreshold && val > 0x10000){
+				if(!inGroup){
+					groupStart = i;
+					groupCount = 0;
+					inGroup = true;
+				}
+				groupCount++;
+			}
+			else if(val == 0){
+				// Zero = group separator
+				if(inGroup && groupCount > 0){
+					groups[numGroups].startRVA = iatRVA + groupStart * sizeof(DWORD);
+					groups[numGroups].count = groupCount;
+					numGroups++;
+					inGroup = false;
+				}
+			}
+			else{
+				// Non-zero but not a resolved address - end of IAT data
+				if(inGroup && groupCount > 0){
+					groups[numGroups].startRVA = iatRVA + groupStart * sizeof(DWORD);
+					groups[numGroups].count = groupCount;
+					numGroups++;
+				}
+				break; // Stop scanning - we've left the IAT area
+			}
+		}
+		// Handle group at end of IAT (no trailing zero)
+		if(inGroup && groupCount > 0 && numGroups < MAX_IAT_GROUPS){
+			groups[numGroups].startRVA = iatRVA + groupStart * sizeof(DWORD);
+			groups[numGroups].count = groupCount;
+			numGroups++;
+		}
+	}
+
+	if(numGroups == 0){
+		OutDebug(hWnd,"IAT Rebuild: No IAT groups found in raw IAT.");
+		return;
+	}
+
+	wsprintf(InfoText,"IAT Rebuild: Found %d IAT groups", numGroups);
+	OutDebug(hWnd,InfoText);
+
+	for(int g = 0; g < numGroups; g++){
+		wsprintf(InfoText,"IAT Rebuild:   Group %d: RVA=%08X, %d entries", g, groups[g].startRVA, groups[g].count);
+		OutDebug(hWnd,InfoText);
+	}
+
+	// =====================================================
+	// Phase C: Identify DLLs via export table matching
+	// =====================================================
+	static const char *commonDlls[] = {
+		"msvbvm60.dll", "msvbvm50.dll", "kernel32.dll", "user32.dll",
+		"gdi32.dll", "advapi32.dll", "ole32.dll", "oleaut32.dll",
+		"msvcrt.dll", "ntdll.dll", "kernelbase.dll", "comctl32.dll",
+		"shell32.dll", "ws2_32.dll", "comdlg32.dll", "shlwapi.dll",
+		"version.dll"
+	};
+	#define NUM_COMMON_DLLS 17
+
+	// Per-group identification results
+	struct GroupInfo {
+		char dllName[MAX_PATH];
+		DWORD_PTR dllBase;        // runtime base of the DLL
+		bool identified;
+		// DLL file mapping (kept open for function resolution)
+		BYTE *dllFileBase;
+		HANDLE hDllMapping;
+		HANDLE hDllFile;
+		DWORD exportDirRVA;
+		DWORD exportDirSize;
+		IMAGE_EXPORT_DIRECTORY *exportDir;
+		DWORD *functions;
+		DWORD *names;
+		WORD *ordinals;
+	};
+	GroupInfo groupInfo[MAX_IAT_GROUPS];
+	memset(groupInfo, 0, sizeof(groupInfo));
+
+	for(int g = 0; g < numGroups; g++){
+		DWORD *groupAddrs = (DWORD*)(pfile + groups[g].startRVA);
+
+		for(int d = 0; d < NUM_COMMON_DLLS; d++){
+			// Open candidate DLL from disk
+			HANDLE hDllFile = INVALID_HANDLE_VALUE;
+			char dllFilePath[MAX_PATH];
+
+			if(LoadedPe==TRUE){
+				char winDir[MAX_PATH];
+				GetWindowsDirectoryA(winDir, MAX_PATH);
+				wsprintf(dllFilePath, "%s\\SysWOW64\\%s", winDir, commonDlls[d]);
+				hDllFile = CreateFileA(dllFilePath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
+			}
+			if(hDllFile == INVALID_HANDLE_VALUE){
+				char sysDir[MAX_PATH];
+				GetSystemDirectoryA(sysDir, MAX_PATH);
+				wsprintf(dllFilePath, "%s\\%s", sysDir, commonDlls[d]);
+				hDllFile = CreateFileA(dllFilePath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
+			}
+			if(hDllFile == INVALID_HANDLE_VALUE) continue;
+
+			HANDLE hDllMapping = CreateFileMappingA(hDllFile, NULL, PAGE_READONLY, 0, 0, NULL);
+			if(!hDllMapping){ CloseHandle(hDllFile); continue; }
+			BYTE *dllFileBase = (BYTE*)MapViewOfFile(hDllMapping, FILE_MAP_READ, 0, 0, 0);
+			if(!dllFileBase){ CloseHandle(hDllMapping); CloseHandle(hDllFile); continue; }
+
+			// Validate PE
+			if(*(WORD*)dllFileBase != IMAGE_DOS_SIGNATURE){
+				UnmapViewOfFile(dllFileBase); CloseHandle(hDllMapping); CloseHandle(hDllFile); continue;
+			}
+			LONG dllLfanew = *(LONG*)(dllFileBase + 0x3C);
+			if(*(DWORD*)(dllFileBase + dllLfanew) != IMAGE_NT_SIGNATURE){
+				UnmapViewOfFile(dllFileBase); CloseHandle(hDllMapping); CloseHandle(hDllFile); continue;
+			}
+
+			BYTE *dllOptHeader = dllFileBase + dllLfanew + 24;
+			WORD dllMagic = *(WORD*)dllOptHeader;
+			DWORD expRVA, expSize;
+			if(dllMagic == 0x20B){ expRVA = *(DWORD*)(dllOptHeader+112); expSize = *(DWORD*)(dllOptHeader+116); }
+			else{ expRVA = *(DWORD*)(dllOptHeader+96); expSize = *(DWORD*)(dllOptHeader+100); }
+
+			if(expRVA == 0 || expSize == 0){
+				UnmapViewOfFile(dllFileBase); CloseHandle(hDllMapping); CloseHandle(hDllFile); continue;
+			}
+
+			IMAGE_EXPORT_DIRECTORY *expDir = (IMAGE_EXPORT_DIRECTORY*)(dllFileBase + DllRvaToFileOffset(dllFileBase, expRVA));
+			DWORD *dllFunctions = (DWORD*)(dllFileBase + DllRvaToFileOffset(dllFileBase, expDir->AddressOfFunctions));
+
+			// Base detection: test_base = group_addr[0] - export_rva
+			// Must be 64KB-aligned
+			bool matched = false;
+			DWORD_PTR bestBase = 0;
+			int bestVerified = 0;
+
+			// Try each export RVA against the first group address
+			for(DWORD e = 0; e < expDir->NumberOfFunctions; e++){
+				if(dllFunctions[e] == 0) continue;
+				// Skip forwarded exports (RVA within export directory range)
+				if(dllFunctions[e] >= expRVA && dllFunctions[e] < expRVA + expSize) continue;
+
+				DWORD_PTR testBase = groupAddrs[0] - dllFunctions[e];
+				if((testBase & 0xFFFF) != 0) continue; // 64KB-aligned check
+
+				// Verify: count how many group addresses match with this base
+				int verified = 0;
+				for(DWORD t = 0; t < groups[g].count; t++){
+					DWORD testRVA = (DWORD)(groupAddrs[t] - testBase);
+					for(DWORD v = 0; v < expDir->NumberOfFunctions; v++){
+						if(dllFunctions[v] == testRVA){
+							verified++;
+							break;
+						}
+					}
+				}
+
+				if(verified > bestVerified){
+					bestVerified = verified;
+					bestBase = testBase;
+				}
+				// Early out if we matched all
+				if((DWORD)bestVerified == groups[g].count) break;
+			}
+
+			// Accept if >= 50% match
+			if(bestVerified > 0 && (DWORD)bestVerified >= (groups[g].count + 1) / 2){
+				// Keep this DLL mapped for function resolution
+				groupInfo[g].identified = true;
+				strcpy(groupInfo[g].dllName, commonDlls[d]);
+				groupInfo[g].dllBase = bestBase;
+				groupInfo[g].dllFileBase = dllFileBase;
+				groupInfo[g].hDllMapping = hDllMapping;
+				groupInfo[g].hDllFile = hDllFile;
+				groupInfo[g].exportDirRVA = expRVA;
+				groupInfo[g].exportDirSize = expSize;
+				groupInfo[g].exportDir = expDir;
+				groupInfo[g].functions = dllFunctions;
+				groupInfo[g].names = (DWORD*)(dllFileBase + DllRvaToFileOffset(dllFileBase, expDir->AddressOfNames));
+				groupInfo[g].ordinals = (WORD*)(dllFileBase + DllRvaToFileOffset(dllFileBase, expDir->AddressOfNameOrdinals));
+
+				wsprintf(InfoText,"IAT Rebuild: Group %d -> %s (base=%08X, matched %d/%d)",
+					g, commonDlls[d], (DWORD)bestBase, bestVerified, groups[g].count);
+				OutDebug(hWnd,InfoText);
+				matched = true;
+			}
+
+			if(!matched){
+				UnmapViewOfFile(dllFileBase);
+				CloseHandle(hDllMapping);
+				CloseHandle(hDllFile);
+			}
+			else{
+				break; // Found the DLL for this group
+			}
+		}
+
+		if(!groupInfo[g].identified){
+			wsprintf(InfoText,"IAT Rebuild: Group %d could not be identified", g);
+			OutDebug(hWnd,InfoText);
+		}
+	}
+
+	// Count identified groups
+	int identifiedCount = 0;
+	for(int g = 0; g < numGroups; g++){
+		if(groupInfo[g].identified) identifiedCount++;
+	}
+
+	if(identifiedCount == 0){
+		OutDebug(hWnd,"IAT Rebuild: No DLLs could be identified from raw IAT. Reconstruction failed.");
+		return;
+	}
+
+	wsprintf(InfoText,"IAT Rebuild: Identified %d/%d groups", identifiedCount, numGroups);
+	OutDebug(hWnd,InfoText);
+
+	// =====================================================
+	// Phase D: Find free space in PE header slack
+	// =====================================================
+	IMAGE_SECTION_HEADER *sec;
+	if(LoadedPe==TRUE){
+		sec = (IMAGE_SECTION_HEADER *)((UCHAR *)(&(nt_header->OptionalHeader))+sizeof(IMAGE_OPTIONAL_HEADER));
+	}
+	else{
+		sec = (IMAGE_SECTION_HEADER *)((UCHAR *)(&(nt_header64->OptionalHeader))+sizeof(IMAGE_OPTIONAL_HEADER64));
+	}
+
+	IMAGE_SECTION_HEADER *lastSecEntry = (IMAGE_SECTION_HEADER *)((UCHAR *)(sec) + NumberOfSections * sizeof(IMAGE_SECTION_HEADER));
+	DWORD headerSlackStart = (DWORD)((BYTE*)lastSecEntry - (BYTE*)pfile);
+	// Align to DWORD boundary
+	headerSlackStart = (headerSlackStart + 3) & ~3;
+
+	DWORD firstSectionStart = 0x1000;
+	if(sec->VirtualAddress > 0){
+		firstSectionStart = sec->VirtualAddress;
+	}
+
+	if(firstSectionStart <= headerSlackStart + 64 || firstSectionStart > (DWORD)hFileSize){
+		OutDebug(hWnd,"IAT Rebuild: Not enough header slack space for import reconstruction.");
+		// Clean up DLL mappings
+		for(int g = 0; g < numGroups; g++){
+			if(groupInfo[g].identified){
+				UnmapViewOfFile(groupInfo[g].dllFileBase);
+				CloseHandle(groupInfo[g].hDllMapping);
+				CloseHandle(groupInfo[g].hDllFile);
+			}
+		}
+		return;
+	}
+
+	DWORD freeSpaceStart = headerSlackStart;
+	DWORD freeSpaceEnd = firstSectionStart;
+	DWORD freeSpaceSize = freeSpaceEnd - freeSpaceStart;
+
+	wsprintf(InfoText,"IAT Rebuild: Header slack: %d bytes at offset %08X-%08X", freeSpaceSize, freeSpaceStart, freeSpaceEnd);
+	OutDebug(hWnd,InfoText);
+
+	// Zero out the header slack area first
+	memset(pfile + freeSpaceStart, 0, freeSpaceSize);
+
+	// =====================================================
+	// Phase E: Write new import table structure
+	// =====================================================
+	// Layout:
+	//   [IMAGE_IMPORT_DESCRIPTOR #0]   (20 bytes each)
+	//   [IMAGE_IMPORT_DESCRIPTOR #1]
+	//   ...
+	//   [IMAGE_IMPORT_DESCRIPTOR null]  (20 bytes, all zeros - terminator)
+	//   "dllname.dll\0"                 (DLL name strings)
+	//   [hint=0]["FuncName\0"]          (IMAGE_IMPORT_BY_NAME entries)
+	//   ...
+
+	DWORD descriptorStart = freeSpaceStart;
+	DWORD descriptorArraySize = (identifiedCount + 1) * sizeof(IMAGE_IMPORT_DESCRIPTOR); // +1 for null terminator
+	DWORD writeOffset = freeSpaceStart + descriptorArraySize;
+	int totalResolved = 0;
+	int totalUnresolved = 0;
+	int descIndex = 0;
+
+	IMAGE_IMPORT_DESCRIPTOR *newDescs = (IMAGE_IMPORT_DESCRIPTOR*)(pfile + descriptorStart);
+
+	for(int g = 0; g < numGroups; g++){
+		if(!groupInfo[g].identified) continue;
+
+		// Check space for DLL name
+		DWORD dllNameLen = 0;
+		while(groupInfo[g].dllName[dllNameLen] != 0) dllNameLen++;
+
+		if(writeOffset + dllNameLen + 1 >= freeSpaceEnd){
+			wsprintf(InfoText,"IAT Rebuild: Out of header space writing DLL name for group %d", g);
+			OutDebug(hWnd,InfoText);
+			break;
+		}
+
+		// Write DLL name string
+		DWORD dllNameRVA = writeOffset; // In header area, file offset == RVA
+		for(DWORD c = 0; c <= dllNameLen; c++){
+			pfile[writeOffset + c] = groupInfo[g].dllName[c];
+		}
+		writeOffset += dllNameLen + 1;
+		// WORD-align
+		writeOffset = (writeOffset + 1) & ~1;
+
+		// Fill in the import descriptor
+		newDescs[descIndex].OriginalFirstThunk = 0; // no OFT
+		newDescs[descIndex].TimeDateStamp = 0;
+		newDescs[descIndex].ForwarderChain = 0;
+		newDescs[descIndex].Name = dllNameRVA;
+		newDescs[descIndex].FirstThunk = groups[g].startRVA;
+
+		wsprintf(InfoText,"IAT Rebuild: Writing descriptor %d: %s, FirstThunk=%08X",
+			descIndex, groupInfo[g].dllName, groups[g].startRVA);
+		OutDebug(hWnd,InfoText);
+
+		// Resolve each function in this group and write hint/name entries
+		DWORD *groupAddrs = (DWORD*)(pfile + groups[g].startRVA);
+		for(DWORD t = 0; t < groups[g].count; t++){
+			DWORD addr = groupAddrs[t];
+			DWORD expRVA = (DWORD)(addr - groupInfo[g].dllBase);
+			char *funcName = NULL;
+
+			// Find the function name by matching the export RVA
+			for(DWORD e = 0; e < groupInfo[g].exportDir->NumberOfFunctions; e++){
+				if(groupInfo[g].functions[e] == expRVA){
+					for(DWORD n = 0; n < groupInfo[g].exportDir->NumberOfNames; n++){
+						if(groupInfo[g].ordinals[n] == e){
+							funcName = (char*)(groupInfo[g].dllFileBase + DllRvaToFileOffset(groupInfo[g].dllFileBase, groupInfo[g].names[n]));
+							break;
+						}
+					}
+					break;
+				}
+			}
+
+			if(funcName != NULL){
+				DWORD nameLen = 0;
+				while(funcName[nameLen] != 0) nameLen++;
+				DWORD entrySize = sizeof(WORD) + nameLen + 1;
+				entrySize = (entrySize + 1) & ~1; // WORD-align
+
+				if(writeOffset + entrySize < freeSpaceEnd){
+					// Write IMAGE_IMPORT_BY_NAME: hint(WORD) + name string
+					*(WORD*)(pfile + writeOffset) = 0; // hint = 0
+					for(DWORD c = 0; c <= nameLen; c++){
+						pfile[writeOffset + sizeof(WORD) + c] = funcName[c];
+					}
+					// Overwrite the IAT entry with the RVA of the hint/name entry
+					groupAddrs[t] = writeOffset;
+					wsprintf(InfoText,"  %s!%s", groupInfo[g].dllName, funcName);
+					OutDebug(hWnd,InfoText);
+					totalResolved++;
+					writeOffset += entrySize;
+				}
+			}
+			else{
+				// Could not resolve - write placeholder
+				char placeholder[64];
+				wsprintf(placeholder, "Unresolved_%08X", addr);
+				DWORD nameLen = 0;
+				while(placeholder[nameLen] != 0) nameLen++;
+				DWORD entrySize = sizeof(WORD) + nameLen + 1;
+				entrySize = (entrySize + 1) & ~1;
+
+				if(writeOffset + entrySize < freeSpaceEnd){
+					*(WORD*)(pfile + writeOffset) = 0;
+					for(DWORD c = 0; c <= nameLen; c++){
+						pfile[writeOffset + sizeof(WORD) + c] = placeholder[c];
+					}
+					groupAddrs[t] = writeOffset;
+					wsprintf(InfoText,"  %s!%s (unresolved)", groupInfo[g].dllName, placeholder);
+					OutDebug(hWnd,InfoText);
+					writeOffset += entrySize;
+				}
+				totalUnresolved++;
+			}
+		}
+
+		descIndex++;
+	}
+
+	// Null-terminate the descriptor array (already zeroed by memset)
+
+	// =====================================================
+	// Phase F: Update DataDirectory[1] (Import Directory)
+	// =====================================================
+	if(LoadedPe==TRUE){
+		nt_header->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress = descriptorStart;
+		nt_header->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].Size = descriptorArraySize;
+	}
+	else if(LoadedPe64==TRUE){
+		nt_header64->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress = descriptorStart;
+		nt_header64->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].Size = descriptorArraySize;
+	}
+
+	wsprintf(InfoText,"IAT Rebuild: Updated DataDirectory[1]: RVA=%08X, Size=%08X", descriptorStart, descriptorArraySize);
+	OutDebug(hWnd,InfoText);
+
+	// =====================================================
+	// Phase G: Log results and clean up
+	// =====================================================
+	OutDebug(hWnd,"");
+	wsprintf(InfoText,"IAT Rebuild: Raw IAT reconstruction complete");
+	OutDebug(hWnd,InfoText);
+	wsprintf(InfoText,"IAT Rebuild: %d groups found, %d DLLs identified", numGroups, identifiedCount);
+	OutDebug(hWnd,InfoText);
+	wsprintf(InfoText,"IAT Rebuild: %d functions resolved, %d unresolved", totalResolved, totalUnresolved);
+	OutDebug(hWnd,InfoText);
+	wsprintf(InfoText,"IAT Rebuild: Used %d/%d bytes of header slack", writeOffset - freeSpaceStart, freeSpaceSize);
+	OutDebug(hWnd,InfoText);
+
+	// Clean up DLL mappings
+	for(int g = 0; g < numGroups; g++){
+		if(groupInfo[g].identified){
+			UnmapViewOfFile(groupInfo[g].dllFileBase);
+			CloseHandle(groupInfo[g].hDllMapping);
+			CloseHandle(groupInfo[g].hDllFile);
+		}
+	}
+}
+
+// ========================================================
 // ============ Rebuild IAT (Import Address Table) ========
 // ========================================================
 void RebuildIAT(HWND hWnd)
@@ -1690,13 +2277,15 @@ void RebuildIAT(HWND hWnd)
 	}
 
 	if(!importsStartRVA){
-		OutDebug(hWnd,"IAT Rebuild: No import directory found, skipping.");
+		OutDebug(hWnd,"IAT Rebuild: No import directory found.");
+		RebuildIAT_RawFallback(hWnd);
 		return;
 	}
 
 	// Bounds check: import directory must be within the file
 	if(importsStartRVA >= (DWORD)hFileSize){
-		OutDebug(hWnd,"IAT Rebuild: Import directory RVA is outside the file, skipping.");
+		OutDebug(hWnd,"IAT Rebuild: Import directory RVA is outside the file.");
+		RebuildIAT_RawFallback(hWnd);
 		return;
 	}
 
@@ -1705,7 +2294,8 @@ void RebuildIAT(HWND hWnd)
 
 	// Validate pointer is within mapped file
 	if((BYTE*)importDesc < (BYTE*)pfile || (BYTE*)importDesc >= (BYTE*)pfile + hFileSize){
-		OutDebug(hWnd,"IAT Rebuild: Import descriptor pointer out of bounds, skipping.");
+		OutDebug(hWnd,"IAT Rebuild: Import descriptor pointer out of bounds.");
+		RebuildIAT_RawFallback(hWnd);
 		return;
 	}
 
@@ -1768,7 +2358,8 @@ void RebuildIAT(HWND hWnd)
 	}
 
 	if(totalThunks == 0){
-		OutDebug(hWnd,"IAT Rebuild: No thunk entries found, skipping.");
+		OutDebug(hWnd,"IAT Rebuild: No thunk entries found in import descriptors.");
+		RebuildIAT_RawFallback(hWnd);
 		return;
 	}
 
@@ -1781,6 +2372,142 @@ void RebuildIAT(HWND hWnd)
 
 	wsprintf(InfoText,"IAT Rebuild: Detected %d/%d resolved thunks. Rebuilding...", resolvedThunks, totalThunks);
 	OutDebug(hWnd,InfoText);
+
+	// =====================================================
+	// Phase 1b: Packer import detection
+	// =====================================================
+	// Pre-scan import descriptors to detect packer-injected imports.
+	// Packers often add a small import table (e.g., 4 kernel32 functions)
+	// at an unusual RVA far from the real imports.
+	struct ImportScanEntry {
+		DWORD ftRVA;
+		int functionCount;
+		char dllName[MAX_PATH];
+		bool isPackerSuspect;
+		int packerScore;
+	};
+	ImportScanEntry importScan[32];
+	int importScanCount = 0;
+	int packerSuspectCount = 0;
+	int totalFuncsAll = 0;
+
+	{
+		PIMAGE_IMPORT_DESCRIPTOR scanDesc = importDesc;
+		while((BYTE*)scanDesc < (BYTE*)pfile + hFileSize - sizeof(IMAGE_IMPORT_DESCRIPTOR) && importScanCount < 32){
+			if(scanDesc->TimeDateStamp == 0 && scanDesc->Name == 0)
+				break;
+			if(scanDesc->Name == 0 || scanDesc->Name >= (DWORD)hFileSize)
+				break;
+
+			DWORD sFtRVA = scanDesc->FirstThunk;
+			if(sFtRVA == 0 || sFtRVA >= (DWORD)hFileSize){
+				scanDesc++;
+				continue;
+			}
+
+			importScan[importScanCount].ftRVA = sFtRVA;
+			importScan[importScanCount].isPackerSuspect = false;
+			importScan[importScanCount].packerScore = 0;
+
+			char *dName = pfile + scanDesc->Name;
+			if((BYTE*)dName >= (BYTE*)pfile && (BYTE*)dName < (BYTE*)pfile + hFileSize){
+				int di = 0;
+				for(; dName[di] != 0 && di < MAX_PATH - 1; di++)
+					importScan[importScanCount].dllName[di] = (char)tolower((unsigned char)dName[di]);
+				importScan[importScanCount].dllName[di] = 0;
+			} else {
+				importScan[importScanCount].dllName[0] = 0;
+			}
+
+			int funcCount = 0;
+			if(LoadedPe==TRUE){
+				PIMAGE_THUNK_DATA32 cntThk = (PIMAGE_THUNK_DATA32)(sFtRVA + (DWORD)pfile);
+				for(int t=0; t<2000; t++){
+					if((BYTE*)cntThk >= (BYTE*)pfile + hFileSize - sizeof(IMAGE_THUNK_DATA32)) break;
+					if(cntThk->u1.AddressOfData == 0) break;
+					funcCount++;
+					cntThk++;
+				}
+			}
+			else if(LoadedPe64==TRUE){
+				PIMAGE_THUNK_DATA64 cntThk64 = (PIMAGE_THUNK_DATA64)(sFtRVA + (DWORD)pfile);
+				for(int t=0; t<2000; t++){
+					if((BYTE*)cntThk64 >= (BYTE*)pfile + hFileSize - sizeof(IMAGE_THUNK_DATA64)) break;
+					if(cntThk64->u1.AddressOfData == 0) break;
+					funcCount++;
+					cntThk64++;
+				}
+			}
+			importScan[importScanCount].functionCount = funcCount;
+			totalFuncsAll += funcCount;
+			importScanCount++;
+			scanDesc++;
+		}
+	}
+
+	// Score each descriptor with heuristics
+	if(importScanCount > 1){
+		// Compute median ftRVA
+		DWORD ftRVAs[32];
+		for(int i=0; i<importScanCount; i++) ftRVAs[i] = importScan[i].ftRVA;
+		for(int i=0; i<importScanCount-1; i++){
+			for(int j=i+1; j<importScanCount; j++){
+				if(ftRVAs[j] < ftRVAs[i]){ DWORD tmp = ftRVAs[i]; ftRVAs[i] = ftRVAs[j]; ftRVAs[j] = tmp; }
+			}
+		}
+		DWORD medianRVA = ftRVAs[importScanCount / 2];
+
+		// Determine last section range
+		IMAGE_SECTION_HEADER *pSec;
+		if(LoadedPe==TRUE)
+			pSec = (IMAGE_SECTION_HEADER *)((UCHAR *)(&(nt_header->OptionalHeader))+sizeof(IMAGE_OPTIONAL_HEADER));
+		else
+			pSec = (IMAGE_SECTION_HEADER *)((UCHAR *)(&(nt_header64->OptionalHeader))+sizeof(IMAGE_OPTIONAL_HEADER64));
+		DWORD lastSecVA = 0, lastSecEnd = 0;
+		if(NumberOfSections > 0){
+			IMAGE_SECTION_HEADER *lastSec = (IMAGE_SECTION_HEADER *)((UCHAR *)(pSec) + (NumberOfSections - 1) * sizeof(IMAGE_SECTION_HEADER));
+			lastSecVA = lastSec->VirtualAddress;
+			lastSecEnd = lastSecVA + lastSec->Misc.VirtualSize;
+		}
+
+		// Check if ALL descriptors have high absolute RVA (packer relocated entire IAT)
+		// Normal PEs have import tables at low RVAs (< 0x100000)
+		bool allHighRVA = true;
+		for(int i=0; i<importScanCount; i++){
+			if(importScan[i].ftRVA <= 0x100000){ allHighRVA = false; break; }
+		}
+
+		for(int i=0; i<importScanCount; i++){
+			int score = 0;
+			DWORD dist = (importScan[i].ftRVA > medianRVA) ?
+				importScan[i].ftRVA - medianRVA : medianRVA - importScan[i].ftRVA;
+
+			if(dist > 0x100000) score += 3;
+			else if(dist > 0x50000) score += 2;
+			else if(dist > 0x10000) score += 1;
+
+			if(importScan[i].functionCount <= 2) score += 2;
+			else if(importScan[i].functionCount <= 5) score += 1;
+
+			if(NumberOfSections > 2 && importScan[i].ftRVA >= lastSecVA && importScan[i].ftRVA < lastSecEnd)
+				score += 2;
+
+			if(totalFuncsAll > 0 && importScan[i].functionCount * 100 / totalFuncsAll < 10)
+				score += 1;
+
+			// All imports at high RVAs suggests packer relocated entire import table
+			if(allHighRVA) score += 1;
+
+			importScan[i].packerScore = score;
+			if(score >= 4){
+				importScan[i].isPackerSuspect = true;
+				packerSuspectCount++;
+				wsprintf(InfoText,"IAT Rebuild: PACKER SUSPECT: %s (ftRVA=%08X, %d funcs, score=%d)",
+					importScan[i].dllName, importScan[i].ftRVA, importScan[i].functionCount, score);
+				OutDebug(hWnd,InfoText);
+			}
+		}
+	}
 
 	// =====================================================
 	// Phase 2: Find free space in the file for new hint/name entries
@@ -1874,7 +2601,12 @@ void RebuildIAT(HWND hWnd)
 	int totalUnresolved = 0;
 	int dllCount = 0;
 
-	// Walk import descriptors again
+	// Walk import descriptors - two-pass processing:
+	// Pass 0: Process non-suspect imports (real IAT gets priority for free space)
+	// Pass 1: Process packer-suspect imports (best-effort)
+	for(int pass=0; pass<2; pass++){
+	if(pass==1 && packerSuspectCount==0) break;
+
 	PIMAGE_IMPORT_DESCRIPTOR curDesc = importDesc;
 
 	while((BYTE*)curDesc < (BYTE*)pfile + hFileSize - sizeof(IMAGE_IMPORT_DESCRIPTOR)){
@@ -1895,6 +2627,19 @@ void RebuildIAT(HWND hWnd)
 			curDesc++;
 			continue;
 		}
+
+		// Look up packer suspect status from Phase 1b scan
+		bool isPacker = false;
+		for(int si=0; si<importScanCount; si++){
+			if(importScan[si].ftRVA == ftRVA){
+				isPacker = importScan[si].isPackerSuspect;
+				break;
+			}
+		}
+
+		// Pass 0: skip packer suspects; Pass 1: skip non-suspects
+		if(pass==0 && isPacker){ curDesc++; continue; }
+		if(pass==1 && !isPacker){ curDesc++; continue; }
 
 		dllCount++;
 
@@ -2517,9 +3262,366 @@ void RebuildIAT(HWND hWnd)
 						tgtBaseFound = (bestVerified64 > 0);
 					}
 
+					// =====================================================
+					// Forward resolution fallbacks (when brute-force fails)
+					// =====================================================
+					bool fallbackCUsed = false;
+
+					// Fallback A: Try preferred ImageBase from target DLL PE header
 					if(!tgtBaseFound){
-						wsprintf(InfoText,"IAT Rebuild:   No valid base found for %s (DLL version may differ from dump source)", targetDllName);
+						ULONGLONG preferredBase = 0;
+						if(tgtMagic == 0x20B)
+							preferredBase = *(ULONGLONG*)(tgtOptHdr + 24);
+						else
+							preferredBase = (ULONGLONG)(*(DWORD*)(tgtOptHdr + 28));
+						int fbAVerified = 0;
+						if(LoadedPe==TRUE){
+							PIMAGE_THUNK_DATA32 vThk = (PIMAGE_THUNK_DATA32)(ftRVA + (DWORD)pfile);
+							while((BYTE*)vThk < (BYTE*)pfile + hFileSize - sizeof(IMAGE_THUNK_DATA32)){
+								if(vThk->u1.AddressOfData == 0) break;
+								if(vThk->u1.AddressOfData > SizeOfImage){
+									DWORD vRVA = (DWORD)((ULONGLONG)vThk->u1.AddressOfData - preferredBase);
+									for(DWORD tv=0; tv<tgtExpDir->NumberOfFunctions; tv++){
+										if(tgtFuncs[tv] == vRVA){ fbAVerified++; break; }
+									}
+								}
+								vThk++;
+							}
+						}
+						else if(LoadedPe64==TRUE){
+							PIMAGE_THUNK_DATA64 vThk64 = (PIMAGE_THUNK_DATA64)(ftRVA + (DWORD)pfile);
+							while((BYTE*)vThk64 < (BYTE*)pfile + hFileSize - sizeof(IMAGE_THUNK_DATA64)){
+								if(vThk64->u1.AddressOfData == 0) break;
+								if(vThk64->u1.AddressOfData > SizeOfImage){
+									DWORD vRVA = (DWORD)(vThk64->u1.AddressOfData - preferredBase);
+									for(DWORD tv=0; tv<tgtExpDir->NumberOfFunctions; tv++){
+										if(tgtFuncs[tv] == vRVA){ fbAVerified++; break; }
+									}
+								}
+								vThk64++;
+							}
+						}
+						if(fbAVerified > 0){
+							tgtCandidateBase = (DWORD_PTR)preferredBase;
+							tgtBaseFound = true;
+							wsprintf(InfoText,"IAT Rebuild:   Fallback A: preferred base %08X (verified %d)", (DWORD)preferredBase, fbAVerified);
+							OutDebug(hWnd,InfoText);
+						}
+					}
+
+					// Fallback B: GetModuleHandle for loaded module base (PE32 only)
+					if(!tgtBaseFound && LoadedPe==TRUE){
+						HMODULE hTgtMod = GetModuleHandleA(targetDllName);
+						if(hTgtMod){
+							DWORD_PTR modBase = (DWORD_PTR)hTgtMod;
+							int fbBVerified = 0;
+							PIMAGE_THUNK_DATA32 vThk = (PIMAGE_THUNK_DATA32)(ftRVA + (DWORD)pfile);
+							while((BYTE*)vThk < (BYTE*)pfile + hFileSize - sizeof(IMAGE_THUNK_DATA32)){
+								if(vThk->u1.AddressOfData == 0) break;
+								if(vThk->u1.AddressOfData > SizeOfImage){
+									DWORD vRVA = (DWORD)(vThk->u1.AddressOfData - modBase);
+									for(DWORD tv=0; tv<tgtExpDir->NumberOfFunctions; tv++){
+										if(tgtFuncs[tv] == vRVA){ fbBVerified++; break; }
+									}
+								}
+								vThk++;
+							}
+							if(fbBVerified > 0){
+								tgtCandidateBase = modBase;
+								tgtBaseFound = true;
+								wsprintf(InfoText,"IAT Rebuild:   Fallback B: in-process base %08X (verified %d)", (DWORD)modBase, fbBVerified);
+								OutDebug(hWnd,InfoText);
+							}
+						}
+					}
+
+					// Fallback C: Name-based resolution without base detection
+					// When DLL versions differ, resolve by matching function names
+					// through the forwarder map instead of relying on RVA-based base detection
+					if(!tgtBaseFound){
+						wsprintf(InfoText,"IAT Rebuild:   Fallback C: name-based resolution for %s", targetDllName);
 						OutDebug(hWnd,InfoText);
+
+						// Build forwarder map from source DLL: for each forwarded export
+						// targeting the current target DLL, store {targetFuncName, originalName}
+						int fwdMapMax = 1024;
+						char *fwdMapTgt = (char*)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, fwdMapMax * 64);
+						char *fwdMapOrig = (char*)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, fwdMapMax * 64);
+						int fwdMapCount = 0;
+
+						if(fwdMapTgt && fwdMapOrig){
+							for(DWORD oe=0; oe<dllExportDir->NumberOfFunctions && fwdMapCount < fwdMapMax; oe++){
+								DWORD oeRVA = dllFunctions[oe];
+								if(oeRVA == 0) continue;
+								if(oeRVA < exportDirRVA || oeRVA >= exportDirRVA + exportDirSize) continue;
+								char *fwd = (char*)(dllFileBase + DllRvaToFileOffset(dllFileBase, oeRVA));
+								char tmpDll[MAX_PATH];
+								int dp = -1;
+								for(int fi=0; fwd[fi]!=0 && fi < MAX_PATH-5; fi++){
+									if(fwd[fi] == '.'){ dp = fi; break; }
+									tmpDll[fi] = (char)tolower((unsigned char)fwd[fi]);
+								}
+								if(dp <= 0) continue;
+								tmpDll[dp] = 0;
+								char tmpFull[MAX_PATH];
+								wsprintf(tmpFull, "%s.dll", tmpDll);
+								if(_stricmp(tmpFull, targetDllName) != 0) continue;
+								char *fwdFunc = &fwd[dp + 1];
+								char *origN = NULL;
+								for(DWORD on=0; on<dllExportDir->NumberOfNames; on++){
+									if(dllOrdinals[on] == oe){
+										origN = (char*)(dllFileBase + DllRvaToFileOffset(dllFileBase, dllNames[on]));
+										break;
+									}
+								}
+								if(!origN) continue;
+								strncpy(fwdMapTgt + fwdMapCount*64, fwdFunc, 63);
+								strncpy(fwdMapOrig + fwdMapCount*64, origN, 63);
+								fwdMapCount++;
+							}
+
+							wsprintf(InfoText,"IAT Rebuild:   Forwarder map: %d entries for %s", fwdMapCount, targetDllName);
+							OutDebug(hWnd,InfoText);
+
+							if(fwdMapCount > 0){
+								// Find best candidate base via cross-verification
+								DWORD_PTR bestBase = 0;
+								int bestMatches = 0;
+
+								if(LoadedPe==TRUE){
+									PIMAGE_THUNK_DATA32 seedThk = (PIMAGE_THUNK_DATA32)(ftRVA + (DWORD)pfile);
+									while((BYTE*)seedThk < (BYTE*)pfile + hFileSize - sizeof(IMAGE_THUNK_DATA32)){
+										if(seedThk->u1.AddressOfData == 0) break;
+										DWORD seedVal = seedThk->u1.AddressOfData;
+										if(seedVal <= SizeOfImage){ seedThk++; continue; }
+										for(DWORD te=0; te<tgtExpDir->NumberOfFunctions; te++){
+											if(tgtFuncs[te] == 0) continue;
+											if(tgtFuncs[te] >= tgtExpRVA && tgtFuncs[te] < tgtExpRVA + tgtExpSize) continue;
+											DWORD_PTR testBase = seedVal - tgtFuncs[te];
+											if((testBase & 0xFFFF) != 0) continue;
+											if(testBase <= 0x10000 || testBase >= 0x7FFF0000) continue;
+											char *teName = NULL;
+											for(DWORD tn=0; tn<tgtExpDir->NumberOfNames; tn++){
+												if(tgtOrds[tn] == (WORD)te){
+													teName = (char*)(tgtBase + DllRvaToFileOffset(tgtBase, tgtNames[tn]));
+													break;
+												}
+											}
+											if(!teName) continue;
+											bool inMap = false;
+											for(int fm=0; fm<fwdMapCount; fm++){
+												if(strcmp(fwdMapTgt + fm*64, teName) == 0){ inMap = true; break; }
+											}
+											if(!inMap) continue;
+											// Cross-verify against all unresolved thunks
+											int matches = 0;
+											PIMAGE_THUNK_DATA32 cvThk = (PIMAGE_THUNK_DATA32)(ftRVA + (DWORD)pfile);
+											while((BYTE*)cvThk < (BYTE*)pfile + hFileSize - sizeof(IMAGE_THUNK_DATA32)){
+												if(cvThk->u1.AddressOfData == 0) break;
+												if(cvThk->u1.AddressOfData > SizeOfImage){
+													DWORD cvRVA = (DWORD)(cvThk->u1.AddressOfData - testBase);
+													for(DWORD tv=0; tv<tgtExpDir->NumberOfFunctions; tv++){
+														if(tgtFuncs[tv] == cvRVA && !(tgtFuncs[tv] >= tgtExpRVA && tgtFuncs[tv] < tgtExpRVA + tgtExpSize)){
+															char *cvName = NULL;
+															for(DWORD cn=0; cn<tgtExpDir->NumberOfNames; cn++){
+																if(tgtOrds[cn] == (WORD)tv){
+																	cvName = (char*)(tgtBase + DllRvaToFileOffset(tgtBase, tgtNames[cn]));
+																	break;
+																}
+															}
+															if(cvName){
+																for(int fm=0; fm<fwdMapCount; fm++){
+																	if(strcmp(fwdMapTgt + fm*64, cvName) == 0){ matches++; break; }
+																}
+															}
+															break;
+														}
+													}
+												}
+												cvThk++;
+											}
+											if(matches > bestMatches){
+												bestMatches = matches;
+												bestBase = testBase;
+												if(matches == unresolvedLeft) break;
+											}
+										}
+										if(bestMatches == unresolvedLeft) break;
+										seedThk++;
+									}
+								}
+								else if(LoadedPe64==TRUE){
+									PIMAGE_THUNK_DATA64 seedThk64 = (PIMAGE_THUNK_DATA64)(ftRVA + (DWORD)pfile);
+									while((BYTE*)seedThk64 < (BYTE*)pfile + hFileSize - sizeof(IMAGE_THUNK_DATA64)){
+										if(seedThk64->u1.AddressOfData == 0) break;
+										ULONGLONG seedVal64 = seedThk64->u1.AddressOfData;
+										if(seedVal64 <= SizeOfImage){ seedThk64++; continue; }
+										for(DWORD te=0; te<tgtExpDir->NumberOfFunctions; te++){
+											if(tgtFuncs[te] == 0) continue;
+											if(tgtFuncs[te] >= tgtExpRVA && tgtFuncs[te] < tgtExpRVA + tgtExpSize) continue;
+											ULONGLONG testBase64 = seedVal64 - tgtFuncs[te];
+											if((testBase64 & 0xFFFF) != 0) continue;
+											if(testBase64 <= 0x10000) continue;
+											char *teName = NULL;
+											for(DWORD tn=0; tn<tgtExpDir->NumberOfNames; tn++){
+												if(tgtOrds[tn] == (WORD)te){
+													teName = (char*)(tgtBase + DllRvaToFileOffset(tgtBase, tgtNames[tn]));
+													break;
+												}
+											}
+											if(!teName) continue;
+											bool inMap = false;
+											for(int fm=0; fm<fwdMapCount; fm++){
+												if(strcmp(fwdMapTgt + fm*64, teName) == 0){ inMap = true; break; }
+											}
+											if(!inMap) continue;
+											int matches = 0;
+											PIMAGE_THUNK_DATA64 cvThk64 = (PIMAGE_THUNK_DATA64)(ftRVA + (DWORD)pfile);
+											while((BYTE*)cvThk64 < (BYTE*)pfile + hFileSize - sizeof(IMAGE_THUNK_DATA64)){
+												if(cvThk64->u1.AddressOfData == 0) break;
+												if(cvThk64->u1.AddressOfData > SizeOfImage){
+													DWORD cvRVA = (DWORD)(cvThk64->u1.AddressOfData - testBase64);
+													for(DWORD tv=0; tv<tgtExpDir->NumberOfFunctions; tv++){
+														if(tgtFuncs[tv] == cvRVA && !(tgtFuncs[tv] >= tgtExpRVA && tgtFuncs[tv] < tgtExpRVA + tgtExpSize)){
+															char *cvName = NULL;
+															for(DWORD cn=0; cn<tgtExpDir->NumberOfNames; cn++){
+																if(tgtOrds[cn] == (WORD)tv){
+																	cvName = (char*)(tgtBase + DllRvaToFileOffset(tgtBase, tgtNames[cn]));
+																	break;
+																}
+															}
+															if(cvName){
+																for(int fm=0; fm<fwdMapCount; fm++){
+																	if(strcmp(fwdMapTgt + fm*64, cvName) == 0){ matches++; break; }
+																}
+															}
+															break;
+														}
+													}
+												}
+												cvThk64++;
+											}
+											if(matches > bestMatches){
+												bestMatches = matches;
+												bestBase = (DWORD_PTR)testBase64;
+												if(matches == unresolvedLeft) break;
+											}
+										}
+										if(bestMatches == unresolvedLeft) break;
+										seedThk64++;
+									}
+								}
+
+								// Resolve thunks using bestBase + forwarder map
+								if(bestMatches > 0){
+									wsprintf(InfoText,"IAT Rebuild:   Fallback C: base %08X resolves %d thunks via name matching", (DWORD)bestBase, bestMatches);
+									OutDebug(hWnd,InfoText);
+
+									if(LoadedPe==TRUE){
+										PIMAGE_THUNK_DATA32 rThk = (PIMAGE_THUNK_DATA32)(ftRVA + (DWORD)pfile);
+										while((BYTE*)rThk < (BYTE*)pfile + hFileSize - sizeof(IMAGE_THUNK_DATA32)){
+											if(rThk->u1.AddressOfData == 0) break;
+											DWORD rVal = rThk->u1.AddressOfData;
+											if(rVal <= SizeOfImage){ rThk++; continue; }
+											DWORD rRVA = (DWORD)(rVal - bestBase);
+											char *tgtFuncName = NULL;
+											for(DWORD tn=0; tn<tgtExpDir->NumberOfNames; tn++){
+												DWORD tIdx = tgtOrds[tn];
+												if(tIdx < tgtExpDir->NumberOfFunctions && tgtFuncs[tIdx] == rRVA){
+													tgtFuncName = (char*)(tgtBase + DllRvaToFileOffset(tgtBase, tgtNames[tn]));
+													break;
+												}
+											}
+											char *originalName = NULL;
+											if(tgtFuncName){
+												for(int fm=0; fm<fwdMapCount; fm++){
+													if(strcmp(fwdMapTgt + fm*64, tgtFuncName) == 0){
+														originalName = fwdMapOrig + fm*64;
+														break;
+													}
+												}
+											}
+											if(originalName){
+												DWORD nameLen = 0;
+												while(originalName[nameLen] != 0) nameLen++;
+												DWORD entrySize = (sizeof(WORD) + nameLen + 1 + 3) & ~3;
+												if(writeOffset + entrySize <= spaceEnd && writeOffset + entrySize <= (DWORD)hFileSize){
+													*(WORD*)(pfile + writeOffset) = 0;
+													for(DWORD c=0; c<=nameLen; c++)
+														pfile[writeOffset + sizeof(WORD) + c] = originalName[c];
+													rThk->u1.AddressOfData = writeOffset;
+													wsprintf(InfoText,"  %s!%s (via %s, name-matched)", normalizedDll, originalName, targetDllName);
+													OutDebug(hWnd,InfoText);
+													totalResolved++;
+													unresolvedLeft--;
+													writeOffset += entrySize;
+												}
+											}
+											rThk++;
+										}
+									}
+									else if(LoadedPe64==TRUE){
+										PIMAGE_THUNK_DATA64 rThk64 = (PIMAGE_THUNK_DATA64)(ftRVA + (DWORD)pfile);
+										while((BYTE*)rThk64 < (BYTE*)pfile + hFileSize - sizeof(IMAGE_THUNK_DATA64)){
+											if(rThk64->u1.AddressOfData == 0) break;
+											if(rThk64->u1.AddressOfData <= SizeOfImage){ rThk64++; continue; }
+											DWORD rRVA = (DWORD)(rThk64->u1.AddressOfData - (ULONGLONG)bestBase);
+											char *tgtFuncName = NULL;
+											for(DWORD tn=0; tn<tgtExpDir->NumberOfNames; tn++){
+												DWORD tIdx = tgtOrds[tn];
+												if(tIdx < tgtExpDir->NumberOfFunctions && tgtFuncs[tIdx] == rRVA){
+													tgtFuncName = (char*)(tgtBase + DllRvaToFileOffset(tgtBase, tgtNames[tn]));
+													break;
+												}
+											}
+											char *originalName = NULL;
+											if(tgtFuncName){
+												for(int fm=0; fm<fwdMapCount; fm++){
+													if(strcmp(fwdMapTgt + fm*64, tgtFuncName) == 0){
+														originalName = fwdMapOrig + fm*64;
+														break;
+													}
+												}
+											}
+											if(originalName){
+												DWORD nameLen = 0;
+												while(originalName[nameLen] != 0) nameLen++;
+												DWORD entrySize = (sizeof(WORD) + nameLen + 1 + 3) & ~3;
+												if(writeOffset + entrySize <= spaceEnd && writeOffset + entrySize <= (DWORD)hFileSize){
+													*(WORD*)(pfile + writeOffset) = 0;
+													for(DWORD c=0; c<=nameLen; c++)
+														pfile[writeOffset + sizeof(WORD) + c] = originalName[c];
+													rThk64->u1.AddressOfData = (ULONGLONG)writeOffset;
+													wsprintf(InfoText,"  %s!%s (via %s, name-matched)", normalizedDll, originalName, targetDllName);
+													OutDebug(hWnd,InfoText);
+													totalResolved++;
+													unresolvedLeft--;
+													writeOffset += entrySize;
+												}
+											}
+											rThk64++;
+										}
+									}
+									fallbackCUsed = true;
+								}
+							}
+						}
+
+						if(fwdMapTgt) HeapFree(GetProcessHeap(), 0, fwdMapTgt);
+						if(fwdMapOrig) HeapFree(GetProcessHeap(), 0, fwdMapOrig);
+					}
+
+					if(!tgtBaseFound && !fallbackCUsed){
+						wsprintf(InfoText,"IAT Rebuild:   All fallbacks exhausted for %s. DLL version differs significantly from dump source.", targetDllName);
+						OutDebug(hWnd,InfoText);
+						UnmapViewOfFile(tgtBase);
+						CloseHandle(hTgtMapping);
+						CloseHandle(hTgtFile);
+						continue;
+					}
+
+					if(fallbackCUsed){
+						// Fallback C resolved thunks directly, skip normal base-dependent resolution
 						UnmapViewOfFile(tgtBase);
 						CloseHandle(hTgtMapping);
 						CloseHandle(hTgtFile);
@@ -2667,53 +3769,84 @@ void RebuildIAT(HWND hWnd)
 
 		// Write placeholder entries for remaining unresolved thunks
 		// This prevents ShowImports from crashing on invalid thunk values
-		if(LoadedPe==TRUE){
-			PIMAGE_THUNK_DATA32 finalThk = (PIMAGE_THUNK_DATA32)(ftRVA + (DWORD)pfile);
-			while((BYTE*)finalThk < (BYTE*)pfile + hFileSize - sizeof(IMAGE_THUNK_DATA32)){
-				if(finalThk->u1.AddressOfData == 0) break;
-				if(finalThk->u1.AddressOfData > SizeOfImage){
-					// Build placeholder name like "Unresolved_771C4230"
-					char placeholder[64];
-					wsprintf(placeholder, "Unresolved_%08X", finalThk->u1.AddressOfData);
-					DWORD nameLen = 0;
-					while(placeholder[nameLen] != 0) nameLen++;
-					DWORD entrySize = (sizeof(WORD) + nameLen + 1 + 3) & ~3;
-					if(writeOffset + entrySize <= spaceEnd && writeOffset + entrySize <= (DWORD)hFileSize){
-						*(WORD*)(pfile + writeOffset) = 0; // hint = 0
-						for(DWORD c=0; c<=nameLen; c++)
-							pfile[writeOffset + sizeof(WORD) + c] = placeholder[c];
-						wsprintf(InfoText,"  %s!%s (unresolved)", normalizedDll, placeholder);
-						OutDebug(hWnd,InfoText);
-						finalThk->u1.AddressOfData = writeOffset;
-						writeOffset += entrySize;
+		// For packer-suspect imports: zero out instead of writing placeholders
+		if(isPacker){
+			int packerZeroed = 0;
+			if(LoadedPe==TRUE){
+				PIMAGE_THUNK_DATA32 finalThk = (PIMAGE_THUNK_DATA32)(ftRVA + (DWORD)pfile);
+				while((BYTE*)finalThk < (BYTE*)pfile + hFileSize - sizeof(IMAGE_THUNK_DATA32)){
+					if(finalThk->u1.AddressOfData == 0) break;
+					if(finalThk->u1.AddressOfData > SizeOfImage){
+						finalThk->u1.AddressOfData = 0;
+						packerZeroed++;
 					}
-					totalUnresolved++;
+					finalThk++;
 				}
-				finalThk++;
+			}
+			else if(LoadedPe64==TRUE){
+				PIMAGE_THUNK_DATA64 finalThk64 = (PIMAGE_THUNK_DATA64)(ftRVA + (DWORD)pfile);
+				while((BYTE*)finalThk64 < (BYTE*)pfile + hFileSize - sizeof(IMAGE_THUNK_DATA64)){
+					if(finalThk64->u1.AddressOfData == 0) break;
+					if(finalThk64->u1.AddressOfData > SizeOfImage){
+						finalThk64->u1.AddressOfData = 0;
+						packerZeroed++;
+					}
+					finalThk64++;
+				}
+			}
+			if(packerZeroed > 0){
+				wsprintf(InfoText,"  Packer import: %d thunks unresolved, zeroed (non-essential)", packerZeroed);
+				OutDebug(hWnd,InfoText);
 			}
 		}
-		else if(LoadedPe64==TRUE){
-			PIMAGE_THUNK_DATA64 finalThk64 = (PIMAGE_THUNK_DATA64)(ftRVA + (DWORD)pfile);
-			while((BYTE*)finalThk64 < (BYTE*)pfile + hFileSize - sizeof(IMAGE_THUNK_DATA64)){
-				if(finalThk64->u1.AddressOfData == 0) break;
-				if(finalThk64->u1.AddressOfData > SizeOfImage){
-					char placeholder[64];
-					wsprintf(placeholder, "Unresolved_%I64X", finalThk64->u1.AddressOfData);
-					DWORD nameLen = 0;
-					while(placeholder[nameLen] != 0) nameLen++;
-					DWORD entrySize = (sizeof(WORD) + nameLen + 1 + 3) & ~3;
-					if(writeOffset + entrySize <= spaceEnd && writeOffset + entrySize <= (DWORD)hFileSize){
-						*(WORD*)(pfile + writeOffset) = 0;
-						for(DWORD c=0; c<=nameLen; c++)
-							pfile[writeOffset + sizeof(WORD) + c] = placeholder[c];
-						wsprintf(InfoText,"  %s!%s (unresolved)", normalizedDll, placeholder);
-						OutDebug(hWnd,InfoText);
-						finalThk64->u1.AddressOfData = (ULONGLONG)writeOffset;
-						writeOffset += entrySize;
+		else{
+			if(LoadedPe==TRUE){
+				PIMAGE_THUNK_DATA32 finalThk = (PIMAGE_THUNK_DATA32)(ftRVA + (DWORD)pfile);
+				while((BYTE*)finalThk < (BYTE*)pfile + hFileSize - sizeof(IMAGE_THUNK_DATA32)){
+					if(finalThk->u1.AddressOfData == 0) break;
+					if(finalThk->u1.AddressOfData > SizeOfImage){
+						char placeholder[64];
+						wsprintf(placeholder, "Unresolved_%08X", finalThk->u1.AddressOfData);
+						DWORD nameLen = 0;
+						while(placeholder[nameLen] != 0) nameLen++;
+						DWORD entrySize = (sizeof(WORD) + nameLen + 1 + 3) & ~3;
+						if(writeOffset + entrySize <= spaceEnd && writeOffset + entrySize <= (DWORD)hFileSize){
+							*(WORD*)(pfile + writeOffset) = 0; // hint = 0
+							for(DWORD c=0; c<=nameLen; c++)
+								pfile[writeOffset + sizeof(WORD) + c] = placeholder[c];
+							wsprintf(InfoText,"  %s!%s (unresolved)", normalizedDll, placeholder);
+							OutDebug(hWnd,InfoText);
+							finalThk->u1.AddressOfData = writeOffset;
+							writeOffset += entrySize;
+						}
+						totalUnresolved++;
 					}
-					totalUnresolved++;
+					finalThk++;
 				}
-				finalThk64++;
+			}
+			else if(LoadedPe64==TRUE){
+				PIMAGE_THUNK_DATA64 finalThk64 = (PIMAGE_THUNK_DATA64)(ftRVA + (DWORD)pfile);
+				while((BYTE*)finalThk64 < (BYTE*)pfile + hFileSize - sizeof(IMAGE_THUNK_DATA64)){
+					if(finalThk64->u1.AddressOfData == 0) break;
+					if(finalThk64->u1.AddressOfData > SizeOfImage){
+						char placeholder[64];
+						wsprintf(placeholder, "Unresolved_%I64X", finalThk64->u1.AddressOfData);
+						DWORD nameLen = 0;
+						while(placeholder[nameLen] != 0) nameLen++;
+						DWORD entrySize = (sizeof(WORD) + nameLen + 1 + 3) & ~3;
+						if(writeOffset + entrySize <= spaceEnd && writeOffset + entrySize <= (DWORD)hFileSize){
+							*(WORD*)(pfile + writeOffset) = 0;
+							for(DWORD c=0; c<=nameLen; c++)
+								pfile[writeOffset + sizeof(WORD) + c] = placeholder[c];
+							wsprintf(InfoText,"  %s!%s (unresolved)", normalizedDll, placeholder);
+							OutDebug(hWnd,InfoText);
+							finalThk64->u1.AddressOfData = (ULONGLONG)writeOffset;
+							writeOffset += entrySize;
+						}
+						totalUnresolved++;
+					}
+					finalThk64++;
+				}
 			}
 		}
 
@@ -2723,11 +3856,13 @@ void RebuildIAT(HWND hWnd)
 		curDesc++;
 	}
 
+	} // end two-pass for loop
+
 	// =====================================================
 	// Phase 5: Log results
 	// =====================================================
 	OutDebug(hWnd,"");
-	wsprintf(InfoText,"IAT Rebuild: Processed %d DLLs", dllCount);
+	wsprintf(InfoText,"IAT Rebuild: Processed %d DLLs (%d packer-suspect)", dllCount, packerSuspectCount);
 	OutDebug(hWnd,InfoText);
 	wsprintf(InfoText,"IAT Rebuild: Resolved %d functions, %d unresolved", totalResolved, totalUnresolved);
 	OutDebug(hWnd,InfoText);
@@ -2845,24 +3980,34 @@ void ShowImports(HWND hWnd)
 	// No section ?
 	if (!pSection)
 	{
-		tvinsert.hParent=NULL;			// top most level no need handle
-		tvinsert.hInsertAfter=TVI_ROOT; // work as root level
-		tvinsert.item.mask=TVIF_TEXT|TVIF_IMAGE|TVIF_SELECTEDIMAGE;
-		tvinsert.item.pszText="No Imports";
-		tvinsert.item.iImage=0;
-		tvinsert.item.iSelectedImage=1;
-		SendDlgItemMessage(hWnd,IDC_IMPORTS_TREE,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
-		return;
+		// Check if the import directory is in the PE header area (e.g. after raw IAT reconstruction)
+		// In the header area, file offset == RVA, so delta = 0
+		DWORD sizeOfHeaders = LoadedPe ? nt_header->OptionalHeader.SizeOfHeaders
+		                               : nt_header64->OptionalHeader.SizeOfHeaders;
+		if(importsStartRVA < sizeOfHeaders && importsStartRVA + sizeof(IMAGE_IMPORT_DESCRIPTOR) <= (DWORD)hFileSize){
+			delta = 0; // Header area: file offset == RVA
+		} else {
+			tvinsert.hParent=NULL;			// top most level no need handle
+			tvinsert.hInsertAfter=TVI_ROOT; // work as root level
+			tvinsert.item.mask=TVIF_TEXT|TVIF_IMAGE|TVIF_SELECTEDIMAGE;
+			tvinsert.item.pszText="No Imports";
+			tvinsert.item.iImage=0;
+			tvinsert.item.iSelectedImage=1;
+			SendDlgItemMessage(hWnd,IDC_IMPORTS_TREE,TVM_INSERTITEM,0,(LPARAM)&tvinsert);
+			return;
+		}
 	}
-
-	// VA-Pointer to the offset
-	delta = (INT)(pSection->VirtualAddress - pSection->PointerToRawData);
+	else
+	{
+		// VA-Pointer to the offset
+		delta = (INT)(pSection->VirtualAddress - pSection->PointerToRawData);
+	}
 	
 	// (Use that value to go to the first IMAGE_IMPORT_DESCRIPTOR structure )
 	// Get the address of DLL pointers
 	importDesc = (PIMAGE_IMPORT_DESCRIPTOR) (importsStartRVA - delta + (DWORD)pfile);
 
-    if (importDesc==0 || (BYTE*)importDesc < (BYTE*)pfile || (BYTE*)importDesc > (BYTE*)pfile + nt_header->OptionalHeader.SizeOfImage) {
+    if (importDesc==0 || (BYTE*)importDesc < (BYTE*)pfile || (BYTE*)importDesc >= (BYTE*)pfile + hFileSize) {
 		tvinsert.hParent=NULL;			// top most level no need handle
 		tvinsert.hInsertAfter=TVI_ROOT; // work as root level
 		tvinsert.item.mask=TVIF_TEXT|TVIF_IMAGE|TVIF_SELECTEDIMAGE;
