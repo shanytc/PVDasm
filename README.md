@@ -60,9 +60,17 @@ ProView is an educational project aimed at building a custom disassembler and de
 
 ### 2026
 
+#### March 12, 2026
+- Fixed hex editor crash on 64-bit: EDITSTREAM struct layout mismatch with RAHexEd DLL
+  - DLL uses 8-byte aligned `pfnCallback` (offset 16, 24 bytes total) vs SDK `pack(4)` layout (offset 12, 20 bytes)
+  - Added `RAHEX_EDITSTREAM` struct matching the DLL for both 32-bit and 64-bit builds
+- Fixed `DWORD` to `DWORD_PTR` for stream callback handles (64-bit handle truncation)
+- Fixed `strcpy_s` buffer overflow in hex editor file loading (`Temp[20]` to `Temp[MAX_PATH]`)
+- Added `WS_VISIBLE` to RAHEXEDIT control in hex editor dialog resource
+
 #### March 11, 2026
-- Added Support for Visual Basic 5/6 Decompilation- Thanks @sp0tz for the PR.
-- Refactred/Enhanced PE/PE+ rebuild capabilities:
+- Added Support for Visual Basic 5/6 Decompilation - Thanks @sp0tz for the PR.
+- Refactored/Enhanced PE/PE+ rebuild capabilities:
   - Scylla/ImpREC like IAT builder for dumped processes
 
 #### January 20, 2026
