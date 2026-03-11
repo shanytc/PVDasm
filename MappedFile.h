@@ -91,7 +91,13 @@ typedef MapTree::iterator					TreeMapItr;
 // =========================  DEFINES  ============================
 // ================================================================
 
-#define PVDASM "PVDasm v1.9 Program Disassembler"
+#define PVDASM_VERSION "1.9"
+
+#ifdef _M_X64
+#define PVDASM "PVDasm v" PVDASM_VERSION " Disassembler (64Bit)"
+#else
+#define PVDASM "PVDasm v" PVDASM_VERSION " Disassembler (32Bit)"
+#endif
 #define WIN32_LEAN_AND_MEAN // Discard old includes
 
 #define AddNewData(key,data) DataAddersses.insert(MapTreeAdd(key,data));

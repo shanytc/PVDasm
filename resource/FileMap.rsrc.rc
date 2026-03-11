@@ -465,7 +465,7 @@ BEGIN
     EDITTEXT        IDC_FAKE_EDIT,5,173,24,12,ES_AUTOHSCROLL | ES_WANTRETURN
     PUSHBUTTON      "OK",IDC_EXIT_ABOUT,159,125,19,11
     LTEXT           "Greetings goes to:",IDC_STATIC,52,38,33,8
-    LTEXT           "PVDasm v1.9",IDC_STATIC,87,26,48,8
+    LTEXT           "",IDC_ABOUT_VERSION,87,26,48,8
     LTEXT           "Shany Golan / 2026",IDC_STATIC,75,127,71,8
     LTEXT           "Goofy - The Man && The Lengend.",IDC_STATIC,52,50,107,8
     LTEXT           "Detten - Thanks for your big help!",IDC_STATIC,52,59,106,8

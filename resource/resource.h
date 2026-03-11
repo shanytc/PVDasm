@@ -434,6 +434,7 @@
 #define IDC_COMMENT_FINDNEXT            1331
 #define IDC_IMPORT_FINDNEXT             1332
 #define IDC_STRREF_FINDNEXT             1333
+#define IDC_ABOUT_VERSION               1334
 
 #define IDR_HISTORY                     245
 #define IDM_HISTORY_COPY                40110
@@ -445,7 +446,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        246
 #define _APS_NEXT_COMMAND_VALUE         40112
-#define _APS_NEXT_CONTROL_VALUE         1334
+#define _APS_NEXT_CONTROL_VALUE         1335
 #define _APS_NEXT_SYMED_VALUE           121
 #endif
 #endif
