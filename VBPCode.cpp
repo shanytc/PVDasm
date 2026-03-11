@@ -100,6 +100,12 @@ DWORD_PTR VBVAToFileOffset(const BYTE* pFileData, DWORD_PTR fileSize, DWORD va)
             return (fileOff < fileSize) ? (DWORD_PTR)fileOff : (DWORD_PTR)-1;
         }
     }
+
+    // Header area: RVA < SizeOfHeaders means file offset == RVA
+    // (import tables rebuilt into header slack by PE rebuild)
+    if (rva < nt->OptionalHeader.SizeOfHeaders && rva < fileSize)
+        return (DWORD_PTR)rva;
+
     return (DWORD_PTR)-1;
 }
 

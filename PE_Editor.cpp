@@ -1597,13 +1597,23 @@ void RebuildPE(HWND hWnd)
 		sec_iter->PointerToRawData		= sec_iter->VirtualAddress;
 		OutDebug(hWnd,InfoText);
 
-		// Fix section characteristics: replace UNINITIALIZED_DATA with CODE if section
-		// has EXECUTE permission and contains actual data (not a true BSS section)
-		if((sec_iter->Characteristics & IMAGE_SCN_CNT_UNINITIALIZED_DATA) &&
-		   (sec_iter->Characteristics & IMAGE_SCN_MEM_EXECUTE)){
-			sec_iter->Characteristics = (sec_iter->Characteristics & ~IMAGE_SCN_CNT_UNINITIALIZED_DATA) | IMAGE_SCN_CNT_CODE;
-			wsprintf(InfoText,"Overiding Section: %s -> Fixed characteristics: UNINIT_DATA -> CODE",sec_iter->Name);
-			OutDebug(hWnd,InfoText);
+		// Fix section characteristics for rebuilt dumps:
+		// Packers garble flags and dumped PEs need permissive permissions.
+		// Ensure all sections have READ+WRITE (standard for dump tools like Scylla).
+		// Fix UNINIT_DATA -> CODE on executable sections.
+		{
+			DWORD oldChars = sec_iter->Characteristics;
+			if((sec_iter->Characteristics & IMAGE_SCN_CNT_UNINITIALIZED_DATA) &&
+			   (sec_iter->Characteristics & IMAGE_SCN_MEM_EXECUTE)){
+				sec_iter->Characteristics = (sec_iter->Characteristics & ~IMAGE_SCN_CNT_UNINITIALIZED_DATA) | IMAGE_SCN_CNT_CODE;
+			}
+			// All sections get READ+WRITE for rebuilt dumps
+			sec_iter->Characteristics |= IMAGE_SCN_MEM_READ | IMAGE_SCN_MEM_WRITE;
+			if(sec_iter->Characteristics != oldChars){
+				wsprintf(InfoText,"Overiding Section: %s -> Fixed characteristics: %08X -> %08X",
+					sec_iter->Name, oldChars, sec_iter->Characteristics);
+				OutDebug(hWnd,InfoText);
+			}
 		}
 
 		OutDebug(hWnd,"");
