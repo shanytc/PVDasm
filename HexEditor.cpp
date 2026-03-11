@@ -52,15 +52,20 @@ HMODULE  hRadHex;
 //MSG      Msg;
 char     FileName[MAX_PATH]="";
 
-// RAHexEd DLL uses an EDITSTREAM with 8-byte aligned pfnCallback (offset 16, total 24).
-// The Windows SDK richedit.h packs EDITSTREAM with pack(4) (pfnCallback at offset 12, total 20).
-// Define a matching struct so the layout agrees with the DLL.
+// RAHexEd DLL EDITSTREAM layout differs from Windows SDK richedit.h on x64.
+// On x64: DLL has 8-byte aligned pfnCallback (offset 16, total 24),
+//          but SDK uses pack(4) putting pfnCallback at offset 12 (total 20).
+// On x86: Both layouts match naturally (pfnCallback at offset 8, total 12).
+#ifdef _WIN64
 typedef struct {
     DWORD_PTR dwCookie;                 // offset 0,  size 8
     DWORD     dwError;                  // offset 8,  size 4
     DWORD     _pad;                     // offset 12, size 4
     EDITSTREAMCALLBACK pfnCallback;     // offset 16, size 8
 } RAHEX_EDITSTREAM;                     // total 24 bytes
+#else
+typedef EDITSTREAM RAHEX_EDITSTREAM;    // total 12 bytes, matches DLL as-is
+#endif
 
 //////////////////////////////////////////////////////////////////////////
 //							DEFINES										//
