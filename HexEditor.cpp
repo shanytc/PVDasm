@@ -52,6 +52,16 @@ HMODULE  hRadHex;
 //MSG      Msg;
 char     FileName[MAX_PATH]="";
 
+// RAHexEd DLL uses an EDITSTREAM with 8-byte aligned pfnCallback (offset 16, total 24).
+// The Windows SDK richedit.h packs EDITSTREAM with pack(4) (pfnCallback at offset 12, total 20).
+// Define a matching struct so the layout agrees with the DLL.
+typedef struct {
+    DWORD_PTR dwCookie;                 // offset 0,  size 8
+    DWORD     dwError;                  // offset 8,  size 4
+    DWORD     _pad;                     // offset 12, size 4
+    EDITSTREAMCALLBACK pfnCallback;     // offset 16, size 8
+} RAHEX_EDITSTREAM;                     // total 24 bytes
+
 //////////////////////////////////////////////////////////////////////////
 //							DEFINES										//
 //////////////////////////////////////////////////////////////////////////
@@ -237,16 +247,16 @@ void LoadFileToRAHexEd(HWND hWnd)
 {
     // File Select dialog struct
 	OPENFILENAME ofn;
-    EDITSTREAM editstream;
+    RAHEX_EDITSTREAM editstream;
     CHARRANGE chrg;
     HANDLE hFile;
     HWND RadHexhWnd=GetDlgItem(hWnd,IDC_RAHEXEDIT);
     HMENU Menu = GetMenu(hWnd);
-    char Temp[20]="",Text[256]="";
+    char Temp[MAX_PATH]="",Text[MAX_PATH+64]="";
 
 	// Intialize struct
 	ZeroMemory(&ofn, sizeof(OPENFILENAME));
-    ZeroMemory(&editstream, sizeof(EDITSTREAM));
+    ZeroMemory(&editstream, sizeof(editstream));
     ZeroMemory(&chrg, sizeof(CHARRANGE));
 
 	ofn.lStructSize = sizeof(OPENFILENAME); // SEE NOTE BELOW
@@ -271,16 +281,17 @@ void LoadFileToRAHexEd(HWND hWnd)
 
     if(hFile==INVALID_HANDLE_VALUE)
 		return;
-    
-    strcpy_s(Temp,StringLen(FileName)+1,FileName);
+
+    strcpy_s(Temp,sizeof(Temp),FileName);
     GetExeName(Temp);
     wsprintf(Text," HexEditor - [%s]",Temp);
     SetWindowText(hWnd,Text);
 
-    editstream.dwCookie = (DWORD)hFile;
+    editstream.dwCookie = (DWORD_PTR)hFile;
     editstream.pfnCallback=(EDITSTREAMCALLBACK)StreamInProc;
 
     SendMessage(RadHexhWnd,EM_STREAMIN,(WPARAM)SF_TEXT,(LPARAM)&editstream);
+
     CloseHandle(hFile);
     SendMessage(RadHexhWnd,EM_SETMODIFY,FALSE,0);
     chrg.cpMin=0;
@@ -331,17 +342,16 @@ void SaveFileAsFromRaHexEd(HWND hWnd)
     else MessageBox(hWnd,"Nothing To Save, No Changes!","Opps",MB_OK);
 }
 
-DWORD CALLBACK StreamInProc(DWORD dwCookie, LPBYTE lpbBuff, LONG cb, LONG FAR *pcb)
+DWORD CALLBACK StreamInProc(DWORD_PTR dwCookie, LPBYTE lpbBuff, LONG cb, LONG FAR *pcb)
 {
     HANDLE hFile = (HANDLE)dwCookie;
 
-    if (!ReadFile(hFile,
-            (LPVOID)lpbBuff, cb, (LPDWORD)pcb, NULL))
+    if (!ReadFile(hFile, (LPVOID)lpbBuff, cb, (LPDWORD)pcb, NULL))
         return((DWORD)-1);
     return(0);
 }
 
-DWORD CALLBACK StreamOutProc(DWORD dwCookie, LPBYTE lpbBuff, LONG cb, LONG FAR *pcb)
+DWORD CALLBACK StreamOutProc(DWORD_PTR dwCookie, LPBYTE lpbBuff, LONG cb, LONG FAR *pcb)
 {
     HANDLE hFile = (HANDLE)dwCookie;
 
@@ -353,11 +363,11 @@ DWORD CALLBACK StreamOutProc(DWORD dwCookie, LPBYTE lpbBuff, LONG cb, LONG FAR *
 
 void SaveFile(HWND RadWin,char *FileName)
 {
-    EDITSTREAM editstream;
+    RAHEX_EDITSTREAM editstream;
     HANDLE hFile;
 
     // Init the struct to Zero
-    ZeroMemory(&editstream, sizeof(EDITSTREAM));
+    ZeroMemory(&editstream, sizeof(editstream));
 
     hFile=CreateFile(FileName,
             GENERIC_WRITE,
@@ -370,7 +380,7 @@ void SaveFile(HWND RadWin,char *FileName)
     if(hFile==INVALID_HANDLE_VALUE)
         return;
     
-    editstream.dwCookie = (DWORD)hFile;
+    editstream.dwCookie = (DWORD_PTR)hFile;
     editstream.pfnCallback=(EDITSTREAMCALLBACK)StreamOutProc;
     SendMessage(RadWin,EM_STREAMOUT,(WPARAM)SF_TEXT,(LPARAM)&editstream);
     CloseHandle(hFile);

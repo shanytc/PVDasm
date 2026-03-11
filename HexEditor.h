@@ -111,7 +111,7 @@ void Hide_UnHide_RadHexAscii	( HWND hWnd						);
 void UpperLower_caseRadHex		( HWND hWnd						);
 
 BOOL  CALLBACK HexEditorProc ( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam  );
-DWORD CALLBACK StreamInProc  ( DWORD dwCookie, LPBYTE lpbBuff, LONG cb, LONG FAR *pcb );
-DWORD CALLBACK StreamOutProc ( DWORD dwCookie, LPBYTE lpbBuff, LONG cb, LONG FAR *pcb );
+DWORD CALLBACK StreamInProc  ( DWORD_PTR dwCookie, LPBYTE lpbBuff, LONG cb, LONG FAR *pcb );
+DWORD CALLBACK StreamOutProc ( DWORD_PTR dwCookie, LPBYTE lpbBuff, LONG cb, LONG FAR *pcb );
 
 #endif
