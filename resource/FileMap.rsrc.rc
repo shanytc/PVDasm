@@ -228,6 +228,15 @@ BEGIN
     END
 END
 
+IDR_HISTORY MENU
+BEGIN
+    POPUP "History"
+    BEGIN
+        MENUITEM "Copy Selected",              IDM_HISTORY_COPY
+        MENUITEM "Save as...",                 IDM_HISTORY_SAVEAS
+    END
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //

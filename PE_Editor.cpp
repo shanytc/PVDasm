@@ -1596,9 +1596,102 @@ void RebuildPE(HWND hWnd)
 		wsprintf(InfoText,"Overiding Section: %s -> Pointer To Raw Data from %08X to %08X",sec_iter->Name,sec_iter->PointerToRawData,sec_iter->VirtualAddress);
 		sec_iter->PointerToRawData		= sec_iter->VirtualAddress;
 		OutDebug(hWnd,InfoText);
+
+		// Fix section characteristics: replace UNINITIALIZED_DATA with CODE if section
+		// has EXECUTE permission and contains actual data (not a true BSS section)
+		if((sec_iter->Characteristics & IMAGE_SCN_CNT_UNINITIALIZED_DATA) &&
+		   (sec_iter->Characteristics & IMAGE_SCN_MEM_EXECUTE)){
+			sec_iter->Characteristics = (sec_iter->Characteristics & ~IMAGE_SCN_CNT_UNINITIALIZED_DATA) | IMAGE_SCN_CNT_CODE;
+			wsprintf(InfoText,"Overiding Section: %s -> Fixed characteristics: UNINIT_DATA -> CODE",sec_iter->Name);
+			OutDebug(hWnd,InfoText);
+		}
+
 		OutDebug(hWnd,"");
 		// Next Section
 		sec_iter = (IMAGE_SECTION_HEADER *)((UCHAR *)(sec_iter)+sizeof(IMAGE_SECTION_HEADER));
+	}
+
+	// =====================================================
+	// Phase F2: Detect packer entry point and find OEP
+	// =====================================================
+	{
+		DWORD ep = 0;
+		DWORD imageBase32 = 0;
+		ULONGLONG imageBase64 = 0;
+		if(LoadedPe==TRUE){
+			ep = nt_header->OptionalHeader.AddressOfEntryPoint;
+			imageBase32 = (DWORD)nt_header->OptionalHeader.ImageBase;
+		}
+		else if(LoadedPe64==TRUE){
+			ep = (DWORD)nt_header64->OptionalHeader.AddressOfEntryPoint;
+			imageBase64 = nt_header64->OptionalHeader.ImageBase;
+		}
+
+		char *pfile_ep = FileMappedData;
+		bool packerEP = false;
+
+		// Check if EP starts with PUSHAD (0x60) - common packer signature
+		if(ep > 0 && ep < (DWORD)hFileSize){
+			BYTE epByte = (BYTE)pfile_ep[ep];
+			if(epByte == 0x60){
+				packerEP = true;
+				wsprintf(InfoText,"Detected packer entry point at RVA %08X (PUSHAD)", ep);
+				OutDebug(hWnd,InfoText);
+			}
+		}
+
+		if(packerEP){
+			// Search for VB5!/VB6! header in the first section
+			DWORD searchStart = section_header->VirtualAddress;
+			DWORD searchEnd = searchStart + section_header->Misc.VirtualSize;
+			if(searchEnd > (DWORD)hFileSize) searchEnd = (DWORD)hFileSize;
+
+			DWORD vbHeaderRVA = 0;
+			for(DWORD off = searchStart; off + 4 <= searchEnd; off++){
+				if(pfile_ep[off]=='V' && pfile_ep[off+1]=='B' && pfile_ep[off+2]=='5' && pfile_ep[off+3]=='!'){
+					vbHeaderRVA = off;
+					wsprintf(InfoText,"Found VB5! header at RVA %08X", vbHeaderRVA);
+					OutDebug(hWnd,InfoText);
+					break;
+				}
+			}
+
+			if(vbHeaderRVA){
+				// Search for PUSH <ImageBase+vbHeaderRVA>; CALL/JMP pattern
+				DWORD vbHeaderVA = imageBase32 + vbHeaderRVA;
+				BYTE pushPattern[5];
+				pushPattern[0] = 0x68; // PUSH imm32
+				*(DWORD*)(pushPattern+1) = vbHeaderVA;
+
+				DWORD oep = 0;
+				for(DWORD off = searchStart; off + 10 <= searchEnd; off++){
+					if(memcmp(pfile_ep + off, pushPattern, 5) == 0){
+						BYTE nextByte = (BYTE)pfile_ep[off+5];
+						if(nextByte == 0xE8 || nextByte == 0xE9){ // CALL rel32 or JMP rel32
+							oep = off;
+							break;
+						}
+						if(nextByte == 0xFF){ // CALL/JMP [mem]
+							oep = off;
+							break;
+						}
+					}
+				}
+
+				if(oep){
+					wsprintf(InfoText,"Found OEP at RVA %08X (PUSH %08X; CALL ThunRTMain)", oep, vbHeaderVA);
+					OutDebug(hWnd,InfoText);
+					wsprintf(InfoText,"Overiding AddressOfEntryPoint from %08X to %08X", ep, oep);
+					OutDebug(hWnd,InfoText);
+					if(LoadedPe==TRUE){
+						nt_header->OptionalHeader.AddressOfEntryPoint = oep;
+					}
+					else if(LoadedPe64==TRUE){
+						nt_header64->OptionalHeader.AddressOfEntryPoint = oep;
+					}
+				}
+			}
+		}
 	}
 
 	// =====================================================
@@ -2563,7 +2656,8 @@ static void RebuildIAT_ScanUnreferenced(
 				}
 			}
 
-			if(bestVerified > 0 && (DWORD)bestVerified >= (groups[g].count + 1) / 2){
+			// Require at least 3 verified matches to avoid false positives from small groups
+			if(bestVerified >= 3 && (DWORD)bestVerified >= (groups[g].count + 1) / 2){
 				groupInfo[g].identified = true;
 				strcpy(groupInfo[g].dllName, commonDlls[d]);
 				groupInfo[g].dllBase = bestBase;
@@ -2722,27 +2816,12 @@ static void RebuildIAT_ScanUnreferenced(
 					}
 				}
 				else{
-					// Write placeholder for unresolved
-					char placeholder[64];
-					wsprintf(placeholder, "Unresolved_%08X", addr);
-					DWORD nameLen = (DWORD)strlen(placeholder);
-					DWORD entrySize = sizeof(WORD) + nameLen + 1;
-					entrySize = (entrySize + 1) & ~1;
-
-					if(writeOffset + entrySize < spaceEnd){
-						*(WORD*)(pfile + writeOffset) = 0;
-						memcpy(pfile + writeOffset + sizeof(WORD), placeholder, nameLen + 1);
-
-						if(LoadedPe==TRUE){
-							*(DWORD*)(pfile + groups[g].startRVA + t * sizeof(DWORD)) = writeOffset;
-						}
-						else{
-							*(ULONGLONG*)(pfile + groups[g].startRVA + t * sizeof(ULONGLONG)) = writeOffset;
-						}
-
-						wsprintf(InfoText,"  %s!%s (unresolved)", groupInfo[g].dllName, placeholder);
-						OutDebug(hWnd,InfoText);
-						writeOffset += entrySize;
+					// Zero the thunk - don't write a fake name the loader can't resolve
+					if(LoadedPe==TRUE){
+						*(DWORD*)(pfile + groups[g].startRVA + t * sizeof(DWORD)) = 0;
+					}
+					else{
+						*(ULONGLONG*)(pfile + groups[g].startRVA + t * sizeof(ULONGLONG)) = 0;
 					}
 					totalUnresolved++;
 				}
@@ -2779,6 +2858,30 @@ static void RebuildIAT_ScanUnreferenced(
 
 		wsprintf(InfoText,"IAT Rebuild Phase 6: Updated DataDirectory[1]: RVA=%08X, Size=%08X", descriptorStart, descriptorArraySize);
 		OutDebug(hWnd,InfoText);
+
+		// Update DataDirectory[12] (IAT) to cover all identified group thunk ranges
+		{
+			DWORD iatStart = 0xFFFFFFFF, iatEnd = 0;
+			DWORD thunkSize = LoadedPe ? sizeof(DWORD) : sizeof(ULONGLONG);
+			for(int g2 = 0; g2 < numGroups; g2++){
+				if(!groupInfo[g2].identified) continue;
+				if(groups[g2].startRVA < iatStart) iatStart = groups[g2].startRVA;
+				DWORD grpEnd = groups[g2].startRVA + (groups[g2].count + 1) * thunkSize; // +1 for null terminator
+				if(grpEnd > iatEnd) iatEnd = grpEnd;
+			}
+			if(iatStart < iatEnd){
+				if(LoadedPe==TRUE){
+					nt_header->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IAT].VirtualAddress = iatStart;
+					nt_header->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IAT].Size = iatEnd - iatStart;
+				}
+				else if(LoadedPe64==TRUE){
+					nt_header64->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IAT].VirtualAddress = iatStart;
+					nt_header64->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IAT].Size = iatEnd - iatStart;
+				}
+				wsprintf(InfoText,"IAT Rebuild Phase 6: Updated DataDirectory[12] (IAT): RVA=%08X, Size=%08X", iatStart, iatEnd - iatStart);
+				OutDebug(hWnd,InfoText);
+			}
+		}
 
 		// Zero out ALL old packer descriptors so the loader ignores them
 		{
