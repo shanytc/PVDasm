@@ -59,6 +59,29 @@ extern DWORD_PTR	hFileSize;
 //////////////////////////////////////////////////////////////////////////
 
 //
+// Returns TRUE if the DLL filename should be skipped because it
+// targets the wrong architecture (e.g. "-64bit.dll" on a 32-bit build).
+//
+static BOOL ShouldSkipDll(const char *fileName)
+{
+    size_t len = lstrlenA(fileName);
+    BOOL has64Suffix = (len >= 10 && lstrcmpiA(fileName + len - 10, "-64bit.dll") == 0);
+    BOOL has32Suffix = (len >= 10 && lstrcmpiA(fileName + len - 10, "-32bit.dll") == 0);
+
+#ifdef _WIN64
+    // 64-bit build: skip "-32bit.dll" and unsuffixed DLLs (assumed 32-bit)
+    if(has32Suffix || !has64Suffix)
+        return TRUE;
+#else
+    // 32-bit build: skip "-64bit.dll"; allow "-32bit.dll" and unsuffixed (assumed 32-bit)
+    if(has64Suffix)
+        return TRUE;
+#endif
+
+    return FALSE;
+}
+
+//
 // This Function check for the Message Located in wParam
 // If it is equal to a Plugin Message, it will execute the Plugin.
 //
@@ -107,19 +130,25 @@ void EnumPlugins()
   // Check if file is found
   if(hFile!=INVALID_HANDLE_VALUE)
   {
-	// Load the DLL
-    hDll = LoadLibrary(W32FindData.cFileName);
+	// Load the DLL (skip wrong-architecture plugins)
+    if(!ShouldSkipDll(W32FindData.cFileName))
+    {
+        hDll = LoadLibrary(W32FindData.cFileName);
 
-	// Store the DLL handle in a linked list.
-    if(hDll != NULL){
-        hDllArray.insert(hDllArray.end(),hDll);
+        // Store the DLL handle in a linked list.
+        if(hDll != NULL){
+            hDllArray.insert(hDllArray.end(),hDll);
+        }
     }
 
 	// Search for all DLLs found, load them, and store thier handles.
     while(FindNextFile(hFile,&W32FindData))
     {
+       if(ShouldSkipDll(W32FindData.cFileName))
+           continue;
+
        hDll = LoadLibrary(W32FindData.cFileName);
-       
+
        if(hDll != NULL){
           hDllArray.insert(hDllArray.end(),hDll);
        }

@@ -79,16 +79,30 @@ typedef struct Code_Flow{
 } CODE_FLOW;
 
 typedef struct Decoded{
-	
+
 	// Define Decoded instruction struct
 
-    DWORD     Address;       // Current address of decoded instruction
-    CODE_FLOW CodeFlow;      // InstructionS: Jump or Call 
-    BYTE      OpcodeSize;    // Opcode Size
-	BYTE      PrefixSize;    // Size of all prefixes used
-    char      Assembly[128]; // Menemonics
-    char      Remarks[256];  // Menemonic addons
-    char      Opcode[25];    // Opcode Byte forms
+    DWORD_PTR	Address;		// Current address of decoded instruction
+    CODE_FLOW	CodeFlow;		// InstructionS: Jump or Call
+    DWORD_PTR	OpcodeSize;		// Opcode Size
+	BYTE		PrefixSize;		// Size of all prefixes used
+    char		Assembly[256];	// Mnemonics
+    char		Remarks[256];	// Mnemonic addons
+    char		Opcode[40];		// Opcode Byte forms
+
+	// VEX/EVEX decoded state
+	BYTE		VexVVVV;
+	BYTE		VexL;
+	BYTE		VexW;
+	BYTE		VexPP;
+	BYTE		VexMMMM;
+	BYTE		EvexAAA;
+	BYTE		EvexZ;
+	BYTE		EvexB;
+	BYTE		EvexLL;
+	BYTE		RegExt;
+	BYTE		IsVEX;
+	BYTE		IsEVEX;
 
 } DISASSEMBLY;
 
