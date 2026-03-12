@@ -1,6 +1,8 @@
 /x64Release/*
 /x64Debug/*
 /.x64Debug/*
+/Release/*
 .vs/
 .claude
 Backups
+*.exe

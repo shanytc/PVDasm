@@ -238,14 +238,19 @@ void Disasm8Chip(WORD wOpcode,DISASSEMBLY* Disasm,DWORD_PTR* Address)
 
 	switch(Opcode){
 		case 0x00:{
-			switch(wOpcode&0x00FF){
-				case 0xE0: lstrcpy(Disasm->Assembly,"cls");		break;
-				case 0xEE: lstrcpy(Disasm->Assembly,"rts");		break;
-				case 0xFB: lstrcpy(Disasm->Assembly,"scright");	break;
-				case 0xFC: lstrcpy(Disasm->Assembly,"scleft");	break;
-				case 0xFE: lstrcpy(Disasm->Assembly,"low");		break;
-				case 0xFF: lstrcpy(Disasm->Assembly,"high");	break;
-				default: wsprintf(Disasm->Assembly,"scdown %d",wOpcode&0x000F); break;
+			if((wOpcode & 0x0F00) != 0){
+				wsprintf(Disasm->Assembly,"sys %03X",wOpcode&0x0FFF);
+			} else {
+				switch(wOpcode&0x00FF){
+					case 0xE0: lstrcpy(Disasm->Assembly,"cls");		break;
+					case 0xEE: lstrcpy(Disasm->Assembly,"rts");		break;
+					case 0xFB: lstrcpy(Disasm->Assembly,"scright");	break;
+					case 0xFC: lstrcpy(Disasm->Assembly,"scleft");	break;
+					case 0xFD: lstrcpy(Disasm->Assembly,"exit");	break;
+					case 0xFE: lstrcpy(Disasm->Assembly,"low");		break;
+					case 0xFF: lstrcpy(Disasm->Assembly,"high");	break;
+					default: wsprintf(Disasm->Assembly,"scdown %d",wOpcode&0x000F); break;
+				}
 			}
 		}
 		break;
@@ -312,7 +317,7 @@ void Disasm8Chip(WORD wOpcode,DISASSEMBLY* Disasm,DWORD_PTR* Address)
 		}
 		break;
 
-		case 0x0C: wsprintf(Disasm->Assembly,"rand v%d,%03X",(wOpcode&0x0F00)>>8,wOpcode&0x0FFF);	break;
+		case 0x0C: wsprintf(Disasm->Assembly,"rand v%d,%02X",(wOpcode&0x0F00)>>8,wOpcode&0x00FF);	break;
 		case 0x0D:{
 			switch(wOpcode&0x000F){
 				case 0x00: wsprintf(Disasm->Assembly, "xsprite %d,%d",(wOpcode&0x0F00)>>8, (wOpcode&0x00F0)>>4);					break;
@@ -342,6 +347,8 @@ void Disasm8Chip(WORD wOpcode,DISASSEMBLY* Disasm,DWORD_PTR* Address)
 				case 0x33: wsprintf(Disasm->Assembly,"bcd v%d",(wOpcode&0x0F00)>>8);	break;
 				case 0x55: wsprintf(Disasm->Assembly,"str v0-v%d",(wOpcode&0x0F00)>>8);	break;
 				case 0x65: wsprintf(Disasm->Assembly,"ldr v0-v%d",(wOpcode&0x0F00)>>8);	break;
+				case 0x75: wsprintf(Disasm->Assembly,"xstr v0-v%d",(wOpcode&0x0F00)>>8);	break;
+				case 0x85: wsprintf(Disasm->Assembly,"xldr v0-v%d",(wOpcode&0x0F00)>>8);	break;
 				default:	wsprintf(Disasm->Assembly,"???");							break;
 			}
 		} 

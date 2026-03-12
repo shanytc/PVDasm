@@ -159,16 +159,30 @@ typedef struct Code_Branch{
 } CODE_BRANCH;
 
 typedef struct Decoded{
-	
+
 	// Define Decoded instruction struct
 
     DWORD_PTR	Address;		// Current address of decoded instruction
-    CODE_FLOW	CodeFlow;		// InstructionS: Jump or Call 
+    CODE_FLOW	CodeFlow;		// InstructionS: Jump or Call
     DWORD_PTR	OpcodeSize;		// Opcode Size
 	BYTE		PrefixSize;		// Size of all prefixes used
-    char		Assembly[128];	// Mnemonics
+    char		Assembly[256];	// Mnemonics (expanded for AVX-512)
     char		Remarks[256];	// Mnemonic add ons
-    char		Opcode[25];		// Opcode Byte forms
+    char		Opcode[40];		// Opcode Byte forms (expanded for VEX/EVEX)
+
+	// VEX/EVEX decoded state
+	BYTE		VexVVVV;		// VEX.vvvv register specifier (inverted)
+	BYTE		VexL;			// VEX.L vector length (0=128, 1=256)
+	BYTE		VexW;			// VEX.W operand size promotion
+	BYTE		VexPP;			// VEX.pp mandatory prefix (0=none, 1=66, 2=F3, 3=F2)
+	BYTE		VexMMMM;		// VEX.mmmmm opcode map (1=0F, 2=0F38, 3=0F3A)
+	BYTE		EvexAAA;		// EVEX.aaa opmask register
+	BYTE		EvexZ;			// EVEX.z zero-masking
+	BYTE		EvexB;			// EVEX.b broadcast/RC/SAE
+	BYTE		EvexLL;			// EVEX.L'L vector length (0=128, 1=256, 2=512)
+	BYTE		RegExt;			// REX-like register extension bits (R, X, B, R')
+	BYTE		IsVEX;			// 1 if VEX-encoded, 0 otherwise
+	BYTE		IsEVEX;			// 1 if EVEX-encoded, 0 otherwise
 
 } DISASSEMBLY;
 
@@ -238,30 +252,36 @@ void Mod_11_RM(
 //////////////////////////////////////////////////////////////////////////
 
 void Mod_11_RM_EX(
-                  BYTE d, 
+                  BYTE d,
                   BYTE w,
                   char **Opcode,
-                  DISASSEMBLY **Disasm,                    
+                  DISASSEMBLY **Disasm,
                   bool PrefixReg,
                   BYTE Op,
                   DWORD_PTR **index,
-                  bool RepPrefix
+                  BYTE RepPrefix
                   );
 
 void Mod_RM_SIB_EX(
                    DISASSEMBLY **Disasm,
-                   char **Opcode, DWORD_PTR pos, 
+                   char **Opcode, DWORD_PTR pos,
                    bool AddrPrefix,
                    int SEG,
                    DWORD_PTR **index,
                    BYTE Op,
                    bool PrefixReg,
-                   bool PrefixSeg,                   
+                   bool PrefixSeg,
                    bool PrefixAddr,
                    BYTE Bit_d,
                    BYTE Bit_w,
-                   bool RepPrefix
+                   BYTE RepPrefix
                 );
+
+// 3-byte opcode and VEX/EVEX decode functions
+void Decode3ByteOpcode_0F38(DISASSEMBLY **Disasm, char **Opcode, DWORD_PTR pos, bool AddrPrefix, int SEG, DWORD_PTR **index, bool PrefixReg, bool PrefixSeg, bool PrefixAddr, BYTE RepPrefix);
+void Decode3ByteOpcode_0F3A(DISASSEMBLY **Disasm, char **Opcode, DWORD_PTR pos, bool AddrPrefix, int SEG, DWORD_PTR **index, bool PrefixReg, bool PrefixSeg, bool PrefixAddr, BYTE RepPrefix);
+void DecodeVEX(DISASSEMBLY **Disasm, char **Opcode, DWORD_PTR pos, bool AddrPrefix, int SEG, DWORD_PTR **index, bool PrefixReg, bool PrefixSeg, bool PrefixAddr);
+void DecodeEVEX(DISASSEMBLY **Disasm, char **Opcode, DWORD_PTR pos, bool AddrPrefix, int SEG, DWORD_PTR **index, bool PrefixReg, bool PrefixSeg, bool PrefixAddr);
 
 void	WINAPI Disassembler	( /*LPVOID lpParam*/									); // Main Core
 void	Decode				( DISASSEMBLY *Disasm,char *Opcode,DWORD_PTR *Index		);
