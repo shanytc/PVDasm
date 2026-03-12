@@ -136,6 +136,7 @@ const char *NewSet5		[16] = { "cmovo"	, "cmovno"		, "cmovb"		, "cmovnb"    , "cm
 const char *NewSet6		[16] = { "???"		, "sqrtps"		, "rsqrtps"		, "rcpps"     , "andps"     , "andnps"  , "orps"    , "xorps"   , "addps"    , "mulps"    , "???"        , "???"     , "subps"   , "minps"  , "divps" , "maxps" }; // New Set6
 const char *NewSet6Ex	[16] = { "???"		, "sqrtss"		, "rsqrtss"		, "rcpss"     , "andps"     , "andnps"  , "orps"    , "xorps"   , "addss"    , "mulss"    , "???"        , "???"     , "subss"   , "minss"  , "divss" , "maxss" }; // New Set6 Extended (Prefix 0xF3)
 const char *NewSet6_F2	[16] = { "???"		, "sqrtsd"		, "???"			, "???"       , "???"       , "???"     , "???"     , "???"     , "addsd"    , "mulsd"    , "???"        , "???"     , "subsd"   , "minsd"  , "divsd" , "maxsd" }; // New Set6 Extended (Prefix 0xF2)
+const char *NewSet6_66	[16] = { "???"		, "sqrtpd"		, "???"			, "???"       , "andpd"     , "andnpd"  , "orpd"    , "xorpd"   , "addpd"    , "mulpd"    , "???"        , "???"     , "subpd"   , "minpd"  , "divpd" , "maxpd" }; // New Set6 Extended (Prefix 0x66)
 const char *NewSet7		[16] = { "punpcklbw", "punpcklwd"	, "punpckldq"	, "packsswb"  , "pcmpgtb"   , "pcmpgtw" , "pcmpgtd" , "packuswb", "punpckhbw", "punpckhwd", "punpckhdq"  , "packssdw", "???"     , "???"    , "movd"  , "movq"  }; // New Set7
 const char *NewSet8		[8]  = { "pshufw"	, "???"			, "???"			, "???"       , "pcmpeqb"   , "pcmpeqw" , "pcmpeqd" , "emms" };                                                                                                    // New Set8
 const char *NewSet9		[16] = { "seto"		, "setno"		, "setb"		, "setnb"     , "sete"      , "setne"   , "setbe"   , "seta"    , "sets"     , "setns"    , "setpe"      , "setpo"   , "setl"    , "setge"  , "setle" , "setg"  }; // New Set9
@@ -145,9 +146,10 @@ const char *NewSet11	[16] = { "cmpxchg"	, "cmpxchg"		, "lss"			, "btr"       , "
 const char *NewSet12	[8]  = { "cmpeqps"	, "cmpltps"		, "cmpleps"		, "cmpunordps", "cmpneqps"  , "cmpnltps", "cmpnleps", "cmpordps" };                                                                                                // New Set12
 const char *NewSet12Ex	[8]  = { "cmpeqss"	, "cmpltss"		, "cmpless"		, "cmpunordss", "cmpneqss"  , "cmpnltss", "cmpnless", "cmpordss" };                                                                                                // New Set12 Extended (Prefix 0xF3)
 const char *NewSet12_F2	[8]  = { "cmpeqsd"	, "cmpltsd"		, "cmplesd"		, "cmpunordsd", "cmpneqsd"  , "cmpnltsd", "cmpnlesd", "cmpordsd" };                                                                                                // New Set12 Extended (Prefix 0xF2)
-const char *NewSet13	[16] = { "???"		, "psrlw"		, "psrld"		, "psrlq"     , "???"       , "pmullw"  , "???"     , "pmovmskb", "psubusb"  , "psubusw"  , "pminub"     , "pand"    , "paddusb" , "paddusw", "pmaxub", "pandn" }; // New Set13
+const char *NewSet12_66	[8]  = { "cmpeqpd"	, "cmpltpd"		, "cmplepd"		, "cmpunordpd", "cmpneqpd"  , "cmpnltpd", "cmpnlepd", "cmpordpd" };                                                                                                // New Set12 Extended (Prefix 0x66)
+const char *NewSet13	[16] = { "???"		, "psrlw"		, "psrld"		, "psrlq"     , "paddq"     , "pmullw"  , "???"     , "pmovmskb", "psubusb"  , "psubusw"  , "pminub"     , "pand"    , "paddusb" , "paddusw", "pmaxub", "pandn" }; // New Set13
 const char *NewSet14	[16] = { "pavgb"	, "psraw"		, "psrad"		, "pavgw"     , "pmulhuw"   , "pmulhw"  , "???"     , "movntq"  , "psubsb"   , "psubsw"   , "pminsw"     , "por"     , "paddsb"  , "paddsw" , "pmaxsw", "pxor"  }; // New Set14
-const char *NewSet15	[16] = { "???"		, "psllw"		, "pslld"		, "psllq"     , "???"       , "pmaddwd" , "psadbw"  , "maskmovq", "psubb"    , "psubw"    , "psubd"      , "???"     , "paddb"   , "paddw"  , "paddd" , "???"   }; // New Set15
+const char *NewSet15	[16] = { "???"		, "psllw"		, "pslld"		, "psllq"     , "???"       , "pmaddwd" , "psadbw"  , "maskmovq", "psubb"    , "psubw"    , "psubd"      , "psubq"   , "paddb"   , "paddw"  , "paddd" , "???"   }; // New Set15
 const char *NewSet16	[8]  = { "???"       , "???"        , "movdq2q"     , "movq2dq"   , "???"       , "???"     , "movq"    , "???" }; // Used at: (0x66/0x73/0x72)0Fxx ; note the prefix.
 
 // Debug/Control/Test Registers
@@ -3218,13 +3220,11 @@ int GetNewInstruction(BYTE Op,char *ASM,bool RegPrefix,char *Opcode, DWORD_PTR I
         case 0x36: case 0x37: case 0x25:
         case 0x39: case 0x3B:
         case 0x3C: case 0x3D: case 0x3E: case 0x3F:
-        case 0x6C: case 0x6D:
         case 0x78: case 0x26: case 0x27:
         case 0x79: case 0x7A: case 0x7B:
         case 0xA6: case 0xA7:
-        case 0xB9: case 0xC3:
-        case 0xD4:
-        case 0xF4: case 0xFB: case 0xFF:{
+        case 0xB9:
+        case 0xF4: case 0xFF:{
             strcpy_s(Inst,"???");
         }
         break;
@@ -3233,30 +3233,8 @@ int GetNewInstruction(BYTE Op,char *ASM,bool RegPrefix,char *Opcode, DWORD_PTR I
 			// MOVQ (0x66 first opcode before 0x0F)
 			// MOVQ2DQ (0xF3 first opcode before 0x0F)
 			// MOVDQ2Q (0xF2 first opcode before 0x0F)
-			switch((BYTE)Opcode[Index-1]){	// Check Prefix.
-				case 0x66:{
-					// MOVQ Wq, Vq
-					// W = ModR/M: Operand is 128Bit MMX or Memory Address, q = Quadword regardless of operand size.
-					// V = Reg field of the ModR/M, a 128Bit MMX register, q = Quadword regardless of operand size.
-					strcpy_s(Inst,"MOVQ");
-					Found=4;
-				}
-				break;
-
-				case 0xF3:{
-					strcpy_s(Inst,"MOVQ2DQ");
-					Found=4;
-				}
-				break;
-
-				case 0xF2:{
-					strcpy_s(Inst,"MOVDQ2Q");
-					Found=4;
-				}
-				break;
-
-				default:strcpy_s(Inst,"???");	// No such command
-			}
+			strcpy_s(Inst,"");
+			Found=0;
 		}
 		break;
 
@@ -3427,6 +3405,9 @@ void Mod_11_RM_EX(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,bool PrefixR
                strcpy_s((*Disasm)->Assembly,"");
                m_OpcodeSize++;
            }
+		   else if(PrefixReg){
+               wsprintf(assembly,"movupd %s, %s",MMXRegs[reg1],MMXRegs[reg2]);
+		   }
 		   else{
                wsprintf(assembly,"movups %s, %s",MMXRegs[reg1],MMXRegs[reg2]);
 		   }
@@ -3447,6 +3428,9 @@ void Mod_11_RM_EX(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,bool PrefixR
                 strcpy_s((*Disasm)->Assembly,"");
                 m_OpcodeSize++;
            }
+		   else if(PrefixReg){
+               wsprintf(assembly,"movupd %s, %s",MMXRegs[reg2],MMXRegs[reg1]);
+		   }
 		   else{
                wsprintf(assembly,"movups %s, %s",MMXRegs[reg2],MMXRegs[reg1]);
 		   }
@@ -3482,15 +3466,21 @@ void Mod_11_RM_EX(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,bool PrefixR
         }
         break;
 
-        case 0x14:{ // UNPCKLPS
-           wsprintf(assembly,"unpcklps %s, %s",MMXRegs[reg1],MMXRegs[reg2]);
+        case 0x14:{ // UNPCKLPS / UNPCKLPD (66)
+           if(PrefixReg)
+               wsprintf(assembly,"unpcklpd %s, %s",MMXRegs[reg1],MMXRegs[reg2]);
+           else
+               wsprintf(assembly,"unpcklps %s, %s",MMXRegs[reg1],MMXRegs[reg2]);
            SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
            wsprintf(temp,"%04X",wOp);
         }
         break;
 
-        case 0x15:{ // UNPCKHPS
-          wsprintf(assembly,"unpckhps %s, %s",MMXRegs[reg1],MMXRegs[reg2]);
+        case 0x15:{ // UNPCKHPS / UNPCKHPD (66)
+          if(PrefixReg)
+              wsprintf(assembly,"unpckhpd %s, %s",MMXRegs[reg1],MMXRegs[reg2]);
+          else
+              wsprintf(assembly,"unpckhps %s, %s",MMXRegs[reg1],MMXRegs[reg2]);
           SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
           wsprintf(temp,"%04X",wOp);
         }
@@ -3527,15 +3517,21 @@ void Mod_11_RM_EX(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,bool PrefixR
         }
         break;
 
-        case 0x28:{ // MOVAPS
-           wsprintf(assembly,"movaps %s, %s",MMXRegs[reg1],MMXRegs[reg2]);
+        case 0x28:{ // MOVAPS / MOVAPD (66)
+           if(PrefixReg)
+               wsprintf(assembly,"movapd %s, %s",MMXRegs[reg1],MMXRegs[reg2]);
+           else
+               wsprintf(assembly,"movaps %s, %s",MMXRegs[reg1],MMXRegs[reg2]);
            SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
            wsprintf(temp,"%04X",wOp);
         }
         break;
 
-        case 0x29:{ // MOVAPS
-          wsprintf(assembly,"movaps %s, %s",MMXRegs[reg2],MMXRegs[reg1]);
+        case 0x29:{ // MOVAPS / MOVAPD (66)
+          if(PrefixReg)
+              wsprintf(assembly,"movapd %s, %s",MMXRegs[reg2],MMXRegs[reg1]);
+          else
+              wsprintf(assembly,"movaps %s, %s",MMXRegs[reg2],MMXRegs[reg1]);
           SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
           wsprintf(temp,"%04X",wOp);
         }
@@ -3592,8 +3588,11 @@ void Mod_11_RM_EX(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,bool PrefixR
         }
         break;
 
-        case 0x2E: case 0x2F:{ // UCOMISS, COMISS (UCOMISD/COMISD use 66 prefix, handled separately)
-            wsprintf(assembly,"%s %s, %s",NewSet4[(Op&0x0F)-0x08],MMXRegs[reg1],MMXRegs[reg2]);
+        case 0x2E: case 0x2F:{ // UCOMISS/COMISS / UCOMISD/COMISD (66)
+            if(PrefixReg)
+                wsprintf(assembly,"%s %s, %s",(Op==0x2E)?"ucomisd":"comisd",MMXRegs[reg1],MMXRegs[reg2]);
+            else
+                wsprintf(assembly,"%s %s, %s",NewSet4[(Op&0x0F)-0x08],MMXRegs[reg1],MMXRegs[reg2]);
             SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
             wsprintf(temp,"%04X",wOp);
         }
@@ -3621,6 +3620,9 @@ void Mod_11_RM_EX(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,bool PrefixR
                 strcpy_s((*Disasm)->Assembly,"");
                 m_OpcodeSize++;
             }
+			else if(PrefixReg){ // 66 prefix: packed double
+                wsprintf(assembly,"%s %s,%s",NewSet6_66[Op&0x0F],MMXRegs[reg1],MMXRegs[reg2]);
+			}
 			else{
                 wsprintf(assembly,"%s %s,%s",NewSet6[Op&0x0F],MMXRegs[reg1],MMXRegs[reg2]);
 			}
@@ -3633,21 +3635,77 @@ void Mod_11_RM_EX(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,bool PrefixR
         case 0x60:case 0x61:case 0x62:case 0x63:case 0x64:case 0x65:case 0x66:case 0x67:
         case 0x68:case 0x69:case 0x6A:case 0x6B:case 0x6F:
         {
-          wsprintf(assembly,"%s %s,%s",NewSet7[Op&0x0F],Regs3DNow[reg1],Regs3DNow[reg2]);
+          if(Op==0x6F && RepPrefix==0xF3){
+              wsprintf(assembly,"movdqu %s,%s",MMXRegs[reg1],MMXRegs[reg2]);
+              strcpy_s((*Disasm)->Assembly,"");
+              m_OpcodeSize++;
+          }
+          else if(Op==0x6F && PrefixReg){
+              wsprintf(assembly,"movdqa %s,%s",MMXRegs[reg1],MMXRegs[reg2]);
+          }
+          else if(PrefixReg){
+              wsprintf(assembly,"%s %s,%s",NewSet7[Op&0x0F],MMXRegs[reg1],MMXRegs[reg2]);
+          }
+          else{
+              wsprintf(assembly,"%s %s,%s",NewSet7[Op&0x0F],Regs3DNow[reg1],Regs3DNow[reg2]);
+          }
           SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
           wsprintf(temp,"%04X",wOp);
         }
         break;
 
-        case 0x6E:{ // MOVD mm, r/m32 — source is GPR, not MMX
-          wsprintf(assembly,"%s %s,%s",NewSet7[Op&0x0F],Regs3DNow[reg1],regs[RM][reg2]);
+        case 0x6E:{ // MOVD mm/xmm, r/m32
+          RM=REG32;
+          if(PrefixReg)
+              wsprintf(assembly,"%s %s,%s",NewSet7[Op&0x0F],MMXRegs[reg1],regs[RM][reg2]);
+          else
+              wsprintf(assembly,"%s %s,%s",NewSet7[Op&0x0F],Regs3DNow[reg1],regs[RM][reg2]);
+          SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
+          wsprintf(temp,"%04X",wOp);
+        }
+        break;
+
+        case 0x6C:{ // PUNPCKLQDQ (66 only)
+          if(PrefixReg)
+              wsprintf(assembly,"punpcklqdq %s,%s",MMXRegs[reg1],MMXRegs[reg2]);
+          else{
+              strcpy_s(assembly,"???");
+              lstrcat((*Disasm)->Remarks,";Invalid Instruction");
+          }
+          SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
+          wsprintf(temp,"%04X",wOp);
+        }
+        break;
+
+        case 0x6D:{ // PUNPCKHQDQ (66 only)
+          if(PrefixReg)
+              wsprintf(assembly,"punpckhqdq %s,%s",MMXRegs[reg1],MMXRegs[reg2]);
+          else{
+              strcpy_s(assembly,"???");
+              lstrcat((*Disasm)->Remarks,";Invalid Instruction");
+          }
           SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
           wsprintf(temp,"%04X",wOp);
         }
         break;
 
         case 0x70:{
-            wsprintf(assembly,"%s %s,%s,%02Xh",NewSet8[Op&0x0F],Regs3DNow[reg1],Regs3DNow[reg2],(BYTE)(*(*Opcode+Pos+2))); 
+            if(RepPrefix==0xF3){
+                wsprintf(assembly,"pshufhw %s,%s,%02Xh",MMXRegs[reg1],MMXRegs[reg2],(BYTE)(*(*Opcode+Pos+2)));
+                strcpy_s((*Disasm)->Assembly,"");
+                m_OpcodeSize++;
+            }
+            else if(RepPrefix==0xF2){
+                wsprintf(assembly,"pshuflw %s,%s,%02Xh",MMXRegs[reg1],MMXRegs[reg2],(BYTE)(*(*Opcode+Pos+2)));
+                strcpy_s((*Disasm)->Assembly,"");
+                m_OpcodeSize++;
+            }
+            else if(PrefixReg){
+                wsprintf(assembly,"pshufd %s,%s,%02Xh",MMXRegs[reg1],MMXRegs[reg2],(BYTE)(*(*Opcode+Pos+2)));
+            }
+            else{
+                wsprintf(assembly,"%s %s,%s,%02Xh",NewSet8[Op&0x0F],Regs3DNow[reg1],Regs3DNow[reg2],(BYTE)(*(*Opcode+Pos+2)));
+            }
             SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
             wsprintf(temp,"%04X %02X",wOp,(BYTE)(*(*Opcode+Pos+2)));
             (*(*index))++;
@@ -3655,22 +3713,46 @@ void Mod_11_RM_EX(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,bool PrefixR
         }
         break;
 
-        case 0x74:case 0x75:case 0x76:{ // MIX
-          wsprintf(assembly,"%s %s,%s",NewSet8[Op&0x0F],Regs3DNow[reg1],Regs3DNow[reg2]); 
+        case 0x74:case 0x75:case 0x76:{ // PCMPEQx
+          if(PrefixReg)
+              wsprintf(assembly,"%s %s,%s",NewSet8[Op&0x0F],MMXRegs[reg1],MMXRegs[reg2]);
+          else
+              wsprintf(assembly,"%s %s,%s",NewSet8[Op&0x0F],Regs3DNow[reg1],Regs3DNow[reg2]);
           SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
           wsprintf(temp,"%04X",wOp);
         }
         break;
 
         case 0x7E:{
-          wsprintf(assembly,"%s %s,%s",NewSet7[Op&0x0F],regs[RM][reg2],Regs3DNow[reg1]); 
+          if(RepPrefix==0xF3){
+              wsprintf(assembly,"movq %s,%s",MMXRegs[reg1],MMXRegs[reg2]);
+              strcpy_s((*Disasm)->Assembly,"");
+              m_OpcodeSize++;
+          }
+          else if(PrefixReg){
+              RM=REG32;
+              wsprintf(assembly,"%s %s,%s",NewSet7[Op&0x0F],regs[RM][reg2],MMXRegs[reg1]);
+          }
+          else{
+              wsprintf(assembly,"%s %s,%s",NewSet7[Op&0x0F],regs[RM][reg2],Regs3DNow[reg1]);
+          }
           SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
           wsprintf(temp,"%04X",wOp);
         }
         break;
 
         case 0x7F:{
-          wsprintf(assembly,"%s %s,%s",NewSet7[Op&0x0F],Regs3DNow[reg2],Regs3DNow[reg1]); 
+          if(RepPrefix==0xF3){
+              wsprintf(assembly,"movdqu %s,%s",MMXRegs[reg2],MMXRegs[reg1]);
+              strcpy_s((*Disasm)->Assembly,"");
+              m_OpcodeSize++;
+          }
+          else if(PrefixReg){
+              wsprintf(assembly,"movdqa %s,%s",MMXRegs[reg2],MMXRegs[reg1]);
+          }
+          else{
+              wsprintf(assembly,"%s %s,%s",NewSet7[Op&0x0F],Regs3DNow[reg2],Regs3DNow[reg1]);
+          }
           SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
           wsprintf(temp,"%04X",wOp);
         }
@@ -3786,6 +3868,9 @@ void Mod_11_RM_EX(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,bool PrefixR
                     strcpy_s((*Disasm)->Assembly,"");
                     m_OpcodeSize++;
                 }
+				else if(PrefixReg){
+                    wsprintf(assembly,"%s %s,%s",NewSet12_66[(BYTE)(*(*Opcode+Pos+2))],MMXRegs[reg1],MMXRegs[reg2]);
+				}
 				else{
                     wsprintf(assembly,"%s %s,%s",NewSet12[(BYTE)(*(*Opcode+Pos+2))],MMXRegs[reg1],MMXRegs[reg2]);
 				}
@@ -3801,6 +3886,9 @@ void Mod_11_RM_EX(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,bool PrefixR
                     strcpy_s((*Disasm)->Assembly,"");
                     m_OpcodeSize++;
                 }
+				else if(PrefixReg){
+                    wsprintf(assembly,"cmppd %s,%s,%02Xh",MMXRegs[reg1],MMXRegs[reg2],(BYTE)(*(*Opcode+Pos+2)));
+				}
 				else{
                     wsprintf(assembly,"cmpps %s,%s,%02Xh",MMXRegs[reg1],MMXRegs[reg2],(BYTE)(*(*Opcode+Pos+2)));
 				}
@@ -3814,8 +3902,11 @@ void Mod_11_RM_EX(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,bool PrefixR
         break;
 
         case 0xC4:{
-            RM=REG16;
-            wsprintf(assembly,"pinsrw %s,%s,%02Xh",Regs3DNow[reg1],regs[RM][reg2],(BYTE)(*(*Opcode+Pos+2)));
+            RM=REG32;
+            if(PrefixReg)
+                wsprintf(assembly,"pinsrw %s,%s,%02Xh",MMXRegs[reg1],regs[RM][reg2],(BYTE)(*(*Opcode+Pos+2)));
+            else
+                wsprintf(assembly,"pinsrw %s,%s,%02Xh",Regs3DNow[reg1],regs[RM][reg2],(BYTE)(*(*Opcode+Pos+2)));
             SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
             wsprintf(temp,"%04X %02X",wOp,(BYTE)(*(*Opcode+Pos+2)));
             (*(*index))++;
@@ -3824,7 +3915,11 @@ void Mod_11_RM_EX(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,bool PrefixR
         break;
 
         case 0xC5:{
-            wsprintf(assembly,"pextrw %s,%s,%02Xh",regs[RM][reg1],Regs3DNow[reg2],(BYTE)(*(*Opcode+Pos+2)));
+            RM=REG32;
+            if(PrefixReg)
+                wsprintf(assembly,"pextrw %s,%s,%02Xh",regs[RM][reg1],MMXRegs[reg2],(BYTE)(*(*Opcode+Pos+2)));
+            else
+                wsprintf(assembly,"pextrw %s,%s,%02Xh",regs[RM][reg1],Regs3DNow[reg2],(BYTE)(*(*Opcode+Pos+2)));
             SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
             wsprintf(temp,"%04X %02X",wOp,(BYTE)(*(*Opcode+Pos+2)));
             (*(*index))++;
@@ -3833,7 +3928,10 @@ void Mod_11_RM_EX(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,bool PrefixR
         break;
 
         case 0xC6:{
-            wsprintf(assembly,"shufps %s,%s,%02Xh",MMXRegs[reg1],MMXRegs[reg2],(BYTE)(*(*Opcode+Pos+2)));
+            if(PrefixReg)
+                wsprintf(assembly,"shufpd %s,%s,%02Xh",MMXRegs[reg1],MMXRegs[reg2],(BYTE)(*(*Opcode+Pos+2)));
+            else
+                wsprintf(assembly,"shufps %s,%s,%02Xh",MMXRegs[reg1],MMXRegs[reg2],(BYTE)(*(*Opcode+Pos+2)));
             SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
             wsprintf(temp,"%04X %02X",wOp,(BYTE)(*(*Opcode+Pos+2)));
             (*(*index))++;
@@ -3842,16 +3940,23 @@ void Mod_11_RM_EX(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,bool PrefixR
         break;
 
         case 0xD7:{
-            wsprintf(assembly,"%s %s,%s",NewSet13[Op&0x0F],regs[RM][reg1],Regs3DNow[reg2]); 
+            RM=REG32;
+            if(PrefixReg)
+                wsprintf(assembly,"%s %s,%s",NewSet13[Op&0x0F],regs[RM][reg1],MMXRegs[reg2]);
+            else
+                wsprintf(assembly,"%s %s,%s",NewSet13[Op&0x0F],regs[RM][reg1],Regs3DNow[reg2]);
             SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
             wsprintf(temp,"%04X",wOp);
         }
         break;
 
-        case 0xD1:case 0xD2:case 0xD3:case 0xD5:case 0xD8:case 0xDF:
-        case 0xD9:case 0xDA:case 0xDB:case 0xDC:case 0xDD:case 0xDE:                    
+        case 0xD1:case 0xD2:case 0xD3:case 0xD4:case 0xD5:case 0xD8:case 0xDF:
+        case 0xD9:case 0xDA:case 0xDB:case 0xDC:case 0xDD:case 0xDE:
         {
-            wsprintf(assembly,"%s %s,%s",NewSet13[Op&0x0F],Regs3DNow[reg1],Regs3DNow[reg2]);
+            if(PrefixReg)
+                wsprintf(assembly,"%s %s,%s",NewSet13[Op&0x0F],MMXRegs[reg1],MMXRegs[reg2]);
+            else
+                wsprintf(assembly,"%s %s,%s",NewSet13[Op&0x0F],Regs3DNow[reg1],Regs3DNow[reg2]);
             SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
             wsprintf(temp,"%04X",wOp);
         }
@@ -3862,23 +3967,37 @@ void Mod_11_RM_EX(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,bool PrefixR
         case 0xEA:case 0xEB:case 0xEC:case 0xED:
         case 0xEE:case 0xEF:
         {
-            wsprintf(assembly,"%s %s,%s",NewSet14[Op&0x0F],Regs3DNow[reg1],Regs3DNow[reg2]);
+            if(PrefixReg)
+                wsprintf(assembly,"%s %s,%s",NewSet14[Op&0x0F],MMXRegs[reg1],MMXRegs[reg2]);
+            else
+                wsprintf(assembly,"%s %s,%s",NewSet14[Op&0x0F],Regs3DNow[reg1],Regs3DNow[reg2]);
             SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
             wsprintf(temp,"%04X",wOp);
         }
         break;
 
         case 0xE7:{
-            wsprintf(assembly,"%s %s,%s",NewSet14[Op&0x0F],regs[RM][reg2],Regs3DNow[reg1]);
+            if(PrefixReg)
+                wsprintf(assembly,"movntdq %s,%s",regs[RM][reg2],MMXRegs[reg1]);
+            else
+                wsprintf(assembly,"%s %s,%s",NewSet14[Op&0x0F],regs[RM][reg2],Regs3DNow[reg1]);
             wsprintf(temp,"%02X%02X",(BYTE)(*(*Opcode+Pos)),(BYTE)(*(*Opcode+Pos+1)));
         }
         break;
 
         case 0xF1:case 0xF2:case 0xF3:case 0xF5:case 0xF6:
-        case 0xF7:case 0xF8:case 0xF9:case 0xFA:case 0xFC:
+        case 0xF7:case 0xF8:case 0xF9:case 0xFA:case 0xFB:case 0xFC:
         case 0xFD:case 0xFE:
         {
-            wsprintf(assembly,"%s %s,%s",NewSet15[Op&0x0F],Regs3DNow[reg1],Regs3DNow[reg2]);
+            if(PrefixReg){
+                if(Op==0xF7)
+                    wsprintf(assembly,"maskmovdqu %s,%s",MMXRegs[reg1],MMXRegs[reg2]);
+                else
+                    wsprintf(assembly,"%s %s,%s",NewSet15[Op&0x0F],MMXRegs[reg1],MMXRegs[reg2]);
+            }
+            else{
+                wsprintf(assembly,"%s %s,%s",NewSet15[Op&0x0F],Regs3DNow[reg1],Regs3DNow[reg2]);
+            }
             SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
             wsprintf(temp,"%04X",wOp);
         }
@@ -3936,7 +4055,11 @@ void Mod_11_RM_EX(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,bool PrefixR
         break;
 
         case 0x50:{
-            wsprintf(assembly,"movmskps %s,%s",regs[RM][reg1],MMXRegs[reg2]);
+            RM=REG32;
+            if(PrefixReg)
+                wsprintf(assembly,"movmskpd %s,%s",regs[RM][reg1],MMXRegs[reg2]);
+            else
+                wsprintf(assembly,"movmskps %s,%s",regs[RM][reg1],MMXRegs[reg2]);
             SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
             wsprintf(temp,"%04X",wOp);
         }
@@ -3948,7 +4071,7 @@ void Mod_11_RM_EX(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,bool PrefixR
             if(
                 (NextByte>=0xD0 && NextByte<=0xD7) ||
                 (NextByte>=0xE0 && NextByte<=0xE7) ||
-                (NextByte>=0xF0 && NextByte<=0xF7) 
+                (NextByte>=0xF0 && NextByte<=0xF7)
               )
             {
 				if(NextByte>=0xD0 && NextByte<=0xD7){
@@ -3962,8 +4085,11 @@ void Mod_11_RM_EX(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,bool PrefixR
                         strcpy_s(temp,"psllw");
 					}
 				}
-            
-                wsprintf(assembly,"%s %s,%02Xh",temp,Regs3DNow[reg2],(BYTE)(*(*Opcode+Pos+2)));
+
+                if(PrefixReg)
+                    wsprintf(assembly,"%s %s,%02Xh",temp,MMXRegs[reg2],(BYTE)(*(*Opcode+Pos+2)));
+                else
+                    wsprintf(assembly,"%s %s,%02Xh",temp,Regs3DNow[reg2],(BYTE)(*(*Opcode+Pos+2)));
             }
             else{
                 strcpy_s(assembly,"???");
@@ -3998,7 +4124,10 @@ void Mod_11_RM_EX(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,bool PrefixR
 					}
 				}
 
-                wsprintf(assembly,"%s %s,%02Xh",temp,Regs3DNow[reg2],(BYTE)(*(*Opcode+Pos+2)));
+                if(PrefixReg)
+                    wsprintf(assembly,"%s %s,%02Xh",temp,MMXRegs[reg2],(BYTE)(*(*Opcode+Pos+2)));
+                else
+                    wsprintf(assembly,"%s %s,%02Xh",temp,Regs3DNow[reg2],(BYTE)(*(*Opcode+Pos+2)));
             }
             else{
                 strcpy_s(assembly,"???");
@@ -4021,12 +4150,21 @@ void Mod_11_RM_EX(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,bool PrefixR
             else if(NextByte>=0xF0 && NextByte<=0xF7){
                 strcpy_s(temp,"psllq");
             }
+            else if(PrefixReg && NextByte>=0xD8 && NextByte<=0xDF){
+                strcpy_s(temp,"psrldq");
+            }
+            else if(PrefixReg && NextByte>=0xF8 && NextByte<=0xFF){
+                strcpy_s(temp,"pslldq");
+            }
             else{
                 strcpy_s(temp,"???");
                 lstrcat((*Disasm)->Remarks,";Invalid Instruction");
             }
 
-            wsprintf(assembly,"%s %s,%02Xh",temp,Regs3DNow[reg2],(BYTE)(*(*Opcode+Pos+2)));
+            if(PrefixReg)
+                wsprintf(assembly,"%s %s,%02Xh",temp,MMXRegs[reg2],(BYTE)(*(*Opcode+Pos+2)));
+            else
+                wsprintf(assembly,"%s %s,%02Xh",temp,Regs3DNow[reg2],(BYTE)(*(*Opcode+Pos+2)));
             SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
             wsprintf(temp,"%04X %02X",wOp,(BYTE)(*(*Opcode+Pos+2)));
             (*(*index))++;
@@ -4059,6 +4197,36 @@ void Mod_11_RM_EX(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,bool PrefixR
             wsprintf(temp,"%04X %02X",wOp,(BYTE)(*(*Opcode+Pos+2)));
             (*(*index))++;
             m_OpcodeSize++;
+        }
+        break;
+
+        case 0xC3:{ // MOVNTI is memory-only; reg-reg is invalid
+            strcpy_s(assembly,"???");
+            lstrcat((*Disasm)->Remarks,";Invalid Instruction");
+            SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
+            wsprintf(temp,"%04X",wOp);
+        }
+        break;
+
+        case 0xD6:{ // MOVQ (66) / MOVQ2DQ (F3) / MOVDQ2Q (F2)
+            if(RepPrefix==0xF3){
+                wsprintf(assembly,"movq2dq %s,%s",MMXRegs[reg1],Regs3DNow[reg2]);
+                strcpy_s((*Disasm)->Assembly,"");
+                m_OpcodeSize++;
+            }
+            else if(RepPrefix==0xF2){
+                wsprintf(assembly,"movdq2q %s,%s",Regs3DNow[reg1],MMXRegs[reg2]);
+                strcpy_s((*Disasm)->Assembly,"");
+                m_OpcodeSize++;
+            }
+            else if(PrefixReg){
+                wsprintf(assembly,"movq %s,%s",MMXRegs[reg2],MMXRegs[reg1]);
+            }
+            else{
+                strcpy_s(assembly,"???");
+            }
+            SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
+            wsprintf(temp,"%04X",wOp);
         }
         break;
 
@@ -4133,6 +4301,9 @@ void Mod_11_RM_EX(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,bool PrefixR
                 strcpy_s((*Disasm)->Assembly,"");
                 m_OpcodeSize++;
             }
+            else if(PrefixReg){
+                wsprintf(assembly,"cvtpd2ps %s, %s",MMXRegs[reg1],MMXRegs[reg2]);
+            }
             else{
                 wsprintf(assembly,"cvtps2pd %s, %s",MMXRegs[reg1],MMXRegs[reg2]);
             }
@@ -4146,6 +4317,9 @@ void Mod_11_RM_EX(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,bool PrefixR
                 wsprintf(assembly,"cvttps2dq %s, %s",MMXRegs[reg1],MMXRegs[reg2]);
                 strcpy_s((*Disasm)->Assembly,"");
                 m_OpcodeSize++;
+            }
+            else if(PrefixReg){
+                wsprintf(assembly,"cvtps2dq %s, %s",MMXRegs[reg1],MMXRegs[reg2]);
             }
             else{
                 wsprintf(assembly,"cvtdq2ps %s, %s",MMXRegs[reg1],MMXRegs[reg2]);
@@ -4313,7 +4487,7 @@ void Mod_RM_SIB_EX(
           { Bit_d=1; Bit_w=1; strcpy_s(RSize,StringLen(regSize[8])+1,regSize[8]); } // DQWORD
       break;
       case 0x60:case 0x61:case 0x62:case 0x63:case 0x64:case 0x65:case 0x66:case 0x67:
-      case 0x68:case 0x69:case 0x6A:case 0x6B:case 0x6E:case 0x6F:
+      case 0x68:case 0x69:case 0x6A:case 0x6B:case 0x6C:case 0x6D:case 0x6E:case 0x6F:
           { Bit_d=1; Bit_w=1; if((Op&0x0F)==0x0E)strcpy_s(RSize,StringLen(regSize[1])+1,regSize[1]);else strcpy_s(RSize,StringLen(regSize[0])+1,regSize[0]); }  // DWORD/QWORD
       break;
       case 0x70:case 0x74:case 0x75:case 0x76: { Bit_d=1; Bit_w=1; strcpy_s(RSize,StringLen(regSize[0])+1,regSize[0]); } break; // QWORD
@@ -4344,16 +4518,17 @@ void Mod_RM_SIB_EX(
       case 0xC0:			{ Bit_d=0; Bit_w=1; strcpy_s(RSize,StringLen(regSize[3])+1,regSize[3]); }				break; // BYTE   (XADD)
       case 0xC1:			{ Bit_d=0; Bit_w=1; strcpy_s(RSize,StringLen(regSize[1])+1,regSize[1]); }				break; // DWORD  (XADD)
       case 0xC2: case 0xC6: { Bit_d=1; Bit_w=1; strcpy_s(RSize,StringLen(regSize[8])+1,regSize[8]); }				break; // DQWORD (MIX)
+      case 0xC3:			{ Bit_d=0; Bit_w=1; strcpy_s(RSize,StringLen(regSize[1])+1,regSize[1]); }				break; // DWORD  (MOVNTI)
       case 0xC4:			{ Bit_d=1; Bit_w=1; strcpy_s(RSize,StringLen(regSize[2])+1,regSize[2]); }				break; // WORD   (MIX)
       case 0xC5: case 0xC7: { Bit_d=1; Bit_w=1; strcpy_s(RSize,StringLen(regSize[0])+1,regSize[0]); }				break; // QWORD  (MIX)
-      case 0xD1:case 0xD2:case 0xD3:case 0xD5:case 0xD7:
+      case 0xD1:case 0xD2:case 0xD3:case 0xD4:case 0xD5:case 0xD7:
       case 0xD8:case 0xD9:case 0xDA:case 0xDB:case 0xDC:
       case 0xDD:case 0xDE:case 0xDF:case 0xE0:case 0xE1:
       case 0xE2:case 0xE3:case 0xE4:case 0xE5:case 0xE8:
       case 0xE9:case 0xEA:case 0xEB:case 0xEC:case 0xED:
       case 0xEE:case 0xEF:
       case 0xF1:case 0xF2:case 0xF3:case 0xF5:case 0xF6:
-      case 0xF7:case 0xF8:case 0xF9:case 0xFA:case 0xFC:
+      case 0xF7:case 0xF8:case 0xF9:case 0xFA:case 0xFB:case 0xFC:
       case 0xFD:case 0xFE:{
 		  if((BYTE)(*(*Opcode))==0x66 || (BYTE)(*(*Opcode))==0xf3 || (BYTE)(*(*Opcode))==0xf2){
 			  Bit_w=1; /* used prefixes has their own direction: [66|F2|F3]0FD6xxxx */
@@ -4364,6 +4539,7 @@ void Mod_RM_SIB_EX(
       }
       break;
 
+      case 0xD6:            { Bit_d=0; Bit_w=1; strcpy_s(RSize,StringLen(regSize[0])+1,regSize[0]); } break; // QWORD  (MOVQ)
       case 0xE7: Bit_d=0; Bit_w=1; strcpy_s(RSize,StringLen(regSize[0])+1,regSize[0]); break; // QWORD
 
       // SSE3 opcodes
@@ -4382,9 +4558,9 @@ void Mod_RM_SIB_EX(
 	}
 	
     if(PrefixReg==1){ // Change 32bit Data Size to 16Bit
-        // All Opcodes with DWORD Data Size
-        BYTE DOpcodes[35]={ 
-                    0x02,0x03,0x2E,0x2F,0x6E,0x7E,
+        // All Opcodes with DWORD Data Size (excludes SSE2 opcodes where 66 is mandatory prefix)
+        BYTE DOpcodes[31]={
+                    0x02,0x03,
                     0xA3,0xA4,0xA5,0xAB,0xAC,0xAD,
                     0xAF,0xB1,0xB3,0xBB,0xBC,0xBD,
                     0xC1,0x40,0x41,0x42,0x43,0x44,
@@ -4392,7 +4568,7 @@ void Mod_RM_SIB_EX(
                     0x4B,0x4C,0x4D,0x4E,0x4F
         };
 
-        for(int i=0;i<35;i++)
+        for(int i=0;i<31;i++)
             if(Op==DOpcodes[i]){
                 RM=REG16; // 16Bit registers
                 strcpy_s(RSize,StringLen(regSize[2])+1,regSize[2]); // word ptr
@@ -4525,18 +4701,72 @@ void Mod_RM_SIB_EX(
                             strcpy_s((*Disasm)->Assembly,"");
                             (*Disasm)->OpcodeSize++;
                         }
+						else if(PrefixReg){
+                            wsprintf(temp,"movupd %s,%s",tempMeme,MMXRegs[REG]);
+						}
 						else{
                             wsprintf(temp,"movups %s,%s",tempMeme,MMXRegs[REG]);
 						}
                     }
-                    break; // MOVUPS/MOVSS/MOVSD
+                    break; // MOVUPS/MOVSS/MOVSD/MOVUPD
                     case 0x13: wsprintf(temp,"movlps %s,%s",tempMeme,MMXRegs[REG]); break; // MOVLPS
                     case 0x17: wsprintf(temp,"movhps %s,%s",tempMeme,MMXRegs[REG]); break; // MOVHPS
-                    case 0x29: wsprintf(temp,"movaps %s,%s",tempMeme,MMXRegs[REG]); break; // MOVAPS
-                    case 0x2B: wsprintf(temp,"movntps %s,%s",tempMeme,MMXRegs[REG]); break; // MOVNTPS
-                    case 0x7E: case 0x7F:wsprintf(temp,"%s %s,%s",NewSet7[Op&0x0F],tempMeme,Regs3DNow[REG]); break; // MOVD/MOVQ
+                    case 0x29:{
+                        if(PrefixReg)
+                            wsprintf(temp,"movapd %s,%s",tempMeme,MMXRegs[REG]);
+                        else
+                            wsprintf(temp,"movaps %s,%s",tempMeme,MMXRegs[REG]);
+                    }
+                    break; // MOVAPS/MOVAPD
+                    case 0x2B:{
+                        if(PrefixReg)
+                            wsprintf(temp,"movntpd %s,%s",tempMeme,MMXRegs[REG]);
+                        else
+                            wsprintf(temp,"movntps %s,%s",tempMeme,MMXRegs[REG]);
+                    }
+                    break; // MOVNTPS/MOVNTPD
+                    case 0x7E:{
+                        if(RepPrefix==0xF3){
+                            wsprintf(temp,"movq %s,%s",MMXRegs[REG],tempMeme);
+                            strcpy_s((*Disasm)->Assembly,"");
+                            (*Disasm)->OpcodeSize++;
+                        }
+                        else if(PrefixReg)
+                            wsprintf(temp,"%s %s,%s",NewSet7[Op&0x0F],tempMeme,MMXRegs[REG]);
+                        else
+                            wsprintf(temp,"%s %s,%s",NewSet7[Op&0x0F],tempMeme,Regs3DNow[REG]);
+                    }
+                    break; // MOVD/MOVQ
+                    case 0x7F:{
+                        if(RepPrefix==0xF3){
+                            wsprintf(temp,"movdqu %s,%s",tempMeme,MMXRegs[REG]);
+                            strcpy_s((*Disasm)->Assembly,"");
+                            (*Disasm)->OpcodeSize++;
+                        }
+                        else if(PrefixReg)
+                            wsprintf(temp,"movdqa %s,%s",tempMeme,MMXRegs[REG]);
+                        else
+                            wsprintf(temp,"%s %s,%s",NewSet7[Op&0x0F],tempMeme,Regs3DNow[REG]);
+                    }
+                    break; // MOVQ/MOVDQA/MOVDQU
+                    case 0xC3: wsprintf(temp,"movnti %s,%s",tempMeme,regs[RM][REG]); break; // MOVNTI
+                    case 0xD6:{
+                        if(PrefixReg)
+                            wsprintf(temp,"movq %s,%s",tempMeme,MMXRegs[REG]);
+                        else{
+                            wsprintf(temp,"??? %s,%s",tempMeme,Regs3DNow[REG]);
+                        }
+                    }
+                    break; // MOVQ (66 0F D6)
+                    case 0xE7:{
+                        if(PrefixReg)
+                            wsprintf(temp,"movntdq %s,%s",tempMeme,MMXRegs[REG]);
+                        else
+                            wsprintf(temp,"%s %s,%s",NewSet14[Op&0x07],tempMeme,Regs3DNow[REG]);
+                    }
+                    break;
                     case 0xA3: case 0xAB:{
-                      wsprintf(temp,"%s %s,%s",NewSet10[Op&0x0F],tempMeme,regs[RM][REG]); 
+                      wsprintf(temp,"%s %s,%s",NewSet10[Op&0x0F],tempMeme,regs[RM][REG]);
                     }
                     break;
 
@@ -4550,7 +4780,7 @@ void Mod_RM_SIB_EX(
                     break;
 
                     case 0xA5: case 0xAD:{
-                      wsprintf(temp,"%s %s,%s,cl",NewSet10[Op&0x0F],tempMeme,regs[RM][REG]); 
+                      wsprintf(temp,"%s %s,%s,cl",NewSet10[Op&0x0F],tempMeme,regs[RM][REG]);
                     }
                     break;
 
@@ -4558,19 +4788,18 @@ void Mod_RM_SIB_EX(
 						if((Op&0x0F)==0x00){
 							RM=REG8;
 						}
-                            
+
                       wsprintf(temp,"%s %s,%s",NewSet11[Op&0x0F],tempMeme,regs[RM][REG]);
                     }
                     break;
 
-                    case 0xC0:{ 
-                        RM=REG8; 
-                        wsprintf(temp,"xadd %s,%s",tempMeme,regs[RM][REG]); 
-                    } 
+                    case 0xC0:{
+                        RM=REG8;
+                        wsprintf(temp,"xadd %s,%s",tempMeme,regs[RM][REG]);
+                    }
                     break; // XADD
 
                     case 0xC1:wsprintf(temp,"xadd %s,%s",tempMeme,regs[RM][REG]); break;
-                    case 0xE7:wsprintf(temp,"%s %s,%s",NewSet14[Op&0x07],tempMeme,Regs3DNow[REG]); break;
 
                 }
                 lstrcat((*Disasm)->Assembly,temp);
@@ -4592,13 +4821,16 @@ void Mod_RM_SIB_EX(
                         strcpy_s((*Disasm)->Assembly,"");
                         (*Disasm)->OpcodeSize++;
                       }
+					  else if(PrefixReg){
+						wsprintf(temp,"movupd %s,%s",MMXRegs[REG],tempMeme);
+					  }
 					  else{
 						wsprintf(temp,"movups %s,%s",MMXRegs[REG],tempMeme);
 					  }
                     }
-                    break; // MOVUPS/MOVSS/MOVSD
+                    break; // MOVUPS/MOVSS/MOVSD/MOVUPD
 
-                    case 0x12:{  // MOVLPS / MOVDDUP (F2) / MOVSLDUP (F3)
+                    case 0x12:{  // MOVLPS / MOVLPD (66) / MOVDDUP (F2) / MOVSLDUP (F3)
                         if(RepPrefix==0xF2){
                             wsprintf(temp,"movddup %s,%s",MMXRegs[REG],tempMeme);
                             strcpy_s((*Disasm)->Assembly,"");
@@ -4609,25 +4841,37 @@ void Mod_RM_SIB_EX(
                             strcpy_s((*Disasm)->Assembly,"");
                             (*Disasm)->OpcodeSize++;
                         }
+                        else if(PrefixReg)
+                            wsprintf(temp,"movlpd %s,%s",MMXRegs[REG],tempMeme);
                         else{
                             wsprintf(temp,"movlps %s,%s",MMXRegs[REG],tempMeme);
                         }
                     }
-                    break; // MOVLPS
-                    case 0x14: wsprintf(temp,"unpcklps %s,%s",MMXRegs[REG],tempMeme); break; // UNPCKLPS
-                    case 0x15: wsprintf(temp,"unpckhps %s,%s",MMXRegs[REG],tempMeme); break; // UNPCKHPS
-                    case 0x16:{ // MOVHPS / MOVSHDUP (F3)
+                    break; // MOVLPS/MOVLPD
+                    case 0x14:{
+                        if(PrefixReg) wsprintf(temp,"unpcklpd %s,%s",MMXRegs[REG],tempMeme);
+                        else wsprintf(temp,"unpcklps %s,%s",MMXRegs[REG],tempMeme);
+                    }
+                    break; // UNPCKLPS/UNPCKLPD
+                    case 0x15:{
+                        if(PrefixReg) wsprintf(temp,"unpckhpd %s,%s",MMXRegs[REG],tempMeme);
+                        else wsprintf(temp,"unpckhps %s,%s",MMXRegs[REG],tempMeme);
+                    }
+                    break; // UNPCKHPS/UNPCKHPD
+                    case 0x16:{ // MOVHPS / MOVHPD (66) / MOVSHDUP (F3)
                         if(RepPrefix==0xF3){
                             wsprintf(temp,"movshdup %s,%s",MMXRegs[REG],tempMeme);
                             strcpy_s((*Disasm)->Assembly,"");
                             (*Disasm)->OpcodeSize++;
                         }
+                        else if(PrefixReg)
+                            wsprintf(temp,"movhpd %s,%s",MMXRegs[REG],tempMeme);
                         else{
                             wsprintf(temp,"movhps %s,%s",MMXRegs[REG],tempMeme);
                         }
                     }
-                    break; // MOVHPS
-                    
+                    break; // MOVHPS/MOVHPD
+
                     case 0x18:{
                       wsprintf(temp,"%s,%s",NewSet3[REG],tempMeme);
                       if(REG>3)
@@ -4635,8 +4879,12 @@ void Mod_RM_SIB_EX(
                     } 
                     break; // MIX
                     
-                    case 0x28: wsprintf(temp,"movaps %s,%s",MMXRegs[REG],tempMeme);	break; // MOVAPS
-                    
+                    case 0x28:{
+                        if(PrefixReg) wsprintf(temp,"movapd %s,%s",MMXRegs[REG],tempMeme);
+                        else wsprintf(temp,"movaps %s,%s",MMXRegs[REG],tempMeme);
+                    }
+                    break; // MOVAPS/MOVAPD
+
                     case 0x2A: case 0x2C: case 0x2D:case 0x2E: case 0x2F:{
                       BYTE R=((Op&0x0F)-0x08);
 					  if(R==4 || R==5){
@@ -4709,6 +4957,9 @@ void Mod_RM_SIB_EX(
                             strcpy_s((*Disasm)->Assembly,"");
                             (*Disasm)->OpcodeSize++;
                         }
+						else if(PrefixReg){
+                            wsprintf(temp,"%s %s,%s",NewSet6_66[Op&0x0F],MMXRegs[REG],tempMeme);
+						}
 						else{
                             wsprintf(temp,"%s %s,%s",NewSet6[Op&0x0F],MMXRegs[REG],tempMeme);
 						}
@@ -4718,12 +4969,40 @@ void Mod_RM_SIB_EX(
                     case 0x60:case 0x61:case 0x62:case 0x63:case 0x64:case 0x65:case 0x66:case 0x67:
                     case 0x68:case 0x69:case 0x6A:case 0x6B:case 0x6E:case 0x6F:
                     {
-                       wsprintf(temp,"%s %s,%s",NewSet7[Op&0x0F],Regs3DNow[REG],tempMeme); 
+                        if(Op==0x6F && RepPrefix==0xF3){
+                            wsprintf(temp,"movdqu %s,%s",MMXRegs[REG],tempMeme);
+                            strcpy_s((*Disasm)->Assembly,"");
+                            (*Disasm)->OpcodeSize++;
+                        }
+                        else if(Op==0x6F && PrefixReg){
+                            wsprintf(temp,"movdqa %s,%s",MMXRegs[REG],tempMeme);
+                        }
+                        else if(PrefixReg){
+                            wsprintf(temp,"%s %s,%s",NewSet7[Op&0x0F],MMXRegs[REG],tempMeme);
+                        }
+                        else{
+                            wsprintf(temp,"%s %s,%s",NewSet7[Op&0x0F],Regs3DNow[REG],tempMeme);
+                        }
                     }
                     break;
 
                     case 0x70:{
-                        wsprintf(temp,"%s %s,%s,%02X",NewSet8[Op&0x0F],Regs3DNow[reg2],tempMeme,FOpcode);
+                        if(RepPrefix==0xF3){
+                            wsprintf(temp,"pshufhw %s,%s,%02X",MMXRegs[REG],tempMeme,FOpcode);
+                            strcpy_s((*Disasm)->Assembly,"");
+                            (*Disasm)->OpcodeSize++;
+                        }
+                        else if(RepPrefix==0xF2){
+                            wsprintf(temp,"pshuflw %s,%s,%02X",MMXRegs[REG],tempMeme,FOpcode);
+                            strcpy_s((*Disasm)->Assembly,"");
+                            (*Disasm)->OpcodeSize++;
+                        }
+                        else if(PrefixReg){
+                            wsprintf(temp,"pshufd %s,%s,%02X",MMXRegs[REG],tempMeme,FOpcode);
+                        }
+                        else{
+                            wsprintf(temp,"%s %s,%s,%02X",NewSet8[Op&0x0F],Regs3DNow[reg2],tempMeme,FOpcode);
+                        }
                         wsprintf(menemonic," %02X",FOpcode);
                         lstrcat((*Disasm)->Opcode,menemonic);
                         (*Disasm)->OpcodeSize++;
@@ -4731,8 +5010,11 @@ void Mod_RM_SIB_EX(
                     }
                     break;
 
-                    case 0x74:case 0x75:case 0x76:{ // MIX
-                       wsprintf(temp,"%s %s,%s",NewSet8[Op&0x0F],Regs3DNow[REG],tempMeme); 
+                    case 0x74:case 0x75:case 0x76:{
+                        if(PrefixReg)
+                            wsprintf(temp,"%s %s,%s",NewSet8[Op&0x0F],MMXRegs[REG],tempMeme);
+                        else
+                            wsprintf(temp,"%s %s,%s",NewSet8[Op&0x0F],Regs3DNow[REG],tempMeme);
                     }
                     break;
 
@@ -4761,8 +5043,8 @@ void Mod_RM_SIB_EX(
                     break;
 
                     case 0xC2:{
-                      if(FOpcode<8){ // Instructions here
-                          if(RepPrefix==0xF3){ // Rep Prefix is being used
+                      if(FOpcode<8){
+                          if(RepPrefix==0xF3){
                               wsprintf(temp,"%s %s,%s",NewSet12Ex[FOpcode],MMXRegs[REG],tempMeme);
                               strcpy_s((*Disasm)->Assembly,"");
                               (*Disasm)->OpcodeSize++;
@@ -4772,12 +5054,15 @@ void Mod_RM_SIB_EX(
                               strcpy_s((*Disasm)->Assembly,"");
                               (*Disasm)->OpcodeSize++;
                           }
+						  else if(PrefixReg){
+                              wsprintf(temp,"%s %s,%s",NewSet12_66[FOpcode],MMXRegs[REG],tempMeme);
+						  }
 						  else{
                               wsprintf(temp,"%s %s,%s",NewSet12[FOpcode],MMXRegs[REG],tempMeme);
 						  }
                       }
                       else{
-                          if(RepPrefix==0xF3){ // Rep Prefix is being used
+                          if(RepPrefix==0xF3){
                               wsprintf(temp,"cmpss %s,%s,%02X",MMXRegs[REG],tempMeme,FOpcode);
                               strcpy_s((*Disasm)->Assembly,"");
                               (*Disasm)->OpcodeSize++;
@@ -4787,11 +5072,14 @@ void Mod_RM_SIB_EX(
                               strcpy_s((*Disasm)->Assembly,"");
                               (*Disasm)->OpcodeSize++;
                           }
+						  else if(PrefixReg){
+                              wsprintf(temp,"cmppd %s,%s,%02X",MMXRegs[REG],tempMeme,FOpcode);
+						  }
 						  else{
                               wsprintf(temp,"cmpps %s,%s,%02X",MMXRegs[REG],tempMeme,FOpcode);
 						  }
                       }
-                       
+
                       wsprintf(menemonic," %02X",FOpcode);
                       lstrcat((*Disasm)->Opcode,menemonic);
                       (*Disasm)->OpcodeSize++;
@@ -4800,25 +5088,10 @@ void Mod_RM_SIB_EX(
                     break;
 
                     case 0xC4:{
-                        wsprintf(temp,"pinsrw %s,%s,%02Xh",Regs3DNow[REG],tempMeme,FOpcode);
-                        wsprintf(menemonic," %02X",FOpcode);
-                        lstrcat((*Disasm)->Opcode,menemonic);
-                        (*Disasm)->OpcodeSize++;
-                        (*(*index))++;
-                    }
-                    break;
-                    
-                    case 0xC5:{
-                        wsprintf(temp,"pextrw %s,%s,%02Xh",regs[RM][REG],tempMeme,FOpcode);
-                        wsprintf(menemonic," %02X",FOpcode);
-                        lstrcat((*Disasm)->Opcode,menemonic);
-                        (*Disasm)->OpcodeSize++;
-                        (*(*index))++;
-                    }
-                    break;
-                    
-                    case 0xC6:{
-                        wsprintf(temp,"shufps %s,%s,%02Xh",MMXRegs[REG],tempMeme,FOpcode);
+                        if(PrefixReg)
+                            wsprintf(temp,"pinsrw %s,%s,%02Xh",MMXRegs[REG],tempMeme,FOpcode);
+                        else
+                            wsprintf(temp,"pinsrw %s,%s,%02Xh",Regs3DNow[REG],tempMeme,FOpcode);
                         wsprintf(menemonic," %02X",FOpcode);
                         lstrcat((*Disasm)->Opcode,menemonic);
                         (*Disasm)->OpcodeSize++;
@@ -4826,11 +5099,30 @@ void Mod_RM_SIB_EX(
                     }
                     break;
 
-                    case 0xD7:wsprintf(temp,"%s %s,%s",NewSet13[Op&0x0F],regs[RM][REG],tempMeme);break;
-                    case 0xD1:case 0xD2:case 0xD3:case 0xD5:case 0xD8:case 0xDF:
+                    case 0xC6:{
+                        if(PrefixReg)
+                            wsprintf(temp,"shufpd %s,%s,%02Xh",MMXRegs[REG],tempMeme,FOpcode);
+                        else
+                            wsprintf(temp,"shufps %s,%s,%02Xh",MMXRegs[REG],tempMeme,FOpcode);
+                        wsprintf(menemonic," %02X",FOpcode);
+                        lstrcat((*Disasm)->Opcode,menemonic);
+                        (*Disasm)->OpcodeSize++;
+                        (*(*index))++;
+                    }
+                    break;
+
+                    case 0xD7:{
+                        RM=REG32;
+                        wsprintf(temp,"%s %s,%s",NewSet13[Op&0x0F],regs[RM][REG],tempMeme);
+                    }
+                    break;
+                    case 0xD1:case 0xD2:case 0xD3:case 0xD4:case 0xD5:case 0xD8:case 0xDF:
                     case 0xD9:case 0xDA:case 0xDB:case 0xDC:case 0xDD:case 0xDE:
                     {
-                        wsprintf(temp,"%s %s,%s",NewSet13[Op&0x0F],Regs3DNow[REG],tempMeme);
+                        if(PrefixReg)
+                            wsprintf(temp,"%s %s,%s",NewSet13[Op&0x0F],MMXRegs[REG],tempMeme);
+                        else
+                            wsprintf(temp,"%s %s,%s",NewSet13[Op&0x0F],Regs3DNow[REG],tempMeme);
                     }
                     break;
 
@@ -4838,14 +5130,25 @@ void Mod_RM_SIB_EX(
                     case 0xE4:case 0xE5:case 0xE8:case 0xE9:
                     case 0xEA:case 0xEB:case 0xEC:case 0xED:
                     case 0xEE:case 0xEF:{
-                      wsprintf(temp,"%s %s,%s",NewSet14[Op&0x0F],Regs3DNow[REG],tempMeme);
+                        if(PrefixReg)
+                            wsprintf(temp,"%s %s,%s",NewSet14[Op&0x0F],MMXRegs[REG],tempMeme);
+                        else
+                            wsprintf(temp,"%s %s,%s",NewSet14[Op&0x0F],Regs3DNow[REG],tempMeme);
                     }
                     break;
 
                     case 0xF1:case 0xF2:case 0xF3:case 0xF5:case 0xF6:
-                    case 0xF7:case 0xF8:case 0xF9:case 0xFA:case 0xFC:
+                    case 0xF7:case 0xF8:case 0xF9:case 0xFA:case 0xFB:case 0xFC:
                     case 0xFD:case 0xFE:{
-                      wsprintf(temp,"%s %s,%s",NewSet15[Op&0x0F],Regs3DNow[REG],tempMeme);
+                        if(PrefixReg){
+                            if(Op==0xF7)
+                                wsprintf(temp,"maskmovdqu %s,%s",MMXRegs[REG],tempMeme);
+                            else
+                                wsprintf(temp,"%s %s,%s",NewSet15[Op&0x0F],MMXRegs[REG],tempMeme);
+                        }
+                        else{
+                            wsprintf(temp,"%s %s,%s",NewSet15[Op&0x0F],Regs3DNow[REG],tempMeme);
+                        }
                     }
                     break;
                 }
@@ -4965,16 +5268,69 @@ void Mod_RM_SIB_EX(
                             strcpy_s((*Disasm)->Assembly,"");
                             (*Disasm)->OpcodeSize++;
                         }
+						else if(PrefixReg){
+                            wsprintf(tempMeme,"movupd %s,%s",menemonic,MMXRegs[reg2]);
+						}
 						else{
                             wsprintf(tempMeme,"movups %s,%s",menemonic,MMXRegs[reg2]);
 						}
                     }
-                    break; // MOVUPS/MOVSS/MOVSD
+                    break; // MOVUPS/MOVSS/MOVSD/MOVUPD
                     case 0x13: wsprintf(tempMeme,"movlps %s,%s",menemonic,MMXRegs[reg2]); break; // MOVLPS
                     case 0x17: wsprintf(tempMeme,"movhps %s,%s",menemonic,MMXRegs[reg2]); break; // MOVHPS
-                    case 0x29: wsprintf(tempMeme,"movaps %s,%s",menemonic,MMXRegs[reg2]); break; // MOVAPS
-                    case 0x2B: wsprintf(tempMeme,"movntps %s,%s",menemonic,MMXRegs[reg2]); break; // MOVNTPS
-                    case 0x7E: case 0x7F:wsprintf(tempMeme,"%s %s,%s",NewSet7[Op&0x0F],menemonic,Regs3DNow[reg2]); break; // MOVD/MOVQ
+                    case 0x29:{
+                        if(PrefixReg)
+                            wsprintf(tempMeme,"movapd %s,%s",menemonic,MMXRegs[reg2]);
+                        else
+                            wsprintf(tempMeme,"movaps %s,%s",menemonic,MMXRegs[reg2]);
+                    }
+                    break; // MOVAPS/MOVAPD
+                    case 0x2B:{
+                        if(PrefixReg)
+                            wsprintf(tempMeme,"movntpd %s,%s",menemonic,MMXRegs[reg2]);
+                        else
+                            wsprintf(tempMeme,"movntps %s,%s",menemonic,MMXRegs[reg2]);
+                    }
+                    break; // MOVNTPS/MOVNTPD
+                    case 0x7E:{
+                        if(RepPrefix==0xF3){
+                            wsprintf(tempMeme,"movq %s,%s",MMXRegs[reg2],menemonic);
+                            strcpy_s((*Disasm)->Assembly,"");
+                            (*Disasm)->OpcodeSize++;
+                        }
+                        else if(PrefixReg)
+                            wsprintf(tempMeme,"%s %s,%s",NewSet7[Op&0x0F],menemonic,MMXRegs[reg2]);
+                        else
+                            wsprintf(tempMeme,"%s %s,%s",NewSet7[Op&0x0F],menemonic,Regs3DNow[reg2]);
+                    }
+                    break; // MOVD/MOVQ
+                    case 0x7F:{
+                        if(RepPrefix==0xF3){
+                            wsprintf(tempMeme,"movdqu %s,%s",menemonic,MMXRegs[reg2]);
+                            strcpy_s((*Disasm)->Assembly,"");
+                            (*Disasm)->OpcodeSize++;
+                        }
+                        else if(PrefixReg)
+                            wsprintf(tempMeme,"movdqa %s,%s",menemonic,MMXRegs[reg2]);
+                        else
+                            wsprintf(tempMeme,"%s %s,%s",NewSet7[Op&0x0F],menemonic,Regs3DNow[reg2]);
+                    }
+                    break; // MOVQ/MOVDQA/MOVDQU
+                    case 0xC3: wsprintf(tempMeme,"movnti %s,%s",menemonic,regs[RM][reg2]); break; // MOVNTI
+					case 0xD6:{
+						if(PrefixReg)
+							wsprintf(tempMeme,"movq %s,%s",menemonic,MMXRegs[reg2]);
+						else
+							wsprintf(tempMeme,"??? %s,%s",menemonic,Regs3DNow[reg2]);
+					}
+					break; // MOVQ (66 0F D6)
+					case 0xE7:{
+						if(PrefixReg)
+							wsprintf(tempMeme,"movntdq %s,%s",menemonic,MMXRegs[reg2]);
+						else
+							wsprintf(tempMeme,"%s %s,%s",NewSet14[Op&0x07],menemonic,Regs3DNow[reg2]);
+					}
+					break;
                     case 0xA3: case 0xAB:{
                         wsprintf(tempMeme,"%s %s,%s",NewSet10[Op&0x0F],menemonic,regs[RM][reg2]);
                     }
@@ -4999,15 +5355,6 @@ void Mod_RM_SIB_EX(
                     break;
                     case 0xC0: RM=REG8; wsprintf(tempMeme,"xadd %s,%s",menemonic,regs[RM][reg2]);break;
                     case 0xC1: wsprintf(tempMeme,"xadd %s,%s",menemonic,regs[RM][reg2]); break;
-					case 0xD6:{
-						Op = (BYTE)(*(*Opcode+pos-2));
-						wsprintf(tempMeme,"%s %s,%s",NewSet16[Op&0x0F],MMXRegs[REG],menemonic);
-					}
-					break;
-					case 0xE7: wsprintf(tempMeme,"%s %s,%s",NewSet14[Op&0x07],menemonic,Regs3DNow[reg2]); break;
-
-                    // SSE3 memory-dest forms (store)
-                    // (most SSE3 are src-from-memory, handled in direction 1)
                 }
 
                 lstrcat((*Disasm)->Assembly,tempMeme); // copy the decoded assembly
@@ -5040,24 +5387,34 @@ void Mod_RM_SIB_EX(
 					break;
 					
 					case 0x10:{
-						if(RepPrefix==0xF3){ // F3 prefix: movss
+						if(RepPrefix==0xF3){
 							strcpy_s((*Disasm)->Assembly,"");
 							(*Disasm)->OpcodeSize++;
 							wsprintf(tempMeme,"movss %s,%s",MMXRegs[reg2],menemonic);
 						}
-						else if(RepPrefix==0xF2){ // F2 prefix: movsd
+						else if(RepPrefix==0xF2){
 							strcpy_s((*Disasm)->Assembly,"");
 							(*Disasm)->OpcodeSize++;
 							wsprintf(tempMeme,"movsd %s,%s",MMXRegs[reg2],menemonic);
+						}
+						else if(PrefixReg){
+							wsprintf(tempMeme,"movupd %s,%s",MMXRegs[reg2],menemonic);
 						}
 						else{
 							wsprintf(tempMeme,"movups %s,%s",MMXRegs[reg2],menemonic);
 						}
                     }
-                    break; // MOVUPS/MOVSS/MOVSD
-                    // case 0x12 and 0x16 handled below in SSE3 section (with F2/F3 prefix discrimination)
-                    case 0x14: wsprintf(tempMeme,"unpcklps %s,%s",MMXRegs[reg2],menemonic); break; // UNPCKLPS
-                    case 0x15: wsprintf(tempMeme,"unpckhps %s,%s",MMXRegs[reg2],menemonic); break; // UNPCKHPS
+                    break; // MOVUPS/MOVSS/MOVSD/MOVUPD
+                    case 0x14:{
+                        if(PrefixReg) wsprintf(tempMeme,"unpcklpd %s,%s",MMXRegs[reg2],menemonic);
+                        else wsprintf(tempMeme,"unpcklps %s,%s",MMXRegs[reg2],menemonic);
+                    }
+                    break; // UNPCKLPS/UNPCKLPD
+                    case 0x15:{
+                        if(PrefixReg) wsprintf(tempMeme,"unpckhpd %s,%s",MMXRegs[reg2],menemonic);
+                        else wsprintf(tempMeme,"unpckhps %s,%s",MMXRegs[reg2],menemonic);
+                    }
+                    break; // UNPCKHPS/UNPCKHPD
                     
                     case 0x18:{
                         wsprintf(tempMeme,"%s %s",NewSet3[REG],menemonic);
@@ -5067,8 +5424,12 @@ void Mod_RM_SIB_EX(
                     } 
                     break;
                     
-                    case 0x28: wsprintf(tempMeme,"movaps %s,%s",MMXRegs[reg2],menemonic);	break; // MOVAPS
-                    
+                    case 0x28:{
+                        if(PrefixReg) wsprintf(tempMeme,"movapd %s,%s",MMXRegs[reg2],menemonic);
+                        else wsprintf(tempMeme,"movaps %s,%s",MMXRegs[reg2],menemonic);
+                    }
+                    break; // MOVAPS/MOVAPD
+
                     case 0x2A: case 0x2C: case 0x2D:case 0x2E: case 0x2F:{
                        BYTE R=((Op&0x0F)-0x08);
 
@@ -5079,7 +5440,10 @@ void Mod_RM_SIB_EX(
                            wsprintf(temp,"%s",MMXRegs[reg2]); // MMX Regs
 					   }
 
-                       if(RepPrefix!=0){
+                       if(PrefixReg && (Op==0x2E || Op==0x2F)){
+                           wsprintf(tempMeme,"%s %s,%s",(Op==0x2E)?"ucomisd":"comisd",MMXRegs[reg2],menemonic);
+                       }
+                       else if(RepPrefix!=0){
                            char instruction[20];
                            if(Op==0x2A || Op==0x2C || Op==0x2D){
                                if(RepPrefix==0xF3){
@@ -5143,6 +5507,9 @@ void Mod_RM_SIB_EX(
                             strcpy_s((*Disasm)->Assembly,"");
                             (*Disasm)->OpcodeSize++;
                         }
+						else if(PrefixReg){
+                            wsprintf(tempMeme,"%s %s,%s",NewSet6_66[Op&0x0F],MMXRegs[reg2],menemonic);
+						}
 						else{
                             wsprintf(tempMeme,"%s %s,%s",NewSet6[Op&0x0F],MMXRegs[reg2],menemonic);
 						}
@@ -5152,12 +5519,59 @@ void Mod_RM_SIB_EX(
                     case 0x60:case 0x61:case 0x62:case 0x63:case 0x64:case 0x65:case 0x66:case 0x67:
                     case 0x68:case 0x69:case 0x6A:case 0x6B:case 0x6E:case 0x6F:
                     {
-                        wsprintf(tempMeme,"%s %s,%s",NewSet7[Op&0x0F],Regs3DNow[reg2],menemonic);
+                        if(Op==0x6F && RepPrefix==0xF3){
+                            wsprintf(tempMeme,"movdqu %s,%s",MMXRegs[reg2],menemonic);
+                            strcpy_s((*Disasm)->Assembly,"");
+                            (*Disasm)->OpcodeSize++;
+                        }
+                        else if(Op==0x6F && PrefixReg){
+                            wsprintf(tempMeme,"movdqa %s,%s",MMXRegs[reg2],menemonic);
+                        }
+                        else if(PrefixReg){
+                            if(Op==0x6E)
+                                wsprintf(tempMeme,"%s %s,%s",NewSet7[Op&0x0F],MMXRegs[reg2],menemonic);
+                            else
+                                wsprintf(tempMeme,"%s %s,%s",NewSet7[Op&0x0F],MMXRegs[reg2],menemonic);
+                        }
+                        else{
+                            wsprintf(tempMeme,"%s %s,%s",NewSet7[Op&0x0F],Regs3DNow[reg2],menemonic);
+                        }
                     }
                     break; // MIX
 
-                    case 0x70:{ // PSHUFW
-                       wsprintf(tempMeme,"%s %s,%s,%02Xh",NewSet8[Op&0x0F],Regs3DNow[reg2],menemonic,FOpcode);
+                    case 0x6C:{ // PUNPCKLQDQ (66 only)
+                        if(PrefixReg)
+                            wsprintf(tempMeme,"punpcklqdq %s,%s",MMXRegs[reg2],menemonic);
+                        else
+                            wsprintf(tempMeme,"???");
+                    }
+                    break;
+
+                    case 0x6D:{ // PUNPCKHQDQ (66 only)
+                        if(PrefixReg)
+                            wsprintf(tempMeme,"punpckhqdq %s,%s",MMXRegs[reg2],menemonic);
+                        else
+                            wsprintf(tempMeme,"???");
+                    }
+                    break;
+
+                    case 0x70:{
+                        if(RepPrefix==0xF3){
+                            wsprintf(tempMeme,"pshufhw %s,%s,%02Xh",MMXRegs[reg2],menemonic,FOpcode);
+                            strcpy_s((*Disasm)->Assembly,"");
+                            (*Disasm)->OpcodeSize++;
+                        }
+                        else if(RepPrefix==0xF2){
+                            wsprintf(tempMeme,"pshuflw %s,%s,%02Xh",MMXRegs[reg2],menemonic,FOpcode);
+                            strcpy_s((*Disasm)->Assembly,"");
+                            (*Disasm)->OpcodeSize++;
+                        }
+                        else if(PrefixReg){
+                            wsprintf(tempMeme,"pshufd %s,%s,%02Xh",MMXRegs[reg2],menemonic,FOpcode);
+                        }
+                        else{
+                            wsprintf(tempMeme,"%s %s,%s,%02Xh",NewSet8[Op&0x0F],Regs3DNow[reg2],menemonic,FOpcode);
+                        }
                        wsprintf(menemonic," %02X",FOpcode);
                        lstrcat((*Disasm)->Opcode,menemonic);
                        (*Disasm)->OpcodeSize++;
@@ -5166,7 +5580,10 @@ void Mod_RM_SIB_EX(
                     break;
 
                     case 0x74:case 0x75:case 0x76:{
-                        wsprintf(tempMeme,"%s %s,%s",NewSet8[Op&0x0F],Regs3DNow[reg2],menemonic); 
+                        if(PrefixReg)
+                            wsprintf(tempMeme,"%s %s,%s",NewSet8[Op&0x0F],MMXRegs[reg2],menemonic);
+                        else
+                            wsprintf(tempMeme,"%s %s,%s",NewSet8[Op&0x0F],Regs3DNow[reg2],menemonic);
                     }
                     break;
 
@@ -5196,31 +5613,37 @@ void Mod_RM_SIB_EX(
 
                     case 0xC2:{
                        if(FOpcode<8){ // Instructions here
-                           if(RepPrefix==0xF3){ // F3 prefix: scalar single
+                           if(RepPrefix==0xF3){
                                wsprintf(tempMeme,"%s %s,%s",NewSet12Ex[FOpcode],MMXRegs[reg2],menemonic);
                                strcpy_s((*Disasm)->Assembly,"");
                                (*Disasm)->OpcodeSize++;
                            }
-                           else if(RepPrefix==0xF2){ // F2 prefix: scalar double
+                           else if(RepPrefix==0xF2){
                                wsprintf(tempMeme,"%s %s,%s",NewSet12_F2[FOpcode],MMXRegs[reg2],menemonic);
                                strcpy_s((*Disasm)->Assembly,"");
                                (*Disasm)->OpcodeSize++;
                            }
+						   else if(PrefixReg){
+                               wsprintf(tempMeme,"%s %s,%s",NewSet12_66[FOpcode],MMXRegs[reg2],menemonic);
+						   }
 						   else{
                                wsprintf(tempMeme,"%s %s,%s",NewSet12[FOpcode],MMXRegs[reg2],menemonic);
 						   }
                        }
                        else{
-                           if(RepPrefix==0xF3){ // F3 prefix: scalar single
+                           if(RepPrefix==0xF3){
                                wsprintf(tempMeme,"cmpss %s,%s,%02Xh",MMXRegs[reg2],menemonic,FOpcode);
                                strcpy_s((*Disasm)->Assembly,"");
                                (*Disasm)->OpcodeSize++;
                            }
-                           else if(RepPrefix==0xF2){ // F2 prefix: scalar double
+                           else if(RepPrefix==0xF2){
                                wsprintf(tempMeme,"cmpsd %s,%s,%02Xh",MMXRegs[reg2],menemonic,FOpcode);
                                strcpy_s((*Disasm)->Assembly,"");
                                (*Disasm)->OpcodeSize++;
                            }
+						   else if(PrefixReg){
+                               wsprintf(tempMeme,"cmppd %s,%s,%02Xh",MMXRegs[reg2],menemonic,FOpcode);
+						   }
 						   else{
                                wsprintf(tempMeme,"cmpps %s,%s,%02Xh",MMXRegs[reg2],menemonic,FOpcode);
 						   }
@@ -5232,18 +5655,12 @@ void Mod_RM_SIB_EX(
                        (*(*index))++;
                     }
                     break;
-                    
-                    case 0xC4:{
-                        wsprintf(tempMeme,"pinsrw %s,%s,%02Xh",Regs3DNow[reg2],menemonic,FOpcode);
-                        wsprintf(menemonic," %02X",FOpcode);
-                        lstrcat((*Disasm)->Opcode,menemonic);
-                        (*Disasm)->OpcodeSize++;
-                        (*(*index))++;
-                    }
-                    break;
 
-                    case 0xC5:{
-                        wsprintf(tempMeme,"pextrw %s,%s,%02Xh",regs[RM][reg2],menemonic,FOpcode);
+                    case 0xC4:{
+                        if(PrefixReg)
+                            wsprintf(tempMeme,"pinsrw %s,%s,%02Xh",MMXRegs[reg2],menemonic,FOpcode);
+                        else
+                            wsprintf(tempMeme,"pinsrw %s,%s,%02Xh",Regs3DNow[reg2],menemonic,FOpcode);
                         wsprintf(menemonic," %02X",FOpcode);
                         lstrcat((*Disasm)->Opcode,menemonic);
                         (*Disasm)->OpcodeSize++;
@@ -5252,7 +5669,10 @@ void Mod_RM_SIB_EX(
                     break;
 
                     case 0xC6:{
-                        wsprintf(tempMeme,"shufps %s,%s,%02Xh",MMXRegs[reg2],menemonic,FOpcode);
+                        if(PrefixReg)
+                            wsprintf(tempMeme,"shufpd %s,%s,%02Xh",MMXRegs[reg2],menemonic,FOpcode);
+                        else
+                            wsprintf(tempMeme,"shufps %s,%s,%02Xh",MMXRegs[reg2],menemonic,FOpcode);
                         wsprintf(menemonic," %02X",FOpcode);
                         lstrcat((*Disasm)->Opcode,menemonic);
                         (*Disasm)->OpcodeSize++;
@@ -5266,17 +5686,29 @@ void Mod_RM_SIB_EX(
 					break;
 
 					case 0xD6:{
-						Op = (BYTE)(*(*Opcode+pos-2));
-						wsprintf(tempMeme,"%s %s,%s",NewSet16[Op&0x0F],menemonic,MMXRegs[REG]);
+						if(PrefixReg)
+							wsprintf(tempMeme,"movq %s,%s",menemonic,MMXRegs[reg2]);
+						else
+							wsprintf(tempMeme,"??? %s,%s",menemonic,Regs3DNow[reg2]);
 					}
 					break;
 
-                    case 0xD7:wsprintf(tempMeme,"%s %s,%s",NewSet13[Op&0x0F],regs[RM][reg2],menemonic);	break;
+                    case 0xD7:{
+                        RM=REG32;
+                        if(PrefixReg)
+                            wsprintf(tempMeme,"%s %s,%s",NewSet13[Op&0x0F],regs[RM][reg2],menemonic);
+                        else
+                            wsprintf(tempMeme,"%s %s,%s",NewSet13[Op&0x0F],regs[RM][reg2],menemonic);
+                    }
+                    break;
 
-                    case 0xD1:case 0xD2:case 0xD3:case 0xD5:case 0xD8:case 0xDF:
+                    case 0xD1:case 0xD2:case 0xD3:case 0xD4:case 0xD5:case 0xD8:case 0xDF:
                     case 0xD9:case 0xDA:case 0xDB:case 0xDC:case 0xDD:case 0xDE:
                     {
-                        wsprintf(tempMeme,"%s %s,%s",NewSet13[Op&0x0F],Regs3DNow[reg2],menemonic);
+                        if(PrefixReg)
+                            wsprintf(tempMeme,"%s %s,%s",NewSet13[Op&0x0F],MMXRegs[reg2],menemonic);
+                        else
+                            wsprintf(tempMeme,"%s %s,%s",NewSet13[Op&0x0F],Regs3DNow[reg2],menemonic);
                     }
                     break;
 
@@ -5284,19 +5716,30 @@ void Mod_RM_SIB_EX(
                     case 0xE4:case 0xE5:case 0xE8:case 0xE9:
                     case 0xEA:case 0xEB:case 0xEC:case 0xED:
                     case 0xEE:case 0xEF:{
-                        wsprintf(tempMeme,"%s %s,%s",NewSet14[Op&0x0F],Regs3DNow[reg2],menemonic);
+                        if(PrefixReg)
+                            wsprintf(tempMeme,"%s %s,%s",NewSet14[Op&0x0F],MMXRegs[reg2],menemonic);
+                        else
+                            wsprintf(tempMeme,"%s %s,%s",NewSet14[Op&0x0F],Regs3DNow[reg2],menemonic);
                     }
                     break;
 
                     case 0xF1:case 0xF2:case 0xF3:case 0xF5:case 0xF6:
-                    case 0xF7:case 0xF8:case 0xF9:case 0xFA:case 0xFC:
+                    case 0xF7:case 0xF8:case 0xF9:case 0xFA:case 0xFB:case 0xFC:
                     case 0xFD:case 0xFE:{
-                        wsprintf(tempMeme,"%s %s,%s",NewSet15[Op&0x0F],Regs3DNow[reg2],menemonic);
+                        if(PrefixReg){
+                            if(Op==0xF7)
+                                wsprintf(tempMeme,"maskmovdqu %s,%s",MMXRegs[reg2],menemonic);
+                            else
+                                wsprintf(tempMeme,"%s %s,%s",NewSet15[Op&0x0F],MMXRegs[reg2],menemonic);
+                        }
+                        else{
+                            wsprintf(tempMeme,"%s %s,%s",NewSet15[Op&0x0F],Regs3DNow[reg2],menemonic);
+                        }
                     }
                     break;
 
                     // ==================== SSE3 memory-src forms ====================
-                    case 0x12:{ // MOVLPS / MOVDDUP (F2) / MOVSLDUP (F3)
+                    case 0x12:{ // MOVLPS / MOVLPD (66) / MOVDDUP (F2) / MOVSLDUP (F3)
                         if(RepPrefix==0xF2){
                             wsprintf(tempMeme,"movddup %s,%s",MMXRegs[reg2],menemonic);
                             strcpy_s((*Disasm)->Assembly,"");
@@ -5307,18 +5750,22 @@ void Mod_RM_SIB_EX(
                             strcpy_s((*Disasm)->Assembly,"");
                             (*Disasm)->OpcodeSize++;
                         }
+                        else if(PrefixReg)
+                            wsprintf(tempMeme,"movlpd %s,%s",MMXRegs[reg2],menemonic);
                         else{
                             wsprintf(tempMeme,"movlps %s,%s",MMXRegs[reg2],menemonic);
                         }
                     }
                     break;
 
-                    case 0x16:{ // MOVHPS / MOVSHDUP (F3)
+                    case 0x16:{ // MOVHPS / MOVHPD (66) / MOVSHDUP (F3)
                         if(RepPrefix==0xF3){
                             wsprintf(tempMeme,"movshdup %s,%s",MMXRegs[reg2],menemonic);
                             strcpy_s((*Disasm)->Assembly,"");
                             (*Disasm)->OpcodeSize++;
                         }
+                        else if(PrefixReg)
+                            wsprintf(tempMeme,"movhpd %s,%s",MMXRegs[reg2],menemonic);
                         else{
                             wsprintf(tempMeme,"movhps %s,%s",MMXRegs[reg2],menemonic);
                         }
@@ -5614,18 +6061,71 @@ void Mod_RM_SIB_EX(
                             strcpy_s((*Disasm)->Assembly,"");
                             (*Disasm)->OpcodeSize++;
                         }
+						else if(PrefixReg){
+                            wsprintf(tempMeme,"movupd %s,%s",menemonic,MMXRegs[REG]);
+						}
 						else{
                             wsprintf(tempMeme,"movups %s,%s",menemonic,MMXRegs[REG]);
 						}
                     }
-                    break; // MOVUPS/MOVSS/MOVSD
+                    break; // MOVUPS/MOVSS/MOVSD/MOVUPD
                     case 0x13: wsprintf(tempMeme,"movlps %s,%s",menemonic,MMXRegs[REG]); break; // MOVLPS
                     case 0x17: wsprintf(tempMeme,"movhps %s,%s",menemonic,MMXRegs[REG]); break; // MOVHPS
-                    case 0x29: wsprintf(tempMeme,"movaps %s,%s",menemonic,MMXRegs[REG]); break; // MOVAPS
-                    case 0x2B: wsprintf(tempMeme,"movntps %s,%s",menemonic,MMXRegs[REG]); break; // MOVNTPS
-                    case 0x7E: case 0x7F:wsprintf(tempMeme,"%s %s,%s",NewSet7[Op&0x0F],menemonic,Regs3DNow[REG]); break; // MOVD/MOVQ
+                    case 0x29:{
+                        if(PrefixReg)
+                            wsprintf(tempMeme,"movapd %s,%s",menemonic,MMXRegs[REG]);
+                        else
+                            wsprintf(tempMeme,"movaps %s,%s",menemonic,MMXRegs[REG]);
+                    }
+                    break; // MOVAPS/MOVAPD
+                    case 0x2B:{
+                        if(PrefixReg)
+                            wsprintf(tempMeme,"movntpd %s,%s",menemonic,MMXRegs[REG]);
+                        else
+                            wsprintf(tempMeme,"movntps %s,%s",menemonic,MMXRegs[REG]);
+                    }
+                    break; // MOVNTPS/MOVNTPD
+                    case 0x7E:{
+                        if(RepPrefix==0xF3){
+                            wsprintf(tempMeme,"movq %s,%s",MMXRegs[REG],menemonic);
+                            strcpy_s((*Disasm)->Assembly,"");
+                            (*Disasm)->OpcodeSize++;
+                        }
+                        else if(PrefixReg)
+                            wsprintf(tempMeme,"%s %s,%s",NewSet7[Op&0x0F],menemonic,MMXRegs[REG]);
+                        else
+                            wsprintf(tempMeme,"%s %s,%s",NewSet7[Op&0x0F],menemonic,Regs3DNow[REG]);
+                    }
+                    break; // MOVD/MOVQ
+                    case 0x7F:{
+                        if(RepPrefix==0xF3){
+                            wsprintf(tempMeme,"movdqu %s,%s",menemonic,MMXRegs[REG]);
+                            strcpy_s((*Disasm)->Assembly,"");
+                            (*Disasm)->OpcodeSize++;
+                        }
+                        else if(PrefixReg)
+                            wsprintf(tempMeme,"movdqa %s,%s",menemonic,MMXRegs[REG]);
+                        else
+                            wsprintf(tempMeme,"%s %s,%s",NewSet7[Op&0x0F],menemonic,Regs3DNow[REG]);
+                    }
+                    break; // MOVQ/MOVDQA/MOVDQU
+                    case 0xC3: wsprintf(tempMeme,"movnti %s,%s",menemonic,regs[RM][REG]); break; // MOVNTI
+					case 0xD6:{
+						if(PrefixReg)
+							wsprintf(tempMeme,"movq %s,%s",menemonic,MMXRegs[REG]);
+						else
+							wsprintf(tempMeme,"??? %s,%s",menemonic,Regs3DNow[REG]);
+					}
+					break;
+					case 0xE7:{
+						if(PrefixReg)
+							wsprintf(tempMeme,"movntdq %s,%s",menemonic,MMXRegs[REG]);
+						else
+							wsprintf(tempMeme,"%s %s,%s",NewSet14[Op&0x07],menemonic,Regs3DNow[REG]);
+					}
+					break;
                     case 0xA3: case 0xAB:{
-                      wsprintf(tempMeme,"%s %s,%s",NewSet10[Op&0x0F],menemonic,regs[RM][REG]); 
+                      wsprintf(tempMeme,"%s %s,%s",NewSet10[Op&0x0F],menemonic,regs[RM][REG]);
                     }
                     break;
                     case 0xA4:case 0xAC:{
@@ -5637,7 +6137,7 @@ void Mod_RM_SIB_EX(
                     }
                     break;
                     case 0xA5: case 0xAD:{
-                      wsprintf(tempMeme,"%s %s,%s,cl",NewSet10[Op&0x0F],menemonic,regs[RM][REG]); 
+                      wsprintf(tempMeme,"%s %s,%s,cl",NewSet10[Op&0x0F],menemonic,regs[RM][REG]);
                     }
                     break;
 
@@ -5645,55 +6145,62 @@ void Mod_RM_SIB_EX(
 						if((Op&0x0F)==0x00){
 							RM=REG8;
 						}
-                            
+
 						wsprintf(tempMeme,"%s %s,%s",NewSet11[Op&0x0F],menemonic,regs[RM][REG]);
                     }
                     break;
                     case 0xC0: { RM=REG8; wsprintf(tempMeme,"xadd %s,%s",menemonic,regs[RM][REG]); }		break; // XADD
-                    case 0xC1: wsprintf(tempMeme,"xadd %s,%s",menemonic,regs[RM][REG]);						break; // XADD  
-					case 0xD6:{
-						Op = (BYTE)(*(*Opcode+pos-2));
-						wsprintf(tempMeme,"%s %s,%s",NewSet16[Op&0x0F],MMXRegs[REG],menemonic);
-						(*Disasm)->OpcodeSize++;
-					}
-					break;
-					case 0xE7: wsprintf(tempMeme,"%s %s,%s",NewSet14[Op&0x07],menemonic,Regs3DNow[REG]);	break;
+                    case 0xC1: wsprintf(tempMeme,"xadd %s,%s",menemonic,regs[RM][REG]);						break; // XADD
                 }
                 lstrcat((*Disasm)->Assembly,tempMeme);
             }
             break;
-            
+
             case 1:{ // direction (<-)
                 switch(Op){ // Decode Instructions
                     case 0x02: wsprintf(tempMeme,"lar %s,%s",regs[RM][REG],menemonic);	break; // LAR
                     case 0x03: wsprintf(tempMeme,"lsl %s,%s",regs[RM][REG],menemonic);	break; // LSL
 					case 0x10:{
-						if(RepPrefix==0xF3){ // F3 prefix: movss
+						if(RepPrefix==0xF3){
 							strcpy_s((*Disasm)->Assembly,"");
 							(*Disasm)->OpcodeSize++;
 							wsprintf(tempMeme,"movss %s,%s",MMXRegs[REG],menemonic);
 						}
-						else if(RepPrefix==0xF2){ // F2 prefix: movsd
+						else if(RepPrefix==0xF2){
 							strcpy_s((*Disasm)->Assembly,"");
 							(*Disasm)->OpcodeSize++;
 							wsprintf(tempMeme,"movsd %s,%s",MMXRegs[REG],menemonic);
+						}
+						else if(PrefixReg){
+							wsprintf(tempMeme,"movupd %s,%s",MMXRegs[REG],menemonic);
 						}
 						else{
 							wsprintf(tempMeme,"movups %s,%s",MMXRegs[REG],menemonic);
 						}
                     }
-                    break; // MOVUPS/MOVSS/MOVSD
-                    // case 0x12 and 0x16 handled below in SSE3 section (with F2/F3 prefix discrimination)
-                    case 0x14: wsprintf(tempMeme,"unpcklps %s,%s",MMXRegs[REG],menemonic);	break; // UNPCKLPS
-                    case 0x15: wsprintf(tempMeme,"unpckhps %s,%s",MMXRegs[REG],menemonic);	break; // UNPCKHPS
+                    break; // MOVUPS/MOVSS/MOVSD/MOVUPD
+                    case 0x14:{
+                        if(PrefixReg) wsprintf(tempMeme,"unpcklpd %s,%s",MMXRegs[REG],menemonic);
+                        else wsprintf(tempMeme,"unpcklps %s,%s",MMXRegs[REG],menemonic);
+                    }
+                    break; // UNPCKLPS/UNPCKLPD
+                    case 0x15:{
+                        if(PrefixReg) wsprintf(tempMeme,"unpckhpd %s,%s",MMXRegs[REG],menemonic);
+                        else wsprintf(tempMeme,"unpckhps %s,%s",MMXRegs[REG],menemonic);
+                    }
+                    break; // UNPCKHPS/UNPCKHPD
                     case 0x18:{
                       wsprintf(tempMeme,"%s,%s",NewSet3[REG],menemonic);
                       if(REG>3)// Invalid Instructions
                           lstrcat((*Disasm)->Remarks,";Invalid instruction");
                     }
                     break;
-                    case 0x28: wsprintf(tempMeme,"movaps %s,%s",MMXRegs[REG],menemonic);	break; // MOVAPS
-                    
+                    case 0x28:{
+                        if(PrefixReg) wsprintf(tempMeme,"movapd %s,%s",MMXRegs[REG],menemonic);
+                        else wsprintf(tempMeme,"movaps %s,%s",MMXRegs[REG],menemonic);
+                    }
+                    break; // MOVAPS/MOVAPD
+
                     case 0x2A: case 0x2C: case 0x2D:case 0x2E: case 0x2F:{
                        BYTE R=((Op&0x0F)-0x08);
 					   if(R==4 || R==5){
@@ -5702,8 +6209,11 @@ void Mod_RM_SIB_EX(
 					   else{
                             wsprintf(temp,"%s",MMXRegs[REG]); // MMX Regs
 					   }
-                        
-                       if(RepPrefix!=0){
+
+                       if(PrefixReg && (Op==0x2E || Op==0x2F)){
+                           wsprintf(tempMeme,"%s %s,%s",(Op==0x2E)?"ucomisd":"comisd",MMXRegs[REG],menemonic);
+                       }
+                       else if(RepPrefix!=0){
                            char instruction[20];
                            if(Op==0x2A || Op==0x2C || Op==0x2D){
                                if(RepPrefix==0xF3){
@@ -5766,6 +6276,9 @@ void Mod_RM_SIB_EX(
                             strcpy_s((*Disasm)->Assembly,"");
                             (*Disasm)->OpcodeSize++;
                         }
+						else if(PrefixReg){
+                            wsprintf(tempMeme,"%s %s,%s",NewSet6_66[Op&0x0F],MMXRegs[REG],menemonic);
+						}
 						else{
                             wsprintf(tempMeme,"%s %s,%s",NewSet6[Op&0x0F],MMXRegs[REG],menemonic);
 						}
@@ -5775,12 +6288,56 @@ void Mod_RM_SIB_EX(
                     case 0x60:case 0x61:case 0x62:case 0x63:case 0x64:case 0x65:case 0x66:case 0x67:
                     case 0x68:case 0x69:case 0x6A:case 0x6B:case 0x6E:case 0x6F:
                     {
-                      wsprintf(tempMeme,"%s %s,%s",NewSet7[Op&0x0F],Regs3DNow[REG],menemonic); 
+                        if(Op==0x6F && RepPrefix==0xF3){
+                            wsprintf(tempMeme,"movdqu %s,%s",MMXRegs[REG],menemonic);
+                            strcpy_s((*Disasm)->Assembly,"");
+                            (*Disasm)->OpcodeSize++;
+                        }
+                        else if(Op==0x6F && PrefixReg){
+                            wsprintf(tempMeme,"movdqa %s,%s",MMXRegs[REG],menemonic);
+                        }
+                        else if(PrefixReg){
+                            wsprintf(tempMeme,"%s %s,%s",NewSet7[Op&0x0F],MMXRegs[REG],menemonic);
+                        }
+                        else{
+                            wsprintf(tempMeme,"%s %s,%s",NewSet7[Op&0x0F],Regs3DNow[REG],menemonic);
+                        }
+                    }
+                    break;
+
+                    case 0x6C:{ // PUNPCKLQDQ (66 only)
+                        if(PrefixReg)
+                            wsprintf(tempMeme,"punpcklqdq %s,%s",MMXRegs[REG],menemonic);
+                        else
+                            wsprintf(tempMeme,"???");
+                    }
+                    break;
+
+                    case 0x6D:{ // PUNPCKHQDQ (66 only)
+                        if(PrefixReg)
+                            wsprintf(tempMeme,"punpckhqdq %s,%s",MMXRegs[REG],menemonic);
+                        else
+                            wsprintf(tempMeme,"???");
                     }
                     break;
 
                     case 0x70:{
-                      wsprintf(tempMeme,"%s %s,%s,%02Xh",NewSet8[Op&0x0F],Regs3DNow[REG],menemonic,FOpcode);
+                        if(RepPrefix==0xF3){
+                            wsprintf(tempMeme,"pshufhw %s,%s,%02Xh",MMXRegs[REG],menemonic,FOpcode);
+                            strcpy_s((*Disasm)->Assembly,"");
+                            (*Disasm)->OpcodeSize++;
+                        }
+                        else if(RepPrefix==0xF2){
+                            wsprintf(tempMeme,"pshuflw %s,%s,%02Xh",MMXRegs[REG],menemonic,FOpcode);
+                            strcpy_s((*Disasm)->Assembly,"");
+                            (*Disasm)->OpcodeSize++;
+                        }
+                        else if(PrefixReg){
+                            wsprintf(tempMeme,"pshufd %s,%s,%02Xh",MMXRegs[REG],menemonic,FOpcode);
+                        }
+                        else{
+                            wsprintf(tempMeme,"%s %s,%s,%02Xh",NewSet8[Op&0x0F],Regs3DNow[REG],menemonic,FOpcode);
+                        }
                       wsprintf(menemonic," %02X",FOpcode);
                       lstrcat((*Disasm)->Opcode,menemonic);
                       (*Disasm)->OpcodeSize++;
@@ -5788,8 +6345,11 @@ void Mod_RM_SIB_EX(
                     }
                     break;
 
-                    case 0x74:case 0x75:case 0x76:{ // MIX
-                       wsprintf(tempMeme,"%s %s,%s",NewSet8[Op&0x0F],Regs3DNow[REG],menemonic); 
+                    case 0x74:case 0x75:case 0x76:{
+                        if(PrefixReg)
+                            wsprintf(tempMeme,"%s %s,%s",NewSet8[Op&0x0F],MMXRegs[REG],menemonic);
+                        else
+                            wsprintf(tempMeme,"%s %s,%s",NewSet8[Op&0x0F],Regs3DNow[REG],menemonic);
                     }
                     break;
 
@@ -5817,32 +6377,38 @@ void Mod_RM_SIB_EX(
                     break;
 
                     case 0xC2:{
-                      if(FOpcode<8){ // Instructions here
-                          if(RepPrefix==0xF3){ // F3 prefix: scalar single
+                      if(FOpcode<8){
+                          if(RepPrefix==0xF3){
                               wsprintf(tempMeme,"%s %s,%s",NewSet12Ex[FOpcode],MMXRegs[REG],menemonic);
                               strcpy_s((*Disasm)->Assembly,"");
                               (*Disasm)->OpcodeSize++;
                           }
-                          else if(RepPrefix==0xF2){ // F2 prefix: scalar double
+                          else if(RepPrefix==0xF2){
                               wsprintf(tempMeme,"%s %s,%s",NewSet12_F2[FOpcode],MMXRegs[REG],menemonic);
                               strcpy_s((*Disasm)->Assembly,"");
                               (*Disasm)->OpcodeSize++;
                           }
+						  else if(PrefixReg){
+                              wsprintf(tempMeme,"%s %s,%s",NewSet12_66[FOpcode],MMXRegs[REG],menemonic);
+						  }
 						  else{
                               wsprintf(tempMeme,"%s %s,%s",NewSet12[FOpcode],MMXRegs[REG],menemonic);
 						  }
                       }
                       else{
-                          if(RepPrefix==0xF3){ // F3 prefix: scalar single
+                          if(RepPrefix==0xF3){
                               wsprintf(tempMeme,"cmpss %s,%s,%02Xh",MMXRegs[REG],menemonic,FOpcode);
                               strcpy_s((*Disasm)->Assembly,"");
                               (*Disasm)->OpcodeSize++;
                           }
-                          else if(RepPrefix==0xF2){ // F2 prefix: scalar double
+                          else if(RepPrefix==0xF2){
                               wsprintf(tempMeme,"cmpsd %s,%s,%02Xh",MMXRegs[REG],menemonic,FOpcode);
                               strcpy_s((*Disasm)->Assembly,"");
                               (*Disasm)->OpcodeSize++;
                           }
+						  else if(PrefixReg){
+                              wsprintf(tempMeme,"cmppd %s,%s,%02Xh",MMXRegs[REG],menemonic,FOpcode);
+						  }
 						  else{
                               wsprintf(tempMeme,"cmpps %s,%s,%02Xh",MMXRegs[REG],menemonic,FOpcode);
 						  }
@@ -5855,16 +6421,10 @@ void Mod_RM_SIB_EX(
                     break;
 
                     case 0xC4:{
-                        wsprintf(tempMeme,"pinsrw %s,%s,%02Xh",Regs3DNow[REG],menemonic,FOpcode);
-                        wsprintf(menemonic," %02X",FOpcode);
-                        lstrcat((*Disasm)->Opcode,menemonic);
-                        (*Disasm)->OpcodeSize++;
-                        (*(*index))++;
-                    }
-                    break;
-
-                    case 0xC5:{
-                        wsprintf(tempMeme,"pextrw %s,%s,%02Xh",regs[RM][REG],menemonic,FOpcode);
+                        if(PrefixReg)
+                            wsprintf(tempMeme,"pinsrw %s,%s,%02Xh",MMXRegs[REG],menemonic,FOpcode);
+                        else
+                            wsprintf(tempMeme,"pinsrw %s,%s,%02Xh",Regs3DNow[REG],menemonic,FOpcode);
                         wsprintf(menemonic," %02X",FOpcode);
                         lstrcat((*Disasm)->Opcode,menemonic);
                         (*Disasm)->OpcodeSize++;
@@ -5873,7 +6433,10 @@ void Mod_RM_SIB_EX(
                     break;
 
                     case 0xC6:{
-                        wsprintf(tempMeme,"shufps %s,%s,%02Xh",MMXRegs[REG],menemonic,FOpcode);
+                        if(PrefixReg)
+                            wsprintf(tempMeme,"shufpd %s,%s,%02Xh",MMXRegs[REG],menemonic,FOpcode);
+                        else
+                            wsprintf(tempMeme,"shufps %s,%s,%02Xh",MMXRegs[REG],menemonic,FOpcode);
                         wsprintf(menemonic," %02X",FOpcode);
                         lstrcat((*Disasm)->Opcode,menemonic);
                         (*Disasm)->OpcodeSize++;
@@ -5882,17 +6445,29 @@ void Mod_RM_SIB_EX(
                     break;
 
 					case 0xD6:{
-						Op = (BYTE)(*(*Opcode+pos-2));
-						wsprintf(tempMeme,"%s %s,%s",NewSet16[Op&0x0F],menemonic,MMXRegs[REG]);
+						if(PrefixReg)
+							wsprintf(tempMeme,"movq %s,%s",menemonic,MMXRegs[REG]);
+						else
+							wsprintf(tempMeme,"??? %s,%s",menemonic,Regs3DNow[REG]);
 					}
 					break;
 
-                    case 0xD7:wsprintf(tempMeme,"%s %s,%s",NewSet13[Op&0x0F],regs[RM][REG],menemonic);	break;
-                    
-                    case 0xD1:case 0xD2:case 0xD3:case 0xD5:case 0xD8:case 0xDF:
+                    case 0xD7:{
+                        RM=REG32;
+                        if(PrefixReg)
+                            wsprintf(tempMeme,"%s %s,%s",NewSet13[Op&0x0F],regs[RM][REG],menemonic);
+                        else
+                            wsprintf(tempMeme,"%s %s,%s",NewSet13[Op&0x0F],regs[RM][REG],menemonic);
+                    }
+                    break;
+
+                    case 0xD1:case 0xD2:case 0xD3:case 0xD4:case 0xD5:case 0xD8:case 0xDF:
                     case 0xD9:case 0xDA:case 0xDB:case 0xDC:case 0xDD:case 0xDE:
                     {
-                        wsprintf(tempMeme,"%s %s,%s",NewSet13[Op&0x0F],Regs3DNow[REG],menemonic);
+                        if(PrefixReg)
+                            wsprintf(tempMeme,"%s %s,%s",NewSet13[Op&0x0F],MMXRegs[REG],menemonic);
+                        else
+                            wsprintf(tempMeme,"%s %s,%s",NewSet13[Op&0x0F],Regs3DNow[REG],menemonic);
                     }
                     break;
 
@@ -5901,34 +6476,49 @@ void Mod_RM_SIB_EX(
                     case 0xEA:case 0xEB:case 0xEC:case 0xED:
                     case 0xEE:case 0xEF:
                     {
-                      wsprintf(tempMeme,"%s %s,%s",NewSet14[Op&0x0F],Regs3DNow[REG],menemonic);
+                        if(PrefixReg)
+                            wsprintf(tempMeme,"%s %s,%s",NewSet14[Op&0x0F],MMXRegs[REG],menemonic);
+                        else
+                            wsprintf(tempMeme,"%s %s,%s",NewSet14[Op&0x0F],Regs3DNow[REG],menemonic);
                     }
                     break;
 
                     case 0xF1:case 0xF2:case 0xF3:case 0xF5:case 0xF6:
-                    case 0xF7:case 0xF8:case 0xF9:case 0xFA:case 0xFC:
+                    case 0xF7:case 0xF8:case 0xF9:case 0xFA:case 0xFB:case 0xFC:
                     case 0xFD:case 0xFE:{
-                      wsprintf(tempMeme,"%s %s,%s",NewSet15[Op&0x0F],Regs3DNow[REG],menemonic);
+                        if(PrefixReg){
+                            if(Op==0xF7)
+                                wsprintf(tempMeme,"maskmovdqu %s,%s",MMXRegs[REG],menemonic);
+                            else
+                                wsprintf(tempMeme,"%s %s,%s",NewSet15[Op&0x0F],MMXRegs[REG],menemonic);
+                        }
+                        else{
+                            wsprintf(tempMeme,"%s %s,%s",NewSet15[Op&0x0F],Regs3DNow[REG],menemonic);
+                        }
                     }
 					break;
 
                     // ==================== SSE3 memory-src forms (SIB) ====================
-                    case 0x12:{ // MOVLPS / MOVDDUP (F2) / MOVSLDUP (F3)
+                    case 0x12:{ // MOVLPS / MOVLPD (66) / MOVDDUP (F2) / MOVSLDUP (F3)
                         if(RepPrefix==0xF2){
                             wsprintf(tempMeme,"movddup %s,%s",MMXRegs[REG],menemonic);
                             strcpy_s((*Disasm)->Assembly,""); (*Disasm)->OpcodeSize++;
                         } else if(RepPrefix==0xF3){
                             wsprintf(tempMeme,"movsldup %s,%s",MMXRegs[REG],menemonic);
                             strcpy_s((*Disasm)->Assembly,""); (*Disasm)->OpcodeSize++;
+                        } else if(PrefixReg){
+                            wsprintf(tempMeme,"movlpd %s,%s",MMXRegs[REG],menemonic);
                         } else {
                             wsprintf(tempMeme,"movlps %s,%s",MMXRegs[REG],menemonic);
                         }
                     }
                     break;
-                    case 0x16:{ // MOVHPS / MOVSHDUP (F3)
+                    case 0x16:{ // MOVHPS / MOVHPD (66) / MOVSHDUP (F3)
                         if(RepPrefix==0xF3){
                             wsprintf(tempMeme,"movshdup %s,%s",MMXRegs[REG],menemonic);
                             strcpy_s((*Disasm)->Assembly,""); (*Disasm)->OpcodeSize++;
+                        } else if(PrefixReg){
+                            wsprintf(tempMeme,"movhpd %s,%s",MMXRegs[REG],menemonic);
                         } else {
                             wsprintf(tempMeme,"movhps %s,%s",MMXRegs[REG],menemonic);
                         }
