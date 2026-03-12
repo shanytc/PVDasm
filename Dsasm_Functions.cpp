@@ -4540,7 +4540,7 @@ void Mod_RM_SIB_EX(
       break;
 
       case 0xD6:            { Bit_d=0; Bit_w=1; strcpy_s(RSize,StringLen(regSize[0])+1,regSize[0]); } break; // QWORD  (MOVQ)
-      case 0xE7: Bit_d=0; Bit_w=1; strcpy_s(RSize,StringLen(regSize[0])+1,regSize[0]); break; // QWORD
+      case 0xE7: Bit_d=0; Bit_w=1; if(PrefixReg) strcpy_s(RSize,StringLen(regSize[8])+1,regSize[8]); else strcpy_s(RSize,StringLen(regSize[0])+1,regSize[0]); break; // DQWORD(movntdq) / QWORD(movntq)
 
       // SSE3 opcodes
       case 0x7C: case 0x7D: { Bit_d=1; Bit_w=1; strcpy_s(RSize,StringLen(regSize[8])+1,regSize[8]); } break; // DQWORD (haddpd/ps, hsubpd/ps)
@@ -6627,10 +6627,10 @@ void Decode3ByteOpcode_0F38(
 
     char assembly[256]="", temp[128]="", menemonic[128]="";
     WORD wOp, wMem;
-    DWORD_PTR m_OpcodeSize = 4; // 0F 38 xx ModRM minimum
+    DWORD_PTR m_OpcodeSize = 2; // 38 + ModRM (ThirdByte added below; caller adds 0F)
 
     // Check if 66 prefix is present (mandatory prefix for most SSE4 instructions)
-    bool Has66 = ((BYTE)(*(*Opcode)) == 0x66);
+    bool Has66 = PrefixReg;
 
     const char *mnem = NULL;
 
@@ -6716,8 +6716,10 @@ void Decode3ByteOpcode_0F38(
     m_OpcodeSize++; // for the 3rd byte
 
     // Determine register set
+    // With 66 prefix: XMM registers (SSSE3 XMM form / SSE4.1+)
+    // Without 66: MM registers (SSSE3 MMX form)
     const char **regSet;
-    if(Has66 || (ThirdByte >= 0x10 && ThirdByte <= 0x41)){
+    if(Has66){
         regSet = MMXRegs; // XMM registers
     } else {
         regSet = Regs3DNow; // MM registers (SSSE3 MMX form)
@@ -6731,7 +6733,7 @@ void Decode3ByteOpcode_0F38(
             m_OpcodeSize++;
         }
         else if(ThirdByte == 0xF1 && RepPrefix==0xF2){
-            wsprintf(assembly,"%s %s, %s",mnem,regs[REG32][REG],regs[REG32][RM]);
+            wsprintf(assembly,"%s %s, %s",mnem,regs[REG32][REG],regs[Has66?REG16:REG32][RM]);
             strcpy_s((*Disasm)->Assembly,"");
             m_OpcodeSize++;
         }
@@ -6744,8 +6746,7 @@ void Decode3ByteOpcode_0F38(
             }
         }
 
-        SwapWord((BYTE*)(*Opcode+pos+1),&wOp,&wMem);
-        wsprintf(temp,"%04X",wOp);
+        wsprintf(temp,"%02X",ModRM);
         lstrcat((*Disasm)->Opcode,temp);
         (*(*index))+=2;
     }
@@ -6757,7 +6758,7 @@ void Decode3ByteOpcode_0F38(
             m_OpcodeSize++;
         }
         else if(ThirdByte == 0xF1 && RepPrefix==0xF2){
-            wsprintf(assembly,"%s %s, dword ptr [...]",mnem,regs[REG32][REG]);
+            wsprintf(assembly,"%s %s, %s ptr [...]",mnem,regs[REG32][REG],Has66?"word":"dword");
             strcpy_s((*Disasm)->Assembly,"");
             m_OpcodeSize++;
         }
@@ -6768,8 +6769,7 @@ void Decode3ByteOpcode_0F38(
             wsprintf(assembly,"%s %s, %s",mnem,regSet[REG],regSet[RM]);
         }
 
-        SwapWord((BYTE*)(*Opcode+pos+1),&wOp,&wMem);
-        wsprintf(temp,"%04X",wOp);
+        wsprintf(temp,"%02X",ModRM);
         lstrcat((*Disasm)->Opcode,temp);
 
         // Handle displacement based on MOD
@@ -6833,9 +6833,9 @@ void Decode3ByteOpcode_0F3A(
 
     char assembly[256]="", temp[128]="";
     WORD wOp, wMem;
-    DWORD_PTR m_OpcodeSize = 5; // 0F 3A xx ModRM imm8
+    DWORD_PTR m_OpcodeSize = 3; // 3A + ModRM + imm8 (ThirdByte added below; caller adds 0F)
 
-    bool Has66 = ((BYTE)(*(*Opcode)) == 0x66);
+    bool Has66 = PrefixReg;
 
     const char *mnem = NULL;
     bool usesGPR = false; // Some instructions use GPR as dest/src
@@ -6917,8 +6917,7 @@ void Decode3ByteOpcode_0F3A(
             wsprintf(assembly,"%s %s, %s, %02Xh",mnem,MMXRegs[REG],MMXRegs[RM],Imm8);
         }
 
-        SwapWord((BYTE*)(*Opcode+pos+1),&wOp,&wMem);
-        wsprintf(temp,"%04X %02X",wOp,Imm8);
+        wsprintf(temp,"%02X %02X",ModRM,Imm8);
         lstrcat((*Disasm)->Opcode,temp);
         (*(*index))+=3; // ModRM + Imm8 + ThirdByte
     }
@@ -6931,8 +6930,7 @@ void Decode3ByteOpcode_0F3A(
             wsprintf(assembly,"%s %s, %s, %02Xh",mnem,MMXRegs[REG],MMXRegs[RM],Imm8);
         }
 
-        SwapWord((BYTE*)(*Opcode+pos+1),&wOp,&wMem);
-        wsprintf(temp,"%04X %02X",wOp,Imm8);
+        wsprintf(temp,"%02X %02X",ModRM,Imm8);
         lstrcat((*Disasm)->Opcode,temp);
 
         // Handle displacement
