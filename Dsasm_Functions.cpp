@@ -537,23 +537,23 @@ void Mod_11_RM(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,char instructio
 					case 0xE1: strcpy_s(assembly,"fabs");		break;
 					case 0xE4: strcpy_s(assembly,"ftst");		break;
 					case 0xE5: strcpy_s(assembly,"fxam");		break;
-					case 0xE8: strcpy_s(assembly,"fld1�");	break;
+					case 0xE8: strcpy_s(assembly,"fld1");	break;
 					case 0xE9: strcpy_s(assembly,"fldl2t");	break;
 					case 0xEA: strcpy_s(assembly,"fldl2e");	break;
 					case 0xEB: strcpy_s(assembly,"fldpi");	break;
-					case 0xEC: strcpy_s(assembly,"fldlg2�");	break;
-					case 0xED: strcpy_s(assembly,"fldln2�");	break;
+					case 0xEC: strcpy_s(assembly,"fldlg2");	break;
+					case 0xED: strcpy_s(assembly,"fldln2");	break;
 					case 0xEE: strcpy_s(assembly,"fldz");		break;
-					case 0xF0: strcpy_s(assembly,"f2xm1�");	break;
+					case 0xF0: strcpy_s(assembly,"f2xm1");	break;
 					case 0xF1: strcpy_s(assembly,"fyl2x");	break;
 					case 0xF2: strcpy_s(assembly,"fptan");	break;
 					case 0xF3: strcpy_s(assembly,"fpatan");	break;
 					case 0xF4: strcpy_s(assembly,"fxtract");	break;
-					case 0xF5: strcpy_s(assembly,"fprem1�");	break;
+					case 0xF5: strcpy_s(assembly,"fprem1");	break;
 					case 0xF6: strcpy_s(assembly,"fdecstp");	break;
 					case 0xF7: strcpy_s(assembly,"fincstp");	break;
 					case 0xF8: strcpy_s(assembly,"fprem");	break;
-					case 0xF9: strcpy_s(assembly,"fyl2xp1�"); break;
+					case 0xF9: strcpy_s(assembly,"fyl2xp1"); break;
 					case 0xFA: strcpy_s(assembly,"fsqrt");	break;
 					case 0xFB: strcpy_s(assembly,"fsincos");	break;
 					case 0xFC: strcpy_s(assembly,"frndint");	break;
@@ -591,6 +591,12 @@ void Mod_11_RM(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,char instructio
 					case 0xDC:case 0xDD:case 0xDE:case 0xDF:
 					{
 						wsprintf(assembly,"fcmovu st,%s",FpuRegs[reg2]);
+					}
+					break;
+
+					case 0xE9: // FUCOMPP
+					{
+						strcpy_s(assembly,"fucompp");
 					}
 					break;
 
@@ -752,7 +758,13 @@ void Mod_11_RM(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,char instructio
 					}
 					break;
 
-					case 0xD8:case 0xD9:case 0xDA:case 0xDB:
+					case 0xD9: // FCOMPP
+					{
+						strcpy_s(assembly,"fcompp");
+					}
+					break;
+
+					case 0xD8:case 0xDA:case 0xDB:
 					case 0xDC:case 0xDD:case 0xDE:case 0xDF:
 					{
 						wsprintf(assembly,"ficomp %s",FpuRegs[reg2]);
@@ -766,12 +778,7 @@ void Mod_11_RM(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,char instructio
 					}
 					break;
 
-					case 0xE9:{
-						strcpy_s(assembly,"fcompp");
-					}
-					break;
-
-					case 0xE8:case 0xEA:case 0xEB:
+					case 0xE8:case 0xE9:case 0xEA:case 0xEB:
 					case 0xEC:case 0xED:case 0xEE:case 0xEF:
 					{
 						wsprintf(assembly,"fsubp %s,st",FpuRegs[reg2]);
