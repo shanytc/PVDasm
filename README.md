@@ -61,9 +61,11 @@ ProView is an educational project aimed at building a custom disassembler and de
 ### 2026
 
 #### March 12, 2026
-- Fixed hex editor crash on 64-bit: EDITSTREAM struct layout mismatch with RAHexEd DLL
-  - DLL uses 8-byte aligned `pfnCallback` (offset 16, 24 bytes total) vs SDK `pack(4)` layout (offset 12, 20 bytes)
-  - Added `RAHEX_EDITSTREAM` struct matching the DLL for both 32-bit and 64-bit builds
+- Refactored <a href="https://www.assembly.com.br/projects/HexEd.zip" target="_blank">HexEd</a> 32-bit MASM Project to 64Bit Masm using UASM.
+  - Fixed hex editor crashes on 32-Bit and 64-Bit DLLs:
+    - EDITSTREAM struct layout mismatch with RAHexEd DLL
+    - DLL uses 8-byte aligned `pfnCallback` (offset 16, 24 bytes total) vs SDK `pack(4)` layout (offset 12, 20 bytes)
+    - Added `RAHEX_EDITSTREAM` struct matching the DLL for both 32-bit and 64-bit builds
 - Fixed `DWORD` to `DWORD_PTR` for stream callback handles (64-bit handle truncation)
 - Fixed `strcpy_s` buffer overflow in hex editor file loading (`Temp[20]` to `Temp[MAX_PATH]`)
 - Added `WS_VISIBLE` to RAHEXEDIT control in hex editor dialog resource
