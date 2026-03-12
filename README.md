@@ -8,12 +8,12 @@
 | $$        \  $$$/  | $$  | $$| $$  | $$ /$$  \ $$| $$\  $ | $$
 | $$         \  $/   | $$$$$$$/| $$  | $$|  $$$$$$/| $$ \/  | $$
 |__/          \_/    |_______/ |__/  |__/ \______/ |__/     |__/
- </pre>
+</pre>
 </p>
 
 <p align="center">
   <strong>32/64-Bit Multi Disassembler</strong><br>
-  Build Version: <code>v1.9</code><br>
+  Build Version: <code>v1.9a</code><br>
   &copy; Shany Golan 2003&ndash;2026
 </p>
 
