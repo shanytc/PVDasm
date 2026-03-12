@@ -27,6 +27,8 @@
 #define EP_RVA          0x1000      /* entry point */
 #define VBHDR_RVA       0x1020      /* VB_HEADER */
 #define PROJDATA_RVA    0x1080      /* VB_PROJECT_DATA (first 0x14 bytes) */
+#define IMPORT_DIR_RVA  0x10A0      /* Import directory table */
+#define IMPORT_NAME_RVA 0x10D0      /* "MSVBVM60.DLL" string */
 #define PCODE_RVA       0x1200      /* P-Code start */
 #define PCODE_END_RVA   0x1400      /* P-Code end */
 
@@ -124,7 +126,10 @@ int main(void)
     w32(0xEC, 0x00001000);         /* SizeOfHeapCommit */
     w32(0xF0, 0);                  /* LoaderFlags */
     w32(0xF4, 16);                 /* NumberOfRvaAndSizes */
-    /* Data directories (16 * 8 = 128 bytes) at 0xF8 — all zeros (no imports etc.) */
+    /* Data directories (16 * 8 = 128 bytes) at 0xF8 */
+    /* Entry 1 = Import Table */
+    w32(0x100, IMPORT_DIR_RVA);        /* Import directory RVA */
+    w32(0x104, 40);                    /* Size: 2 descriptors x 20 bytes */
 
     /* ================================================================ */
     /*  Section Header #1 (.text) at 0x178 (40 bytes)                   */
@@ -202,6 +207,28 @@ int main(void)
     w32(off + 0x10, VA(PCODE_END_RVA));    /* lpCodeEnd */
     w32(off + 0x14, 0x00000000);           /* dwDataSize */
     /* Rest left as zeros */
+
+    /* ================================================================ */
+    /*  Import Directory at RVA 0x10A0 (file offset 0x02A0)             */
+    /*  IMAGE_IMPORT_DESCRIPTOR #1: MSVBVM60.DLL                        */
+    /*  IMAGE_IMPORT_DESCRIPTOR #2: null terminator (already zeroed)     */
+    /*                                                                  */
+    /*  +0x00: DWORD  OriginalFirstThunk  (ILT RVA, 0 = unused)         */
+    /*  +0x04: DWORD  TimeDateStamp                                     */
+    /*  +0x08: DWORD  ForwarderChain                                    */
+    /*  +0x0C: DWORD  Name               (RVA of DLL name string)       */
+    /*  +0x10: DWORD  FirstThunk         (IAT RVA, 0 = unused)          */
+    /* ================================================================ */
+    off = FO(IMPORT_DIR_RVA);
+    w32(off + 0x00, 0x00000000);           /* OriginalFirstThunk (unused) */
+    w32(off + 0x04, 0x00000000);           /* TimeDateStamp */
+    w32(off + 0x08, 0x00000000);           /* ForwarderChain */
+    w32(off + 0x0C, IMPORT_NAME_RVA);      /* Name -> "MSVBVM60.DLL" */
+    w32(off + 0x10, 0x00000000);           /* FirstThunk (unused) */
+    /* Descriptor #2 (null terminator) is already zeros */
+
+    /* DLL name string at RVA 0x10D0 */
+    memcpy(&pe[FO(IMPORT_NAME_RVA)], "MSVBVM60.DLL", 13); /* includes '\0' */
 
     /* ================================================================ */
     /*  P-Code Bytecode at RVA 0x1200 (file offset 0x0400)              */
