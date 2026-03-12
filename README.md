@@ -60,6 +60,21 @@ ProView is an educational project aimed at building a custom disassembler and de
 
 ### 2026
 
+#### March 13, 2026
+- Added/Fixed Architectures, PVDAsm now supports:
+  - AVX
+  - AVX2
+  - AVX-512
+  - Chip-8
+  - MMX
+  - SSE
+  - SSE2
+  - SSE3
+  - SSE4
+  - x86
+  - x87 (FPU)
+  - Visual Basic P-Code
+
 #### March 12, 2026
 - Refactored <a href="https://www.assembly.com.br/projects/HexEd.zip" target="_blank">HexEd</a> 32-bit MASM Project to 64Bit Masm using UASM.
   - Fixed hex editor crashes on 32-Bit and 64-Bit DLLs:
