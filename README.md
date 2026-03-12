@@ -36,24 +36,24 @@ ProView is an educational project aimed at building a custom disassembler and de
 
 | Feature | Description |
 |---|---|
-| **Disassembler Engine** | Custom x86 engine with MMX, 3DNow!, SSE, and SSE2 support |
-| **PE/PE+ Editor** | View and edit PE (32-bit) and PE+ (64-bit) executable headers + Rebuild Tools|
-| **Dark Mode** | Light/Dark mode UI support |
-| **Function Analysis** | Prologue/epilogue detection, parameters, and local variables |
+| **Disassembler Engine** | Custom x86 engine with MMX, 3DNow!, SSE, and SSE2 support and more. |
+| **PE/PE+ Editor** | View and edit PE (32-bit) and PE+ (64-bit) executable headers + Rebuild Tools. |
+| **Dark Mode** | Light/Dark mode UI support. |
+| **Function Analysis** | Prologue/epilogue detection, parameters, and local variables. |
 | **Process Manager** | View and dump running processes (Win2K/XP/7+) |
-| **Plugin SDK** | Develop and load custom plugins from the `\Plugin\` directory |
-| **MASM Wizard** | Generate MASM source code from disassembled output |
-| **Code Patcher** | Inline assembly patcher with live preview |
-| **Branch Tracing** | Trace jumps/calls and return with arrow keys |
-| **XReferences** | Cross-reference viewer with search |
-| **String References** | String reference browser with search dialog |
-| **HexEditor** | Embedded hex editor (RadASM add-in) |
-| **PVScript Engine** | Custom scripting engine for command automation |
-| **API Recognition** | Automatic API parameter annotation via signature database |
-| **Color Schemes** | SoftICE, IDA, OllyDbg, W32Asm, and custom themes |
-| **Save/Load Projects** | Persist analysis state including functions, data, and comments |
-| **Map File Support** | Import/export MAP files (IDA-compatible) |
-| **Multi CPU Suuport** | Support Intel x86, Chip8, Visual Basic architectures |
+| **Plugin SDK** | Develop and load custom plugins from the `\Plugin\` directory. |
+| **MASM Wizard** | Generate MASM source code from disassembled output. |
+| **Code Patcher** | Inline assembly patcher with live preview. |
+| **Branch Tracing** | Trace jumps/calls and return with arrow keys. |
+| **XReferences** | Cross-reference viewer with search. |
+| **String References** | String reference browser with search dialog. |
+| **HexEditor** | Embedded hex editor (RadASM add-in.) |
+| **PVScript Engine** | Custom scripting engine for command automation. |
+| **API Recognition** | Automatic API parameter annotation via signature database. |
+| **Color Schemes** | SoftICE, IDA, OllyDbg, W32Asm, and custom themes. |
+| **Save/Load Projects** | Persist analysis state including functions, data, and comments. |
+| **Map File Support** | Import/export MAP files (IDA-compatible.) |
+| **Multi CPU Suuport** | Support Intel x86, Chip8, Visual Basic architectures. |
 ---
 
 ## Changelog
