@@ -79,6 +79,7 @@ typedef DisasmDataArray::iterator			ItrDisasm;
 typedef vector<int>							DisasmImportsArray,IntArray;
 typedef vector<CODE_BRANCH>					CodeBranch;
 typedef vector<FUNCTION_INFORMATION>		FunctionInfo;
+typedef vector<EXPORT_INFORMATION>		ExportInfoArray;
 typedef FunctionInfo::iterator				FunctionInfoItr;
 typedef DisasmImportsArray::iterator		ItrImports;
 typedef CodeBranch::iterator				ItrCodeBranch;

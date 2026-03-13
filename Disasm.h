@@ -219,6 +219,11 @@ typedef struct FunctioInformation{
 
 } FUNCTION_INFORMATION;
 
+typedef struct ExportInformation{
+	DWORD_PTR	ExportAddress;   // VA (ImageBase + RVA)
+	char		ExportName[128]; // Export function name
+} EXPORT_INFORMATION;
+
 // ================================================================
 // =======================  PROTOTYPES  ===========================
 // ================================================================
