@@ -385,22 +385,16 @@ BEGIN
     CONTROL         "Run First Pass analyzer:",IDC_FIRST_PASS,"Button",BS_AUTOCHECKBOX | BS_LEFTTEXT | WS_TABSTOP,20,206,101,10
     CONTROL         "Load API signatures:",IDC_SIGNATURES,"Button",BS_AUTOCHECKBOX | BS_LEFTTEXT | WS_TABSTOP,20,217,101,10
     PUSHBUTTON      "...",IDC_LOAD_SIGS,125,216,14,11
-    PUSHBUTTON      "Data Editor",IDC_DATA_CREATE_SEGMENTS,23,247,50,17
-    PUSHBUTTON      "Functions Editor",IDC_FDATA_CREATE_EP,78,246,59,18
-    PUSHBUTTON      "Import MAP",IDC_LOAD_MAP,142,246,50,18
-    PUSHBUTTON      "Options",IDC_ADVANCED,197,246,50,18
+    PUSHBUTTON      "Data Editor",IDC_DATA_CREATE_SEGMENTS,22,247,50,17
+    PUSHBUTTON      "Functions Editor",IDC_FDATA_CREATE_EP,75,247,59,17
+    PUSHBUTTON      "Import MAP",IDC_LOAD_MAP,137,247,50,17
+    PUSHBUTTON      "Options",IDC_ADVANCED,190,247,50,17
     LTEXT           "Processor(s) Family:",IDC_STATIC,13,79,64,9
     LTEXT           "( Bytes from EP )",IDC_STATIC,155,184,53,8
-    LTEXT           "(Default: Not Show)",IDC_STATIC,127,120,63,8,WS_DISABLED
-    LTEXT           "(Default: Uppercased disasm)",IDC_STATIC,127,131,94,8
-    LTEXT           "(Default: Show)",IDC_STATIC,127,141,50,8
     LTEXT           """""",IDC_LOADED_FILE,15,5,234,24
     GROUPBOX        "Options",IDC_STATIC,14,107,234,125
-    LTEXT           "(Default: Show)",IDC_STATIC,127,151,50,8
-    LTEXT           "(Default: Show)",IDC_STATIC,127,161,50,8
-    LTEXT           "(Default: Show)",IDC_STATIC,127,172,50,8
     LTEXT           "( Ignores Assembly before EP )",IDC_STATIC,126,196,97,8
-    GROUPBOX        "Advanced Options",IDC_STATIC,14,235,213,38
+    GROUPBOX        "Advanced Options",IDC_STATIC,14,235,234,38
     LTEXT           "( Analyze Data/Code/FEP )",IDC_STATIC,126,207,88,8
     LTEXT           "( Display API parameters )",IDC_STATIC,143,217,82,8
 END
@@ -865,7 +859,7 @@ BEGIN
         MENUITEM "Open Project...\tCtrl+Alt+O", IDM_OPEN_PROJECT
         MENUITEM "Save Project...\tCtrl+Alt+S", IDM_SAVE_PROJECT
         MENUITEM SEPARATOR
-        POPUP "Create"
+        POPUP "Export"
         BEGIN
             MENUITEM "Source Code\tCtrl+W",         IDC_PRODUCE_MASM
             MENUITEM "Disassembly\tCtrl+V",         IDC_PRODUCE_VIEW
