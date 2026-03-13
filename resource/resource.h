@@ -338,6 +338,7 @@
 #define IDC_XREF_CANCEL                 1333
 #define IDC_XREF_TARGET                 1334
 #define IDC_XREF_JUMPBACK               1335
+#define IDC_OPEN_PE_EDITOR              1336
 #define IDC_LOADFILE                    40001
 #define IDC_EXIT                        40002
 #define IDC_MENUABOUT                   40004
@@ -446,7 +447,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        246
 #define _APS_NEXT_COMMAND_VALUE         40112
-#define _APS_NEXT_CONTROL_VALUE         1335
+#define _APS_NEXT_CONTROL_VALUE         1337
 #define _APS_NEXT_SYMED_VALUE           121
 #endif
 #endif

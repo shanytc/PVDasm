@@ -362,13 +362,13 @@ BEGIN
     CONTROL         "Tree1",IDC_EXPORTS_TREE,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT | TVS_TRACKSELECT | TVS_FULLROWSELECT | TVS_SINGLEEXPAND | WS_BORDER | WS_TABSTOP,6,132,312,118
 END
 
-IDD_DISASM DIALOGEX 0, 0, 260, 295
+IDD_DISASM DIALOGEX 0, 0, 260, 313
 STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Disassemble New File"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    DEFPUSHBUTTON   "Ok",IDC_DISASM_FILE,76,277,52,14
-    PUSHBUTTON      "Cancel",IDC_CANCEL,134,277,52,14
+    DEFPUSHBUTTON   "Ok",IDC_DISASM_FILE,76,295,52,14
+    PUSHBUTTON      "Cancel",IDC_CANCEL,134,295,52,14
     LISTBOX         IDC_FILE_FORMAT,13,31,234,44,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
     COMBOBOX        IDC_CPUS,14,90,200,58,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      "SET",IDC_SET_CPU,220,89,28,14
@@ -388,13 +388,14 @@ BEGIN
     PUSHBUTTON      "Data Editor",IDC_DATA_CREATE_SEGMENTS,22,247,50,17
     PUSHBUTTON      "Functions Editor",IDC_FDATA_CREATE_EP,75,247,59,17
     PUSHBUTTON      "Import MAP",IDC_LOAD_MAP,137,247,50,17
-    PUSHBUTTON      "Options",IDC_ADVANCED,190,247,50,17
+    PUSHBUTTON      "PE Editor",IDC_OPEN_PE_EDITOR,190,247,50,17
+    PUSHBUTTON      "Options",IDC_ADVANCED,22,265,50,17
     LTEXT           "Processor(s) Family:",IDC_STATIC,13,79,64,9
     LTEXT           "( Bytes from EP )",IDC_STATIC,155,184,53,8
     LTEXT           """""",IDC_LOADED_FILE,15,5,234,24
     GROUPBOX        "Options",IDC_STATIC,14,107,234,125
     LTEXT           "( Ignores Assembly before EP )",IDC_STATIC,126,196,97,8
-    GROUPBOX        "Advanced Options",IDC_STATIC,14,235,234,38
+    GROUPBOX        "Advanced Options",IDC_STATIC,14,235,234,56
     LTEXT           "( Analyze Data/Code/FEP )",IDC_STATIC,126,207,88,8
     LTEXT           "( Display API parameters )",IDC_STATIC,143,217,82,8
 END
@@ -463,11 +464,11 @@ BEGIN
     LTEXT           "Shany Golan / 2026",IDC_STATIC,75,127,71,8
     LTEXT           "Goofy - The Man && The Lengend.",IDC_STATIC,52,50,107,8
     LTEXT           "Detten - Thanks for your big help!",IDC_STATIC,52,59,106,8
-    LTEXT           "Cage - Buddy!!!! hug :-)",IDC_STATIC,52,68,72,8
+    LTEXT           "Cage - Buddy!!!! (hug)",IDC_STATIC,52,68,72,8
     LTEXT           "TheSvin - Amazing opcode essays!",IDC_STATIC,52,77,112,8
-    LTEXT           "ORC+, Woodmann, Fravia, HCU+!",IDC_STATIC,52,86,105,8
+    LTEXT           "ORC+,Woodmann,Fravia,HCU+!",IDC_STATIC,52,86,105,8
     LTEXT           "All RCE tool writers, where ever you are.",IDC_STATIC,53,95,127,8
-    LTEXT           "AMD/Intel - Great x86 Books",IDC_STATIC,54,114,107,8
+    LTEXT           "AMD/Intel - x86/x87 Books",IDC_STATIC,54,114,107,8
     LTEXT           "Hex-Rays IDA / Ollydbg.",IDC_STATIC,53,104,113,8
 END
 
