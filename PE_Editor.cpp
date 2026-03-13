@@ -5302,15 +5302,10 @@ void ShowExports(HWND hWnd)
 		{
             if (ordinals[j]==i)
 			{
-				__try{
-                wsprintf(Function,"%s ",name[j]-delta+base);
-				}
-				// Allert the User!
-				__except (MessageBox(hWnd,"Can't Get Exported Function!","PVDasm Handler",MB_OK))
-				{
-					ClearIMpex(ExpTree,"Currupted Export Directory");
-					return;
-				}
+				char *namePtr = (char*)(name[j] - delta + base);
+				if(namePtr < pfile || namePtr >= pfile + (DWORD)hFileSize)
+					continue;
+				lstrcpynA(Function, namePtr, sizeof(Function));
 			}
 
 		}
