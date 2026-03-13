@@ -395,9 +395,17 @@ void CalculateBlockDimensions(HDC hDC, CFG_GRAPH* graph)
 
         for (DWORD_PTR idx = block.StartIndex; idx <= block.EndIndex && idx < DisasmDataLines.size(); idx++) {
             char line[512];
-            wsprintf(line, "%s  %s",
-                     DisasmDataLines[idx].GetAddress(),
-                     DisasmDataLines[idx].GetMnemonic());
+            char* comment = DisasmDataLines[idx].GetComments();
+            if (comment && comment[0] != '\0') {
+                wsprintf(line, "%s  %s  ; %s",
+                         DisasmDataLines[idx].GetAddress(),
+                         DisasmDataLines[idx].GetMnemonic(),
+                         comment);
+            } else {
+                wsprintf(line, "%s  %s",
+                         DisasmDataLines[idx].GetAddress(),
+                         DisasmDataLines[idx].GetMnemonic());
+            }
 
             SIZE textSize;
             GetTextExtentPoint32(hDC, line, lstrlen(line), &textSize);
@@ -1015,6 +1023,21 @@ void RenderBlocks(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
             // Draw mnemonic
             SetTextColor(hDC, textColor);
             TextOut(hDC, block.X + CFG_BLOCK_PADDING + 75, y, asmText, lstrlen(asmText));
+
+            // Draw comment if present
+            char* comment = DisasmDataLines[idx].GetComments();
+            if (comment && comment[0] != '\0') {
+                // Measure mnemonic width to position comment after it
+                SIZE asmSize;
+                GetTextExtentPoint32(hDC, asmText, lstrlen(asmText), &asmSize);
+                int commentX = block.X + CFG_BLOCK_PADDING + 75 + asmSize.cx;
+
+                char commentBuf[256];
+                wsprintf(commentBuf, "  ; %s", comment);
+                COLORREF commentColor = g_DarkMode ? RGB(87, 166, 74) : RGB(0, 128, 0);
+                SetTextColor(hDC, commentColor);
+                TextOut(hDC, commentX, y, commentBuf, lstrlen(commentBuf));
+            }
 
             y += CFG_LINE_HEIGHT;
         }
