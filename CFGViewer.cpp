@@ -275,6 +275,19 @@ BOOL BuildCFGFromFunction(DWORD_PTR funcStart, DWORD_PTR funcEnd, const char* fu
             block.IsExitBlock = IsReturnInstruction(lastMnemonic);
         }
 
+        // Check if this block starts a known function
+        block.FunctionLabel[0] = '\0';
+        for (size_t fi = 0; fi < fFunctionInfo.size(); fi++) {
+            if (fFunctionInfo[fi].FunctionStart == block.StartAddress) {
+                if (fFunctionInfo[fi].FunctionName[0] != '\0')
+                    strncpy(block.FunctionLabel, fFunctionInfo[fi].FunctionName, 63);
+                else
+                    wsprintf(block.FunctionLabel, "Proc_%08X", (DWORD)block.StartAddress);
+                block.FunctionLabel[63] = '\0';
+                break;
+            }
+        }
+
         outGraph->Blocks.push_back(block);
         outGraph->AddressToBlockIndex[block.StartAddress] = outGraph->Blocks.size() - 1;
         outGraph->BlockIDToIndex[block.BlockID] = outGraph->Blocks.size() - 1;
@@ -378,6 +391,16 @@ void CalculateBlockDimensions(HDC hDC, CFG_GRAPH* graph)
                 maxWidth = textSize.cx + 2 * CFG_BLOCK_PADDING;
             }
             numLines++;
+        }
+
+        // Account for function label header
+        if (block.FunctionLabel[0] != '\0') {
+            SIZE labelSize;
+            GetTextExtentPoint32(hDC, block.FunctionLabel, lstrlen(block.FunctionLabel), &labelSize);
+            if (labelSize.cx + 2 * CFG_BLOCK_PADDING > maxWidth) {
+                maxWidth = labelSize.cx + 2 * CFG_BLOCK_PADDING;
+            }
+            numLines++;  // Extra line for the header
         }
 
         block.Width = maxWidth;
@@ -672,6 +695,7 @@ void RenderEdges(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
     COLORREF trueColor = RGB(0, 180, 0);              // Green (branch taken)
     COLORREF falseColor = RGB(220, 50, 50);           // Red (fall-through)
     COLORREF backEdgeColor = RGB(0, 120, 220);        // Blue (loop)
+    COLORREF callColor = RGB(100, 50, 200);           // Purple (CALL)
 
     // ── Pre-pass: build per-block port assignments ──────────────────
     // outgoing[blockID] = list of edge indices leaving that block (non-back-edges)
@@ -783,6 +807,7 @@ void RenderEdges(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
             switch (edge.Type) {
                 case EDGE_CONDITIONAL_TRUE:  edgeColor = trueColor; break;
                 case EDGE_CONDITIONAL_FALSE: edgeColor = falseColor; break;
+                case EDGE_CALL:             edgeColor = callColor; break;
                 default: edgeColor = unconditionalColor; break;
             }
         }
@@ -884,9 +909,10 @@ void RenderEdges(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
             labelY = startY + 8;
         }
 
-        // Draw True/False label for conditional edges
-        if (edge.Type == EDGE_CONDITIONAL_TRUE || edge.Type == EDGE_CONDITIONAL_FALSE) {
-            const char* label = (edge.Type == EDGE_CONDITIONAL_TRUE) ? "T" : "F";
+        // Draw True/False/Call label for conditional and call edges
+        if (edge.Type == EDGE_CONDITIONAL_TRUE || edge.Type == EDGE_CONDITIONAL_FALSE || edge.Type == EDGE_CALL) {
+            const char* label = (edge.Type == EDGE_CONDITIONAL_TRUE) ? "T" :
+                                (edge.Type == EDGE_CONDITIONAL_FALSE) ? "F" : "C";
             SetBkMode(hDC, TRANSPARENT);
             SetTextColor(hDC, edgeColor);
             TextOut(hDC, labelX, labelY, label, 1);
@@ -946,6 +972,22 @@ void RenderBlocks(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
         // Draw instructions inside block
         SetBkMode(hDC, TRANSPARENT);
         int y = block.Y + CFG_BLOCK_PADDING;
+
+        // Draw function label header if present
+        if (block.FunctionLabel[0] != '\0') {
+            COLORREF headerColor = g_DarkMode ? RGB(100, 160, 255) : RGB(0, 50, 160);
+            SetTextColor(hDC, headerColor);
+            TextOut(hDC, block.X + CFG_BLOCK_PADDING, y, block.FunctionLabel, lstrlen(block.FunctionLabel));
+            y += CFG_LINE_HEIGHT;
+
+            // Draw separator line below header
+            HPEN hSepPen = CreatePen(PS_SOLID, 1, g_DarkMode ? RGB(80, 80, 80) : RGB(180, 180, 180));
+            HPEN hOldSepPen = (HPEN)SelectObject(hDC, hSepPen);
+            MoveToEx(hDC, block.X + 2, y - 2, NULL);
+            LineTo(hDC, block.X + block.Width - 2, y - 2);
+            SelectObject(hDC, hOldSepPen);
+            DeleteObject(hSepPen);
+        }
 
         for (DWORD_PTR idx = block.StartIndex; idx <= block.EndIndex && idx < DisasmDataLines.size(); idx++) {
             char* addrText = DisasmDataLines[idx].GetAddress();
@@ -1377,6 +1419,14 @@ BOOL BuildCFGByTracing(DWORD_PTR startIndex, CFG_GRAPH* outGraph)
         DWORD_PTR idx = currentIndex;
         while (idx < DisasmDataLines.size()) {
             if (visitedIndices.count(idx)) break;
+
+            // Skip proc marker lines (empty address = comment/separator, not real instruction)
+            const char* addrStr = DisasmDataLines[idx].GetAddress();
+            if (!addrStr || addrStr[0] == '\0') {
+                idx++;
+                continue;
+            }
+
             visitedIndices.insert(idx);
 
             const char* mnemonic = DisasmDataLines[idx].GetMnemonic();
@@ -1388,6 +1438,74 @@ BOOL BuildCFGByTracing(DWORD_PTR startIndex, CFG_GRAPH* outGraph)
             if (isRet) {
                 // End of this path
                 break;
+            }
+
+            if (isCall) {
+                // Try to find call destination
+                DWORD_PTR destAddr = 0;
+                bool foundInCodeFlow = false;
+
+                for (size_t j = 0; j < DisasmCodeFlow.size(); j++) {
+                    if (DisasmCodeFlow[j].Current_Index == idx) {
+                        destAddr = DisasmCodeFlow[j].Branch_Destination;
+                        foundInCodeFlow = true;
+                        break;
+                    }
+                }
+
+                if (!foundInCodeFlow || destAddr == 0) {
+                    destAddr = ExtractAddressFromMnemonic(mnemonic);
+                }
+
+                // Check if target is a numeric local address (not an API call like KERNEL32!ExitProcess)
+                // API calls contain '!' in mnemonic or resolve to address 0
+                bool isLocalCall = (destAddr != 0);
+                if (isLocalCall) {
+                    // Check if mnemonic contains '!' (API call indicator)
+                    const char* p = mnemonic;
+                    while (*p) {
+                        if (*p == '!') { isLocalCall = false; break; }
+                        p++;
+                    }
+                }
+
+                if (isLocalCall) {
+                    DWORD_PTR destIndex = FindIndexByAddress(destAddr);
+
+                    if (destIndex != (DWORD_PTR)-1 && destIndex < DisasmDataLines.size()) {
+                        // Call target starts a new block
+                        blockStartIndices.insert(destIndex);
+                        // Return address (next instruction) starts a new block
+                        if (idx + 1 < DisasmDataLines.size()) {
+                            blockStartIndices.insert(idx + 1);
+                        }
+
+                        // CALL edge to target
+                        successors[idx].push_back(destIndex);
+                        edgeTypes[(idx << 16) | (destIndex & 0xFFFF)] = EDGE_CALL;
+
+                        // Fall-through edge to return address
+                        if (idx + 1 < DisasmDataLines.size()) {
+                            successors[idx].push_back(idx + 1);
+                            edgeTypes[(idx << 16) | ((idx + 1) & 0xFFFF)] = EDGE_UNCONDITIONAL;
+
+                            if (!visitedIndices.count(idx + 1)) {
+                                toVisit.insert(idx + 1);
+                            }
+                        }
+
+                        // Trace the call target
+                        if (!visitedIndices.count(destIndex)) {
+                            toVisit.insert(destIndex);
+                        }
+
+                        break;  // End current block (CALL splits the block)
+                    }
+                }
+
+                // If not a local call, just continue (fall-through)
+                idx++;
+                continue;
             }
 
             if (isCondJump || isUncondJump) {
@@ -1487,6 +1605,10 @@ BOOL BuildCFGByTracing(DWORD_PTR startIndex, CFG_GRAPH* outGraph)
             if (IsConditionalJump(mnemonic) || IsUnconditionalJump(mnemonic) || IsReturnInstruction(mnemonic)) {
                 break;
             }
+            // CALL also ends the block if the next instruction starts a new block
+            if (IsCallInstruction(mnemonic) && blockStartIndices.count(idx + 1)) {
+                break;
+            }
         }
 
         block.EndIndex = endIdx;
@@ -1495,6 +1617,19 @@ BOOL BuildCFGByTracing(DWORD_PTR startIndex, CFG_GRAPH* outGraph)
 
         const char* lastMnemonic = DisasmDataLines[endIdx].GetMnemonic();
         block.IsExitBlock = IsReturnInstruction(lastMnemonic);
+
+        // Check if this block starts a known function
+        block.FunctionLabel[0] = '\0';
+        for (size_t fi = 0; fi < fFunctionInfo.size(); fi++) {
+            if (fFunctionInfo[fi].FunctionStart == block.StartAddress) {
+                if (fFunctionInfo[fi].FunctionName[0] != '\0')
+                    strncpy(block.FunctionLabel, fFunctionInfo[fi].FunctionName, 63);
+                else
+                    wsprintf(block.FunctionLabel, "Proc_%08X", (DWORD)block.StartAddress);
+                block.FunctionLabel[63] = '\0';
+                break;
+            }
+        }
 
         outGraph->Blocks.push_back(block);
         outGraph->AddressToBlockIndex[block.StartAddress] = outGraph->Blocks.size() - 1;
@@ -1547,8 +1682,33 @@ BOOL BuildCFGByTracing(DWORD_PTR startIndex, CFG_GRAPH* outGraph)
                 edge.IsBackEdge = false;
                 outGraph->Edges.push_back(edge);
             }
+        } else if (IsCallInstruction(lastMnemonic)) {
+            // CALL instruction - create edge to call target and fall-through
+            DWORD_PTR destAddr = ExtractAddressFromMnemonic(lastMnemonic);
+            if (destAddr != 0 && outGraph->AddressToBlockIndex.count(destAddr)) {
+                actualJumpTargets.insert(destAddr);
+                CFG_EDGE edge;
+                edge.SourceBlockID = block.BlockID;
+                edge.TargetBlockID = outGraph->Blocks[outGraph->AddressToBlockIndex[destAddr]].BlockID;
+                edge.Type = EDGE_CALL;
+                edge.IsBackEdge = false;
+                outGraph->Edges.push_back(edge);
+            }
+
+            // Fall-through edge (return address)
+            DWORD_PTR nextIdx = lastIdx + 1;
+            DWORD_PTR nextAddr = GetAddressAtIndex(nextIdx);
+            if (outGraph->AddressToBlockIndex.count(nextAddr)) {
+                actualJumpTargets.insert(nextAddr);
+                CFG_EDGE edge;
+                edge.SourceBlockID = block.BlockID;
+                edge.TargetBlockID = outGraph->Blocks[outGraph->AddressToBlockIndex[nextAddr]].BlockID;
+                edge.Type = EDGE_UNCONDITIONAL;
+                edge.IsBackEdge = false;
+                outGraph->Edges.push_back(edge);
+            }
         } else if (!IsReturnInstruction(lastMnemonic) && !block.IsExitBlock) {
-            // Not a branch or return - create fall-through edge
+            // Not a branch, call, or return - create fall-through edge
             DWORD_PTR nextIdx = lastIdx + 1;
             DWORD_PTR nextAddr = GetAddressAtIndex(nextIdx);
             if (outGraph->AddressToBlockIndex.count(nextAddr)) {
@@ -1586,7 +1746,7 @@ BOOL BuildCFGByTracing(DWORD_PTR startIndex, CFG_GRAPH* outGraph)
                 if (candidate.EndIndex + 1 == block.StartIndex) {
                     // Check if previous block ends with a control flow instruction
                     const char* lastMnemonic = DisasmDataLines[candidate.EndIndex].GetMnemonic();
-                    if (!IsConditionalJump(lastMnemonic) && !IsUnconditionalJump(lastMnemonic) && !IsReturnInstruction(lastMnemonic)) {
+                    if (!IsConditionalJump(lastMnemonic) && !IsUnconditionalJump(lastMnemonic) && !IsReturnInstruction(lastMnemonic) && !IsCallInstruction(lastMnemonic)) {
                         prevBlock = &candidate;
                         prevIdx = j;
                         break;

@@ -35,7 +35,8 @@
 typedef enum CFGEdgeType {
     EDGE_UNCONDITIONAL = 0,    // JMP (always taken)
     EDGE_CONDITIONAL_TRUE,     // Jcc when condition is true (branch taken)
-    EDGE_CONDITIONAL_FALSE     // Fall-through when condition is false
+    EDGE_CONDITIONAL_FALSE,    // Fall-through when condition is false
+    EDGE_CALL                  // CALL instruction edge (blue/purple)
 } CFG_EDGE_TYPE;
 
 // Represents a single basic block in the CFG
@@ -58,6 +59,9 @@ typedef struct CFGBasicBlock {
     bool        IsEntryBlock;      // Function entry point
     bool        IsExitBlock;       // Contains RET or no successors
     bool        IsSelected;        // Currently selected by user
+
+    // Function label
+    char        FunctionLabel[64]; // Function/proc name if this is a function entry
 
 } CFG_BASIC_BLOCK;
 
