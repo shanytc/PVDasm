@@ -335,6 +335,21 @@ BOOL BuildCFGFromFunction(DWORD_PTR funcStart, DWORD_PTR funcEnd, const char* fu
         }
     }
 
+    // Add loc_ labels for jump target blocks that don't already have a function label
+    std::set<DWORD_PTR> jumpTargetAddrs;
+    for (auto& pair : successors) {
+        for (DWORD_PTR target : pair.second) {
+            jumpTargetAddrs.insert(target);
+        }
+    }
+    for (size_t i = 0; i < outGraph->Blocks.size(); i++) {
+        CFG_BASIC_BLOCK& block = outGraph->Blocks[i];
+        if (block.FunctionLabel[0] == '\0' && !block.IsEntryBlock &&
+            jumpTargetAddrs.count(block.StartAddress)) {
+            wsprintf(block.FunctionLabel, "loc_%08X", (DWORD)block.StartAddress);
+        }
+    }
+
     return (outGraph->Blocks.size() > 0);
 }
 
@@ -1721,6 +1736,15 @@ BOOL BuildCFGByTracing(DWORD_PTR startIndex, CFG_GRAPH* outGraph)
             }
         }
         // RET instructions have no outgoing edges
+    }
+
+    // Add loc_ labels for jump target blocks that don't already have a function label
+    for (size_t i = 0; i < outGraph->Blocks.size(); i++) {
+        CFG_BASIC_BLOCK& block = outGraph->Blocks[i];
+        if (block.FunctionLabel[0] == '\0' && !block.IsEntryBlock &&
+            actualJumpTargets.count(block.StartAddress)) {
+            wsprintf(block.FunctionLabel, "loc_%08X", (DWORD)block.StartAddress);
+        }
     }
 
     // Post-process: Merge blocks that are NOT actual jump targets
