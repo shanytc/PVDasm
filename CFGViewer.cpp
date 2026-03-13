@@ -466,7 +466,8 @@ void LayoutCFG(CFG_GRAPH* graph)
 
     // Step 4: Assign coordinates
     int currentY = CFG_BLOCK_V_SPACING;
-    int totalWidth = 0;
+    int maxLayerWidth = 0;
+    std::map<int, int> layerWidths;
 
     for (int layer = 0; layer <= maxLayer; layer++) {
         if (layerBlocks.find(layer) == layerBlocks.end()) continue;
@@ -483,10 +484,11 @@ void LayoutCFG(CFG_GRAPH* graph)
             if (block.Height > maxHeight) maxHeight = block.Height;
         }
         layerWidth -= CFG_BLOCK_H_SPACING;  // Remove trailing spacing
+        layerWidths[layer] = layerWidth;
 
-        if (layerWidth > totalWidth) totalWidth = layerWidth;
+        if (layerWidth > maxLayerWidth) maxLayerWidth = layerWidth;
 
-        // Assign X coordinates (centered, starting from left)
+        // Assign X coordinates (left-aligned initially, will center later)
         int currentX = CFG_BLOCK_H_SPACING;
         int posInLayer = 0;
 
@@ -501,7 +503,19 @@ void LayoutCFG(CFG_GRAPH* graph)
         currentY += maxHeight + CFG_BLOCK_V_SPACING;
     }
 
-    graph->GraphWidth = totalWidth + 2 * CFG_BLOCK_H_SPACING;
+    // Step 5: Center each layer horizontally (diamond/tree shape)
+    for (int layer = 0; layer <= maxLayer; layer++) {
+        if (layerBlocks.find(layer) == layerBlocks.end()) continue;
+
+        int offset = (maxLayerWidth - layerWidths[layer]) / 2;
+        if (offset > 0) {
+            for (size_t idx : layerBlocks[layer]) {
+                graph->Blocks[idx].X += offset;
+            }
+        }
+    }
+
+    graph->GraphWidth = maxLayerWidth + 2 * CFG_BLOCK_H_SPACING;
     graph->GraphHeight = currentY;
 }
 
@@ -636,6 +650,19 @@ void DrawArrowhead(HDC hDC, int fromX, int fromY, int toX, int toY, COLORREF col
     DeleteObject(hBrush);
 }
 
+// Compute a spread X position for a port along a block edge.
+// portIndex is 0-based, totalPorts is the count of ports on that edge.
+static int ComputePortX(CFG_BASIC_BLOCK& block, int portIndex, int totalPorts)
+{
+    if (totalPorts <= 1)
+        return block.X + block.Width / 2;
+
+    const int margin = 12;
+    int usable = block.Width - 2 * margin;
+    if (usable < 0) usable = 0;
+    return block.X + margin + (portIndex * usable) / (totalPorts - 1);
+}
+
 void RenderEdges(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
 {
     if (!graph || !viewState) return;
@@ -646,6 +673,77 @@ void RenderEdges(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
     COLORREF falseColor = RGB(220, 50, 50);           // Red (fall-through)
     COLORREF backEdgeColor = RGB(0, 120, 220);        // Blue (loop)
 
+    // ── Pre-pass: build per-block port assignments ──────────────────
+    // outgoing[blockID] = list of edge indices leaving that block (non-back-edges)
+    // incoming[blockID] = list of edge indices arriving at that block (all edges including back edges)
+    std::map<DWORD_PTR, std::vector<size_t>> outgoingEdges;
+    std::map<DWORD_PTR, std::vector<size_t>> incomingEdges;
+    std::set<size_t> backEdgeSet;
+
+    for (size_t i = 0; i < graph->Edges.size(); i++) {
+        CFG_EDGE& edge = graph->Edges[i];
+
+        // Skip edges with missing blocks
+        if (graph->BlockIDToIndex.find(edge.SourceBlockID) == graph->BlockIDToIndex.end() ||
+            graph->BlockIDToIndex.find(edge.TargetBlockID) == graph->BlockIDToIndex.end()) {
+            continue;
+        }
+
+        if (edge.IsBackEdge) {
+            backEdgeSet.insert(i);
+        } else {
+            outgoingEdges[edge.SourceBlockID].push_back(i);
+        }
+        // All edges (including back edges) get a port on the target's top edge
+        incomingEdges[edge.TargetBlockID].push_back(i);
+    }
+
+    // Sort outgoing edges by target block X (left-to-right) to reduce crossings
+    for (auto& pair : outgoingEdges) {
+        std::sort(pair.second.begin(), pair.second.end(),
+            [&](size_t a, size_t b) {
+                CFG_EDGE& ea = graph->Edges[a];
+                CFG_EDGE& eb = graph->Edges[b];
+                CFG_BASIC_BLOCK& da = graph->Blocks[graph->BlockIDToIndex[ea.TargetBlockID]];
+                CFG_BASIC_BLOCK& db = graph->Blocks[graph->BlockIDToIndex[eb.TargetBlockID]];
+                return da.X < db.X;
+            });
+    }
+
+    // Sort incoming edges by source block X (left-to-right) to reduce crossings
+    for (auto& pair : incomingEdges) {
+        std::sort(pair.second.begin(), pair.second.end(),
+            [&](size_t a, size_t b) {
+                CFG_EDGE& ea = graph->Edges[a];
+                CFG_EDGE& eb = graph->Edges[b];
+                CFG_BASIC_BLOCK& sa = graph->Blocks[graph->BlockIDToIndex[ea.SourceBlockID]];
+                CFG_BASIC_BLOCK& sb = graph->Blocks[graph->BlockIDToIndex[eb.SourceBlockID]];
+                return sa.X < sb.X;
+            });
+    }
+
+    // Build index-within-port-list lookup for each edge
+    // outPortIndex[edgeIdx] = position of this edge in its source block's outgoing list
+    // inPortIndex[edgeIdx]  = position of this edge in its target block's incoming list
+    std::map<size_t, int> outPortIndex, inPortIndex;
+    std::map<size_t, int> outPortTotal, inPortTotal;
+
+    for (auto& pair : outgoingEdges) {
+        int total = (int)pair.second.size();
+        for (int k = 0; k < total; k++) {
+            outPortIndex[pair.second[k]] = k;
+            outPortTotal[pair.second[k]] = total;
+        }
+    }
+    for (auto& pair : incomingEdges) {
+        int total = (int)pair.second.size();
+        for (int k = 0; k < total; k++) {
+            inPortIndex[pair.second[k]] = k;
+            inPortTotal[pair.second[k]] = total;
+        }
+    }
+
+    // ── Draw loop ───────────────────────────────────────────────────
     for (size_t i = 0; i < graph->Edges.size(); i++) {
         CFG_EDGE& edge = graph->Edges[i];
 
@@ -662,22 +760,18 @@ void RenderEdges(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
         int startX, startY, endX, endY;
 
         if (edge.IsBackEdge) {
-            // Back edges go out the left side
+            // Back edges: leave from left side of source, arrive at top of target
             startX = srcBlock.X;
             startY = srcBlock.Y + srcBlock.Height / 2;
-            endX = dstBlock.X;
-            endY = dstBlock.Y + dstBlock.Height / 2;
-        } else if (dstBlock.Y > srcBlock.Y + srcBlock.Height) {
-            // Normal downward edge
-            startX = srcBlock.X + srcBlock.Width / 2;
-            startY = srcBlock.Y + srcBlock.Height;
-            endX = dstBlock.X + dstBlock.Width / 2;
+
+            // Use port spread along target's top edge (shared with normal incoming edges)
+            endX = ComputePortX(dstBlock, inPortIndex[i], inPortTotal[i]);
             endY = dstBlock.Y;
         } else {
-            // Edge going upward or sideways
-            startX = srcBlock.X + srcBlock.Width / 2;
+            // Normal edge (downward, upward, or sideways) — use port spread
+            startX = ComputePortX(srcBlock, outPortIndex[i], outPortTotal[i]);
             startY = srcBlock.Y + srcBlock.Height;
-            endX = dstBlock.X + dstBlock.Width / 2;
+            endX = ComputePortX(dstBlock, inPortIndex[i], inPortTotal[i]);
             endY = dstBlock.Y;
         }
 
@@ -700,28 +794,94 @@ void RenderEdges(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
         int labelX, labelY;  // Position for True/False label
 
         if (edge.IsBackEdge) {
-            // Draw back edge with a curve to the left
-            int midX = min(startX, endX) - 30;
+            // 4-segment orthogonal route:
+            // src left side -> left to channel -> UP to above target -> right to port X -> down into top
+
+            // Count back edges before this one for staggering
+            int backEdgeIndex = 0;
+            for (size_t be : backEdgeSet) {
+                if (be >= i) break;
+                backEdgeIndex++;
+            }
+
+            int channelX = min(srcBlock.X, endX) - 30 - (backEdgeIndex * 15);
+            int aboveY = dstBlock.Y - CFG_BLOCK_V_SPACING / 2;
+
+            // Obstacle avoidance for back edges
+            for (size_t bi = 0; bi < graph->Blocks.size(); bi++) {
+                CFG_BASIC_BLOCK& blk = graph->Blocks[bi];
+                if (blk.BlockID == edge.SourceBlockID || blk.BlockID == edge.TargetBlockID)
+                    continue;
+
+                // Push vertical channel left if it passes through a block
+                if (channelX >= blk.X - 5 && channelX <= blk.X + blk.Width + 5) {
+                    int segMinY = min(startY, aboveY);
+                    int segMaxY = max(startY, aboveY);
+                    if (segMaxY >= blk.Y && segMinY <= blk.Y + blk.Height) {
+                        channelX = blk.X - 20;
+                    }
+                }
+
+                // Push horizontal segment up if it passes through a block
+                int hMinX = min(channelX, endX);
+                int hMaxX = max(channelX, endX);
+                if (aboveY >= blk.Y - 5 && aboveY <= blk.Y + blk.Height + 5) {
+                    if (hMaxX >= blk.X && hMinX <= blk.X + blk.Width) {
+                        aboveY = blk.Y - 15;
+                    }
+                }
+            }
 
             MoveToEx(hDC, startX, startY, NULL);
-            LineTo(hDC, midX, startY);
-            LineTo(hDC, midX, endY);
-            LineTo(hDC, endX, endY);
+            LineTo(hDC, channelX, startY);    // Left to channel
+            LineTo(hDC, channelX, aboveY);    // Up to above target
+            LineTo(hDC, endX, aboveY);        // Right to port X
+            LineTo(hDC, endX, endY);          // Down into top
 
-            // Arrowhead
-            DrawArrowhead(hDC, midX, endY, endX, endY, edgeColor);
+            // Arrowhead points downward into the block top
+            DrawArrowhead(hDC, endX, aboveY, endX, endY, edgeColor);
 
-            labelX = midX - 5;
-            labelY = (startY + endY) / 2;
+            labelX = channelX - 5;
+            labelY = (startY + aboveY) / 2;
         } else {
+            // 3-segment orthogonal route:
+            // source port -> vertical down -> horizontal -> vertical down -> target port
+            int midY = (startY + endY) / 2;
+
+            // Obstacle avoidance: push midY above any block the horizontal segment crosses
+            for (size_t bi = 0; bi < graph->Blocks.size(); bi++) {
+                CFG_BASIC_BLOCK& blk = graph->Blocks[bi];
+                if (blk.BlockID == edge.SourceBlockID || blk.BlockID == edge.TargetBlockID)
+                    continue;
+
+                int hMinX = min(startX, endX);
+                int hMaxX = max(startX, endX);
+
+                // Check if horizontal segment overlaps block's X range
+                if (hMaxX >= blk.X && hMinX <= blk.X + blk.Width) {
+                    // Check if midY is within block's Y range (with margin)
+                    if (midY >= blk.Y - 5 && midY <= blk.Y + blk.Height + 5) {
+                        midY = blk.Y - 15;
+                    }
+                }
+            }
+
+            // Clamp midY between start and end for downward edges
+            if (startY < endY) {
+                if (midY < startY + 5) midY = startY + 5;
+                if (midY > endY - 5) midY = endY - 5;
+            }
+
             MoveToEx(hDC, startX, startY, NULL);
-            LineTo(hDC, endX, endY);
+            LineTo(hDC, startX, midY);        // Vertical down from source
+            LineTo(hDC, endX, midY);          // Horizontal to target column
+            LineTo(hDC, endX, endY);          // Vertical down into target
 
-            // Arrowhead
-            DrawArrowhead(hDC, startX, startY, endX, endY, edgeColor);
+            // Arrowhead points downward into the target block
+            DrawArrowhead(hDC, endX, midY, endX, endY, edgeColor);
 
-            labelX = (startX + endX) / 2;
-            labelY = (startY + endY) / 2 - 8;
+            labelX = startX + 4;
+            labelY = startY + 8;
         }
 
         // Draw True/False label for conditional edges
