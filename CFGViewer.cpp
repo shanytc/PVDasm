@@ -790,9 +790,11 @@ void RenderEdges(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
         }
     }
 
-    // Track used horizontal segments to prevent overlapping edge lines
+    // Track used segments to prevent overlapping edge lines
     struct UsedHSeg { int y; int minX; int maxX; };
     std::vector<UsedHSeg> usedHorizontalSegs;
+    struct UsedVSeg { int x; int minY; int maxY; };
+    std::vector<UsedVSeg> usedVerticalSegs;
 
     // ── Draw loop ───────────────────────────────────────────────────
     for (size_t i = 0; i < graph->Edges.size(); i++) {
@@ -819,11 +821,19 @@ void RenderEdges(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
             endX = ComputePortX(dstBlock, inPortIndex[i], inPortTotal[i]);
             endY = dstBlock.Y;
         } else {
-            // Normal edge (downward, upward, or sideways) — use port spread
+            // Normal edge — choose attachment sides based on relative block positions
             startX = ComputePortX(srcBlock, outPortIndex[i], outPortTotal[i]);
-            startY = srcBlock.Y + srcBlock.Height;
             endX = ComputePortX(dstBlock, inPortIndex[i], inPortTotal[i]);
-            endY = dstBlock.Y;
+
+            if (srcBlock.Y >= dstBlock.Y + dstBlock.Height) {
+                // Source is below target — leave from top, arrive at bottom
+                startY = srcBlock.Y;
+                endY = dstBlock.Y + dstBlock.Height;
+            } else {
+                // Source is above or overlapping target — normal downward flow
+                startY = srcBlock.Y + srcBlock.Height;
+                endY = dstBlock.Y;
+            }
         }
 
         // Choose color based on edge type
@@ -910,6 +920,16 @@ void RenderEdges(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
             LineTo(hDC, endX, aboveY);        // Right to port X
             LineTo(hDC, endX, endY);          // Down into top
 
+            // Record back-edge vertical segments for collision avoidance
+            {
+                int vMinY = min(startY, aboveY);
+                int vMaxY = max(startY, aboveY);
+                usedVerticalSegs.push_back({ channelX, vMinY, vMaxY });
+                vMinY = min(aboveY, endY);
+                vMaxY = max(aboveY, endY);
+                usedVerticalSegs.push_back({ endX, vMinY, vMaxY });
+            }
+
             // Arrowhead points downward into the block top
             DrawArrowhead(hDC, endX, aboveY, endX, endY, edgeColor);
 
@@ -938,10 +958,15 @@ void RenderEdges(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
                 }
             }
 
-            // Clamp midY between start and end for downward edges
+            // Clamp midY between start and end
             if (startY < endY) {
+                // Downward flow
                 if (midY < startY + 5) midY = startY + 5;
                 if (midY > endY - 5) midY = endY - 5;
+            } else if (startY > endY) {
+                // Upward flow
+                if (midY > startY - 5) midY = startY - 5;
+                if (midY < endY + 5) midY = endY + 5;
             }
 
             // Stagger horizontal segment if it overlaps a previously used one
@@ -964,16 +989,69 @@ void RenderEdges(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
                 usedHorizontalSegs.push_back(seg);
             }
 
-            MoveToEx(hDC, startX, startY, NULL);
-            LineTo(hDC, startX, midY);        // Vertical down from source
-            LineTo(hDC, endX, midY);          // Horizontal to target column
-            LineTo(hDC, endX, endY);          // Vertical down into target
+            // Check vertical segments for overlap and compute jog offsets
+            int drawStartX = startX;
+            int drawEndX = endX;
+            {
+                // Check start-side vertical (startY <-> midY)
+                int vMinY = min(startY, midY);
+                int vMaxY = max(startY, midY);
+                if (vMaxY - vMinY > 5) {
+                    for (int iter = 0; iter < 20; iter++) {
+                        bool collision = false;
+                        for (size_t s = 0; s < usedVerticalSegs.size(); s++) {
+                            if (abs(usedVerticalSegs[s].x - drawStartX) < 6 &&
+                                vMaxY >= usedVerticalSegs[s].minY && vMinY <= usedVerticalSegs[s].maxY) {
+                                drawStartX += 8;
+                                collision = true;
+                                break;
+                            }
+                        }
+                        if (!collision) break;
+                    }
+                }
+                usedVerticalSegs.push_back({ drawStartX, vMinY, vMaxY });
 
-            // Arrowhead points downward into the target block
-            DrawArrowhead(hDC, endX, midY, endX, endY, edgeColor);
+                // Check end-side vertical (midY <-> endY)
+                vMinY = min(midY, endY);
+                vMaxY = max(midY, endY);
+                if (vMaxY - vMinY > 5) {
+                    for (int iter = 0; iter < 20; iter++) {
+                        bool collision = false;
+                        for (size_t s = 0; s < usedVerticalSegs.size(); s++) {
+                            if (abs(usedVerticalSegs[s].x - drawEndX) < 6 &&
+                                vMaxY >= usedVerticalSegs[s].minY && vMinY <= usedVerticalSegs[s].maxY) {
+                                drawEndX += 8;
+                                collision = true;
+                                break;
+                            }
+                        }
+                        if (!collision) break;
+                    }
+                }
+                usedVerticalSegs.push_back({ drawEndX, vMinY, vMaxY });
+            }
+
+            // Draw route with jogs where vertical segments were shifted
+            MoveToEx(hDC, startX, startY, NULL);
+            if (drawStartX != startX)
+                LineTo(hDC, drawStartX, startY);  // horizontal jog from source port
+            LineTo(hDC, drawStartX, midY);         // vertical from source
+            LineTo(hDC, drawEndX, midY);           // horizontal to target column
+            if (drawEndX != endX) {
+                // Jog back to the target port with a short final vertical approach
+                int jogY = (midY < endY) ? endY - 12 : endY + 12;
+                LineTo(hDC, drawEndX, jogY);       // shifted vertical, stopping short
+                LineTo(hDC, endX, jogY);           // horizontal jog back to port
+                LineTo(hDC, endX, endY);           // final short vertical into target
+                DrawArrowhead(hDC, endX, jogY, endX, endY, edgeColor);
+            } else {
+                LineTo(hDC, endX, endY);           // vertical into target
+                DrawArrowhead(hDC, endX, midY, endX, endY, edgeColor);
+            }
 
             labelX = startX + 4;
-            labelY = startY + 8;
+            labelY = (startY < endY) ? startY + 8 : startY - 16;
         }
 
         // Draw True/False/Call label for conditional and call edges
