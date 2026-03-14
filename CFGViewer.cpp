@@ -980,12 +980,12 @@ void RenderBlocks(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
                 singleIncomingType = graph->Edges[e].Type;
             }
         }
-        if (incomingCount == 1 && singleIncomingType == EDGE_CONDITIONAL_TRUE) {
+        if (block.IsExitBlock) {
+            bgColor = exitBlockBg;
+        } else if (incomingCount == 1 && singleIncomingType == EDGE_CONDITIONAL_TRUE) {
             bgColor = trueBranchBg;
         } else if (incomingCount == 1 && singleIncomingType == EDGE_CONDITIONAL_FALSE) {
             bgColor = falseBranchBg;
-        } else if (block.IsExitBlock) {
-            bgColor = exitBlockBg;
         }
 
         // Draw block background
