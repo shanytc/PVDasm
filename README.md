@@ -50,15 +50,28 @@ ProView is an educational project aimed at building a custom disassembler and de
 | **HexEditor** | Embedded hex editor (RadASM add-in.) |
 | **PVScript Engine** | Custom scripting engine for command automation. |
 | **API Recognition** | Automatic API parameter annotation via signature database. |
+| **Function Graph (CFG)** | Interactive control flow graph viewer with draggable blocks, zoom/pan, orthogonal edge routing, and export to PNG/JPEG. |
 | **Color Schemes** | SoftICE, IDA, OllyDbg, W32Asm, and custom themes. |
 | **Save/Load Projects** | Persist analysis state including functions, data, and comments. |
 | **Map File Support** | Import/export MAP files (IDA-compatible.) |
-| **Multi CPU Suuport** | Support Intel x86, Chip8, Visual Basic architectures. |
+| **Multi CPU Support** | Support Intel x86, Chip8, Visual Basic architectures. |
 ---
 
 ## Changelog
 
 ### 2026
+
+#### March 14, 2026
+- Added **Function Graph (CFG) Viewer** — interactive control flow graph for functions
+  - Orthogonal edge routing with port spreading and obstacle avoidance
+  - Draggable blocks with edge re-routing on move
+  - Color-coded blocks: green (true branch), red (false branch), blue (exit/return)
+  - CALL edges with function name headers and `loc_` labels on jump targets
+  - Comments displayed inline within blocks
+  - Zoom/pan with mouse wheel and drag
+  - Right-click context menu: "Fit Graph to Screen" and "Save as Image..." (PNG with transparency / JPEG)
+  - Auto-fit graph on window resize
+  - Double-click block to navigate to address in main disassembly
 
 #### March 13, 2026
 - Added/Fixed Architectures, PVDAsm now supports:
