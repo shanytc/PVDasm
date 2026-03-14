@@ -954,8 +954,9 @@ void RenderBlocks(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
     COLORREF blockBg = g_DarkMode ? RGB(50, 50, 50) : RGB(255, 255, 245);
     COLORREF blockBorder = g_DarkMode ? RGB(100, 100, 100) : RGB(0, 0, 0);
     COLORREF selectedBorder = RGB(0, 120, 215);
-    COLORREF entryBlockBg = g_DarkMode ? RGB(40, 70, 40) : RGB(220, 255, 220);
-    COLORREF exitBlockBg = g_DarkMode ? RGB(70, 40, 40) : RGB(255, 220, 220);
+    COLORREF trueBranchBg = g_DarkMode ? RGB(40, 70, 40) : RGB(220, 255, 220);    // Light green
+    COLORREF falseBranchBg = g_DarkMode ? RGB(70, 40, 40) : RGB(255, 220, 220);   // Light red
+    COLORREF exitBlockBg = g_DarkMode ? RGB(40, 50, 70) : RGB(210, 230, 255);     // Light blue
     COLORREF textColor = g_DarkMode ? g_DarkTextColor : RGB(0, 0, 0);
     COLORREF addrColor = g_DarkMode ? RGB(130, 130, 130) : RGB(100, 100, 100);
 
@@ -969,10 +970,23 @@ void RenderBlocks(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
 
         RECT blockRect = {block.X, block.Y, block.X + block.Width, block.Y + block.Height};
 
-        // Choose background color based on block type
+        // Choose background color based on incoming edges
         COLORREF bgColor = blockBg;
-        if (block.IsEntryBlock) bgColor = entryBlockBg;
-        else if (block.IsExitBlock) bgColor = exitBlockBg;
+        int incomingCount = 0;
+        CFG_EDGE_TYPE singleIncomingType = EDGE_UNCONDITIONAL;
+        for (size_t e = 0; e < graph->Edges.size(); e++) {
+            if (graph->Edges[e].TargetBlockID == block.BlockID) {
+                incomingCount++;
+                singleIncomingType = graph->Edges[e].Type;
+            }
+        }
+        if (incomingCount == 1 && singleIncomingType == EDGE_CONDITIONAL_TRUE) {
+            bgColor = trueBranchBg;
+        } else if (incomingCount == 1 && singleIncomingType == EDGE_CONDITIONAL_FALSE) {
+            bgColor = falseBranchBg;
+        } else if (block.IsExitBlock) {
+            bgColor = exitBlockBg;
+        }
 
         // Draw block background
         HBRUSH hBgBrush = CreateSolidBrush(bgColor);
