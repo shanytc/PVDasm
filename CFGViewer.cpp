@@ -397,7 +397,7 @@ void CalculateBlockDimensions(HDC hDC, CFG_GRAPH* graph)
             char line[512];
             char* comment = DisasmDataLines[idx].GetComments();
             if (comment && comment[0] != '\0') {
-                wsprintf(line, "%s  %s  ; %s",
+                wsprintf(line, "%s  %s  %s",
                          DisasmDataLines[idx].GetAddress(),
                          DisasmDataLines[idx].GetMnemonic(),
                          comment);
@@ -1047,7 +1047,7 @@ void RenderBlocks(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
                 int commentX = block.X + CFG_BLOCK_PADDING + 75 + asmSize.cx;
 
                 char commentBuf[256];
-                wsprintf(commentBuf, "  ; %s", comment);
+                wsprintf(commentBuf, "  %s", comment);
                 COLORREF commentColor = g_DarkMode ? RGB(87, 166, 74) : RGB(0, 128, 0);
                 SetTextColor(hDC, commentColor);
                 TextOut(hDC, commentX, y, commentBuf, lstrlen(commentBuf));
