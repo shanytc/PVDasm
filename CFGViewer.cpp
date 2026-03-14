@@ -790,6 +790,10 @@ void RenderEdges(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
         }
     }
 
+    // Track used horizontal segments to prevent overlapping edge lines
+    struct UsedHSeg { int y; int minX; int maxX; };
+    std::vector<UsedHSeg> usedHorizontalSegs;
+
     // ── Draw loop ───────────────────────────────────────────────────
     for (size_t i = 0; i < graph->Edges.size(); i++) {
         CFG_EDGE& edge = graph->Edges[i];
@@ -880,6 +884,26 @@ void RenderEdges(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
                 }
             }
 
+            // Stagger horizontal segment if it overlaps a previously used one
+            {
+                int hMinX = min(channelX, endX);
+                int hMaxX = max(channelX, endX);
+                for (int iter = 0; iter < 20; iter++) {
+                    bool collision = false;
+                    for (size_t s = 0; s < usedHorizontalSegs.size(); s++) {
+                        if (abs(usedHorizontalSegs[s].y - aboveY) < 6 &&
+                            hMaxX >= usedHorizontalSegs[s].minX && hMinX <= usedHorizontalSegs[s].maxX) {
+                            aboveY -= 8;
+                            collision = true;
+                            break;
+                        }
+                    }
+                    if (!collision) break;
+                }
+                UsedHSeg seg = { aboveY, hMinX, hMaxX };
+                usedHorizontalSegs.push_back(seg);
+            }
+
             MoveToEx(hDC, startX, startY, NULL);
             LineTo(hDC, channelX, startY);    // Left to channel
             LineTo(hDC, channelX, aboveY);    // Up to above target
@@ -918,6 +942,26 @@ void RenderEdges(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
             if (startY < endY) {
                 if (midY < startY + 5) midY = startY + 5;
                 if (midY > endY - 5) midY = endY - 5;
+            }
+
+            // Stagger horizontal segment if it overlaps a previously used one
+            {
+                int hMinX = min(startX, endX);
+                int hMaxX = max(startX, endX);
+                for (int iter = 0; iter < 20; iter++) {
+                    bool collision = false;
+                    for (size_t s = 0; s < usedHorizontalSegs.size(); s++) {
+                        if (abs(usedHorizontalSegs[s].y - midY) < 6 &&
+                            hMaxX >= usedHorizontalSegs[s].minX && hMinX <= usedHorizontalSegs[s].maxX) {
+                            midY += 8;
+                            collision = true;
+                            break;
+                        }
+                    }
+                    if (!collision) break;
+                }
+                UsedHSeg seg = { midY, hMinX, hMaxX };
+                usedHorizontalSegs.push_back(seg);
             }
 
             MoveToEx(hDC, startX, startY, NULL);
