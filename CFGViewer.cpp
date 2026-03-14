@@ -25,6 +25,8 @@
 #include <windowsx.h>
 #include <algorithm>
 #include <cmath>
+#include <gdiplus.h>
+#pragma comment(lib, "gdiplus.lib")
 
 // ================================================================
 // ====================  EXTERNAL REFERENCES  =====================
@@ -47,6 +49,7 @@ static CFG_GRAPH        g_CurrentGraph;
 static CFG_VIEW_STATE   g_ViewState;
 static HFONT            g_hCFGFont = NULL;
 static HWND             g_hCFGViewerWnd = NULL;  // Handle to modeless CFG viewer window
+static ULONG_PTR        g_GdiplusToken = 0;
 
 // ================================================================
 // ====================  HELPER FUNCTIONS  ========================
@@ -1184,6 +1187,166 @@ void RenderBlocks(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
     }
 }
 
+// ================================================================
+// ====================  SAVE GRAPH TO FILE  ======================
+// ================================================================
+
+static int GetEncoderCLSID(const WCHAR* format, CLSID* pClsid)
+{
+    UINT num = 0, size = 0;
+    Gdiplus::GetImageEncodersSize(&num, &size);
+    if (size == 0) return -1;
+
+    Gdiplus::ImageCodecInfo* pInfo = (Gdiplus::ImageCodecInfo*)malloc(size);
+    if (!pInfo) return -1;
+
+    Gdiplus::GetImageEncoders(num, size, pInfo);
+    for (UINT i = 0; i < num; i++) {
+        if (wcscmp(pInfo[i].MimeType, format) == 0) {
+            *pClsid = pInfo[i].Clsid;
+            free(pInfo);
+            return i;
+        }
+    }
+    free(pInfo);
+    return -1;
+}
+
+static void SaveGraphToFile(HWND hWnd, CFG_GRAPH* graph)
+{
+    if (!graph || graph->Blocks.empty()) return;
+
+    // Show Save dialog with both formats
+    char szFile[MAX_PATH] = "";
+    OPENFILENAME ofn;
+    ZeroMemory(&ofn, sizeof(ofn));
+    ofn.lStructSize = sizeof(ofn);
+    ofn.hwndOwner = hWnd;
+    ofn.lpstrFile = szFile;
+    ofn.nMaxFile = MAX_PATH;
+    ofn.lpstrFilter = "PNG Image (*.png)\0*.png\0JPEG Image (*.jpg)\0*.jpg\0";
+    ofn.lpstrDefExt = "png";
+    ofn.nFilterIndex = 1;
+    ofn.Flags = OFN_OVERWRITEPROMPT | OFN_PATHMUSTEXIST;
+
+    if (!GetSaveFileName(&ofn)) return;
+
+    // Determine format from file extension
+    BOOL isPNG = TRUE;
+    const char* ext = strrchr(szFile, '.');
+    if (ext && (_stricmp(ext, ".jpg") == 0 || _stricmp(ext, ".jpeg") == 0)) {
+        isPNG = FALSE;
+    }
+
+    // Compute graph bounds with margin
+    int margin = 20;
+    int imgWidth = graph->GraphWidth + margin * 2;
+    int imgHeight = graph->GraphHeight + margin * 2;
+    if (imgWidth < 100) imgWidth = 100;
+    if (imgHeight < 100) imgHeight = 100;
+
+    // Find graph origin (minimum X, Y across all blocks)
+    int minX = INT_MAX, minY = INT_MAX;
+    for (size_t i = 0; i < graph->Blocks.size(); i++) {
+        if (graph->Blocks[i].X < minX) minX = graph->Blocks[i].X;
+        if (graph->Blocks[i].Y < minY) minY = graph->Blocks[i].Y;
+    }
+
+    // Create memory DC
+    HDC hScreenDC = GetDC(hWnd);
+    HDC hMemDC = CreateCompatibleDC(hScreenDC);
+
+    HBITMAP hBitmap;
+    if (isPNG) {
+        // 32-bit ARGB for transparency
+        BITMAPINFO bmi;
+        ZeroMemory(&bmi, sizeof(bmi));
+        bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+        bmi.bmiHeader.biWidth = imgWidth;
+        bmi.bmiHeader.biHeight = -imgHeight;  // top-down
+        bmi.bmiHeader.biPlanes = 1;
+        bmi.bmiHeader.biBitCount = 32;
+        bmi.bmiHeader.biCompression = BI_RGB;
+        void* pBits = NULL;
+        hBitmap = CreateDIBSection(hMemDC, &bmi, DIB_RGB_COLORS, &pBits, NULL, 0);
+        // DIB section is zero-initialized (fully transparent)
+    } else {
+        hBitmap = CreateCompatibleBitmap(hScreenDC, imgWidth, imgHeight);
+    }
+
+    HBITMAP hOldBmp = (HBITMAP)SelectObject(hMemDC, hBitmap);
+
+    // For JPEG, fill with white background
+    if (!isPNG) {
+        RECT fillRect = {0, 0, imgWidth, imgHeight};
+        HBRUSH hWhite = CreateSolidBrush(RGB(255, 255, 255));
+        FillRect(hMemDC, &fillRect, hWhite);
+        DeleteObject(hWhite);
+    }
+
+    // Set up transform: 1:1 zoom, offset to place graph at margin
+    SetGraphicsMode(hMemDC, GM_ADVANCED);
+    XFORM xform;
+    xform.eM11 = 1.0f;
+    xform.eM12 = 0;
+    xform.eM21 = 0;
+    xform.eM22 = 1.0f;
+    xform.eDx = (FLOAT)(margin - minX);
+    xform.eDy = (FLOAT)(margin - minY);
+    SetWorldTransform(hMemDC, &xform);
+
+    // Select font and render
+    HFONT hOldFont = NULL;
+    if (g_hCFGFont) {
+        hOldFont = (HFONT)SelectObject(hMemDC, g_hCFGFont);
+    }
+
+    // Create a temporary view state for rendering (not used for transform, but needed by API)
+    CFG_VIEW_STATE exportView;
+    InitCFGViewState(&exportView);
+
+    RenderEdges(hMemDC, graph, &exportView);
+    RenderBlocks(hMemDC, graph, &exportView);
+
+    if (hOldFont) {
+        SelectObject(hMemDC, hOldFont);
+    }
+
+    // Reset transform
+    ModifyWorldTransform(hMemDC, NULL, MWT_IDENTITY);
+
+    // Save using GDI+
+    Gdiplus::Bitmap* gdipBmp = Gdiplus::Bitmap::FromHBITMAP(hBitmap, NULL);
+    if (gdipBmp) {
+        // Convert filename to wide string
+        WCHAR wFile[MAX_PATH];
+        MultiByteToWideChar(CP_ACP, 0, szFile, -1, wFile, MAX_PATH);
+
+        CLSID clsid;
+        if (isPNG) {
+            GetEncoderCLSID(L"image/png", &clsid);
+            gdipBmp->Save(wFile, &clsid, NULL);
+        } else {
+            GetEncoderCLSID(L"image/jpeg", &clsid);
+            // Set JPEG quality to 95
+            Gdiplus::EncoderParameters encoderParams;
+            encoderParams.Count = 1;
+            encoderParams.Parameter[0].Guid = Gdiplus::EncoderQuality;
+            encoderParams.Parameter[0].Type = Gdiplus::EncoderParameterValueTypeLong;
+            encoderParams.Parameter[0].NumberOfValues = 1;
+            ULONG quality = 95;
+            encoderParams.Parameter[0].Value = &quality;
+            gdipBmp->Save(wFile, &clsid, &encoderParams);
+        }
+        delete gdipBmp;
+    }
+
+    SelectObject(hMemDC, hOldBmp);
+    DeleteObject(hBitmap);
+    DeleteDC(hMemDC);
+    ReleaseDC(hWnd, hScreenDC);
+}
+
 void RenderCFG(HWND hWnd, HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
 {
     if (!hWnd || !hDC || !graph || !viewState) return;
@@ -1246,6 +1409,10 @@ BOOL CALLBACK CFGViewerDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lP
 {
     switch (Message) {
         case WM_INITDIALOG: {
+            // Initialize GDI+
+            Gdiplus::GdiplusStartupInput gdipStartup;
+            Gdiplus::GdiplusStartup(&g_GdiplusToken, &gdipStartup, NULL);
+
             // Initialize view state
             InitCFGViewState(&g_ViewState);
 
@@ -1425,7 +1592,48 @@ BOOL CALLBACK CFGViewerDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lP
             return 0;
         }
 
+        case WM_CONTEXTMENU: {
+            POINT pt;
+            pt.x = GET_X_LPARAM(lParam);
+            pt.y = GET_Y_LPARAM(lParam);
+
+            // If invoked via keyboard (Shift+F10), use center of window
+            if (pt.x == -1 && pt.y == -1) {
+                RECT rc;
+                GetClientRect(hWnd, &rc);
+                pt.x = rc.right / 2;
+                pt.y = rc.bottom / 2;
+                ClientToScreen(hWnd, &pt);
+            }
+
+            HMENU hMenu = CreatePopupMenu();
+            AppendMenu(hMenu, MF_STRING, IDM_CFG_FIT_GRAPH, "Fit Graph to Screen");
+            AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
+            AppendMenu(hMenu, MF_STRING, IDM_CFG_SAVE_IMAGE, "Save as Image...");
+
+            TrackPopupMenu(hMenu, TPM_RIGHTBUTTON, pt.x, pt.y, 0, hWnd, NULL);
+            DestroyMenu(hMenu);
+            return 0;
+        }
+
+        case WM_COMMAND: {
+            switch (LOWORD(wParam)) {
+                case IDM_CFG_FIT_GRAPH:
+                    CenterGraphInView(hWnd, &g_CurrentGraph, &g_ViewState);
+                    InvalidateRect(hWnd, NULL, FALSE);
+                    break;
+
+                case IDM_CFG_SAVE_IMAGE:
+                    SaveGraphToFile(hWnd, &g_CurrentGraph);
+                    break;
+            }
+            return 0;
+        }
+
         case WM_SIZE: {
+            if (wParam != SIZE_MINIMIZED) {
+                CenterGraphInView(hWnd, &g_CurrentGraph, &g_ViewState);
+            }
             InvalidateRect(hWnd, NULL, FALSE);
             return 0;
         }
@@ -1477,6 +1685,10 @@ BOOL CALLBACK CFGViewerDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lP
             if (g_hCFGFont) {
                 DeleteObject(g_hCFGFont);
                 g_hCFGFont = NULL;
+            }
+            if (g_GdiplusToken) {
+                Gdiplus::GdiplusShutdown(g_GdiplusToken);
+                g_GdiplusToken = 0;
             }
             g_hCFGViewerWnd = NULL;
             return 0;

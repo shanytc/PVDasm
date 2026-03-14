@@ -444,12 +444,15 @@
 #define IDD_CFG_VIEWER                  246
 #define IDC_VIEW_CFG                    40112
 
+#define IDM_CFG_FIT_GRAPH               40113
+#define IDM_CFG_SAVE_IMAGE              40114
+
 // Next default values for new objects
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        246
-#define _APS_NEXT_COMMAND_VALUE         40113
+#define _APS_NEXT_COMMAND_VALUE         40115
 #define _APS_NEXT_CONTROL_VALUE         1337
 #define _APS_NEXT_SYMED_VALUE           121
 #endif
