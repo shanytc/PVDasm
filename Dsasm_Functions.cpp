@@ -57,6 +57,7 @@ extern	bool		JumpApi;
 extern	bool		CallAddrApi;
 extern	DWORD_PTR	Address;
 extern	bool		PushString;
+extern	DISASM_OPTIONS	disop;
 
 #endif
 
@@ -80,12 +81,20 @@ extern	bool		PushString;
 // =====================  CONST VARIABLES  ========================
 // ================================================================
 
-// x86 Registers
-const char *regs[3][9] = {
-	{ "al", "cl", "dl", "bl", "ah", "ch", "dh", "bh"  },		// 8Bit
-	{ "ax", "cx", "dx", "bx", "sp", "bp", "si", "di"  },		// 16Bit
-	{ "eax","ecx","edx","ebx","esp","ebp","esi","edi" }			// 32bit
-	//{ "eeax","eecx","eedx","eebx","eesp","eebp","eesi",eedi"	// 64Bit
+// x86/x86-64 Registers
+const char *regs[6][16] = {
+	// REG8 (no REX) — indices 0-7 only valid
+	{ "al","cl","dl","bl","ah","ch","dh","bh","r8b","r9b","r10b","r11b","r12b","r13b","r14b","r15b" },
+	// REG16
+	{ "ax","cx","dx","bx","sp","bp","si","di","r8w","r9w","r10w","r11w","r12w","r13w","r14w","r15w" },
+	// REG32
+	{ "eax","ecx","edx","ebx","esp","ebp","esi","edi","r8d","r9d","r10d","r11d","r12d","r13d","r14d","r15d" },
+	// FPU (unused placeholder, index 3)
+	{ "","","","","","","","","","","","","","","","" },
+	// REG64 (index 4)
+	{ "rax","rcx","rdx","rbx","rsp","rbp","rsi","rdi","r8","r9","r10","r11","r12","r13","r14","r15" },
+	// REG8X (with REX — SPL/BPL/SIL/DIL replace AH-BH, index 5)
+	{ "al","cl","dl","bl","spl","bpl","sil","dil","r8b","r9b","r10b","r11b","r12b","r13b","r14b","r15b" }
 };
 
 // x86 Data Size
@@ -422,7 +431,7 @@ void Mod_11_RM(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,char instructio
 		}
         
 		// (<-) / reg32
-		if(d==1 && w==1){    
+		if(d==1 && w==1){
 			RM=REG32;
 			if(PrefixReg==1){
 				RM=REG16; // (<-) / reg16
@@ -431,7 +440,29 @@ void Mod_11_RM(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,char instructio
 			reg2=(m_Opcode&0x07);
 			reg1=(m_Opcode&0x38)>>3;
 		}
-        
+
+		// 64-bit mode: apply REX extensions
+		if((*Disasm)->Mode64){
+			// REX.W promotes operand size to 64-bit
+			if((*Disasm)->RexW && w==1){
+				RM=REG64;
+			}
+			// REX.R extends reg field (reg1 in d=1, reg2 in d=0)
+			if((*Disasm)->RexR){
+				if(d==1) reg1 |= 0x08;
+				else     reg2 |= 0x08;
+			}
+			// REX.B extends r/m field (reg2 in d=1, reg1 in d=0)
+			if((*Disasm)->RexB){
+				if(d==1) reg2 |= 0x08;
+				else     reg1 |= 0x08;
+			}
+			// REX prefix present + w=0: use REG8X (SPL/BPL/SIL/DIL)
+			if((*Disasm)->RexPrefix && w==0){
+				RM=REG8X;
+			}
+		}
+
 		// Check Opcode Size (XCHG changes it)
 		if(m_OpcodeSize==1){
 			wsprintf(temp,"%02X",Op);
@@ -1087,7 +1118,28 @@ void Mod_RM_SIB(
 			}
 		}
 	}
-	
+
+	// 64-bit mode: REX.W promotes operand size to 64-bit
+	if((*Disasm)->Mode64 && (*Disasm)->RexW && !UsesFPU){
+		if(lstrcmp(RSize,"Byte")!=0){
+			RM=REG64;
+			strcpy_s(RSize,StringLen(regSize[0])+1,regSize[0]); // Qword ptr
+		}
+	}
+
+	// 64-bit mode: REX.R extends REG field
+	if((*Disasm)->Mode64 && (*Disasm)->RexR){
+		REG |= 0x08;
+	}
+
+	// 64-bit mode: default address size is 64-bit (unless 0x67 prefix)
+	if((*Disasm)->Mode64){
+		if(!PrefixAddr)
+			ADDRM=REG64;
+		else
+			ADDRM=REG32; // 0x67 in 64-bit: use 32-bit addressing
+	}
+
 	// SCALE INDEX BASE :
 	SIB=(BYTE)(*(*Opcode+pos+1))&0x07; // Get SIB extension
 	/*
@@ -1130,7 +1182,7 @@ void Mod_RM_SIB(
 	//				AddrPrefix is being used!			//
 	// =================================================//
 
-	if(PrefixAddr==1){ // Prefix 0x67 is set, Change Segments/Addressing Modes to 16 bits
+	if(PrefixAddr==1 && !(*Disasm)->Mode64){ // Prefix 0x67 in 32-bit mode: Change to 16-bit addressing
 		FOpcode=((BYTE)(*(*Opcode+pos+1))&0x0F); // Get addressing Mode (8 types of mode)
 		reg1=((BYTE)(*(*Opcode+pos+1))&0x38)>>3;
 
@@ -1724,7 +1776,12 @@ void Mod_RM_SIB(
 	if(SIB!=SIB_EX){ // NO SIB extension (i.e: 0x0001 = add byte ptr [ecx], al)
 		reg1=((BYTE)(*(*Opcode+pos+1))&0x07); // Get the register (we have only one)
 		reg2=(((BYTE)(*(*Opcode+pos+1))&0x38)>>3);
-        
+
+		// 64-bit mode: apply REX.B to r/m field
+		if((*Disasm)->Mode64 && (*Disasm)->RexB){
+			reg1 |= 0x08;
+		}
+
 		// Check for valid/invalid pop instruction,
 		// pop insteruction must have reg bit 000
 		if(Op==0x8F && reg2!=0){
@@ -1733,14 +1790,20 @@ void Mod_RM_SIB(
 
 		switch(Extension){ // Check what extension we have (None/Byte/Dword)
 			case 0:{ // no extention to regMem
-				if(reg1==REG_EBP){ // cannot display EBP as memoryReg, use DWORD mem location
+				if((reg1&0x07)==REG_EBP){ // mod=00 rm=5: [disp32] or [RIP+disp32]
                     SwapDword((BYTE*)(*Opcode+pos+2),&dwOp,&dwMem);
 					SwapWord((BYTE*)(*Opcode+pos),&wOp,&wMem);
 					Address=dwMem;
                     wsprintf(menemonic,"%04X%08X",wOp,dwOp);
 					lstrcat((*Disasm)->Opcode,menemonic);
-					wsprintf(instr,"%08Xh",dwMem);
-					wsprintf(menemonic,"%s ptr %s:[%s]",RSize,segs[SEG],instr);
+					if((*Disasm)->Mode64){
+						// 64-bit mode: RIP-relative addressing
+						wsprintf(instr,"%08Xh",dwMem);
+						wsprintf(menemonic,"%s ptr [RIP+%s]",RSize,instr);
+					}else{
+						wsprintf(instr,"%08Xh",dwMem);
+						wsprintf(menemonic,"%s ptr %s:[%s]",RSize,segs[SEG],instr);
+					}
 					(*Disasm)->OpcodeSize=6;
 					(*(*index))+=5;
 				}
@@ -3332,14 +3395,32 @@ void Mod_11_RM_EX(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,bool PrefixR
     }
     
     // (<-) / reg32
-    if(d==1 && w==1){    
+    if(d==1 && w==1){
         RM=REG32;
 		if(PrefixReg==1){
             RM=REG16; // (<-) / reg16
 		}
-        
+
         reg2=(m_Opcode&0x07);
         reg1=(m_Opcode&0x38)>>3;
+    }
+
+    // 64-bit mode: apply REX extensions
+    if((*Disasm)->Mode64){
+        if((*Disasm)->RexW && w==1){
+            RM=REG64;
+        }
+        if((*Disasm)->RexR){
+            if(d==1) reg1 |= 0x08;
+            else     reg2 |= 0x08;
+        }
+        if((*Disasm)->RexB){
+            if(d==1) reg2 |= 0x08;
+            else     reg1 |= 0x08;
+        }
+        if((*Disasm)->RexPrefix && w==0){
+            RM=REG8X;
+        }
     }
 
     switch(Op){
@@ -4587,14 +4668,27 @@ void Mod_RM_SIB_EX(
        strcpy_s(RSize,StringLen(regSize[1])+1,regSize[1]); // DWORD
     }
 
+    // 64-bit mode: REX.W promotes operand size, REX.R extends REG
+    if((*Disasm)->Mode64){
+        if((*Disasm)->RexW){
+            RM=REG64;
+            strcpy_s(RSize,StringLen(regSize[0])+1,regSize[0]); // Qword ptr
+        }
+        if((*Disasm)->RexR) REG |= 0x08;
+        if(!AddrPrefix)
+            ADDRM=REG64;
+        else
+            ADDRM=REG32;
+    }
+
     // SCALE INDEX BASE
 	SIB=(BYTE)(*(*Opcode+pos+1))&0x07; // Get SIB extension
 
     // =================================================//
     //				AddrPrefix is being used!			//
     // =================================================//
-    
-    if(PrefixAddr==1){ // Prefix 0x67 is set, Change Segments/Addressing Modes to 16 bits
+
+    if(PrefixAddr==1 && !(*Disasm)->Mode64){ // Prefix 0x67 in 32-bit mode: 16-bit addressing
         FOpcode=((BYTE)(*(*Opcode+pos+1))&0x0F); // Get addressing Mode (8 types of mode)
         reg1=((BYTE)(*(*Opcode+pos+1))&0x38)>>3;
         
@@ -5176,16 +5270,27 @@ void Mod_RM_SIB_EX(
     if(SIB!=SIB_EX){ // NO SIB extension (i.e: 0x0001 = add byte ptr [ecx], al)
         reg1=((BYTE)(*(*Opcode+pos+1))&0x07); // get register (we have only one)
         reg2=(((BYTE)(*(*Opcode+pos+1))&0x38)>>3);
-        
+
+        // 64-bit mode: apply REX.B to r/m field, REX.R to reg field
+        if((*Disasm)->Mode64){
+            if((*Disasm)->RexB) reg1 |= 0x08;
+            if((*Disasm)->RexR) reg2 |= 0x08;
+        }
+
         switch(Extension){ // Check what extension we have (None/Byte/Dword)
             case 00:{ // no extension to regMem
-                if(reg1==REG_EBP){ // cannot display EBP as memoryReg, use DWORD memory location
+                if((reg1&0x07)==REG_EBP){ // mod=00 rm=5: [disp32] or [RIP+disp32]
                     SwapDword((BYTE*)(*Opcode+pos+2),&dwOp,&dwMem);
                     SwapWord((BYTE*)(*Opcode+pos),&wOp,&wMem);
                     wsprintf(menemonic,"%04X%08X",wOp,dwOp);
                     lstrcat((*Disasm)->Opcode,menemonic);
-                    wsprintf(instr,"%08Xh",dwMem);
-                    wsprintf(menemonic,"%s ptr %s:[%s]",RSize,segs[SEG],instr);
+                    if((*Disasm)->Mode64){
+                        wsprintf(instr,"%08Xh",dwMem);
+                        wsprintf(menemonic,"%s ptr [RIP+%s]",RSize,instr);
+                    }else{
+                        wsprintf(instr,"%08Xh",dwMem);
+                        wsprintf(menemonic,"%s ptr %s:[%s]",RSize,segs[SEG],instr);
+                    }
                     (*Disasm)->OpcodeSize=6;
                     (*(*index))+=5;
                     FOpcode=(BYTE)(*(*Opcode+pos+6));

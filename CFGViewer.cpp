@@ -40,6 +40,7 @@ extern bool                 g_DarkMode;
 extern COLORREF             g_DarkBkColor;
 extern COLORREF             g_DarkTextColor;
 extern IMAGE_NT_HEADERS*    nt_hdr;
+extern bool                 LoadedPe64;
 
 // ================================================================
 // ====================  GLOBAL STATE  ============================
@@ -170,7 +171,10 @@ BOOL BuildCFGFromFunction(DWORD_PTR funcStart, DWORD_PTR funcEnd, const char* fu
         strncpy(outGraph->FunctionName, funcName, 63);
         outGraph->FunctionName[63] = '\0';
     } else {
-        wsprintf(outGraph->FunctionName, "sub_%08X", (DWORD)funcStart);
+        if(LoadedPe64)
+            wsprintf(outGraph->FunctionName, "sub_%08X%08X", (DWORD)(funcStart>>32), (DWORD)funcStart);
+        else
+            wsprintf(outGraph->FunctionName, "sub_%08X", (DWORD)funcStart);
     }
 
     // Find start and end indices in DisasmDataLines
@@ -285,7 +289,10 @@ BOOL BuildCFGFromFunction(DWORD_PTR funcStart, DWORD_PTR funcEnd, const char* fu
                 if (fFunctionInfo[fi].FunctionName[0] != '\0')
                     strncpy(block.FunctionLabel, fFunctionInfo[fi].FunctionName, 63);
                 else
-                    wsprintf(block.FunctionLabel, "Proc_%08X", (DWORD)block.StartAddress);
+                    if(LoadedPe64)
+                        wsprintf(block.FunctionLabel, "Proc_%08X%08X", (DWORD)(block.StartAddress>>32), (DWORD)block.StartAddress);
+                    else
+                        wsprintf(block.FunctionLabel, "Proc_%08X", (DWORD)block.StartAddress);
                 block.FunctionLabel[63] = '\0';
                 break;
             }
@@ -349,7 +356,10 @@ BOOL BuildCFGFromFunction(DWORD_PTR funcStart, DWORD_PTR funcEnd, const char* fu
         CFG_BASIC_BLOCK& block = outGraph->Blocks[i];
         if (block.FunctionLabel[0] == '\0' && !block.IsEntryBlock &&
             jumpTargetAddrs.count(block.StartAddress)) {
-            wsprintf(block.FunctionLabel, "loc_%08X", (DWORD)block.StartAddress);
+            if(LoadedPe64)
+                wsprintf(block.FunctionLabel, "loc_%08X%08X", (DWORD)(block.StartAddress>>32), (DWORD)block.StartAddress);
+            else
+                wsprintf(block.FunctionLabel, "loc_%08X", (DWORD)block.StartAddress);
         }
     }
 
@@ -1778,7 +1788,10 @@ BOOL BuildCFGByTracing(DWORD_PTR startIndex, CFG_GRAPH* outGraph)
     ClearCFGGraph(outGraph);
 
     DWORD_PTR startAddr = GetAddressAtIndex(startIndex);
-    wsprintf(outGraph->FunctionName, "Code at %08X", (DWORD)startAddr);
+    if(LoadedPe64)
+        wsprintf(outGraph->FunctionName, "Code at %08X%08X", (DWORD)(startAddr>>32), (DWORD)startAddr);
+    else
+        wsprintf(outGraph->FunctionName, "Code at %08X", (DWORD)startAddr);
     outGraph->FunctionStart = startAddr;
 
     // Set to track visited addresses and addresses to visit
@@ -2011,7 +2024,10 @@ BOOL BuildCFGByTracing(DWORD_PTR startIndex, CFG_GRAPH* outGraph)
                 if (fFunctionInfo[fi].FunctionName[0] != '\0')
                     strncpy(block.FunctionLabel, fFunctionInfo[fi].FunctionName, 63);
                 else
-                    wsprintf(block.FunctionLabel, "Proc_%08X", (DWORD)block.StartAddress);
+                    if(LoadedPe64)
+                        wsprintf(block.FunctionLabel, "Proc_%08X%08X", (DWORD)(block.StartAddress>>32), (DWORD)block.StartAddress);
+                    else
+                        wsprintf(block.FunctionLabel, "Proc_%08X", (DWORD)block.StartAddress);
                 block.FunctionLabel[63] = '\0';
                 break;
             }
@@ -2114,7 +2130,10 @@ BOOL BuildCFGByTracing(DWORD_PTR startIndex, CFG_GRAPH* outGraph)
         CFG_BASIC_BLOCK& block = outGraph->Blocks[i];
         if (block.FunctionLabel[0] == '\0' && !block.IsEntryBlock &&
             actualJumpTargets.count(block.StartAddress)) {
-            wsprintf(block.FunctionLabel, "loc_%08X", (DWORD)block.StartAddress);
+            if(LoadedPe64)
+                wsprintf(block.FunctionLabel, "loc_%08X%08X", (DWORD)(block.StartAddress>>32), (DWORD)block.StartAddress);
+            else
+                wsprintf(block.FunctionLabel, "loc_%08X", (DWORD)block.StartAddress);
         }
     }
 

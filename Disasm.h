@@ -68,6 +68,7 @@
 #define BINARY_FORMAT	"Binary File"
 #define x86_PC_16Bit	"80x86 (16Bit) Proccessor: PC"
 #define x86_PC			"80x86 (32Bit) Proccessor: PC"
+#define x86_64_PC		"x86-64 (64Bit) Processor: PC"
 #define x87_PC			"80x87 (62Bit) Proccessor: PC"
 #define CPU_chip8		"Chip8/SCHIP Processor"
 #define CPU_vbpcode5	"VB5 P-Code Processor"
@@ -81,6 +82,7 @@
 #define x86_16Bit	3
 #define vbpcode5	4
 #define vbpcode6	5
+#define x86_64		6
 
 #define MY_MSG 101
 #define PV_TRUE  1
@@ -91,6 +93,8 @@
 #define REG16 1
 #define REG32 2
 #define FPU   3 // Not in use.
+#define REG64 4
+#define REG8X 5 // 8-bit with REX (SPL/BPL/SIL/DIL)
 
 // 8Bit Registers
 #define  REG_AL 0
@@ -121,6 +125,24 @@
 #define  REG_EBP 5
 #define  REG_ESI 6
 #define  REG_EDI 7
+
+// 64-bit Registers
+#define  REG_RAX 0
+#define  REG_RCX 1
+#define  REG_RDX 2
+#define  REG_RBX 3
+#define  REG_RSP 4
+#define  REG_RBP 5
+#define  REG_RSI 6
+#define  REG_RDI 7
+#define  REG_R8  8
+#define  REG_R9  9
+#define  REG_R10 10
+#define  REG_R11 11
+#define  REG_R12 12
+#define  REG_R13 13
+#define  REG_R14 14
+#define  REG_R15 15
 
 // Segments
 #define SEG_ES 0
@@ -183,6 +205,14 @@ typedef struct Decoded{
 	BYTE		RegExt;			// REX-like register extension bits (R, X, B, R')
 	BYTE		IsVEX;			// 1 if VEX-encoded, 0 otherwise
 	BYTE		IsEVEX;			// 1 if EVEX-encoded, 0 otherwise
+
+	// REX prefix state (64-bit mode)
+	BYTE		RexPrefix;		// Raw REX byte (0 if no REX)
+	BYTE		RexW;			// REX.W — 64-bit operand size
+	BYTE		RexR;			// REX.R — extends ModRM.reg
+	BYTE		RexX;			// REX.X — extends SIB.index
+	BYTE		RexB;			// REX.B — extends ModRM.rm / SIB.base
+	BYTE		Mode64;			// 1 if decoding in 64-bit mode
 
 } DISASSEMBLY;
 
