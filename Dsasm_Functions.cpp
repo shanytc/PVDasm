@@ -210,6 +210,8 @@ void Mod_11_RM(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,char instructio
 				RM=REG8;
 				if(Op==0x83 && PrefixReg==0){ // full size reg
 					RM=REG32;
+					if((*Disasm)->Mode64 && (*Disasm)->RexW)
+						RM=REG64;
 				}
 
 				if(PrefixReg==1){
@@ -217,6 +219,8 @@ void Mod_11_RM(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,char instructio
 				}
 
 				reg1=(m_Opcode&7); // Get Destination Register
+				if((*Disasm)->Mode64 && (*Disasm)->RexB)
+					reg1 |= 0x08;
 				SwapWord((BYTE*)(*Opcode+Pos+1),&wOp,&wMem);
 
 				FOpcode=wOp&0x00FF;
@@ -239,6 +243,8 @@ void Mod_11_RM(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,char instructio
 				if(PrefixReg==1){ // READ WORD
 					RM=REG16;
 					reg1=(m_Opcode&0x07); // Get Destination Register
+					if((*Disasm)->Mode64 && (*Disasm)->RexB)
+						reg1 |= 0x08;
 					SwapWord((BYTE*)(*Opcode+Pos+2),&wOp,&wMem);
 					SwapDword((BYTE*)(*Opcode+Pos),&dwOp,&dwMem);
 					// Read imm16
@@ -250,7 +256,11 @@ void Mod_11_RM(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,char instructio
 				}
 				else{ //no reg prefix
 					RM=REG32;
+					if((*Disasm)->Mode64 && (*Disasm)->RexW)
+						RM=REG64;
 					reg1=(m_Opcode&0x07); // Get Destination Register
+					if((*Disasm)->Mode64 && (*Disasm)->RexB)
+						reg1 |= 0x08;
 					SwapDword((BYTE*)(*Opcode+Pos+2),&dwOp,&dwMem);
 					SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
 					// Read Dword Data number (imm32)
