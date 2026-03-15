@@ -960,7 +960,12 @@ void Mod_11_RM(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,char instructio
 			break;
 
 			case 0xFF:{
-				wsprintf(assembly,"%s %s",InstructionsSet4[REG],regs[RM][reg2]);
+				DWORD_PTR ff_RM = RM;
+				// In 64-bit mode, CALL/JMP/PUSH always use 64-bit registers
+				if((*Disasm)->Mode64 && (REG==2 || REG==4 || REG==6)){
+					ff_RM = REG64;
+				}
+				wsprintf(assembly,"%s %s",InstructionsSet4[REG],regs[ff_RM][reg2]);
 				if(REG==7){
 					lstrcat((*Disasm)->Remarks,";Illegal Instruction");
 				}
@@ -1046,7 +1051,14 @@ void Mod_RM_SIB(
 	switch((BYTE)(*(*Opcode+pos))){
 		case 0x20:			{	PrefixReg=0; }	break; // Force Byte Size Regardless Operands.
 		case 0x39: case 0x3B:	{	strcpy_s(RSize,StringLen(regSize[1])+1,regSize[1]);													}	break; // DWORD
-		case 0x63:			{	Bit_d=0; Bit_w=1; strcpy_s(RSize,StringLen(regSize[1])+1,regSize[1]);									}	break; // DWORD
+		case 0x63:			{
+			if((*Disasm)->Mode64){
+				Bit_d=1; Bit_w=1; // MOVSXD: register is destination
+			} else {
+				Bit_d=0; Bit_w=1; // ARPL: memory/reg is destination
+			}
+			strcpy_s(RSize,StringLen(regSize[1])+1,regSize[1]); // DWORD source
+		}	break;
 		case 0x62:			{	RM=REG32; bound=1; Bit_d=1; Bit_w=0; strcpy_s(RSize,StringLen(regSize[0])+1,regSize[0]);				}	break; // QWORD
 		case 0x69:			{	Bit_d=0; Bit_w=1; strcpy_s(RSize,StringLen(regSize[1])+1,regSize[1]);									}	break; // DWORD
 		case 0x6B:			{	Bit_d=0; Bit_w=1; strcpy_s(RSize,StringLen(regSize[1])+1,regSize[1]);									}	break; // DWORD
@@ -1132,6 +1144,19 @@ void Mod_RM_SIB(
 	// 64-bit mode: REX.W promotes operand size to 64-bit
 	if((*Disasm)->Mode64 && (*Disasm)->RexW && !UsesFPU){
 		if(lstrcmp(RSize,"Byte")!=0){
+			RM=REG64;
+			strcpy_s(RSize,StringLen(regSize[0])+1,regSize[0]); // Qword ptr
+		}
+	}
+
+	// Special case: MOVSXD — source memory operand is always 32-bit
+	if((*Disasm)->Mode64 && (BYTE)(*(*Opcode+pos))==0x63){
+		strcpy_s(RSize,StringLen(regSize[1])+1,regSize[1]); // Dword ptr (source is always 32-bit)
+	}
+
+	// 64-bit mode: CALL/JMP/PUSH indirect default to 64-bit operand size
+	if((*Disasm)->Mode64 && (BYTE)(*(*Opcode+pos))==0xFF){
+		if(REG==2 || REG==4 || REG==6){ // CALL, JMP, PUSH
 			RM=REG64;
 			strcpy_s(RSize,StringLen(regSize[0])+1,regSize[0]); // Qword ptr
 		}
