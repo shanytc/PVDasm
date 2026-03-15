@@ -1,12 +1,12 @@
 @echo off
 REM ============================================================
 REM  PVDasm Test Binary Builder
-REM  Compiles test .c files into 32-bit PE executables for
-REM  stress-testing PVDasm's disassembly engine.
+REM  Compiles test .c files into 32-bit PE executables and
+REM  a 64-bit PE+ executable for stress-testing PVDasm.
 REM
 REM  Usage: Just run build_tests.bat from any command prompt.
 REM         The script auto-detects Visual Studio and sets up
-REM         the x86 compiler environment.
+REM         the compiler environment.
 REM ============================================================
 
 echo ========================================
@@ -14,12 +14,7 @@ echo  PVDasm Test Binary Builder
 echo ========================================
 echo.
 
-REM Check if cl.exe is already available (e.g. VS command prompt)
-where cl >nul 2>&1
-if not errorlevel 1 goto :have_cl
-
-REM --- Auto-detect Visual Studio vcvarsall.bat ---
-echo Searching for Visual Studio...
+REM --- Always search for vcvarsall.bat (needed for x64 build) ---
 set "VCVARS="
 
 REM Try vswhere (VS 2017+) first
@@ -55,21 +50,15 @@ exit /b 1
 
 :found_vcvars
 echo Found: %VCVARS%
+echo.
+
+REM --- Set up x86 environment for 32-bit builds ---
 echo Setting up x86 environment...
 call "%VCVARS%" x86 >nul 2>&1
 if errorlevel 1 (
-    echo ERROR: vcvarsall.bat failed.
+    echo ERROR: vcvarsall.bat x86 failed.
     exit /b 1
 )
-
-REM Verify cl.exe is now available
-where cl >nul 2>&1
-if errorlevel 1 (
-    echo ERROR: cl.exe still not found after running vcvarsall.bat.
-    exit /b 1
-)
-
-:have_cl
 echo Using: & where cl
 echo.
 
@@ -131,6 +120,28 @@ if exist vb_pcode_gen.exe (
 )
 echo.
 
+REM --- Switch to x64 environment for 64-bit build (in a sub-process) ---
+echo --- Building x64.exe (64-bit x86-64) ---
+echo    VCVARS = %VCVARS%
+(
+    echo @echo off
+    echo call "%VCVARS%" x64
+    echo if errorlevel 1 exit /b 1
+    echo cl /nologo /W3 /Od /GS- /MD /Fe:x64.exe x64.c /link /SUBSYSTEM:CONSOLE
+) > _build_x64.bat
+echo    Generated _build_x64.bat:
+type _build_x64.bat
+echo.
+cmd /c _build_x64.bat
+del /q _build_x64.bat 2>nul
+if not exist x64.exe (
+    echo    FAILED: x64.exe was not produced.
+) else (
+    echo    SUCCESS: x64.exe built.
+)
+echo.
+
+:cleanup
 REM --- Clean up build artifacts ---
 del /q *.obj *.pdb *.ilk 2>nul
 
@@ -142,7 +153,7 @@ echo  Test files produced:
 echo    x86.exe        - Basic 32-bit x86 instructions
 echo    x87_fpu.exe    - x87 FPU instructions
 echo    mmx.exe        - MMX + 3DNow! instructions
-echo    sse.exe         - SSE instructions
+echo    sse.exe        - SSE instructions
 echo    sse2.exe       - SSE2 instructions
 echo    sse3.exe       - SSE3 + SSSE3 instructions
 echo    sse4.exe       - SSE4.1 + SSE4.2 instructions
@@ -150,6 +161,7 @@ echo    avx.exe        - AVX instructions (VEX 128/256-bit)
 echo    avx2.exe       - AVX2 + FMA3 instructions
 echo    avx512.exe     - AVX-512F instructions (EVEX, zmm, opmask)
 echo    chip8.bin      - Chip8/SCHIP ROM (all opcodes)
+echo    x64.exe        - 64-bit x86-64 instructions (PE+)
 echo    vb_pcode.exe   - VB6 P-Code PE (select VB P-Code CPU mode)
 echo.
 echo  Load each file into PVDasm and verify disassembly output.
