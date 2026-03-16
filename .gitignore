@@ -6,3 +6,4 @@
 .claude
 Backups
 *.exe
+tests/chip8.bin
