@@ -393,6 +393,20 @@ void Mod_11_RM(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,char instructio
 			}
 
 			reg1=(m_Opcode&7); // Get Destination Register
+
+			// 64-bit mode: apply REX extensions for C0/C1
+			if((*Disasm)->Mode64){
+				if((*Disasm)->RexW && w==1){
+					RM=REG64;
+				}
+				if((*Disasm)->RexB){
+					reg1 |= 0x08;
+				}
+				if((*Disasm)->RexPrefix && w==0){
+					RM=REG8X;
+				}
+			}
+
 			SwapWord((BYTE*)(*Opcode+Pos+1),&wOp,&wMem);
 			wsprintf(temp,"%02Xh",wOp&0x00FF);
 			// Read Opcodes: Opcode - imm8
@@ -1173,6 +1187,11 @@ void Mod_RM_SIB(
 			ADDRM=REG64;
 		else
 			ADDRM=REG32; // 0x67 in 64-bit: use 32-bit addressing
+	}
+
+	// REX prefix present + byte mode: use REG8X (SPL/BPL/SIL/DIL)
+	if((*Disasm)->Mode64 && (*Disasm)->RexPrefix && Bit_w==0){
+		RM=REG8X;
 	}
 
 	// SCALE INDEX BASE :
@@ -3255,7 +3274,7 @@ int GetNewInstruction(BYTE Op,char *ASM,bool RegPrefix,char *Opcode, DWORD_PTR I
 
         // Invalid instructions, but have a valid 0xC0.
         case 0x20: case 0x21:case 0x22:
-        case 0x23: case 0x50: case 0xBA:case 0x71:
+        case 0x23: case 0x50: case 0x71:
         case 0x72: case 0x73:{
             strcpy_s(Inst,"???");
             Found=3;
@@ -3328,7 +3347,7 @@ int GetNewInstruction(BYTE Op,char *ASM,bool RegPrefix,char *Opcode, DWORD_PTR I
         // Invalid Instructions!!
         case 0x19: case 0x1A: case 0x1B:
         case 0x1C: case 0x1D: case 0x04:
-        case 0x1F: case 0x0A: case 0x0C: case 0x24:
+        case 0x0A: case 0x0C: case 0x24:
         case 0x36: case 0x37: case 0x25:
         case 0x39: case 0x3B:
         case 0x3C: case 0x3D: case 0x3E: case 0x3F:
@@ -3548,6 +3567,13 @@ void Mod_11_RM_EX(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,bool PrefixR
             else{
                 wsprintf(assembly,"nop %s",regs[RM][reg2]);
             }
+            SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
+            wsprintf(temp,"%04X",wOp);
+        }
+        break;
+
+        case 0x1F:{
+            wsprintf(assembly,"nop %s",regs[RM][reg2]);
             SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
             wsprintf(temp,"%04X",wOp);
         }
@@ -4678,6 +4704,7 @@ void Mod_RM_SIB_EX(
                 break;
       case 0x02: case 0x03:{ Bit_d=1; Bit_w=1; strcpy_s(RSize,StringLen(regSize[1])+1,regSize[1]); }		break; // DWORD
       case 0x0D: { Bit_d=1; Bit_w=1; strcpy_s(RSize,StringLen(regSize[0])+1,regSize[0]); }				break; // DWORD
+      case 0x1F: { Bit_d=0; Bit_w=1; strcpy_s(RSize,StringLen(regSize[1])+1,regSize[1]); }				break; // DWORD  (NOP)
 	  case 0x10: { Bit_d=1; Bit_w=1; strcpy_s(RSize,StringLen(regSize[8])+1,regSize[8]); }				break; // DQWORD
       case 0x11: { Bit_d=0; Bit_w=1; strcpy_s(RSize,StringLen(regSize[8])+1,regSize[8]); }				break; // DQWORD
       case 0x12: case 0x16: { Bit_d=1; Bit_w=1; strcpy_s(RSize,StringLen(regSize[0])+1,regSize[0]); }		break; // QWORD
@@ -4707,12 +4734,27 @@ void Mod_RM_SIB_EX(
           { Bit_d=1; Bit_w=1; strcpy_s(RSize,StringLen(regSize[8])+1,regSize[8]); } // DQWORD
       break;
       case 0x60:case 0x61:case 0x62:case 0x63:case 0x64:case 0x65:case 0x66:case 0x67:
-      case 0x68:case 0x69:case 0x6A:case 0x6B:case 0x6C:case 0x6D:case 0x6E:case 0x6F:
+      case 0x68:case 0x69:case 0x6A:case 0x6B:case 0x6C:case 0x6D:case 0x6E:
           { Bit_d=1; Bit_w=1; if((Op&0x0F)==0x0E)strcpy_s(RSize,StringLen(regSize[1])+1,regSize[1]);else strcpy_s(RSize,StringLen(regSize[0])+1,regSize[0]); }  // DWORD/QWORD
+      break;
+      case 0x6F:{  // MOVQ (MMX) / MOVDQA (66) / MOVDQU (F3) — 128-bit with prefix
+          Bit_d=1; Bit_w=1;
+          if(PrefixReg || RepPrefix==0xF3)
+              strcpy_s(RSize,StringLen(regSize[8])+1,regSize[8]);  // DQword (128-bit)
+          else
+              strcpy_s(RSize,StringLen(regSize[0])+1,regSize[0]);  // Qword (64-bit MMX)
+      }
       break;
       case 0x70:case 0x74:case 0x75:case 0x76: { Bit_d=1; Bit_w=1; strcpy_s(RSize,StringLen(regSize[0])+1,regSize[0]); } break; // QWORD
       case 0x7E: { Bit_d=0; Bit_w=1; strcpy_s(RSize,StringLen(regSize[1])+1,regSize[1]); }  break;   // DWORD
-      case 0x7F: { Bit_d=0; Bit_w=1; strcpy_s(RSize,StringLen(regSize[0])+1,regSize[0]); }  break;   // QWORD
+      case 0x7F:{  // MOVQ (MMX) / MOVDQA (66) / MOVDQU (F3) — 128-bit with prefix
+          Bit_d=0; Bit_w=1;
+          if(PrefixReg || RepPrefix==0xF3)
+              strcpy_s(RSize,StringLen(regSize[8])+1,regSize[8]);  // DQword (128-bit)
+          else
+              strcpy_s(RSize,StringLen(regSize[0])+1,regSize[0]);  // Qword (64-bit MMX)
+      }
+      break;
       case 0x90:case 0x91:case 0x92:case 0x93:case 0x94:case 0x95:case 0x96:case 0x97:
       case 0x98:case 0x99:case 0x9A:case 0x9B:case 0x9C:case 0x9D:case 0x9E:case 0x9F:
           { Bit_d=1; Bit_w=1; strcpy_s(RSize,StringLen(regSize[3])+1,regSize[3]); }  // BYTE
@@ -4730,7 +4772,7 @@ void Mod_RM_SIB_EX(
       break; //512Byte / DWORD  (FXSAVE)
       case 0xAF:			{ Bit_d=1; Bit_w=1; strcpy_s(RSize,StringLen(regSize[1])+1,regSize[1]); }				break; // DWORD  (IMUL)
       case 0xB0:			{ Bit_d=0; Bit_w=1; strcpy_s(RSize,StringLen(regSize[3])+1,regSize[3]); }				break; // BYTE   (CMPXCHG)
-      case 0xB1: case 0xB3: case 0xBB:{ Bit_d=0; Bit_w=1; strcpy_s(RSize,StringLen(regSize[1])+1,regSize[1]); }	break; // DWORD  (CMPXCHG/BTC/BTR)
+      case 0xB1: case 0xB3: case 0xBA: case 0xBB:{ Bit_d=0; Bit_w=1; strcpy_s(RSize,StringLen(regSize[1])+1,regSize[1]); }	break; // DWORD  (CMPXCHG/BT/BTC/BTR)
       case 0xB2: case 0xB4: case 0xB5:{ Bit_d=1; Bit_w=1; strcpy_s(RSize,StringLen(regSize[4])+1,regSize[4]); }	break; // FWORD  (LSS/LFS/LGS)
       case 0xB6: case 0xBE: { Bit_d=1; Bit_w=1; strcpy_s(RSize,StringLen(regSize[3])+1,regSize[3]); }				break; // BYTE   (MOVSX/MOVZX)
       case 0xB7: case 0xBF: { Bit_d=1; Bit_w=1; strcpy_s(RSize,StringLen(regSize[2])+1,regSize[2]); }				break; // WORD   (MOVSX/MOVZX)
@@ -4796,7 +4838,7 @@ void Mod_RM_SIB_EX(
             }
     }
     
-    if(RepPrefix!=0){
+    if(RepPrefix!=0 && Op!=0x6F && Op!=0x7F){
        strcpy_s(RSize,StringLen(regSize[1])+1,regSize[1]); // DWORD
     }
 
@@ -4916,10 +4958,15 @@ void Mod_RM_SIB_EX(
 
                     case 0x01:{
                         wsprintf(temp,"%s %s",NewSet2[REG],tempMeme);
-                        
+
 						if(REG==5){ // Invalid operation
                             lstrcat((*Disasm)->Remarks,";Invalid instruction");
 						}
+                    }
+                    break;
+
+                    case 0x1F:{
+                        wsprintf(temp,"nop %s",tempMeme);
                     }
                     break;
 
@@ -5029,6 +5076,22 @@ void Mod_RM_SIB_EX(
 						}
 
                       wsprintf(temp,"%s %s,%s",NewSet11[Op&0x0F],tempMeme,regs[RM][REG]);
+                    }
+                    break;
+
+                    case 0xBA:{
+                        const char *btOps[] = {"???","???","???","???","bt","bts","btr","btc"};
+                        BYTE regField = REG & 0x07;
+                        if(regField < 4){
+                            wsprintf(temp,"??? %s",tempMeme);
+                            lstrcat((*Disasm)->Remarks,";Invalid Instruction");
+                        } else {
+                            wsprintf(temp,"%s %s,%02Xh",btOps[regField],tempMeme,FOpcode);
+                        }
+                        wsprintf(menemonic," %02X",FOpcode);
+                        lstrcat((*Disasm)->Opcode,menemonic);
+                        (*Disasm)->OpcodeSize++;
+                        (*(*index))++;
                     }
                     break;
 
@@ -5517,10 +5580,15 @@ void Mod_RM_SIB_EX(
 
                     case 0x01:{ // MIX Instructions
                         wsprintf(tempMeme,"%s %s",NewSet2[REG],menemonic);
-                        
+
 						if(REG==5){ // Invalid operation
                             lstrcat((*Disasm)->Remarks,";Invalid instruction");
 						}
+                    }
+                    break;
+
+                    case 0x1F:{
+                        wsprintf(tempMeme,"nop %s",menemonic);
                     }
                     break;
 
@@ -5626,6 +5694,23 @@ void Mod_RM_SIB_EX(
                         wsprintf(tempMeme,"%s %s,%s",NewSet11[Op&0x0F],menemonic,regs[RM][reg2]);
                     }
                     break;
+
+                    case 0xBA:{
+                        const char *btOps[] = {"???","???","???","???","bt","bts","btr","btc"};
+                        BYTE regField = REG & 0x07;
+                        if(regField < 4){
+                            wsprintf(tempMeme,"??? %s",menemonic);
+                            lstrcat((*Disasm)->Remarks,";Invalid Instruction");
+                        } else {
+                            wsprintf(tempMeme,"%s %s,%02Xh",btOps[regField],menemonic,FOpcode);
+                        }
+                        wsprintf(temp," %02X",FOpcode);
+                        lstrcat((*Disasm)->Opcode,temp);
+                        (*Disasm)->OpcodeSize++;
+                        (*(*index))++;
+                    }
+                    break;
+
                     case 0xC0: RM=REG8; wsprintf(tempMeme,"xadd %s,%s",menemonic,regs[RM][reg2]);break;
                     case 0xC1: wsprintf(tempMeme,"xadd %s,%s",menemonic,regs[RM][reg2]); break;
                 }
@@ -6336,10 +6421,15 @@ void Mod_RM_SIB_EX(
 
                     case 0x01:{
                         wsprintf(tempMeme,"%s %s",NewSet2[REG],menemonic); // removed a ,%s
-                        
+
 						if(REG==5){ // Invalid operation
                             lstrcat((*Disasm)->Remarks,";Invalid instruction");
 						}
+                    }
+                    break;
+
+                    case 0x1F:{
+                        wsprintf(tempMeme,"nop %s",menemonic);
                     }
                     break;
 
@@ -6448,6 +6538,23 @@ void Mod_RM_SIB_EX(
 						wsprintf(tempMeme,"%s %s,%s",NewSet11[Op&0x0F],menemonic,regs[RM][REG]);
                     }
                     break;
+
+                    case 0xBA:{
+                        const char *btOps[] = {"???","???","???","???","bt","bts","btr","btc"};
+                        BYTE regField = REG & 0x07;
+                        if(regField < 4){
+                            wsprintf(tempMeme,"??? %s",menemonic);
+                            lstrcat((*Disasm)->Remarks,";Invalid Instruction");
+                        } else {
+                            wsprintf(tempMeme,"%s %s,%02Xh",btOps[regField],menemonic,FOpcode);
+                        }
+                        wsprintf(temp," %02X",FOpcode);
+                        lstrcat((*Disasm)->Opcode,temp);
+                        (*Disasm)->OpcodeSize++;
+                        (*(*index))++;
+                    }
+                    break;
+
                     case 0xC0: { RM=REG8; wsprintf(tempMeme,"xadd %s,%s",menemonic,regs[RM][REG]); }		break; // XADD
                     case 0xC1: wsprintf(tempMeme,"xadd %s,%s",menemonic,regs[RM][REG]);						break; // XADD
                 }
