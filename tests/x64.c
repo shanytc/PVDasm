@@ -153,6 +153,165 @@ __declspec(noinline) int test_rex_byte_regs(const char *s)
     return (int)c;
 }
 
+/* ---- 64-bit specific instructions via _emit ---- */
+
+/*
+ * x64 MSVC doesn't support inline __asm, so we use a raw .asm
+ * object or embed bytes in a data section.  For PVDasm testing we
+ * just need the raw bytes present in the binary; we put them in a
+ * function that is never called so the compiler keeps them.
+ *
+ * We use a pragma section + __declspec(allocate) to place raw
+ * opcode bytes into the .text section where PVDasm will decode them.
+ */
+
+#pragma section(".opctest", read, execute)
+
+/* Raw instruction bytes for PVDasm to decode */
+__declspec(allocate(".opctest")) static const unsigned char x64_test_opcodes[] = {
+    /* SWAPGS (0F 01 F8) */
+    0x0F, 0x01, 0xF8,
+
+    /* RDTSCP (0F 01 F9) */
+    0x0F, 0x01, 0xF9,
+
+    /* CMPXCHG16B [rax] (REX.W + 0F C7 /1) = 48 0F C7 08 */
+    0x48, 0x0F, 0xC7, 0x08,
+
+    /* RDRAND rax (REX.W + 0F C7 F0) = 48 0F C7 F0 */
+    0x48, 0x0F, 0xC7, 0xF0,
+
+    /* RDSEED rax (REX.W + 0F C7 F8) = 48 0F C7 F8 */
+    0x48, 0x0F, 0xC7, 0xF8,
+
+    /* LZCNT rax, rbx (REX.W + F3 0F BD C3) = F3 48 0F BD C3 */
+    0xF3, 0x48, 0x0F, 0xBD, 0xC3,
+
+    /* TZCNT rax, rbx (REX.W + F3 0F BC C3) = F3 48 0F BC C3 */
+    0xF3, 0x48, 0x0F, 0xBC, 0xC3,
+
+    /* XGETBV (0F 01 D0) */
+    0x0F, 0x01, 0xD0,
+
+    /* XSETBV (0F 01 D1) */
+    0x0F, 0x01, 0xD1,
+
+    /* VMCALL (0F 01 C1) */
+    0x0F, 0x01, 0xC1,
+
+    /* VMLAUNCH (0F 01 C2) */
+    0x0F, 0x01, 0xC2,
+
+    /* VMRESUME (0F 01 C3) */
+    0x0F, 0x01, 0xC3,
+
+    /* VMXOFF (0F 01 C4) */
+    0x0F, 0x01, 0xC4,
+
+    /* XEND (0F 01 D5) */
+    0x0F, 0x01, 0xD5,
+
+    /* XTEST (0F 01 D6) */
+    0x0F, 0x01, 0xD6,
+
+    /* SVM instructions */
+    0x0F, 0x01, 0xD8,  /* VMRUN */
+    0x0F, 0x01, 0xD9,  /* VMMCALL */
+    0x0F, 0x01, 0xDA,  /* VMLOAD */
+    0x0F, 0x01, 0xDB,  /* VMSAVE */
+    0x0F, 0x01, 0xDC,  /* STGI */
+    0x0F, 0x01, 0xDD,  /* CLGI */
+    0x0F, 0x01, 0xDE,  /* SKINIT */
+    0x0F, 0x01, 0xDF,  /* INVLPGA */
+
+    /* ENDBR64 (F3 0F 1E FA) */
+    0xF3, 0x0F, 0x1E, 0xFA,
+
+    /* ENDBR32 (F3 0F 1E FB) */
+    0xF3, 0x0F, 0x1E, 0xFB,
+
+    /* AES-NI: AESENC xmm0, xmm1 (66 0F 38 DC C1) */
+    0x66, 0x0F, 0x38, 0xDC, 0xC1,
+
+    /* AESENCLAST xmm0, xmm1 (66 0F 38 DD C1) */
+    0x66, 0x0F, 0x38, 0xDD, 0xC1,
+
+    /* AESDEC xmm0, xmm1 (66 0F 38 DE C1) */
+    0x66, 0x0F, 0x38, 0xDE, 0xC1,
+
+    /* AESDECLAST xmm0, xmm1 (66 0F 38 DF C1) */
+    0x66, 0x0F, 0x38, 0xDF, 0xC1,
+
+    /* AESIMC xmm0, xmm1 (66 0F 38 DB C1) */
+    0x66, 0x0F, 0x38, 0xDB, 0xC1,
+
+    /* AESKEYGENASSIST xmm0, xmm1, 01h (66 0F 3A DF C1 01) */
+    0x66, 0x0F, 0x3A, 0xDF, 0xC1, 0x01,
+
+    /* PCLMULQDQ xmm0, xmm1, 00h (66 0F 3A 44 C1 00) */
+    0x66, 0x0F, 0x3A, 0x44, 0xC1, 0x00,
+
+    /* SHA1NEXTE xmm0, xmm1 (0F 38 C8 C1) */
+    0x0F, 0x38, 0xC8, 0xC1,
+
+    /* SHA256RNDS2 xmm0, xmm1 (0F 38 CB C1) */
+    0x0F, 0x38, 0xCB, 0xC1,
+
+    /* MOVBE eax, [rcx] (0F 38 F0 01) */
+    0x0F, 0x38, 0xF0, 0x01,
+
+    /* ADCX eax, ebx (66 0F 38 F6 C3) */
+    0x66, 0x0F, 0x38, 0xF6, 0xC3,
+
+    /* ADOX eax, ebx (F3 0F 38 F6 C3) */
+    0xF3, 0x0F, 0x38, 0xF6, 0xC3,
+
+    /* BMI1: ANDN eax, ebx, ecx (VEX.NDS.LZ.0F38.W0 F2 C1) */
+    0xC4, 0xE2, 0x60, 0xF2, 0xC1,
+
+    /* BMI1: BLSI eax, ecx (VEX.NDD.LZ.0F38.W0 F3 /3) */
+    0xC4, 0xE2, 0x78, 0xF3, 0xD9,
+
+    /* BMI1: BEXTR eax, ecx, ebx */
+    0xC4, 0xE2, 0x60, 0xF7, 0xC1,
+
+    /* BMI2: BZHI eax, ecx, ebx */
+    0xC4, 0xE2, 0x60, 0xF5, 0xC1,
+
+    /* BMI2: SARX eax, ecx, ebx */
+    0xC4, 0xE2, 0x62, 0xF7, 0xC1,
+
+    /* BMI2: SHLX eax, ecx, ebx */
+    0xC4, 0xE2, 0x61, 0xF7, 0xC1,
+
+    /* BMI2: SHRX eax, ecx, ebx */
+    0xC4, 0xE2, 0x63, 0xF7, 0xC1,
+
+    /* BMI2: RORX eax, ecx, 5 (VEX.LZ.F2.0F3A.W0 F0 C1 05) */
+    0xC4, 0xE3, 0x7B, 0xF0, 0xC1, 0x05,
+
+    /* BMI2: PDEP eax, ebx, ecx */
+    0xC4, 0xE2, 0x63, 0xF5, 0xC1,
+
+    /* BMI2: PEXT eax, ebx, ecx */
+    0xC4, 0xE2, 0x62, 0xF5, 0xC1,
+
+    /* BMI2: MULX edx, eax, ecx */
+    0xC4, 0xE2, 0x7B, 0xF6, 0xD1,
+
+    /* 64-bit BMI with REX.W: ANDN rax, rbx, rcx */
+    0xC4, 0xE2, 0xE0, 0xF2, 0xC1,  /* W=1 */
+
+    /* RDRAND eax (no REX) (0F C7 F0) */
+    0x0F, 0xC7, 0xF0,
+
+    /* RDSEED eax (no REX) (0F C7 F8) */
+    0x0F, 0xC7, 0xF8,
+
+    /* RET to prevent fallthrough into garbage */
+    0xC3
+};
+
 /* ---- Entry point ---- */
 int main(void)
 {
@@ -186,6 +345,10 @@ int main(void)
 
     byte_result = test_rex_byte_regs("A");
     printf("[PASS] REX byte registers (char = %d)\n", byte_result);
+
+    /* Reference the test section to prevent linker from stripping it */
+    printf("\nx64 opcode test section at: %p (size=%zu bytes)\n",
+           x64_test_opcodes, sizeof(x64_test_opcodes));
 
     printf("\nAll tests passed. Load x64.exe in PVDasm to verify disassembly.\n");
     return 0;

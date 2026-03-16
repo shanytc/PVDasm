@@ -121,9 +121,9 @@ const char *FpuRegs							[8] = { "st(0)", "st(1)", "st(2)", "st(3)" , "st(4)" ,
 const char *FpuInstructions					[8] = { "fadd" , "fmul" , "fcom" , "fcomp" , "fsub"  , "fsubr" , "fdiv"  , "fdivr"  }; // Unsigned fpu instructions
 const char *FpuInstructionsSigned			[8] = { "fiadd", "fimul", "ficom", "ficomp", "fisub" , "fisubr", "fidiv" , "fidivr" }; // Signed fpu instructions
 const char *FpuInstructionsSet2				[8] = { "fld"  , "???"  , "fst"  , "fstp"  , "fldenv", "fldcw" , "fstenv", "fstcw"  }; // set2 of Unsigned fpu instructions
-const char *FpuInstructionsSet2Signed		[8] = { "fild" , "???"  , "fist" , "fistp" , "???"   , "fld"   , "???"   , "fstp"   }; // set2 of Signed fpu instructions
-const char *FpuInstructionsSet3				[8] = { "fld"  , "???"  , "fst"  , "fstp"  , "frstor", "???"   , "fsave" , "fstsw"  }; // set3 of Unsigned fpu instructions
-const char *FpuInstructionsSet2Signed_EX	[8] = { "fild" , "???"  , "fist" , "fistp" , "fbld"  , "fild"  , "fbstp" , "fistp"  }; // set2 of Signed fpu instructions With Extended 2 instructions
+const char *FpuInstructionsSet2Signed		[8] = { "fild" , "fisttp", "fist" , "fistp" , "???"   , "fld"   , "???"   , "fstp"   }; // set2 of Signed fpu instructions
+const char *FpuInstructionsSet3				[8] = { "fld"  , "fisttp", "fst"  , "fstp"  , "frstor", "???"   , "fsave" , "fstsw"  }; // set3 of Unsigned fpu instructions
+const char *FpuInstructionsSet2Signed_EX	[8] = { "fild" , "fisttp", "fist" , "fistp" , "fbld"  , "fild"  , "fbstp" , "fistp"  }; // set2 of Signed fpu instructions With Extended 2 instructions
 
 // MMX, 3DNow! Registers
 const char *Regs3DNow	[8]  = { "mm0"	, "mm1"		, "mm2"		, "mm3"		, "mm4"		, "mm5"		, "mm6"		, "mm7"		}; // 3DNow! Registers
@@ -150,7 +150,7 @@ const char *NewSet7		[16] = { "punpcklbw", "punpcklwd"	, "punpckldq"	, "packsswb
 const char *NewSet8		[8]  = { "pshufw"	, "???"			, "???"			, "???"       , "pcmpeqb"   , "pcmpeqw" , "pcmpeqd" , "emms" };                                                                                                    // New Set8
 const char *NewSet9		[16] = { "seto"		, "setno"		, "setb"		, "setnb"     , "sete"      , "setne"   , "setbe"   , "seta"    , "sets"     , "setns"    , "setpe"      , "setpo"   , "setl"    , "setge"  , "setle" , "setg"  }; // New Set9
 const char *NewSet10	[16] = { "push fs"	, "pop fs"		, "cpuid"		, "bt"        , "shld"      , "shld"    , "???"     , "???"     , "push gs"  , "pop gs"   , "rsm"        , "bts"     , "shrd"    , "shrd"   , "fxsave", "imul"  }; // New Set10
-const char *NewSet10Ex	[8]  = { "fxsave"	, "fxrstor"		, "ldmxcsr"		, "stmxcsr"   , "???"       , "???"     , "???"     , "???" };                                                                                                     // New Set10 Extended (Opcode 0xAE)
+const char *NewSet10Ex	[8]  = { "fxsave"	, "fxrstor"		, "ldmxcsr"		, "stmxcsr"   , "xsave"     , "xrstor"  , "xsaveopt", "clflush" };                                                                                              // New Set10 Extended (Opcode 0xAE)
 const char *NewSet11	[16] = { "cmpxchg"	, "cmpxchg"		, "lss"			, "btr"       , "lfs"       , "lgs"     , "movzx"   , "movzx"   , "???"      , "???"      , "???"        , "btc"     , "bsf"     , "bsr"    , "movsx" , "movsx" }; // New Set11
 const char *NewSet12	[8]  = { "cmpeqps"	, "cmpltps"		, "cmpleps"		, "cmpunordps", "cmpneqps"  , "cmpnltps", "cmpnleps", "cmpordps" };                                                                                                // New Set12
 const char *NewSet12Ex	[8]  = { "cmpeqss"	, "cmpltss"		, "cmpless"		, "cmpunordss", "cmpneqss"  , "cmpnltss", "cmpnless", "cmpordss" };                                                                                                // New Set12 Extended (Prefix 0xF3)
@@ -679,8 +679,8 @@ void Mod_11_RM(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,char instructio
 
 					case 0xE0: strcpy_s(assembly,"feni");  break;
 					case 0xE1: strcpy_s(assembly,"fdisi"); break;
-					case 0xE2: strcpy_s(assembly,"fclex"); break;
-					case 0xE3: strcpy_s(assembly,"finit"); break;
+					case 0xE2: strcpy_s(assembly,"fnclex"); break;
+					case 0xE3: strcpy_s(assembly,"fninit"); break;
 
 					case 0xE4: case 0xE5: case 0xE6: case 0xE7: // (Invalid) Reserved instructions..???
 					{
@@ -3318,9 +3318,16 @@ int GetNewInstruction(BYTE Op,char *ASM,bool RegPrefix,char *Opcode, DWORD_PTR I
         }
         break;
 
+        // CET ENDBR / NOP hint (0F 1E xx)
+        case 0x1E:{
+            strcpy_s(Inst,"nop");
+            Found=3;
+        }
+        break;
+
         // Invalid Instructions!!
         case 0x19: case 0x1A: case 0x1B:
-        case 0x1C: case 0x1D: case 0x1E: case 0x04:
+        case 0x1C: case 0x1D: case 0x04:
         case 0x1F: case 0x0A: case 0x0C: case 0x24:
         case 0x36: case 0x37: case 0x25:
         case 0x39: case 0x3B:
@@ -3356,8 +3363,8 @@ int GetNewInstruction(BYTE Op,char *ASM,bool RegPrefix,char *Opcode, DWORD_PTR I
 
 		// 0F C7 XX [XX- has valid 0x08-0x0F]
 		case 0xC7:{
-			strcpy_s(Inst,"cmpxchg8b");
-			Found=4;
+			strcpy_s(Inst,"");
+			Found=0;
 		}
 		break;
         
@@ -3484,6 +3491,30 @@ void Mod_11_RM_EX(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,bool PrefixR
                 wsprintf(temp,"%04X",wOp);
                 break;
             }
+            // VMX instructions (0F 01 C1-C4)
+            if(m_Opcode==0xC1){ wsprintf(assembly,"vmcall");   SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem); wsprintf(temp,"%04X",wOp); break; }
+            if(m_Opcode==0xC2){ wsprintf(assembly,"vmlaunch"); SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem); wsprintf(temp,"%04X",wOp); break; }
+            if(m_Opcode==0xC3){ wsprintf(assembly,"vmresume"); SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem); wsprintf(temp,"%04X",wOp); break; }
+            if(m_Opcode==0xC4){ wsprintf(assembly,"vmxoff");   SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem); wsprintf(temp,"%04X",wOp); break; }
+            // XSAVE: XGETBV/XSETBV (0F 01 D0/D1)
+            if(m_Opcode==0xD0){ wsprintf(assembly,"xgetbv");   SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem); wsprintf(temp,"%04X",wOp); break; }
+            if(m_Opcode==0xD1){ wsprintf(assembly,"xsetbv");   SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem); wsprintf(temp,"%04X",wOp); break; }
+            // TSX: XEND/XTEST (0F 01 D5/D6)
+            if(m_Opcode==0xD5){ wsprintf(assembly,"xend");     SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem); wsprintf(temp,"%04X",wOp); break; }
+            if(m_Opcode==0xD6){ wsprintf(assembly,"xtest");    SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem); wsprintf(temp,"%04X",wOp); break; }
+            // SVM instructions (0F 01 D8-DF)
+            if(m_Opcode==0xD8){ wsprintf(assembly,"vmrun");    SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem); wsprintf(temp,"%04X",wOp); break; }
+            if(m_Opcode==0xD9){ wsprintf(assembly,"vmmcall");  SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem); wsprintf(temp,"%04X",wOp); break; }
+            if(m_Opcode==0xDA){ wsprintf(assembly,"vmload");   SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem); wsprintf(temp,"%04X",wOp); break; }
+            if(m_Opcode==0xDB){ wsprintf(assembly,"vmsave");   SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem); wsprintf(temp,"%04X",wOp); break; }
+            if(m_Opcode==0xDC){ wsprintf(assembly,"stgi");     SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem); wsprintf(temp,"%04X",wOp); break; }
+            if(m_Opcode==0xDD){ wsprintf(assembly,"clgi");     SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem); wsprintf(temp,"%04X",wOp); break; }
+            if(m_Opcode==0xDE){ wsprintf(assembly,"skinit");   SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem); wsprintf(temp,"%04X",wOp); break; }
+            if(m_Opcode==0xDF){ wsprintf(assembly,"invlpga");  SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem); wsprintf(temp,"%04X",wOp); break; }
+            // SWAPGS (0F 01 F8) - 64-bit only
+            if(m_Opcode==0xF8){ wsprintf(assembly,"swapgs");   SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem); wsprintf(temp,"%04X",wOp); break; }
+            // RDTSCP (0F 01 F9)
+            if(m_Opcode==0xF9){ wsprintf(assembly,"rdtscp");   SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem); wsprintf(temp,"%04X",wOp); break; }
 
             RM=REG32; // DEFAULT 32Bit
 			if(REG>=4 && REG<=6){ // USES 32bit
@@ -3500,6 +3531,25 @@ void Mod_11_RM_EX(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,bool PrefixR
 			if(REG==5){
                 lstrcat((*Disasm)->Remarks,";Invalid Instruction");
 			}
+        }
+        break;
+
+        case 0x1E:{ // CET: ENDBR64 (0F 1E FA), ENDBR32 (0F 1E FB)
+            if(RepPrefix==0xF3 && m_Opcode==0xFB){
+                wsprintf(assembly,"endbr32");
+                strcpy_s((*Disasm)->Assembly,"");
+                m_OpcodeSize++;
+            }
+            else if(RepPrefix==0xF3 && m_Opcode==0xFA){
+                wsprintf(assembly,"endbr64");
+                strcpy_s((*Disasm)->Assembly,"");
+                m_OpcodeSize++;
+            }
+            else{
+                wsprintf(assembly,"nop %s",regs[RM][reg2]);
+            }
+            SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
+            wsprintf(temp,"%04X",wOp);
         }
         break;
 
@@ -3582,8 +3632,11 @@ void Mod_11_RM_EX(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,bool PrefixR
         }
         break;
 
-        case 0x13:{ // MOVLPS
-            wsprintf(assembly,"movlps %s, %s",MMXRegs[reg2],MMXRegs[reg1]);
+        case 0x13:{ // MOVLPS / MOVLPD (66)
+            if(PrefixReg)
+                wsprintf(assembly,"movlpd %s, %s",MMXRegs[reg2],MMXRegs[reg1]);
+            else
+                wsprintf(assembly,"movlps %s, %s",MMXRegs[reg2],MMXRegs[reg1]);
             SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
             wsprintf(temp,"%04X",wOp);
         }
@@ -3948,22 +4001,50 @@ void Mod_11_RM_EX(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,bool PrefixR
         }
         break;
 
+        case 0xBC:{ // BSF or TZCNT (F3 0F BC)
+            if(RepPrefix==0xF3){
+                wsprintf(assembly,"tzcnt %s,%s",regs[RM][reg1],regs[RM][reg2]);
+                strcpy_s((*Disasm)->Assembly,"");
+                m_OpcodeSize++;
+            }
+            else{
+                wsprintf(assembly,"%s %s,%s",NewSet11[Op&0x0F],regs[RM][reg1],regs[RM][reg2]);
+            }
+            SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
+            wsprintf(temp,"%04X",wOp);
+        }
+        break;
+
+        case 0xBD:{ // BSR or LZCNT (F3 0F BD)
+            if(RepPrefix==0xF3){
+                wsprintf(assembly,"lzcnt %s,%s",regs[RM][reg1],regs[RM][reg2]);
+                strcpy_s((*Disasm)->Assembly,"");
+                m_OpcodeSize++;
+            }
+            else{
+                wsprintf(assembly,"%s %s,%s",NewSet11[Op&0x0F],regs[RM][reg1],regs[RM][reg2]);
+            }
+            SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
+            wsprintf(temp,"%04X",wOp);
+        }
+        break;
+
         case 0xB2:case 0xB4:case 0xB5:
-        case 0xB6:case 0xB7:case 0xBC: 
-        case 0xBD:case 0xBE:case 0xBF:
+        case 0xB6:case 0xB7:
+        case 0xBE:case 0xBF:
         {
           BYTE reg=Op&0x0F;
           int RM2=REG32; // default
-          
+
 		  if(reg==0x06 || reg==0x0E){
               RM2=REG8;
 		  }
-          
+
 		  if(reg==0x07 || reg==0x0F){
               RM2=REG16;
 		  }
-          
-          wsprintf(assembly,"%s %s,%s",NewSet11[Op&0x0F],regs[RM][reg1],regs[RM2][reg2]); 
+
+          wsprintf(assembly,"%s %s,%s",NewSet11[Op&0x0F],regs[RM][reg1],regs[RM2][reg2]);
           SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
           wsprintf(temp,"%04X",wOp);
         }
@@ -4059,6 +4140,22 @@ void Mod_11_RM_EX(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,bool PrefixR
             wsprintf(temp,"%04X %02X",wOp,(BYTE)(*(*Opcode+Pos+2)));
             (*(*index))++;
             m_OpcodeSize++;
+        }
+        break;
+
+        case 0xC7:{ // RDRAND (REG==6) / RDSEED (REG==7) - register form
+            if(REG==6){
+                wsprintf(assembly,"rdrand %s",regs[RM][reg2]);
+            }
+            else if(REG==7){
+                wsprintf(assembly,"rdseed %s",regs[RM][reg2]);
+            }
+            else{
+                strcpy_s(assembly,"???");
+                lstrcat((*Disasm)->Remarks,";Invalid Instruction");
+            }
+            SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
+            wsprintf(temp,"%04X",wOp);
         }
         break;
 
@@ -4845,7 +4942,13 @@ void Mod_RM_SIB_EX(
 						}
                     }
                     break; // MOVUPS/MOVSS/MOVSD/MOVUPD
-                    case 0x13: wsprintf(temp,"movlps %s,%s",tempMeme,MMXRegs[REG]); break; // MOVLPS
+                    case 0x13:{
+                        if(PrefixReg)
+                            wsprintf(temp,"movlpd %s,%s",tempMeme,MMXRegs[REG]);
+                        else
+                            wsprintf(temp,"movlps %s,%s",tempMeme,MMXRegs[REG]);
+                    }
+                    break; // MOVLPS/MOVLPD
                     case 0x17: wsprintf(temp,"movhps %s,%s",tempMeme,MMXRegs[REG]); break; // MOVHPS
                     case 0x29:{
                         if(PrefixReg)
@@ -5161,18 +5264,35 @@ void Mod_RM_SIB_EX(
                     }
                     break; // MIX
 
-                    case 0xAE:{ // FXSAVE
+                    case 0xAE:{ // FXSAVE/XSAVE/etc
                         wsprintf(temp,"%s %s",NewSet10Ex[REG],tempMeme);
-						if(REG>3){ // Check for Invalid
-                            lstrcat((*Disasm)->Remarks,"Invalid Instruction");
-						}
                     }
                     break;
                     case 0xAF:wsprintf(temp,"%s %s,%s",NewSet10[Op&0x0F],regs[RM][REG],tempMeme);break;
                     
+                    case 0xBC:{ // BSF or TZCNT (F3 0F BC)
+                        if(RepPrefix==0xF3){
+                            wsprintf(temp,"tzcnt %s,%s",regs[RM][REG],tempMeme);
+                            strcpy_s((*Disasm)->Assembly,"");
+                            (*Disasm)->OpcodeSize++;
+                        } else {
+                            wsprintf(temp,"%s %s,%s",NewSet11[Op&0x0F],regs[RM][REG],tempMeme);
+                        }
+                    }
+                    break;
+                    case 0xBD:{ // BSR or LZCNT (F3 0F BD)
+                        if(RepPrefix==0xF3){
+                            wsprintf(temp,"lzcnt %s,%s",regs[RM][REG],tempMeme);
+                            strcpy_s((*Disasm)->Assembly,"");
+                            (*Disasm)->OpcodeSize++;
+                        } else {
+                            wsprintf(temp,"%s %s,%s",NewSet11[Op&0x0F],regs[RM][REG],tempMeme);
+                        }
+                    }
+                    break;
                     case 0xB2:case 0xB4:case 0xB5:
-                    case 0xB6:case 0xB7:case 0xBC:
-                    case 0xBD:case 0xBE:case 0xBF:
+                    case 0xB6:case 0xB7:
+                    case 0xBE:case 0xBF:
                     {
                       wsprintf(temp,"%s %s,%s",NewSet11[Op&0x0F],regs[RM][REG],tempMeme);
                     }
@@ -5423,7 +5543,13 @@ void Mod_RM_SIB_EX(
 						}
                     }
                     break; // MOVUPS/MOVSS/MOVSD/MOVUPD
-                    case 0x13: wsprintf(tempMeme,"movlps %s,%s",menemonic,MMXRegs[reg2]); break; // MOVLPS
+                    case 0x13:{
+                        if(PrefixReg)
+                            wsprintf(tempMeme,"movlpd %s,%s",menemonic,MMXRegs[reg2]);
+                        else
+                            wsprintf(tempMeme,"movlps %s,%s",menemonic,MMXRegs[reg2]);
+                    }
+                    break; // MOVLPS/MOVLPD
                     case 0x17: wsprintf(tempMeme,"movhps %s,%s",menemonic,MMXRegs[reg2]); break; // MOVHPS
                     case 0x29:{
                         if(PrefixReg)
@@ -5743,16 +5869,33 @@ void Mod_RM_SIB_EX(
 
                     case 0xAE:{
                         wsprintf(tempMeme,"%s %s",NewSet10Ex[REG],menemonic);
-						if(REG>3){ // Check for Invalid
-                            lstrcat((*Disasm)->Remarks,";Invalid Instruction");
-						}
                     }
                     break;
                     case 0xAF:wsprintf(tempMeme,"%s %s,%s",NewSet10[Op&0x0F],regs[RM][reg2],menemonic);break;
 
+                    case 0xBC:{ // BSF or TZCNT (F3 0F BC)
+                        if(RepPrefix==0xF3){
+                            wsprintf(tempMeme,"tzcnt %s,%s",regs[RM][reg2],menemonic);
+                            strcpy_s((*Disasm)->Assembly,"");
+                            (*Disasm)->OpcodeSize++;
+                        } else {
+                            wsprintf(tempMeme,"%s %s,%s",NewSet11[Op&0x0F],regs[RM][reg2],menemonic);
+                        }
+                    }
+                    break;
+                    case 0xBD:{ // BSR or LZCNT (F3 0F BD)
+                        if(RepPrefix==0xF3){
+                            wsprintf(tempMeme,"lzcnt %s,%s",regs[RM][reg2],menemonic);
+                            strcpy_s((*Disasm)->Assembly,"");
+                            (*Disasm)->OpcodeSize++;
+                        } else {
+                            wsprintf(tempMeme,"%s %s,%s",NewSet11[Op&0x0F],regs[RM][reg2],menemonic);
+                        }
+                    }
+                    break;
                     case 0xB2:case 0xB4:case 0xB5:
-                    case 0xB6:case 0xB7:case 0xBC: 
-                    case 0xBD:case 0xBE:case 0xBF:
+                    case 0xB6:case 0xB7:
+                    case 0xBE:case 0xBF:
                     {
                         wsprintf(tempMeme,"%s %s,%s",NewSet11[Op&0x0F],regs[RM][reg2],menemonic);
                     }
@@ -5828,7 +5971,10 @@ void Mod_RM_SIB_EX(
                     break;
 
 					case 0xC7:{
-						wsprintf(tempMeme,"cmpxchg8b %s",menemonic);
+						if((*Disasm)->Mode64 && (*Disasm)->RexW)
+							wsprintf(tempMeme,"cmpxchg16b %s",menemonic);
+						else
+							wsprintf(tempMeme,"cmpxchg8b %s",menemonic);
 					}
 					break;
 
@@ -6216,7 +6362,13 @@ void Mod_RM_SIB_EX(
 						}
                     }
                     break; // MOVUPS/MOVSS/MOVSD/MOVUPD
-                    case 0x13: wsprintf(tempMeme,"movlps %s,%s",menemonic,MMXRegs[REG]); break; // MOVLPS
+                    case 0x13:{
+                        if(PrefixReg)
+                            wsprintf(tempMeme,"movlpd %s,%s",menemonic,MMXRegs[REG]);
+                        else
+                            wsprintf(tempMeme,"movlps %s,%s",menemonic,MMXRegs[REG]);
+                    }
+                    break; // MOVLPS/MOVLPD
                     case 0x17: wsprintf(tempMeme,"movhps %s,%s",menemonic,MMXRegs[REG]); break; // MOVHPS
                     case 0x29:{
                         if(PrefixReg)
@@ -6509,15 +6661,33 @@ void Mod_RM_SIB_EX(
 
                     case 0xAE:{
                         wsprintf(tempMeme,"%s %s",NewSet10Ex[REG],menemonic);
-                        if(REG>3)// Check for Invalid
-                            lstrcat((*Disasm)->Remarks,";Invalid Instruction");
                     }
                     break;
                     case 0xAF:wsprintf(tempMeme,"%s %s,%s",NewSet10[Op&0x0F],regs[RM][REG],menemonic);break;
 
+                    case 0xBC:{ // BSF or TZCNT (F3 0F BC)
+                        if(RepPrefix==0xF3){
+                            wsprintf(tempMeme,"tzcnt %s,%s",regs[RM][REG],menemonic);
+                            strcpy_s((*Disasm)->Assembly,"");
+                            (*Disasm)->OpcodeSize++;
+                        } else {
+                            wsprintf(tempMeme,"%s %s,%s",NewSet11[Op&0x0F],regs[RM][REG],menemonic);
+                        }
+                    }
+                    break;
+                    case 0xBD:{ // BSR or LZCNT (F3 0F BD)
+                        if(RepPrefix==0xF3){
+                            wsprintf(tempMeme,"lzcnt %s,%s",regs[RM][REG],menemonic);
+                            strcpy_s((*Disasm)->Assembly,"");
+                            (*Disasm)->OpcodeSize++;
+                        } else {
+                            wsprintf(tempMeme,"%s %s,%s",NewSet11[Op&0x0F],regs[RM][REG],menemonic);
+                        }
+                    }
+                    break;
                     case 0xB2:case 0xB4:case 0xB5:
-                    case 0xB6:case 0xB7:case 0xBC: 
-                    case 0xBD:case 0xBE:case 0xBF:
+                    case 0xB6:case 0xB7:
+                    case 0xBE:case 0xBF:
                     {
                      wsprintf(tempMeme,"%s %s,%s",NewSet11[Op&0x0F],regs[RM][REG],menemonic);
                     }
@@ -6835,11 +7005,35 @@ void Decode3ByteOpcode_0F38(
         // SSE4.2
         case 0x37: mnem = "pcmpgtq";   break;
 
-        // SSE4.2: CRC32 (F2 0F 38 F0/F1)
+        // SHA extensions
+        case 0xC8: mnem = "sha1nexte";   break;
+        case 0xC9: mnem = "sha1msg1";    break;
+        case 0xCA: mnem = "sha1msg2";    break;
+        case 0xCB: mnem = "sha256rnds2"; break;
+        case 0xCC: mnem = "sha256msg1";  break;
+        case 0xCD: mnem = "sha256msg2";  break;
+
+        // AES-NI (require 66 prefix)
+        case 0xDB: mnem = "aesimc";      break;
+        case 0xDC: mnem = "aesenc";      break;
+        case 0xDD: mnem = "aesenclast";  break;
+        case 0xDE: mnem = "aesdec";      break;
+        case 0xDF: mnem = "aesdeclast";  break;
+
+        // MOVBE / CRC32 (F2 0F 38 F0/F1)
         case 0xF0: case 0xF1:{
             if(RepPrefix==0xF2){
                 mnem = "crc32";
+            } else {
+                mnem = "movbe";
             }
+            break;
+        }
+
+        // ADCX (66 0F 38 F6) / ADOX (F3 0F 38 F6)
+        case 0xF6:{
+            if(Has66) mnem = "adcx";
+            else if(RepPrefix==0xF3) mnem = "adox";
             break;
         }
 
@@ -6872,6 +7066,16 @@ void Decode3ByteOpcode_0F38(
         regSet = Regs3DNow; // MM registers (SSSE3 MMX form)
     }
 
+    // SHA extensions always use XMM registers regardless of 66 prefix
+    if(ThirdByte >= 0xC8 && ThirdByte <= 0xCD){
+        regSet = MMXRegs;
+    }
+
+    // Check if this instruction uses GPR operands
+    bool usesGPR38 = false;
+    if((ThirdByte == 0xF0 || ThirdByte == 0xF1) && RepPrefix!=0xF2) usesGPR38 = true; // MOVBE
+    if(ThirdByte == 0xF6) usesGPR38 = true; // ADCX/ADOX
+
     if(MOD == 0x03){ // Register-register form
         // CRC32 special: GPR operands
         if(ThirdByte == 0xF0 && RepPrefix==0xF2){
@@ -6884,9 +7088,20 @@ void Decode3ByteOpcode_0F38(
             strcpy_s((*Disasm)->Assembly,"");
             m_OpcodeSize++;
         }
+        else if(ThirdByte == 0xF0 && RepPrefix!=0xF2){ // MOVBE r, r/m (load)
+            wsprintf(assembly,"%s %s, %s",mnem,regs[REG32][REG],regs[REG32][RM]);
+        }
+        else if(ThirdByte == 0xF1 && RepPrefix!=0xF2){ // MOVBE r/m, r (store)
+            wsprintf(assembly,"%s %s, %s",mnem,regs[REG32][RM],regs[REG32][REG]);
+        }
+        else if(ThirdByte == 0xF6){ // ADCX/ADOX r, r/m
+            wsprintf(assembly,"%s %s, %s",mnem,regs[REG32][REG],regs[REG32][RM]);
+            if(Has66) strcpy_s((*Disasm)->Assembly,"");
+            else if(RepPrefix==0xF3){ strcpy_s((*Disasm)->Assembly,""); m_OpcodeSize++; }
+        }
         else{
-            // Implicit xmm0 for blendv instructions
-            if(ThirdByte == 0x10 || ThirdByte == 0x14 || ThirdByte == 0x15){
+            // Implicit xmm0 for blendv / sha256rnds2 instructions
+            if(ThirdByte == 0x10 || ThirdByte == 0x14 || ThirdByte == 0x15 || ThirdByte == 0xCB){
                 wsprintf(assembly,"%s %s, %s, xmm0",mnem,regSet[REG],regSet[RM]);
             } else {
                 wsprintf(assembly,"%s %s, %s",mnem,regSet[REG],regSet[RM]);
@@ -6897,29 +7112,132 @@ void Decode3ByteOpcode_0F38(
         lstrcat((*Disasm)->Opcode,temp);
         (*(*index))+=2;
     }
-    else{ // Memory form - simplified: just show ModRM byte and mnemonic
-        // For memory forms, show reg, [memory] format
+    else{ // Memory form - decode ModRM memory operand
+        DWORD_PTR dwOp=0, dwMem=0;
+        char memStr[128]="";
+        char opcExtra[64]="";
+        int segOvr = SEG;
+
+        // Segment override for EBP base with MOD=01/02
+        if(RM==REG_EBP && MOD!=0 && !PrefixSeg)
+            segOvr = SEG_SS;
+
+        // Decode memory operand into memStr, format extra opcode bytes into opcExtra
+        if(MOD == 0x00){
+            if(RM == 0x05){ // [disp32]
+                SwapDword((BYTE*)(*Opcode+pos+3),&dwOp,&dwMem);
+                wsprintf(memStr,"%s:[%08Xh]",segs[segOvr],dwMem);
+                wsprintf(opcExtra,"%08X",dwOp);
+            }
+            else if(RM == 0x04){ // SIB
+                BYTE sib = (BYTE)(*(*Opcode+pos+3));
+                BYTE sibIdx   = (sib>>3)&0x07;
+                BYTE sibBase  = sib&0x07;
+                BYTE sibScale = (sib>>6)&0x03;
+                const char *scStr = Scale[sibScale+1]; // "+","*2+","*4+","*8+"
+
+                if(sibBase == REG_EBP){ // base=5 + MOD=00 -> disp32
+                    SwapDword((BYTE*)(*Opcode+pos+4),&dwOp,&dwMem);
+                    wsprintf(opcExtra,"%02X%08X",sib,dwOp);
+                    if(sibIdx == REG_ESP) // no index
+                        wsprintf(memStr,"%s:[%08Xh]",segs[segOvr],dwMem);
+                    else
+                        wsprintf(memStr,"%s:[%s%s%08Xh]",segs[segOvr],regs[REG32][sibIdx],scStr,dwMem);
+                }
+                else{
+                    if(sibBase==REG_ESP && !PrefixSeg) segOvr=SEG_SS;
+                    wsprintf(opcExtra,"%02X",sib);
+                    if(sibIdx == REG_ESP) // no index
+                        wsprintf(memStr,"%s:[%s]",segs[segOvr],regs[REG32][sibBase]);
+                    else
+                        wsprintf(memStr,"%s:[%s%s%s]",segs[segOvr],regs[REG32][sibIdx],scStr,regs[REG32][sibBase]);
+                }
+            }
+            else{ // [reg]
+                wsprintf(memStr,"%s:[%s]",segs[segOvr],regs[REG32][RM]);
+            }
+        }
+        else if(MOD == 0x01){ // [reg+disp8]
+            if(RM == 0x04){ // SIB + disp8
+                BYTE sib = (BYTE)(*(*Opcode+pos+3));
+                BYTE sibIdx   = (sib>>3)&0x07;
+                BYTE sibBase  = sib&0x07;
+                BYTE sibScale = (sib>>6)&0x03;
+                BYTE disp8    = (BYTE)(*(*Opcode+pos+4));
+                const char *scStr = Scale[sibScale+1];
+                char dsign[4]="+"; BYTE dval=disp8;
+                if(disp8>0x7F){ strcpy_s(dsign,"-"); dval=(BYTE)(0x100-disp8); }
+                if((sibBase==REG_EBP||sibBase==REG_ESP) && !PrefixSeg) segOvr=SEG_SS;
+                wsprintf(opcExtra,"%02X%02X",sib,disp8);
+                if(sibIdx == REG_ESP)
+                    wsprintf(memStr,"%s:[%s%s%02Xh]",segs[segOvr],regs[REG32][sibBase],dsign,dval);
+                else
+                    wsprintf(memStr,"%s:[%s%s%s%s%02Xh]",segs[segOvr],regs[REG32][sibIdx],scStr,regs[REG32][sibBase],dsign,dval);
+            }
+            else{ // [reg+disp8]
+                BYTE disp8 = (BYTE)(*(*Opcode+pos+3));
+                char dsign[4]="+"; BYTE dval=disp8;
+                if(disp8>0x7F){ strcpy_s(dsign,"-"); dval=(BYTE)(0x100-disp8); }
+                wsprintf(memStr,"%s:[%s%s%02Xh]",segs[segOvr],regs[REG32][RM],dsign,dval);
+                wsprintf(opcExtra,"%02X",disp8);
+            }
+        }
+        else if(MOD == 0x02){ // [reg+disp32]
+            if(RM == 0x04){ // SIB + disp32
+                BYTE sib = (BYTE)(*(*Opcode+pos+3));
+                BYTE sibIdx   = (sib>>3)&0x07;
+                BYTE sibBase  = sib&0x07;
+                BYTE sibScale = (sib>>6)&0x03;
+                const char *scStr = Scale[sibScale+1];
+                SwapDword((BYTE*)(*Opcode+pos+4),&dwOp,&dwMem);
+                if((sibBase==REG_EBP||sibBase==REG_ESP) && !PrefixSeg) segOvr=SEG_SS;
+                char tmp2[16]; wsprintf(tmp2,"%08X",dwOp);
+                wsprintf(opcExtra,"%02X",sib);
+                lstrcat(opcExtra,tmp2);
+                if(sibIdx == REG_ESP)
+                    wsprintf(memStr,"%s:[%s+%08Xh]",segs[segOvr],regs[REG32][sibBase],dwMem);
+                else
+                    wsprintf(memStr,"%s:[%s%s%s+%08Xh]",segs[segOvr],regs[REG32][sibIdx],scStr,regs[REG32][sibBase],dwMem);
+            }
+            else{ // [reg+disp32]
+                SwapDword((BYTE*)(*Opcode+pos+3),&dwOp,&dwMem);
+                wsprintf(memStr,"%s:[%s+%08Xh]",segs[segOvr],regs[REG32][RM],dwMem);
+                wsprintf(opcExtra,"%08X",dwOp);
+            }
+        }
+
+        // Build instruction assembly using decoded memStr
         if(ThirdByte == 0xF0 && RepPrefix==0xF2){
-            wsprintf(assembly,"%s %s, byte ptr [...]",mnem,regs[REG32][REG]);
+            wsprintf(assembly,"%s %s, byte ptr %s",mnem,regs[REG32][REG],memStr);
             strcpy_s((*Disasm)->Assembly,"");
             m_OpcodeSize++;
         }
         else if(ThirdByte == 0xF1 && RepPrefix==0xF2){
-            wsprintf(assembly,"%s %s, %s ptr [...]",mnem,regs[REG32][REG],Has66?"word":"dword");
+            wsprintf(assembly,"%s %s, %s ptr %s",mnem,regs[REG32][REG],Has66?"word":"dword",memStr);
             strcpy_s((*Disasm)->Assembly,"");
             m_OpcodeSize++;
         }
-        else if(ThirdByte == 0x10 || ThirdByte == 0x14 || ThirdByte == 0x15){
-            wsprintf(assembly,"%s %s, %s, xmm0",mnem,regSet[REG],regSet[RM]);
+        else if(usesGPR38){ // MOVBE, ADCX, ADOX - GPR operands
+            if(ThirdByte == 0xF1) // MOVBE store: m, r
+                wsprintf(assembly,"%s dword ptr %s, %s",mnem,memStr,regs[REG32][REG]);
+            else // MOVBE load / ADCX / ADOX: r, m
+                wsprintf(assembly,"%s %s, dword ptr %s",mnem,regs[REG32][REG],memStr);
+            if(Has66 || RepPrefix==0xF3) strcpy_s((*Disasm)->Assembly,"");
+            if(RepPrefix==0xF3) m_OpcodeSize++;
+        }
+        else if(ThirdByte == 0x10 || ThirdByte == 0x14 || ThirdByte == 0x15 || ThirdByte == 0xCB){
+            wsprintf(assembly,"%s %s, %s, xmm0",mnem,regSet[REG],memStr);
         }
         else{
-            wsprintf(assembly,"%s %s, %s",mnem,regSet[REG],regSet[RM]);
+            wsprintf(assembly,"%s %s, %s",mnem,regSet[REG],memStr);
         }
 
+        // Append ModRM byte + SIB/displacement opcode bytes
         wsprintf(temp,"%02X",ModRM);
         lstrcat((*Disasm)->Opcode,temp);
+        if(opcExtra[0]) lstrcat((*Disasm)->Opcode,opcExtra);
 
-        // Handle displacement based on MOD
+        // Advance index and opcode size for displacement bytes
         if(MOD == 0x00){
             if(RM == 0x05){ // disp32
                 (*(*index))+=4;
@@ -6952,6 +7270,9 @@ void Decode3ByteOpcode_0F38(
         strcpy_s((*Disasm)->Assembly,""); // clear 66 prefix mnemonic
     }
     if(RepPrefix==0xF2){
+        strcpy_s((*Disasm)->Assembly,""); // clear rep prefix mnemonic
+    }
+    if(RepPrefix==0xF3){
         strcpy_s((*Disasm)->Assembly,""); // clear rep prefix mnemonic
     }
 
@@ -7010,11 +7331,17 @@ void Decode3ByteOpcode_0F3A(
         case 0x41: mnem = "dppd";      break;
         case 0x42: mnem = "mpsadbw";   break;
 
+        // PCLMULQDQ (66 0F 3A 44)
+        case 0x44: mnem = "pclmulqdq"; break;
+
         // SSE4.2
         case 0x60: mnem = "pcmpestrm"; break;
         case 0x61: mnem = "pcmpestri"; break;
         case 0x62: mnem = "pcmpistrm"; break;
         case 0x63: mnem = "pcmpistri"; break;
+
+        // AESKEYGENASSIST (66 0F 3A DF)
+        case 0xDF: mnem = "aeskeygenassist"; break;
 
         default: mnem = NULL; break;
     }
@@ -7189,6 +7516,7 @@ void DecodeVEX(
             case 0x45: baseMnem = W?(pp==1?"kord":"korq"):(pp==1?"korb":"korw"); break;
             case 0x46: baseMnem = W?(pp==1?"kxnord":"kxnorq"):(pp==1?"kxnorb":"kxnorw"); break;
             case 0x47: baseMnem = W?(pp==1?"kxord":"kxorq"):(pp==1?"kxorb":"kxorw"); break;
+            case 0x4A: baseMnem = W?(pp==1?"kaddd":"kaddq"):(pp==1?"kaddb":"kaddw"); break;
             case 0x4B: baseMnem = (pp==1)?"kunpckbw":"kunpckwd"; break;
             case 0x16: baseMnem = (pp==2)?"movshdup":(pp==1)?"movhpd":"movlhps"; break;
             case 0x17: baseMnem = (pp==1)?"movhpd":"movhps"; break;
@@ -7402,6 +7730,37 @@ void DecodeVEX(
             case 0xBD: baseMnem = W ? "fnmadd231sd" : "fnmadd231ss"; break;
             case 0xBE: baseMnem = W ? "fnmsub231pd" : "fnmsub231ps"; break;
             case 0xBF: baseMnem = W ? "fnmsub231sd" : "fnmsub231ss"; break;
+            // F16C: vcvtph2ps (VEX.256/128.66.0F38.W0 13)
+            case 0x13: if(pp==1) baseMnem = "cvtph2ps"; break;
+            // BMI1: ANDN (VEX.NDS.LZ.0F38.W0/W1 F2)
+            case 0xF2: if(pp==0) baseMnem = "andn"; break;
+            // BMI1: BLSI/BLSMSK/BLSR (VEX.NDD.LZ.0F38.W0/W1 F3 /reg)
+            case 0xF3:{
+                if(pp==0){
+                    BYTE regField = (ModRM >> 3) & 0x07;
+                    if(regField==1) baseMnem = "blsr";
+                    else if(regField==2) baseMnem = "blsmsk";
+                    else if(regField==3) baseMnem = "blsi";
+                }
+                break;
+            }
+            // BMI2: BZHI (pp=0), PDEP (pp=3/F2), PEXT (pp=2/F3) — opcode F5
+            case 0xF5:{
+                if(pp==0) baseMnem = "bzhi";
+                else if(pp==3) baseMnem = "pdep";
+                else if(pp==2) baseMnem = "pext";
+                break;
+            }
+            // BMI2: MULX (F2), opcode F6
+            case 0xF6: if(pp==3) baseMnem = "mulx"; break;
+            // BMI1: BEXTR (pp=0), BMI2: SARX (pp=2/F3), SHLX (pp=1/66), SHRX (pp=3/F2) — opcode F7
+            case 0xF7:{
+                if(pp==0) baseMnem = "bextr";
+                else if(pp==2) baseMnem = "sarx";
+                else if(pp==1) baseMnem = "shlx";
+                else if(pp==3) baseMnem = "shrx";
+                break;
+            }
             default: baseMnem = NULL; break;
         }
     }
@@ -7449,6 +7808,10 @@ void DecodeVEX(
             case 0x61: baseMnem = "pcmpestri"; break;
             case 0x62: baseMnem = "pcmpistrm"; break;
             case 0x63: baseMnem = "pcmpistri"; break;
+            // F16C: vcvtps2ph (VEX.256/128.66.0F3A.W0 1D)
+            case 0x1D: if(pp==1) baseMnem = "cvtps2ph"; break;
+            // BMI2: RORX (VEX.LZ.F2.0F3A.W0/W1 F0)
+            case 0xF0: if(pp==3) baseMnem = "rorx"; break;
             default: baseMnem = NULL; break;
         }
     }
@@ -7471,11 +7834,31 @@ void DecodeVEX(
     strcpy_s((*Disasm)->Assembly,"");
 
     // Build the AVX mnemonic with "v" prefix (K-register ops already have 'k' prefix)
+    // BMI1/BMI2 instructions don't get "v" prefix
     char avxMnem[64];
+    bool isBMI = false;
+    if(mmmmm == 2 && (OpByte >= 0xF2 && OpByte <= 0xF7)){
+        // BMI1/BMI2 instructions use GPR, no "v" prefix
+        isBMI = true;
+    }
+    // RORX in map 3
+    if(mmmmm == 3 && OpByte == 0xF0 && pp == 3){
+        isBMI = true;
+    }
+
     if(baseMnem[0] == 'k')
+        wsprintf(avxMnem,"%s",baseMnem);
+    else if(isBMI)
         wsprintf(avxMnem,"%s",baseMnem);
     else
         wsprintf(avxMnem,"v%s",baseMnem);
+
+    // For BMI instructions, use GPR register set
+    int gprSize = W ? REG64 : REG32;
+    if(isBMI){
+        dstRegs = NULL; // signal to use regs[][] below
+        srcRegs = NULL;
+    }
 
     // Format operands - 3-operand form: vop dest, vvvv, src
     // Some instructions don't use vvvv (moves, converts, etc.)
@@ -7496,7 +7879,66 @@ void DecodeVEX(
         }
     }
 
-    if(MOD == 0x03){ // reg,reg form
+    if(isBMI){
+        // BMI instructions: use GPR registers
+        // Most BMI: dest=REG, src1=vvvv, src2=RM (3-operand)
+        // BLSI/BLSMSK/BLSR: dest=vvvv, src=RM (2-operand, vvvv is dest)
+        // BEXTR/BZHI: dest=REG, src1=RM, src2=vvvv (different order)
+        if(mmmmm==2 && OpByte==0xF3 && pp==0){
+            // BLSI/BLSMSK/BLSR: vvvv = dest, RM = src
+            if(MOD == 0x03)
+                wsprintf(assembly,"%s %s, %s",avxMnem,regs[gprSize][vvvv&0x0F],regs[gprSize][RM&0x0F]);
+            else
+                wsprintf(assembly,"%s %s, [...]",avxMnem,regs[gprSize][vvvv&0x0F]);
+        }
+        else if(mmmmm==2 && (OpByte==0xF7 && pp==0)){ // BEXTR: dest=REG, src1=RM, src2=vvvv
+            if(MOD == 0x03)
+                wsprintf(assembly,"%s %s, %s, %s",avxMnem,regs[gprSize][REG&0x0F],regs[gprSize][RM&0x0F],regs[gprSize][vvvv&0x0F]);
+            else
+                wsprintf(assembly,"%s %s, [...], %s",avxMnem,regs[gprSize][REG&0x0F],regs[gprSize][vvvv&0x0F]);
+        }
+        else if(mmmmm==2 && OpByte==0xF5 && pp==0){ // BZHI: dest=REG, src1=RM, src2=vvvv
+            if(MOD == 0x03)
+                wsprintf(assembly,"%s %s, %s, %s",avxMnem,regs[gprSize][REG&0x0F],regs[gprSize][RM&0x0F],regs[gprSize][vvvv&0x0F]);
+            else
+                wsprintf(assembly,"%s %s, [...], %s",avxMnem,regs[gprSize][REG&0x0F],regs[gprSize][vvvv&0x0F]);
+        }
+        else if(mmmmm==2 && (OpByte==0xF7 && pp!=0)){ // SARX/SHLX/SHRX: dest=REG, src1=RM, src2=vvvv
+            if(MOD == 0x03)
+                wsprintf(assembly,"%s %s, %s, %s",avxMnem,regs[gprSize][REG&0x0F],regs[gprSize][RM&0x0F],regs[gprSize][vvvv&0x0F]);
+            else
+                wsprintf(assembly,"%s %s, [...], %s",avxMnem,regs[gprSize][REG&0x0F],regs[gprSize][vvvv&0x0F]);
+        }
+        else if(mmmmm==3 && OpByte==0xF0 && pp==3){ // RORX: dest=REG, src=RM (imm8 handled later)
+            if(MOD == 0x03)
+                wsprintf(assembly,"%s %s, %s",avxMnem,regs[gprSize][REG&0x0F],regs[gprSize][RM&0x0F]);
+            else
+                wsprintf(assembly,"%s %s, [...]",avxMnem,regs[gprSize][REG&0x0F]);
+            needsVVVV = false;
+        }
+        else{
+            // Default BMI: dest=REG, src1=vvvv, src2=RM (ANDN, PDEP, PEXT, MULX)
+            if(MOD == 0x03)
+                wsprintf(assembly,"%s %s, %s, %s",avxMnem,regs[gprSize][REG&0x0F],regs[gprSize][vvvv&0x0F],regs[gprSize][RM&0x0F]);
+            else
+                wsprintf(assembly,"%s %s, %s, [...]",avxMnem,regs[gprSize][REG&0x0F],regs[gprSize][vvvv&0x0F]);
+        }
+
+        // Handle memory displacement for BMI
+        if(MOD != 0x03){
+            if(MOD == 0x00){
+                if((RM&0x07) == 0x05){ m_OpcodeSize+=4; }
+                else if((RM&0x07) == 0x04){ m_OpcodeSize++; }
+            }
+            else if(MOD == 0x01){ m_OpcodeSize++;
+                if((RM&0x07) == 0x04){ m_OpcodeSize++; }
+            }
+            else if(MOD == 0x02){ m_OpcodeSize+=4;
+                if((RM&0x07) == 0x04){ m_OpcodeSize++; }
+            }
+        }
+    }
+    else if(MOD == 0x03){ // reg,reg form
         if(needsVVVV && vvvv < 16){
             wsprintf(assembly,"%s %s, %s, %s",avxMnem,dstRegs[REG&0x0F],dstRegs[vvvv],srcRegs[RM&0x0F]);
         } else {
