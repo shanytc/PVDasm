@@ -9,3 +9,4 @@ Backups
 tests/*.bin
 tests/*.asm
 tests/*.lst
+__pycache__/

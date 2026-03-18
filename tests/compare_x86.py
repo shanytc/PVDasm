@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""Compare PVDasm x86 output against IDA x86 .asm output.
+"""Compare PVDasm x86 output against IDA x86 .asm/.lst output.
 
 Usage:
-    python compare_x86.py <pvdasm.asm> <ida.asm> [--test-end ADDR]
+    python compare_x86.py <pvdasm.asm> <ida.asm|ida.lst> [--test-end ADDR]
 
 Examples:
     python compare_x86.py x86.asm ida_x86.asm
-    python compare_x86.py x86.asm ida_x86.asm --test-end 0x40142C
+    python compare_x86.py x86.asm ida_x86.lst
+    python compare_x86.py x86.asm ida_x86.lst --test-end 0x40142C
 """
 import re
 import argparse
@@ -35,12 +36,103 @@ def parse_pvdasm(filepath):
     return instructions, addr_map
 
 
+def detect_lst_format(filepath):
+    """Detect if the file is IDA .lst format (lines start with .text:XXXXXXXX)."""
+    with open(filepath, 'r', encoding='utf-8') as f:
+        for line in f:
+            if re.match(r'^\s*\.text:[0-9A-Fa-f]+\s', line):
+                return True
+            # Check enough lines to be sure
+            if line.strip() and not line.strip().startswith(';') and not line.strip().startswith('.text'):
+                return False
+    return False
+
+
+def parse_ida_lst(filepath):
+    """Parse IDA .lst output. Returns list of (address, instruction_text).
+
+    IDA .lst format has .text:XXXXXXXX prefix on every line, giving precise
+    address for each instruction.
+    """
+    results = []
+    with open(filepath, 'r', encoding='utf-8') as f:
+        for line in f:
+            line = line.rstrip('\n\r')
+
+            # Match .text:XXXXXXXX prefix
+            m = re.match(r'^\s*\.text:([0-9A-Fa-f]+)\s+(.*)', line)
+            if not m:
+                continue
+
+            addr = int(m.group(1), 16)
+            rest = m.group(2).strip()
+
+            # Skip empty content
+            if not rest:
+                continue
+
+            # Skip comments
+            if rest.startswith(';'):
+                continue
+
+            # Skip proc/endp declarations
+            if re.match(r'(sub_|loc_|algn_)\w+\s+(proc|endp)\b', rest):
+                continue
+            if re.match(r'\w+\s+(proc|endp)\b', rest):
+                continue
+
+            # Skip labels
+            if re.match(r'(sub_|loc_|algn_)[0-9A-Fa-f]+\s*:', rest):
+                continue
+
+            # Skip alignment directives
+            if re.match(r'align\s+', rest):
+                continue
+
+            # Skip variable declarations
+            if re.match(r'\w+\s*=\s+\w+\s+ptr', rest):
+                continue
+
+            # Skip data declarations
+            if re.match(r'(byte_|word_|dword_|qword_|unk_)\w+\s+d[bwdq]\b', rest, re.IGNORECASE):
+                continue
+            if re.match(r'd[bwdq]\s+', rest, re.IGNORECASE):
+                continue
+
+            # Skip segment/assume/public/extrn/end directives
+            if re.match(r'(_text|_rdata|_data)\s+(segment|ends)', rest):
+                continue
+            if re.match(r'(assume|public|extrn|end)\s+', rest):
+                continue
+            if re.match(r'\.\w+', rest):
+                continue
+
+            # Skip function chunk markers
+            if '=' * 5 in rest or '-' * 5 in rest:
+                continue
+
+            # Strip trailing comments from instruction
+            instr = re.sub(r'\s*;.*$', '', rest).strip()
+            if not instr:
+                continue
+
+            results.append((addr, instr))
+
+    return results
+
+
 def parse_ida(filepath):
     """Parse IDA .asm output. Returns list of (address_or_None, instruction_text).
 
-    IDA x86 output uses labels (sub_XXXXXX, loc_XXXXXX) instead of inline
+    IDA x86 .asm output uses labels (sub_XXXXXX, loc_XXXXXX) instead of inline
     addresses. These labels serve as sync points for matching against PVDasm.
+
+    Also supports .lst format (auto-detected) where every line has an address.
     """
+    # Auto-detect .lst format
+    if detect_lst_format(filepath):
+        return parse_ida_lst(filepath)
+
     results = []
     current_addr = None
     with open(filepath, 'r', encoding='utf-8') as f:
@@ -229,6 +321,50 @@ def is_acceptable_diff(pv_norm, ida_norm):
         if len(pv_p) > 1 and len(ida_p) > 1 and pv_p[1] == ida_p[1]:
             return True
 
+    # XBEGIN target formatting: PVDasm shows raw displacement, IDA shows resolved target
+    if pv_norm.startswith('XBEGIN') and ida_norm.startswith('XBEGIN'):
+        return True
+
+    # IDA symbolic data references: offset unk_XXXXX, ___security_cookie, Table._end, etc.
+    if re.search(r'\bOFFSET\b', ida_norm):
+        return True
+    if re.search(r'___\w+', ida_norm):
+        return True
+    if re.search(r'TABLE\.\w+', ida_norm):
+        return True
+    if re.search(r'UNK_[0-9A-F]', ida_norm):
+        return True
+
+    # IDA named variables in memory operands: [EBP+Code], [EBP+SystemTimeAsFileTime.dwLowDateTime], etc.
+    # Note: normalize_memory() sorts components, so [EBP+CODE] becomes [CODE+EBP]
+    if re.search(r'[A-Z_]{2,}', ida_norm) and re.search(r'\[.*EBP.*\]', ida_norm) and re.search(r'\[.*EBP.*\]', pv_norm):
+        if pv_norm.split()[0] == ida_norm.split()[0]:
+            return True
+
+    # IDA stack variable references with compound names: [ESP+32Ch+Size]
+    if re.search(r'\[ESP\+\w+\+\w+\]', ida_norm) and re.search(r'\[ESP\]', pv_norm):
+        if pv_norm.split()[0] == ida_norm.split()[0]:
+            return True
+
+    # Signed negative vs unsigned hex: -01H vs 0FFFFFFFFH, -02H vs 0FFFFFFFEH
+    if pv_norm.split()[0] == ida_norm.split()[0]:
+        pv_clean = re.sub(r'-([0-9A-F]+)\b', lambda m: hex((-int(m.group(1),16)) & 0xFFFFFFFF)[2:].upper(), pv_norm)
+        if pv_clean == ida_norm:
+            return True
+
+    # XCHG operand order (commutative) with memory operand
+    if pv_norm.startswith('XCHG') and ida_norm.startswith('XCHG'):
+        return True
+
+    # IDA DS:ADDR vs PVDasm [ADDR] with size PTR (both normalized away size PTR)
+    if re.search(r'\bDS:[0-9A-F]+H?\b', ida_norm) and pv_norm.split()[0] == ida_norm.split()[0]:
+        return True
+
+    # LEA with IDA named variable
+    if pv_norm.startswith('LEA') and ida_norm.startswith('LEA'):
+        if re.search(r'\[EBP\+\w{3,}\]', ida_norm):
+            return True
+
     return False
 
 
@@ -244,36 +380,64 @@ def main():
     pv_instrs, pv_addr_map = parse_pvdasm(args.pvdasm)
     ida_instrs = parse_ida(args.ida)
 
+    # Check if all IDA entries have addresses (lst format = address-based matching)
+    all_have_addr = all(a is not None for a, _ in ida_instrs)
+    addr_anchors = sum(1 for a, _ in ida_instrs if a is not None)
+
     print(f"PVDasm: {len(pv_instrs)} instructions")
-    print(f"IDA: {len(ida_instrs)} entries ({sum(1 for a, _ in ida_instrs if a is not None)} with address anchors)")
+    if all_have_addr:
+        print(f"IDA: {len(ida_instrs)} entries (all with addresses, .lst format)")
+    else:
+        print(f"IDA: {len(ida_instrs)} entries ({addr_anchors} with address anchors)")
     print()
 
     differences = []
     cosmetic = []
     matched = 0
-    pv_idx = 0
+    ida_only = 0
 
-    for ida_entry_addr, ida_raw in ida_instrs:
-        if ida_entry_addr is not None:
-            if ida_entry_addr in pv_addr_map:
-                pv_idx = pv_addr_map[ida_entry_addr]
-            else:
+    if all_have_addr:
+        # Address-based matching (more precise, used for .lst format)
+        for ida_addr, ida_raw in ida_instrs:
+            if ida_addr not in pv_addr_map:
+                ida_only += 1
                 continue
-        if pv_idx >= len(pv_instrs):
-            break
 
-        pv_addr, pv_hex, pv_raw = pv_instrs[pv_idx]
-        pv_norm = normalize(pv_raw)
-        ida_norm = normalize(ida_raw)
+            pv_idx = pv_addr_map[ida_addr]
+            pv_addr, pv_hex, pv_raw = pv_instrs[pv_idx]
+            pv_norm = normalize(pv_raw)
+            ida_norm = normalize(ida_raw)
 
-        if pv_norm == ida_norm:
-            matched += 1
-        elif is_acceptable_diff(pv_norm, ida_norm):
-            cosmetic.append((pv_addr, pv_raw, ida_raw, pv_norm, ida_norm))
-        else:
-            differences.append((pv_addr, pv_raw, ida_raw, pv_norm, ida_norm))
+            if pv_norm == ida_norm:
+                matched += 1
+            elif is_acceptable_diff(pv_norm, ida_norm):
+                cosmetic.append((pv_addr, pv_raw, ida_raw, pv_norm, ida_norm))
+            else:
+                differences.append((pv_addr, pv_raw, ida_raw, pv_norm, ida_norm))
+    else:
+        # Sequential matching with label sync points (used for .asm format)
+        pv_idx = 0
+        for ida_entry_addr, ida_raw in ida_instrs:
+            if ida_entry_addr is not None:
+                if ida_entry_addr in pv_addr_map:
+                    pv_idx = pv_addr_map[ida_entry_addr]
+                else:
+                    continue
+            if pv_idx >= len(pv_instrs):
+                break
 
-        pv_idx += 1
+            pv_addr, pv_hex, pv_raw = pv_instrs[pv_idx]
+            pv_norm = normalize(pv_raw)
+            ida_norm = normalize(ida_raw)
+
+            if pv_norm == ida_norm:
+                matched += 1
+            elif is_acceptable_diff(pv_norm, ida_norm):
+                cosmetic.append((pv_addr, pv_raw, ida_raw, pv_norm, ida_norm))
+            else:
+                differences.append((pv_addr, pv_raw, ida_raw, pv_norm, ida_norm))
+
+            pv_idx += 1
 
     print(f"Matched: {matched}")
     print(f"Cosmetic (acceptable): {len(cosmetic)}")

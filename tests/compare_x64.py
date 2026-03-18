@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""Compare PVDasm x64 output against IDA x64 .asm output.
+"""Compare PVDasm x64 output against IDA x64 .asm/.lst output.
 
 Usage:
-    python compare_x64.py <pvdasm.asm> <ida.asm> [--test-end ADDR]
+    python compare_x64.py <pvdasm.asm> <ida.asm|ida.lst> [--test-end ADDR]
 
 Examples:
     python compare_x64.py x64.asm ida_x64.asm
-    python compare_x64.py x64.asm ida_x64.asm --test-end 0x140001200
+    python compare_x64.py x64.asm ida_x64.lst
+    python compare_x64.py x64.asm ida_x64.lst --test-end 0x140001200
 """
 import re
 import argparse
