@@ -308,6 +308,53 @@ __declspec(allocate(".opctest")) static const unsigned char x64_test_opcodes[] =
     /* RDSEED eax (no REX) (0F C7 F8) */
     0x0F, 0xC7, 0xF8,
 
+    /* ---- VMX Extended Instructions ---- */
+
+    /* VMREAD [rcx], rax (0F 78 01) - memory form, Bit_d=0 */
+    0x0F, 0x78, 0x01,
+
+    /* VMREAD rax, rcx (0F 78 C1) - register form: vmread eax, ecx */
+    0x0F, 0x78, 0xC1,
+
+    /* VMREAD r8, rcx (REX.B + 0F 78 C1) = 41 0F 78 C1 - extended reg */
+    0x41, 0x0F, 0x78, 0xC1,
+
+    /* VMWRITE rcx, rax (0F 79 C8) - register form: vmwrite ecx, eax */
+    0x0F, 0x79, 0xC8,
+
+    /* VMWRITE rax, [rcx] (0F 79 01) - memory form */
+    0x0F, 0x79, 0x01,
+
+    /* VMWRITE rax, r8 (REX.B + 0F 79 C0) = 41 0F 79 C0 - extended reg */
+    0x41, 0x0F, 0x79, 0xC0,
+
+    /* VMPTRLD [rcx] (NP 0F C7 /6 = 0F C7 31) */
+    0x0F, 0xC7, 0x31,
+
+    /* VMPTRLD [rax+10h] (NP 0F C7 70 10) - with disp8 */
+    0x0F, 0xC7, 0x70, 0x10,
+
+    /* VMPTRST [rcx] (NP 0F C7 /7 = 0F C7 39) */
+    0x0F, 0xC7, 0x39,
+
+    /* VMCLEAR [rcx] (66 0F C7 /6 = 66 0F C7 31) */
+    0x66, 0x0F, 0xC7, 0x31,
+
+    /* VMXON [rcx] (F3 0F C7 /6 = F3 0F C7 31) */
+    0xF3, 0x0F, 0xC7, 0x31,
+
+    /* INVEPT eax, [rcx] (66 0F 38 80 01) */
+    0x66, 0x0F, 0x38, 0x80, 0x01,
+
+    /* INVEPT eax, [rax+10h] (66 0F 38 80 40 10) - with disp8 */
+    0x66, 0x0F, 0x38, 0x80, 0x40, 0x10,
+
+    /* INVVPID eax, [rcx] (66 0F 38 81 01) */
+    0x66, 0x0F, 0x38, 0x81, 0x01,
+
+    /* INVVPID eax, [rax+10h] (66 0F 38 81 40 10) - with disp8 */
+    0x66, 0x0F, 0x38, 0x81, 0x40, 0x10,
+
     /* RET to prevent fallthrough into garbage */
     0xC3
 };

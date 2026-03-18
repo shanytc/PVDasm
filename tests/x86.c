@@ -696,6 +696,105 @@ __declspec(noinline) void test_endbr(void)
     }
 }
 
+/* ---- VMX extended instructions ---- */
+__declspec(noinline) void test_vmx_extended(void)
+{
+    __asm {
+        ; VMREAD eax, ecx (0F 78 C1) - register form
+        _emit 0x0F
+        _emit 0x78
+        _emit 0xC1  ; ModRM: mod=11 reg=0(eax) rm=1(ecx)
+
+        ; VMREAD edx, ebx (0F 78 DA) - register form
+        _emit 0x0F
+        _emit 0x78
+        _emit 0xDA  ; ModRM: mod=11 reg=3(ebx) rm=2(edx)
+
+        ; VMREAD [eax], ecx (0F 78 08) - memory form
+        _emit 0x0F
+        _emit 0x78
+        _emit 0x08  ; ModRM: mod=00 reg=1(ecx) rm=0([eax])
+
+        ; VMREAD [ecx+10h], edx (0F 78 51 10) - memory+disp8
+        _emit 0x0F
+        _emit 0x78
+        _emit 0x51  ; ModRM: mod=01 reg=2(edx) rm=1([ecx+disp8])
+        _emit 0x10
+
+        ; VMWRITE ecx, eax (0F 79 C8) - register form
+        _emit 0x0F
+        _emit 0x79
+        _emit 0xC8  ; ModRM: mod=11 reg=1(ecx) rm=0(eax)
+
+        ; VMWRITE ebx, edx (0F 79 D3) - register form
+        _emit 0x0F
+        _emit 0x79
+        _emit 0xD3  ; ModRM: mod=11 reg=2(edx) rm=3(ebx)
+
+        ; VMWRITE eax, [ecx] (0F 79 01) - memory form
+        _emit 0x0F
+        _emit 0x79
+        _emit 0x01  ; ModRM: mod=00 reg=0(eax) rm=1([ecx])
+
+        ; VMPTRLD [eax] (NP 0F C7 /6 mem) = 0F C7 30
+        _emit 0x0F
+        _emit 0xC7
+        _emit 0x30  ; ModRM: mod=00 reg=6 rm=0([eax])
+
+        ; VMPTRLD [ecx+08h] (0F C7 71 08) - memory+disp8
+        _emit 0x0F
+        _emit 0xC7
+        _emit 0x71  ; ModRM: mod=01 reg=6 rm=1([ecx+disp8])
+        _emit 0x08
+
+        ; VMPTRST [eax] (NP 0F C7 /7 mem) = 0F C7 38
+        _emit 0x0F
+        _emit 0xC7
+        _emit 0x38  ; ModRM: mod=00 reg=7 rm=0([eax])
+
+        ; VMCLEAR [eax] (66 0F C7 /6 mem) = 66 0F C7 30
+        _emit 0x66
+        _emit 0x0F
+        _emit 0xC7
+        _emit 0x30  ; ModRM: mod=00 reg=6 rm=0([eax])
+
+        ; VMXON [eax] (F3 0F C7 /6 mem) = F3 0F C7 30
+        _emit 0xF3
+        _emit 0x0F
+        _emit 0xC7
+        _emit 0x30  ; ModRM: mod=00 reg=6 rm=0([eax])
+
+        ; INVEPT eax, [ecx] (66 0F 38 80 01)
+        _emit 0x66
+        _emit 0x0F
+        _emit 0x38
+        _emit 0x80
+        _emit 0x01  ; ModRM: mod=00 reg=0(eax) rm=1([ecx])
+
+        ; INVEPT edx, [ebx] (66 0F 38 80 13)
+        _emit 0x66
+        _emit 0x0F
+        _emit 0x38
+        _emit 0x80
+        _emit 0x13  ; ModRM: mod=00 reg=2(edx) rm=3([ebx])
+
+        ; INVVPID eax, [ecx] (66 0F 38 81 01)
+        _emit 0x66
+        _emit 0x0F
+        _emit 0x38
+        _emit 0x81
+        _emit 0x01  ; ModRM: mod=00 reg=0(eax) rm=1([ecx])
+
+        ; INVVPID edx, [ebx+10h] (66 0F 38 81 53 10)
+        _emit 0x66
+        _emit 0x0F
+        _emit 0x38
+        _emit 0x81
+        _emit 0x53  ; ModRM: mod=01 reg=2(edx) rm=3([ebx+disp8])
+        _emit 0x10
+    }
+}
+
 /* ---- VEX-encoded: BMI1/BMI2 ---- */
 __declspec(noinline) void test_bmi(void)
 {
@@ -817,5 +916,6 @@ int main(void)
     test_adcx_adox();
     test_endbr();
     test_bmi();
+    test_vmx_extended();
     return 0;
 }

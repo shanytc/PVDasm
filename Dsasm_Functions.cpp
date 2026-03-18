@@ -3351,8 +3351,8 @@ int GetNewInstruction(BYTE Op,char *ASM,bool RegPrefix,char *Opcode, DWORD_PTR I
         case 0x36: case 0x37: case 0x25:
         case 0x39: case 0x3B:
         case 0x3C: case 0x3D: case 0x3E: case 0x3F:
-        case 0x78: case 0x26: case 0x27:
-        case 0x79: case 0x7A: case 0x7B:
+        case 0x26: case 0x27:
+        case 0x7A: case 0x7B:
         case 0xA6: case 0xA7:
         case 0xB9:
         case 0xF4: case 0xFF:{
@@ -4185,6 +4185,20 @@ void Mod_11_RM_EX(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,bool PrefixR
         }
         break;
 
+        case 0x78:{ // VMREAD r/m64, r64
+            wsprintf(assembly,"vmread %s,%s",regs[RM][reg2],regs[RM][reg1]);
+            SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
+            wsprintf(temp,"%04X",wOp);
+        }
+        break;
+
+        case 0x79:{ // VMWRITE r64, r/m64
+            wsprintf(assembly,"vmwrite %s,%s",regs[RM][reg1],regs[RM][reg2]);
+            SwapWord((BYTE*)(*Opcode+Pos),&wOp,&wMem);
+            wsprintf(temp,"%04X",wOp);
+        }
+        break;
+
         case 0xD7:{
             RM=REG32;
             if(PrefixReg)
@@ -4771,6 +4785,8 @@ void Mod_RM_SIB_EX(
       } 
       break; //512Byte / DWORD  (FXSAVE)
       case 0xAF:			{ Bit_d=1; Bit_w=1; strcpy_s(RSize,StringLen(regSize[1])+1,regSize[1]); }				break; // DWORD  (IMUL)
+      case 0x78:			{ Bit_d=0; Bit_w=1; strcpy_s(RSize,StringLen(regSize[1])+1,regSize[1]); }				break; // DWORD  (VMREAD)
+      case 0x79:			{ Bit_d=1; Bit_w=1; strcpy_s(RSize,StringLen(regSize[1])+1,regSize[1]); }				break; // DWORD  (VMWRITE)
       case 0xB0:			{ Bit_d=0; Bit_w=1; strcpy_s(RSize,StringLen(regSize[3])+1,regSize[3]); }				break; // BYTE   (CMPXCHG)
       case 0xB1: case 0xB3: case 0xBA: case 0xBB:{ Bit_d=0; Bit_w=1; strcpy_s(RSize,StringLen(regSize[1])+1,regSize[1]); }	break; // DWORD  (CMPXCHG/BT/BTC/BTR)
       case 0xB2: case 0xB4: case 0xB5:{ Bit_d=1; Bit_w=1; strcpy_s(RSize,StringLen(regSize[4])+1,regSize[4]); }	break; // FWORD  (LSS/LFS/LGS)
@@ -5094,6 +5110,8 @@ void Mod_RM_SIB_EX(
                         (*(*index))++;
                     }
                     break;
+
+                    case 0x78: wsprintf(temp,"vmread %s,%s",tempMeme,regs[RM][REG]); break; // VMREAD
 
                     case 0xC0:{
                         RM=REG8;
@@ -5456,6 +5474,39 @@ void Mod_RM_SIB_EX(
                     }
                     break;
 
+                    case 0x79: wsprintf(temp,"vmwrite %s,%s",regs[RM][REG],tempMeme); break; // VMWRITE
+
+                    case 0xC7:{ // CMPXCHG8B/16B / VMPTRLD / VMCLEAR / VMXON / VMPTRST
+                        BYTE regField = REG & 0x07;
+                        if(regField==1){
+                            if((*Disasm)->Mode64 && (*Disasm)->RexW)
+                                wsprintf(temp,"cmpxchg16b %s",tempMeme);
+                            else
+                                wsprintf(temp,"cmpxchg8b %s",tempMeme);
+                        }
+                        else if(regField==6){
+                            if(RepPrefix==0xF3){
+                                wsprintf(temp,"vmxon %s",tempMeme);
+                                strcpy_s((*Disasm)->Assembly,"");
+                                (*Disasm)->OpcodeSize++;
+                            }
+                            else if(PrefixReg){
+                                wsprintf(temp,"vmclear %s",tempMeme);
+                            }
+                            else{
+                                wsprintf(temp,"vmptrld %s",tempMeme);
+                            }
+                        }
+                        else if(regField==7){
+                            wsprintf(temp,"vmptrst %s",tempMeme);
+                        }
+                        else{
+                            wsprintf(temp,"??? %s",tempMeme);
+                            lstrcat((*Disasm)->Remarks,";Invalid Instruction");
+                        }
+                    }
+                    break;
+
                     case 0xF1:case 0xF2:case 0xF3:case 0xF5:case 0xF6:
                     case 0xF7:case 0xF8:case 0xF9:case 0xFA:case 0xFB:case 0xFC:
                     case 0xFD:case 0xFE:{
@@ -5710,6 +5761,8 @@ void Mod_RM_SIB_EX(
                         (*(*index))++;
                     }
                     break;
+
+                    case 0x78: wsprintf(tempMeme,"vmread %s,%s",menemonic,regs[RM][reg2]); break; // VMREAD
 
                     case 0xC0: RM=REG8; wsprintf(tempMeme,"xadd %s,%s",menemonic,regs[RM][reg2]);break;
                     case 0xC1: wsprintf(tempMeme,"xadd %s,%s",menemonic,regs[RM][reg2]); break;
@@ -6055,11 +6108,36 @@ void Mod_RM_SIB_EX(
                     }
                     break;
 
-					case 0xC7:{
-						if((*Disasm)->Mode64 && (*Disasm)->RexW)
-							wsprintf(tempMeme,"cmpxchg16b %s",menemonic);
-						else
-							wsprintf(tempMeme,"cmpxchg8b %s",menemonic);
+					case 0x79: wsprintf(tempMeme,"vmwrite %s,%s",regs[RM][reg2],menemonic); break; // VMWRITE
+
+					case 0xC7:{ // CMPXCHG8B/16B / VMPTRLD / VMCLEAR / VMXON / VMPTRST
+						BYTE regField = REG & 0x07;
+						if(regField==1){
+							if((*Disasm)->Mode64 && (*Disasm)->RexW)
+								wsprintf(tempMeme,"cmpxchg16b %s",menemonic);
+							else
+								wsprintf(tempMeme,"cmpxchg8b %s",menemonic);
+						}
+						else if(regField==6){
+							if(RepPrefix==0xF3){
+								wsprintf(tempMeme,"vmxon %s",menemonic);
+								strcpy_s((*Disasm)->Assembly,"");
+								(*Disasm)->OpcodeSize++;
+							}
+							else if(PrefixReg){
+								wsprintf(tempMeme,"vmclear %s",menemonic);
+							}
+							else{
+								wsprintf(tempMeme,"vmptrld %s",menemonic);
+							}
+						}
+						else if(regField==7){
+							wsprintf(tempMeme,"vmptrst %s",menemonic);
+						}
+						else{
+							wsprintf(tempMeme,"??? %s",menemonic);
+							lstrcat((*Disasm)->Remarks,";Invalid Instruction");
+						}
 					}
 					break;
 
@@ -6555,6 +6633,8 @@ void Mod_RM_SIB_EX(
                     }
                     break;
 
+                    case 0x78: wsprintf(tempMeme,"vmread %s,%s",menemonic,regs[RM][REG]); break; // VMREAD
+
                     case 0xC0: { RM=REG8; wsprintf(tempMeme,"xadd %s,%s",menemonic,regs[RM][REG]); }		break; // XADD
                     case 0xC1: wsprintf(tempMeme,"xadd %s,%s",menemonic,regs[RM][REG]);						break; // XADD
                 }
@@ -6856,6 +6936,8 @@ void Mod_RM_SIB_EX(
                     }
                     break;
 
+                    case 0x79: wsprintf(tempMeme,"vmwrite %s,%s",regs[RM][REG],menemonic); break; // VMWRITE
+
                     case 0xC6:{
                         if(PrefixReg)
                             wsprintf(tempMeme,"shufpd %s,%s,%02Xh",MMXRegs[REG],menemonic,FOpcode);
@@ -6865,6 +6947,37 @@ void Mod_RM_SIB_EX(
                         lstrcat((*Disasm)->Opcode,menemonic);
                         (*Disasm)->OpcodeSize++;
                         (*(*index))++;
+                    }
+                    break;
+
+                    case 0xC7:{ // CMPXCHG8B/16B / VMPTRLD / VMCLEAR / VMXON / VMPTRST
+                        BYTE regField = REG & 0x07;
+                        if(regField==1){
+                            if((*Disasm)->Mode64 && (*Disasm)->RexW)
+                                wsprintf(tempMeme,"cmpxchg16b %s",menemonic);
+                            else
+                                wsprintf(tempMeme,"cmpxchg8b %s",menemonic);
+                        }
+                        else if(regField==6){
+                            if(RepPrefix==0xF3){
+                                wsprintf(tempMeme,"vmxon %s",menemonic);
+                                strcpy_s((*Disasm)->Assembly,"");
+                                (*Disasm)->OpcodeSize++;
+                            }
+                            else if(PrefixReg){
+                                wsprintf(tempMeme,"vmclear %s",menemonic);
+                            }
+                            else{
+                                wsprintf(tempMeme,"vmptrld %s",menemonic);
+                            }
+                        }
+                        else if(regField==7){
+                            wsprintf(tempMeme,"vmptrst %s",menemonic);
+                        }
+                        else{
+                            wsprintf(tempMeme,"??? %s",menemonic);
+                            lstrcat((*Disasm)->Remarks,";Invalid Instruction");
+                        }
                     }
                     break;
 
@@ -7144,6 +7257,16 @@ void Decode3ByteOpcode_0F38(
             break;
         }
 
+        // VMX: INVEPT (66 0F 38 80) / INVVPID (66 0F 38 81)
+        case 0x80:{
+            if(Has66) mnem = "invept";
+            break;
+        }
+        case 0x81:{
+            if(Has66) mnem = "invvpid";
+            break;
+        }
+
         default: mnem = NULL; break;
     }
 
@@ -7182,6 +7305,7 @@ void Decode3ByteOpcode_0F38(
     bool usesGPR38 = false;
     if((ThirdByte == 0xF0 || ThirdByte == 0xF1) && RepPrefix!=0xF2) usesGPR38 = true; // MOVBE
     if(ThirdByte == 0xF6) usesGPR38 = true; // ADCX/ADOX
+    if(ThirdByte == 0x80 || ThirdByte == 0x81) usesGPR38 = true; // INVEPT/INVVPID
 
     if(MOD == 0x03){ // Register-register form
         // CRC32 special: GPR operands
@@ -7205,6 +7329,10 @@ void Decode3ByteOpcode_0F38(
             wsprintf(assembly,"%s %s, %s",mnem,regs[REG32][REG],regs[REG32][RM]);
             if(Has66) strcpy_s((*Disasm)->Assembly,"");
             else if(RepPrefix==0xF3){ strcpy_s((*Disasm)->Assembly,""); m_OpcodeSize++; }
+        }
+        else if(ThirdByte == 0x80 || ThirdByte == 0x81){ // INVEPT/INVVPID - memory only, reg form invalid
+            wsprintf(assembly,"???");
+            lstrcat((*Disasm)->Remarks,";Invalid Instruction");
         }
         else{
             // Implicit xmm0 for blendv / sha256rnds2 instructions
@@ -7323,6 +7451,10 @@ void Decode3ByteOpcode_0F38(
             wsprintf(assembly,"%s %s, %s ptr %s",mnem,regs[REG32][REG],Has66?"word":"dword",memStr);
             strcpy_s((*Disasm)->Assembly,"");
             m_OpcodeSize++;
+        }
+        else if(ThirdByte == 0x80 || ThirdByte == 0x81){ // INVEPT/INVVPID: r32, m128
+            wsprintf(assembly,"%s %s, %s",mnem,regs[REG32][REG],memStr);
+            strcpy_s((*Disasm)->Assembly,""); // clear 66 prefix
         }
         else if(usesGPR38){ // MOVBE, ADCX, ADOX - GPR operands
             if(ThirdByte == 0xF1) // MOVBE store: m, r
