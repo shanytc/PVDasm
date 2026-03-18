@@ -271,6 +271,17 @@ def is_acceptable_diff(pv_norm, ida_norm):
     if pv_norm.startswith('NOP') and ida_norm.startswith('NOP'):
         return True
 
+    # IDA named variables in memory operands: [RBP+SystemTimeAsFileTime.dwLowDateTime], [RSP+38h+Locale], etc.
+    if pv_norm.split()[0] == ida_norm.split()[0]:
+        if re.search(r'[A-Z][A-Za-z]{2,}', ida_norm) and re.search(r'\[.*R[BS]P.*\]', ida_norm):
+            return True
+
+    # Signed negative vs unsigned hex: -02H vs 0FFFFFFFFFFFFFFFEH
+    if pv_norm.split()[0] == ida_norm.split()[0]:
+        pv_clean = re.sub(r'-([0-9A-F]+)\b', lambda m: hex((-int(m.group(1),16)) & 0xFFFFFFFFFFFFFFFF)[2:].upper(), pv_norm)
+        if pv_clean == ida_norm:
+            return True
+
     return False
 
 
