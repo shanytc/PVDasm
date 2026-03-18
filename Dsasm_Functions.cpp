@@ -278,7 +278,7 @@ void Mod_11_RM(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,char instructio
 		}
 
 		if(Op==0xC7){
-			/* 
+			/*
 			Instruction rule: Mem,Imm ->  1100011woo000mmm,imm
 			Code Block: 1100011
 			w = Reg Size
@@ -288,11 +288,16 @@ void Mod_11_RM(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,char instructio
 			imm - Immidiant (����)
 			*/
 
-			if(((m_Opcode&0x38)>>3)!=0){ // check 000
-			  lstrcat((*Disasm)->Remarks,"Invalid Instruction");
+			if(((m_Opcode&0x38)>>3)==7){ // XBEGIN rel16/rel32 (C7 F8)
+				wsprintf(assembly,"xbegin %s",temp);
 			}
-
-			wsprintf(assembly,"%s %s, %s","mov",regs[RM][reg1],temp);
+			else if(((m_Opcode&0x38)>>3)!=0){ // check 000
+			  lstrcat((*Disasm)->Remarks,"Invalid Instruction");
+			  wsprintf(assembly,"%s %s, %s","mov",regs[RM][reg1],temp);
+			}
+			else{
+			  wsprintf(assembly,"%s %s, %s","mov",regs[RM][reg1],temp);
+			}
         }
         else{
 			// Build assembly
@@ -353,6 +358,17 @@ void Mod_11_RM(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,char instructio
 
 		if(Op==0xC6){
 			RM=REG8;
+			if(m_Opcode==0xF8){ // XABORT imm8 (C6 F8 ib)
+				BYTE imm = (BYTE)(*(*Opcode+Pos+2));
+				wsprintf(m_Bytes,"C6 F8 %02X",imm);
+				wsprintf(assembly,"xabort %02Xh",imm);
+				m_OpcodeSize=3;
+				(*(*index))+=2;
+				lstrcat((*Disasm)->Assembly,assembly);
+				(*Disasm)->OpcodeSize=m_OpcodeSize;
+				lstrcat((*Disasm)->Opcode,m_Bytes);
+				return;
+			}
 			if(m_Opcode>=0xC0 && m_Opcode<=0xC7){
 				reg1=(m_Opcode&0x07); // Get Destination Register
 				SwapWord((BYTE*)(*Opcode+Pos+1),&wOp,&wMem);
@@ -3553,8 +3569,15 @@ void Mod_11_RM_EX(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,bool PrefixR
         }
         break;
 
-        case 0x1E:{ // CET: ENDBR64 (0F 1E FA), ENDBR32 (0F 1E FB)
-            if(RepPrefix==0xF3 && m_Opcode==0xFB){
+        case 0x1E:{ // CET: ENDBR64 (0F 1E FA), ENDBR32 (0F 1E FB), RDSSPD/Q (F3 0F 1E /1)
+            if(RepPrefix==0xF3 && REG==1){ // RDSSPD/RDSSPQ (F3 0F 1E /1)
+                wsprintf(assembly,"%s %s",
+                    ((*Disasm)->Mode64 && (*Disasm)->RexW)?"rdsspq":"rdsspd",
+                    regs[RM][reg2]);
+                strcpy_s((*Disasm)->Assembly,"");
+                m_OpcodeSize++;
+            }
+            else if(RepPrefix==0xF3 && m_Opcode==0xFB){
                 wsprintf(assembly,"endbr32");
                 strcpy_s((*Disasm)->Assembly,"");
                 m_OpcodeSize++;
@@ -3994,8 +4017,15 @@ void Mod_11_RM_EX(BYTE d, BYTE w,char **Opcode,DISASSEMBLY **Disasm,bool PrefixR
         break;
 
         case 0xAE:{
-            wsprintf(temp,"%02X%02X",(BYTE)(*(*Opcode+Pos)),(BYTE)(*(*Opcode+Pos+1))); 
-            if(REG>3){ // Check for Invalid
+            wsprintf(temp,"%02X%02X",(BYTE)(*(*Opcode+Pos)),(BYTE)(*(*Opcode+Pos+1)));
+            if(RepPrefix==0xF3 && REG==5){ // INCSSPD/INCSSPQ (F3 0F AE /5)
+                wsprintf(assembly,"%s %s",
+                    ((*Disasm)->Mode64 && (*Disasm)->RexW)?"incsspq":"incsspd",
+                    regs[RM][reg2]);
+                strcpy_s((*Disasm)->Assembly,"");
+                m_OpcodeSize++;
+            }
+            else if(REG>3){ // Check for Invalid
                 m_Opcode=(BYTE)(*(*Opcode+Pos+1));
                 switch(m_Opcode){ // Lone Instructions
                     case 0xE8: strcpy_s(assembly,"lfence"); break;
@@ -7233,6 +7263,9 @@ void Decode3ByteOpcode_0F38(
         case 0xCC: mnem = "sha256msg1";  break;
         case 0xCD: mnem = "sha256msg2";  break;
 
+        // GFNI (66 0F 38 CF)
+        case 0xCF: if(Has66) mnem = "gf2p8mulb"; break;
+
         // AES-NI (require 66 prefix)
         case 0xDB: mnem = "aesimc";      break;
         case 0xDC: mnem = "aesenc";      break;
@@ -7581,6 +7614,10 @@ void Decode3ByteOpcode_0F3A(
 
         // AESKEYGENASSIST (66 0F 3A DF)
         case 0xDF: mnem = "aeskeygenassist"; break;
+
+        // GFNI (66 0F 3A CE/CF)
+        case 0xCE: if(Has66) mnem = "gf2p8affineqb"; break;
+        case 0xCF: if(Has66) mnem = "gf2p8affineinvqb"; break;
 
         default: mnem = NULL; break;
     }
@@ -8000,6 +8037,13 @@ void DecodeVEX(
                 else if(pp==3) baseMnem = "shrx";
                 break;
             }
+            // GFNI (VEX.66.0F38 CF)
+            case 0xCF: if(pp==1) baseMnem = "gf2p8mulb"; break;
+            // VAES (VEX.66.0F38 DC-DF)
+            case 0xDC: if(pp==1) baseMnem = "aesenc"; break;
+            case 0xDD: if(pp==1) baseMnem = "aesenclast"; break;
+            case 0xDE: if(pp==1) baseMnem = "aesdec"; break;
+            case 0xDF: if(pp==1) baseMnem = "aesdeclast"; break;
             default: baseMnem = NULL; break;
         }
     }
@@ -8051,6 +8095,9 @@ void DecodeVEX(
             case 0x1D: if(pp==1) baseMnem = "cvtps2ph"; break;
             // BMI2: RORX (VEX.LZ.F2.0F3A.W0/W1 F0)
             case 0xF0: if(pp==3) baseMnem = "rorx"; break;
+            // GFNI (VEX.66.0F3A CE/CF)
+            case 0xCE: if(pp==1) baseMnem = "gf2p8affineqb"; break;
+            case 0xCF: if(pp==1) baseMnem = "gf2p8affineinvqb"; break;
             default: baseMnem = NULL; break;
         }
     }
@@ -8303,7 +8350,7 @@ void DecodeEVEX(
             case 0x58: baseMnem = (pp==2)?"addss":(pp==3)?"addsd":(pp==1)?"addpd":"addps"; break;
             case 0x59: baseMnem = (pp==2)?"mulss":(pp==3)?"mulsd":(pp==1)?"mulpd":"mulps"; break;
             case 0x5A: baseMnem = (pp==2)?"cvtss2sd":(pp==3)?"cvtsd2ss":(pp==1)?"cvtpd2ps":"cvtps2pd"; break;
-            case 0x5B: baseMnem = (pp==2)?"cvttps2dq":(pp==1)?"cvtps2dq":"cvtdq2ps"; break;
+            case 0x5B: baseMnem = (pp==2)?"cvttps2dq":(pp==1)?"cvtps2dq":W?"cvtqq2ps":"cvtdq2ps"; break;
             case 0x5C: baseMnem = (pp==2)?"subss":(pp==3)?"subsd":(pp==1)?"subpd":"subps"; break;
             case 0x5D: baseMnem = (pp==2)?"minss":(pp==3)?"minsd":(pp==1)?"minpd":"minps"; break;
             case 0x5E: baseMnem = (pp==2)?"divss":(pp==3)?"divsd":(pp==1)?"divpd":"divps"; break;
@@ -8314,12 +8361,67 @@ void DecodeEVEX(
             case 0x7F: baseMnem = W?(pp==2?"movdqu64":(pp==1?"movdqa64":"movdqu64")):(pp==2?"movdqu32":(pp==1?"movdqa32":"movdqu32")); break;
             case 0xC2: baseMnem = (pp==2)?"cmpss":(pp==3)?"cmpsd":(pp==1)?"cmppd":"cmpps"; break;
             case 0xC6: baseMnem = (pp==1)?"shufpd":"shufps"; break;
+            // AVX-512 BW: integer byte/word ops
+            case 0x60: baseMnem = "punpcklbw"; break;
+            case 0x61: baseMnem = "punpcklwd"; break;
+            case 0x62: baseMnem = "punpckldq"; break;
+            case 0x63: baseMnem = "packsswb"; break;
+            case 0x64: baseMnem = "pcmpgtb"; break;
+            case 0x65: baseMnem = "pcmpgtw"; break;
+            case 0x67: baseMnem = "packuswb"; break;
+            case 0x68: baseMnem = "punpckhbw"; break;
+            case 0x69: baseMnem = "punpckhwd"; break;
+            case 0x6A: baseMnem = "punpckhdq"; break;
+            case 0x6B: baseMnem = "packssdw"; break;
+            case 0x6C: baseMnem = "punpcklqdq"; break;
+            case 0x6D: baseMnem = "punpckhqdq"; break;
+            // AVX-512 DQ: movd/movq
+            case 0x6E: baseMnem = W?"movq":"movd"; break;
+            case 0x70: baseMnem = (pp==1)?"pshufd":(pp==2)?"pshufhw":(pp==3)?"pshuflw":NULL; break;
+            case 0x74: baseMnem = "pcmpeqb"; break;
+            case 0x75: baseMnem = "pcmpeqw"; break;
+            // AVX-512 DQ: conversion instructions
+            case 0x78: baseMnem = (pp==1)?W?"cvttpd2udq":"cvttps2udq" : (pp==2)?W?"cvttsd2usi":"cvttss2usi" : NULL; break;
+            case 0x79: baseMnem = (pp==1)?W?"cvtpd2udq":"cvtps2udq" : (pp==2)?W?"cvtsd2usi":"cvtss2usi" : NULL; break;
+            case 0x7A: baseMnem = (pp==1)?W?"cvttpd2qq":"cvttps2qq" : (pp==2)?"cvtudq2pd" : (pp==3)?"cvtudq2ps" : NULL; break;
+            case 0x7B: baseMnem = (pp==1)?W?"cvtpd2qq":"cvtps2qq" : (pp==2)?W?"cvtusi2sd":"cvtusi2ss" : (pp==3)?"cvtpd2dq" : NULL; break;
+            case 0x7E: baseMnem = W?"movq":"movd"; break;
+            case 0xD1: baseMnem = "psrlw"; break;
+            case 0xD2: baseMnem = "psrld"; break;
+            case 0xD3: baseMnem = "psrlq"; break;
             case 0xD4: baseMnem = "paddq"; break;
+            case 0xD5: baseMnem = "pmullw"; break;
+            case 0xD8: baseMnem = "psubusb"; break;
+            case 0xD9: baseMnem = "psubusw"; break;
+            case 0xDA: baseMnem = "pminub"; break;
             case 0xDB: baseMnem = W?"pandq":"pandd"; break;
+            case 0xDC: baseMnem = "paddusb"; break;
+            case 0xDD: baseMnem = "paddusw"; break;
+            case 0xDE: baseMnem = "pmaxub"; break;
             case 0xDF: baseMnem = W?"pandnq":"pandnd"; break;
+            case 0xE0: baseMnem = "pavgb"; break;
+            case 0xE1: baseMnem = "psraw"; break;
+            case 0xE2: baseMnem = "psrad"; break;
+            case 0xE3: baseMnem = "pavgw"; break;
+            case 0xE4: baseMnem = "pmulhuw"; break;
+            case 0xE5: baseMnem = "pmulhw"; break;
+            case 0xE6: baseMnem = (pp==1)?"cvttpd2dq":(pp==2)?(W?"cvtqq2pd":"cvtdq2pd"):(pp==3)?"cvtpd2dq":NULL; break;
+            case 0xE8: baseMnem = "psubsb"; break;
+            case 0xE9: baseMnem = "psubsw"; break;
+            case 0xEA: baseMnem = "pminsw"; break;
             case 0xEB: baseMnem = W?"porq":"pord"; break;
+            case 0xEC: baseMnem = "paddsb"; break;
+            case 0xED: baseMnem = "paddsw"; break;
+            case 0xEE: baseMnem = "pmaxsw"; break;
             case 0xEF: baseMnem = W?"pxorq":"pxord"; break;
+            case 0xF1: baseMnem = "psllw"; break;
+            case 0xF2: baseMnem = "pslld"; break;
+            case 0xF3: baseMnem = "psllq"; break;
             case 0xF4: baseMnem = "pmuludq"; break;
+            case 0xF5: baseMnem = "pmaddwd"; break;
+            case 0xF6: baseMnem = "psadbw"; break;
+            case 0xF8: baseMnem = "psubb"; break;
+            case 0xF9: baseMnem = "psubw"; break;
             case 0xFA: baseMnem = "psubd"; break;
             case 0xFB: baseMnem = "psubq"; break;
             case 0xFC: baseMnem = "paddb"; break;
@@ -8334,31 +8436,44 @@ void DecodeEVEX(
             case 0x0B: baseMnem = "pmulhrsw"; break;
             case 0x0C: baseMnem = "permilps"; break;
             case 0x0D: baseMnem = "permilpd"; break;
-            case 0x10: baseMnem = "psrlvw"; break;
-            case 0x11: baseMnem = "psravw"; break;
-            case 0x12: baseMnem = "psllvw"; break;
-            case 0x14: baseMnem = "prorvd"; break;
-            case 0x15: baseMnem = "prolvd"; break;
+            case 0x10: baseMnem = (pp==2)?"pmovuswb":"psrlvw"; break;
+            case 0x11: baseMnem = (pp==2)?"pmovusdb":"psravw"; break;
+            case 0x12: baseMnem = (pp==2)?"pmovusqb":"psllvw"; break;
+            case 0x13: if(pp==2) baseMnem = "pmovusdw"; break;
+            case 0x14: baseMnem = (pp==2)?"pmovusqw":"prorvd"; break;
+            case 0x15: baseMnem = (pp==2)?"pmovusqd":"prolvd"; break;
             case 0x18: baseMnem = "broadcastss"; break;
             case 0x19: baseMnem = "broadcastsd"; break;
             case 0x1A: baseMnem = W?"broadcasti64x4":"broadcasti32x4"; break;
             case 0x1E: baseMnem = "pabsd"; break;
             case 0x1F: baseMnem = "pabsq"; break;
+            case 0x20: if(pp==2) baseMnem = "pmovswb"; break;
+            case 0x21: if(pp==2) baseMnem = "pmovsdb"; break;
+            case 0x22: if(pp==2) baseMnem = "pmovsqb"; break;
+            case 0x23: if(pp==2) baseMnem = "pmovsdw"; break;
+            case 0x24: if(pp==2) baseMnem = "pmovsqw"; break;
+            case 0x25: if(pp==2) baseMnem = "pmovsqd"; break;
             case 0x27: baseMnem = "ptestnmd"; break;
-            case 0x28: baseMnem = "pmuldq"; break;
-            case 0x29: baseMnem = "pcmpeqq"; break;
+            case 0x28: baseMnem = (pp==2)?(W?"pmovm2w":"pmovm2b"):"pmuldq"; break;
+            case 0x29: baseMnem = (pp==2)?(W?"pmovw2m":"pmovb2m"):"pcmpeqq"; break;
             case 0x2A: baseMnem = "movntdqa"; break;
+            case 0x30: if(pp==2) baseMnem = "pmovwb"; break;
+            case 0x31: if(pp==2) baseMnem = "pmovdb"; break;
+            case 0x32: if(pp==2) baseMnem = "pmovqb"; break;
+            case 0x33: if(pp==2) baseMnem = "pmovdw"; break;
+            case 0x34: if(pp==2) baseMnem = "pmovqw"; break;
+            case 0x35: if(pp==2) baseMnem = "pmovqd"; break;
             case 0x36: baseMnem = W?"permq":"permd"; break;
             case 0x37: baseMnem = "pcmpgtq"; break;
-            case 0x38: baseMnem = "pminsb"; break;
-            case 0x39: baseMnem = "pminsd"; break;
+            case 0x38: baseMnem = (pp==2)?(W?"pmovm2q":"pmovm2d"):"pminsb"; break;
+            case 0x39: baseMnem = (pp==2)?(W?"pmovq2m":"pmovd2m"):"pminsd"; break;
             case 0x3A: baseMnem = "pminuw"; break;
             case 0x3B: baseMnem = "pminud"; break;
             case 0x3C: baseMnem = "pmaxsb"; break;
             case 0x3D: baseMnem = "pmaxsd"; break;
             case 0x3E: baseMnem = "pmaxuw"; break;
             case 0x3F: baseMnem = "pmaxud"; break;
-            case 0x40: baseMnem = "pmulld"; break;
+            case 0x40: baseMnem = W?"pmullq":"pmulld"; break; // AVX-512 DQ: W-dependent
             case 0x45: baseMnem = W?"psrlvq":"psrlvd"; break;
             case 0x46: baseMnem = W?"psravq":"psravd"; break;
             case 0x47: baseMnem = W?"psllvq":"psllvd"; break;
@@ -8380,9 +8495,24 @@ void DecodeEVEX(
             case 0xA1: baseMnem = "pscatterqd"; break;
             case 0xA2: baseMnem = "scatterdps"; break;
             case 0xA3: baseMnem = "scatterqps"; break;
+            // AVX-512 VBMI
+            case 0x75: baseMnem = W?"permi2w":"permi2b"; break;
+            case 0x7D: baseMnem = W?"permt2w":"permt2b"; break;
+            case 0x83: baseMnem = "pmultishiftqb"; break;
+            case 0x8D: baseMnem = W?"permw":"permb"; break;
+            // AVX-512 IFMA
+            case 0xB4: baseMnem = "pmadd52luq"; break;
+            case 0xB5: baseMnem = "pmadd52huq"; break;
             case 0xC8: baseMnem = "exp2ps"; break;
             case 0xCA: baseMnem = "rcp28ps"; break;
             case 0xCC: baseMnem = "rsqrt28ps"; break;
+            // GFNI (EVEX.66.0F38 CF)
+            case 0xCF: baseMnem = "gf2p8mulb"; break;
+            // VAES (EVEX.66.0F38 DC-DF)
+            case 0xDC: baseMnem = "aesenc"; break;
+            case 0xDD: baseMnem = "aesenclast"; break;
+            case 0xDE: baseMnem = "aesdec"; break;
+            case 0xDF: baseMnem = "aesdeclast"; break;
             default: baseMnem = NULL; break;
         }
     }
@@ -8395,8 +8525,8 @@ void DecodeEVEX(
             case 0x09: baseMnem = "roundpd"; break;
             case 0x0A: baseMnem = "roundss"; break;
             case 0x0B: baseMnem = "roundsd"; break;
-            case 0x18: baseMnem = "insertf32x4"; break;
-            case 0x19: baseMnem = "extractf32x4"; break;
+            case 0x18: baseMnem = W?"insertf64x2":"insertf32x4"; break;  // AVX-512 DQ: W-dependent
+            case 0x19: baseMnem = W?"extractf64x2":"extractf32x4"; break; // AVX-512 DQ: W-dependent
             case 0x1A: baseMnem = "insertf64x4"; break;
             case 0x1B: baseMnem = "extractf64x4"; break;
             case 0x1E: baseMnem = "pcmpud"; break;
@@ -8404,14 +8534,25 @@ void DecodeEVEX(
             case 0x25: baseMnem = "ternlogd"; break;
             case 0x26: baseMnem = "getmantps"; break;
             case 0x27: baseMnem = "getmantss"; break;
-            case 0x38: baseMnem = "inserti32x4"; break;
-            case 0x39: baseMnem = "extracti32x4"; break;
+            case 0x38: baseMnem = W?"inserti64x2":"inserti32x4"; break;  // AVX-512 DQ: W-dependent
+            case 0x39: baseMnem = W?"extracti64x2":"extracti32x4"; break; // AVX-512 DQ: W-dependent
             case 0x3A: baseMnem = "inserti64x4"; break;
             case 0x3B: baseMnem = "extracti64x4"; break;
             case 0x42: baseMnem = "dbpsadbw"; break;
             case 0x43: baseMnem = "shuffi32x4"; break;
+            // VPCLMULQDQ (EVEX.66.0F3A 44)
+            case 0x44: baseMnem = "pclmulqdq"; break;
+            // AVX-512 DQ: VRANGE
+            case 0x50: baseMnem = W?"rangepd":"rangeps"; break;
+            case 0x51: baseMnem = W?"rangesd":"rangess"; break;
             case 0x54: baseMnem = "fixupimmps"; break;
             case 0x55: baseMnem = "fixupimmss"; break;
+            // AVX-512 DQ: VFPCLASS
+            case 0x66: baseMnem = W?"fpclasspd":"fpclassps"; break;
+            case 0x67: baseMnem = W?"fpclasssd":"fpclassss"; break;
+            // GFNI (EVEX.66.0F3A CE/CF)
+            case 0xCE: baseMnem = "gf2p8affineqb"; break;
+            case 0xCF: baseMnem = "gf2p8affineinvqb"; break;
             default: baseMnem = NULL; break;
         }
     }
@@ -8461,6 +8602,55 @@ void DecodeEVEX(
         wsprintf(srcStr,"%s",dstRegs[RM_field & 0x07]); // simplified for memory
     }
 
+    // Compare instructions write to mask register (k0-k7), not vector register
+    if(mm == 1 && (OpByte == 0x64 || OpByte == 0x65 || OpByte == 0x66 ||
+                   OpByte == 0x74 || OpByte == 0x75 || OpByte == 0x76)){
+        wsprintf(destStr,"%s",KRegs[REG_field & 7]);
+    }
+
+    // Shift-by-xmm instructions: source (shift count) is always XMM regardless of LL
+    if(mm == 1 && (OpByte == 0xD1 || OpByte == 0xD2 || OpByte == 0xD3 ||
+                   OpByte == 0xE1 || OpByte == 0xE2 ||
+                   OpByte == 0xF1 || OpByte == 0xF2 || OpByte == 0xF3)){
+        if(MOD == 0x03){
+            wsprintf(srcStr,"%s",XMMRegs[RM_field & 15]);
+        }
+    }
+
+    // AVX-512 BW/DQ: Truncation instructions (map 2, pp=2, opcodes 0x10-0x15, 0x20-0x25, 0x30-0x35)
+    // Source is full-size REG, dest is reduced-size RM
+    BOOL isTruncation = FALSE;
+    if(mm == 2 && pp == 2 &&
+       ((OpByte >= 0x10 && OpByte <= 0x15) ||
+        (OpByte >= 0x20 && OpByte <= 0x25) ||
+        (OpByte >= 0x30 && OpByte <= 0x35))){
+        isTruncation = TRUE;
+        wsprintf(srcStr,"%s",dstRegs[REG_field & (LL==2 ? 31 : 15)]);
+        int lo = OpByte & 0x0F;
+        const char **rr;
+        if(lo == 0 || lo == 3 || lo == 5)
+            rr = (LL==2)?YMMRegs:XMMRegs;  // half-size
+        else
+            rr = XMMRegs;  // quarter or eighth
+        if(MOD == 0x03)
+            wsprintf(destStr,"%s",rr[RM_field & 15]);
+    }
+
+    // VPMOVM2B/W/D/Q: dest=vector(REG), src=mask(RM)
+    if(mm == 2 && pp == 2 && (OpByte == 0x28 || OpByte == 0x38)){
+        wsprintf(srcStr,"%s",KRegs[RM_field & 7]);
+    }
+
+    // VPMOVB2M/W2M/D2M/Q2M: dest=mask(REG), src=vector(RM)
+    if(mm == 2 && pp == 2 && (OpByte == 0x29 || OpByte == 0x39)){
+        wsprintf(destStr,"%s",KRegs[REG_field & 7]);
+    }
+
+    // VFPCLASS: k dest register
+    if(mm == 3 && (OpByte == 0x66 || OpByte == 0x67)){
+        wsprintf(destStr,"%s",KRegs[REG_field & 7]);
+    }
+
     // Broadcast decorator
     char bcastStr[16]="";
     if(b_bit && MOD != 0x03){
@@ -8479,8 +8669,26 @@ void DecodeEVEX(
         }
     }
 
+    // Some instructions use only 2 operands (dest, src) — no VVVV register
+    BOOL twoOperand = FALSE;
+    if(mm == 1 && (OpByte == 0x70 ||  // VPSHUFD/VPSHUFHW/VPSHUFLW
+                   OpByte == 0x6E || OpByte == 0x7E)){  // VMOVD/VMOVQ
+        twoOperand = TRUE;
+    }
+    if(isTruncation) twoOperand = TRUE;
+    // VPMOVM2B/W/D/Q and VPMOVB2M/W2M/D2M/Q2M
+    if(mm == 2 && pp == 2 && (OpByte == 0x28 || OpByte == 0x29 || OpByte == 0x38 || OpByte == 0x39))
+        twoOperand = TRUE;
+    // VFPCLASS (k dest + imm8, 2-operand)
+    if(mm == 3 && (OpByte == 0x66 || OpByte == 0x67))
+        twoOperand = TRUE;
+
     // Build full assembly string
-    wsprintf(assembly,"%s %s%s, %s, %s%s",avxMnem,destStr,maskStr,vvvvStr,srcStr,bcastStr);
+    if(twoOperand){
+        wsprintf(assembly,"%s %s%s, %s%s",avxMnem,destStr,maskStr,srcStr,bcastStr);
+    } else {
+        wsprintf(assembly,"%s %s%s, %s, %s%s",avxMnem,destStr,maskStr,vvvvStr,srcStr,bcastStr);
+    }
 
     // Handle displacement
     if(MOD == 0x00){
@@ -8495,7 +8703,7 @@ void DecodeEVEX(
     }
 
     // Handle immediate byte for 0F3A map and specific 0F map instructions
-    if(mm == 3 || OpByte == 0xC2 || OpByte == 0xC6){
+    if(mm == 3 || OpByte == 0xC2 || OpByte == 0xC6 || OpByte == 0x70){
         BYTE imm = (BYTE)(*(*Opcode+pos+m_OpcodeSize));
         char immStr[16];
         wsprintf(immStr,", %02Xh",imm);

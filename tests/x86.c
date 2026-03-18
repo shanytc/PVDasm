@@ -897,6 +897,1262 @@ __declspec(noinline) void test_bmi(void)
     }
 }
 
+/* ---- TSX Extended: XBEGIN / XABORT ---- */
+__declspec(noinline) void test_tsx_extended(void)
+{
+    __asm {
+        ; XABORT 42h (C6 F8 42)
+        _emit 0xC6
+        _emit 0xF8
+        _emit 0x42
+
+        ; XABORT 00h (C6 F8 00)
+        _emit 0xC6
+        _emit 0xF8
+        _emit 0x00
+
+        ; XBEGIN rel32=0 (C7 F8 00000000) - jump to next instruction
+        _emit 0xC7
+        _emit 0xF8
+        _emit 0x00
+        _emit 0x00
+        _emit 0x00
+        _emit 0x00
+
+        ; XBEGIN rel32=0x10 (C7 F8 10000000)
+        _emit 0xC7
+        _emit 0xF8
+        _emit 0x10
+        _emit 0x00
+        _emit 0x00
+        _emit 0x00
+
+        ; XBEGIN rel16=0 with 66 prefix (66 C7 F8 0000)
+        _emit 0x66
+        _emit 0xC7
+        _emit 0xF8
+        _emit 0x00
+        _emit 0x00
+    }
+}
+
+/* ---- CET Extended: RDSSPD / INCSSPD ---- */
+__declspec(noinline) void test_cet_extended(void)
+{
+    __asm {
+        ; RDSSPD eax (F3 0F 1E C8) - ModRM: mod=11 reg=1 rm=0(eax)
+        _emit 0xF3
+        _emit 0x0F
+        _emit 0x1E
+        _emit 0xC8
+
+        ; RDSSPD ecx (F3 0F 1E C9) - ModRM: mod=11 reg=1 rm=1(ecx)
+        _emit 0xF3
+        _emit 0x0F
+        _emit 0x1E
+        _emit 0xC9
+
+        ; RDSSPD edx (F3 0F 1E CA) - ModRM: mod=11 reg=1 rm=2(edx)
+        _emit 0xF3
+        _emit 0x0F
+        _emit 0x1E
+        _emit 0xCA
+
+        ; INCSSPD eax (F3 0F AE E8) - ModRM: mod=11 reg=5 rm=0(eax)
+        _emit 0xF3
+        _emit 0x0F
+        _emit 0xAE
+        _emit 0xE8
+
+        ; INCSSPD ecx (F3 0F AE E9) - ModRM: mod=11 reg=5 rm=1(ecx)
+        _emit 0xF3
+        _emit 0x0F
+        _emit 0xAE
+        _emit 0xE9
+    }
+}
+
+/* ---- GFNI Legacy (66 0F 38/3A) ---- */
+__declspec(noinline) void test_gfni_legacy(void)
+{
+    __asm {
+        ; GF2P8MULB xmm0, xmm1 (66 0F 38 CF C1)
+        _emit 0x66
+        _emit 0x0F
+        _emit 0x38
+        _emit 0xCF
+        _emit 0xC1  ; ModRM: mod=11 reg=0 rm=1
+
+        ; GF2P8MULB xmm2, xmm3 (66 0F 38 CF D3)
+        _emit 0x66
+        _emit 0x0F
+        _emit 0x38
+        _emit 0xCF
+        _emit 0xD3  ; ModRM: mod=11 reg=2 rm=3
+
+        ; GF2P8AFFINEQB xmm0, xmm1, 00h (66 0F 3A CE C1 00)
+        _emit 0x66
+        _emit 0x0F
+        _emit 0x3A
+        _emit 0xCE
+        _emit 0xC1
+        _emit 0x00
+
+        ; GF2P8AFFINEQB xmm0, xmm1, 0Fh (66 0F 3A CE C1 0F)
+        _emit 0x66
+        _emit 0x0F
+        _emit 0x3A
+        _emit 0xCE
+        _emit 0xC1
+        _emit 0x0F
+
+        ; GF2P8AFFINEINVQB xmm0, xmm1, 01h (66 0F 3A CF C1 01)
+        _emit 0x66
+        _emit 0x0F
+        _emit 0x3A
+        _emit 0xCF
+        _emit 0xC1
+        _emit 0x01
+    }
+}
+
+/* ---- GFNI VEX + VAES VEX ---- */
+__declspec(noinline) void test_gfni_vaes_vex(void)
+{
+    __asm {
+        ; === GFNI VEX ===
+
+        ; VGF2P8MULB xmm0, xmm1, xmm2 (VEX.128.66.0F38.W0 CF)
+        ; C4 E2 71 CF C2
+        _emit 0xC4
+        _emit 0xE2  ; R=1 X=1 B=1 mmmmm=00010
+        _emit 0x71  ; W=0 vvvv=~1=1110 L=0 pp=01(66)
+        _emit 0xCF
+        _emit 0xC2  ; ModRM: mod=11 reg=0(xmm0) rm=2(xmm2)
+
+        ; VGF2P8AFFINEQB xmm0, xmm1, xmm2, 00h (VEX.128.66.0F3A.W0 CE)
+        ; C4 E3 71 CE C2 00
+        _emit 0xC4
+        _emit 0xE3  ; mmmmm=00011
+        _emit 0x71
+        _emit 0xCE
+        _emit 0xC2
+        _emit 0x00
+
+        ; VGF2P8AFFINEINVQB xmm0, xmm1, xmm2, 01h (VEX.128.66.0F3A.W0 CF)
+        ; C4 E3 71 CF C2 01
+        _emit 0xC4
+        _emit 0xE3
+        _emit 0x71
+        _emit 0xCF
+        _emit 0xC2
+        _emit 0x01
+
+        ; === VAES VEX ===
+
+        ; VAESENC xmm0, xmm1, xmm2 (VEX.128.66.0F38.WIG DC)
+        ; C4 E2 71 DC C2
+        _emit 0xC4
+        _emit 0xE2
+        _emit 0x71
+        _emit 0xDC
+        _emit 0xC2
+
+        ; VAESENCLAST xmm0, xmm1, xmm2 (VEX.128.66.0F38.WIG DD)
+        _emit 0xC4
+        _emit 0xE2
+        _emit 0x71
+        _emit 0xDD
+        _emit 0xC2
+
+        ; VAESDEC xmm0, xmm1, xmm2 (VEX.128.66.0F38.WIG DE)
+        _emit 0xC4
+        _emit 0xE2
+        _emit 0x71
+        _emit 0xDE
+        _emit 0xC2
+
+        ; VAESDECLAST xmm0, xmm1, xmm2 (VEX.128.66.0F38.WIG DF)
+        _emit 0xC4
+        _emit 0xE2
+        _emit 0x71
+        _emit 0xDF
+        _emit 0xC2
+    }
+}
+
+/* ---- EVEX: GFNI, VAES, VPCLMULQDQ ---- */
+__declspec(noinline) void test_evex_gfni_vaes_vpclmul(void)
+{
+    /*
+     * EVEX prefix: 62 P0 P1 P2 OpByte ModRM [imm8]
+     * P0: R(7) X(6) B(5) R'(4) 00(3:2) mm(1:0)  -- all R/X/B/R' inverted, =1 means no extension
+     *     mm=01(0F), 10(0F38), 11(0F3A)
+     * P1: W(7) ~vvvv(6:3) 1(2) pp(1:0)  -- vvvv inverted; pp: 01=66,10=F3,11=F2
+     * P2: z(7) L'L(6:5) b(4) ~V'(3) aaa(2:0)  -- V' inverted
+     *
+     * Common values used below:
+     *   P0=F2 (mm=10, 0F38), P0=F3 (mm=11, 0F3A), P0=F1 (mm=01, 0F)
+     *   P1=75 (W=0,vvvv=1,pp=01), P1=F5 (W=1,vvvv=1,pp=01)
+     *   P1=7D (W=0,vvvv=0,pp=01)
+     *   P2=08 (128-bit,no mask), P2=48 (512-bit,no mask)
+     *   ModRM C2 = mod=11 reg=0 rm=2
+     */
+    __asm {
+        ; === GFNI EVEX (map 2 = 0F38) ===
+
+        ; VGF2P8MULB xmm0, xmm1, xmm2 (EVEX.128.66.0F38.W0 CF)
+        ; 62 F2 75 08 CF C2
+        _emit 0x62
+        _emit 0xF2  ; P0: mm=10
+        _emit 0x75  ; P1: W=0 vvvv=1 pp=01
+        _emit 0x08  ; P2: LL=00(128) no mask
+        _emit 0xCF  ; opcode
+        _emit 0xC2  ; ModRM
+
+        ; === GFNI EVEX (map 3 = 0F3A) ===
+
+        ; VGF2P8AFFINEQB xmm0, xmm1, xmm2, 00h (EVEX.128.66.0F3A.W0 CE)
+        ; 62 F3 75 08 CE C2 00
+        _emit 0x62
+        _emit 0xF3  ; P0: mm=11
+        _emit 0x75
+        _emit 0x08
+        _emit 0xCE
+        _emit 0xC2
+        _emit 0x00  ; imm8
+
+        ; VGF2P8AFFINEINVQB xmm0, xmm1, xmm2, 01h (EVEX.128.66.0F3A.W0 CF)
+        ; 62 F3 75 08 CF C2 01
+        _emit 0x62
+        _emit 0xF3
+        _emit 0x75
+        _emit 0x08
+        _emit 0xCF
+        _emit 0xC2
+        _emit 0x01
+
+        ; === VAES EVEX (map 2 = 0F38) ===
+
+        ; VAESENC xmm0, xmm1, xmm2 (EVEX.128.66.0F38.WIG DC)
+        ; 62 F2 75 08 DC C2
+        _emit 0x62
+        _emit 0xF2
+        _emit 0x75
+        _emit 0x08
+        _emit 0xDC
+        _emit 0xC2
+
+        ; VAESENCLAST xmm0, xmm1, xmm2 (EVEX.128.66.0F38.WIG DD)
+        _emit 0x62
+        _emit 0xF2
+        _emit 0x75
+        _emit 0x08
+        _emit 0xDD
+        _emit 0xC2
+
+        ; VAESDEC xmm0, xmm1, xmm2 (EVEX.128.66.0F38.WIG DE)
+        _emit 0x62
+        _emit 0xF2
+        _emit 0x75
+        _emit 0x08
+        _emit 0xDE
+        _emit 0xC2
+
+        ; VAESDECLAST xmm0, xmm1, xmm2 (EVEX.128.66.0F38.WIG DF)
+        _emit 0x62
+        _emit 0xF2
+        _emit 0x75
+        _emit 0x08
+        _emit 0xDF
+        _emit 0xC2
+
+        ; === VPCLMULQDQ EVEX (map 3 = 0F3A) ===
+
+        ; VPCLMULQDQ xmm0, xmm1, xmm2, 00h (EVEX.128.66.0F3A.W0 44)
+        ; 62 F3 75 08 44 C2 00
+        _emit 0x62
+        _emit 0xF3
+        _emit 0x75
+        _emit 0x08
+        _emit 0x44
+        _emit 0xC2
+        _emit 0x00
+
+        ; VPCLMULQDQ xmm0, xmm1, xmm2, 11h (high x high)
+        ; 62 F3 75 08 44 C2 11
+        _emit 0x62
+        _emit 0xF3
+        _emit 0x75
+        _emit 0x08
+        _emit 0x44
+        _emit 0xC2
+        _emit 0x11
+    }
+}
+
+/* ---- EVEX: AVX-512 IFMA + VBMI ---- */
+__declspec(noinline) void test_evex_ifma_vbmi(void)
+{
+    __asm {
+        ; === AVX-512 IFMA (EVEX map 2 = 0F38, W=1) ===
+
+        ; VPMADD52LUQ xmm0, xmm1, xmm2 (EVEX.128.66.0F38.W1 B4)
+        ; 62 F2 F5 08 B4 C2
+        _emit 0x62
+        _emit 0xF2  ; P0: mm=10
+        _emit 0xF5  ; P1: W=1 vvvv=1 pp=01
+        _emit 0x08  ; P2: LL=00(128)
+        _emit 0xB4
+        _emit 0xC2
+
+        ; VPMADD52HUQ xmm0, xmm1, xmm2 (EVEX.128.66.0F38.W1 B5)
+        ; 62 F2 F5 08 B5 C2
+        _emit 0x62
+        _emit 0xF2
+        _emit 0xF5
+        _emit 0x08
+        _emit 0xB5
+        _emit 0xC2
+
+        ; === AVX-512 VBMI (EVEX map 2 = 0F38) ===
+
+        ; VPERMI2B xmm0, xmm1, xmm2 (EVEX.128.66.0F38.W0 75)
+        ; 62 F2 75 08 75 C2
+        _emit 0x62
+        _emit 0xF2
+        _emit 0x75  ; W=0
+        _emit 0x08
+        _emit 0x75
+        _emit 0xC2
+
+        ; VPERMI2W xmm0, xmm1, xmm2 (EVEX.128.66.0F38.W1 75)
+        ; 62 F2 F5 08 75 C2
+        _emit 0x62
+        _emit 0xF2
+        _emit 0xF5  ; W=1
+        _emit 0x08
+        _emit 0x75
+        _emit 0xC2
+
+        ; VPERMT2B xmm0, xmm1, xmm2 (EVEX.128.66.0F38.W0 7D)
+        ; 62 F2 75 08 7D C2
+        _emit 0x62
+        _emit 0xF2
+        _emit 0x75
+        _emit 0x08
+        _emit 0x7D
+        _emit 0xC2
+
+        ; VPERMT2W xmm0, xmm1, xmm2 (EVEX.128.66.0F38.W1 7D)
+        ; 62 F2 F5 08 7D C2
+        _emit 0x62
+        _emit 0xF2
+        _emit 0xF5
+        _emit 0x08
+        _emit 0x7D
+        _emit 0xC2
+
+        ; VPMULTISHIFTQB xmm0, xmm1, xmm2 (EVEX.128.66.0F38.W0 83)
+        ; 62 F2 75 08 83 C2
+        _emit 0x62
+        _emit 0xF2
+        _emit 0x75
+        _emit 0x08
+        _emit 0x83
+        _emit 0xC2
+
+        ; VPERMB xmm0, xmm1, xmm2 (EVEX.128.66.0F38.W0 8D)
+        ; 62 F2 75 08 8D C2
+        _emit 0x62
+        _emit 0xF2
+        _emit 0x75
+        _emit 0x08
+        _emit 0x8D
+        _emit 0xC2
+
+        ; VPERMW xmm0, xmm1, xmm2 (EVEX.128.66.0F38.W1 8D)
+        ; 62 F2 F5 08 8D C2
+        _emit 0x62
+        _emit 0xF2
+        _emit 0xF5
+        _emit 0x08
+        _emit 0x8D
+        _emit 0xC2
+    }
+}
+
+/* ---- EVEX: AVX-512 DQ ---- */
+__declspec(noinline) void test_evex_avx512dq(void)
+{
+    __asm {
+        ; === VPMULLQ (map 2, W=1, opcode 40) ===
+
+        ; VPMULLQ xmm0, xmm1, xmm2 (EVEX.128.66.0F38.W1 40)
+        ; 62 F2 F5 08 40 C2
+        _emit 0x62
+        _emit 0xF2  ; mm=10
+        _emit 0xF5  ; W=1 vvvv=1 pp=01
+        _emit 0x08  ; LL=00
+        _emit 0x40
+        _emit 0xC2
+
+        ; VPMULLD xmm0, xmm1, xmm2 (EVEX.128.66.0F38.W0 40) - for comparison
+        ; 62 F2 75 08 40 C2
+        _emit 0x62
+        _emit 0xF2
+        _emit 0x75  ; W=0
+        _emit 0x08
+        _emit 0x40
+        _emit 0xC2
+
+        ; === W-dependent insert/extract (map 3) ===
+
+        ; VINSERTF64X2 (W=1): EVEX.128.66.0F3A.W1 18
+        ; 62 F3 F5 08 18 C2 00
+        _emit 0x62
+        _emit 0xF3  ; mm=11
+        _emit 0xF5  ; W=1
+        _emit 0x08
+        _emit 0x18
+        _emit 0xC2
+        _emit 0x00
+
+        ; VINSERTF32X4 (W=0): EVEX.128.66.0F3A.W0 18
+        ; 62 F3 75 08 18 C2 00
+        _emit 0x62
+        _emit 0xF3
+        _emit 0x75  ; W=0
+        _emit 0x08
+        _emit 0x18
+        _emit 0xC2
+        _emit 0x00
+
+        ; VEXTRACTF64X2 (W=1): EVEX.128.66.0F3A.W1 19
+        ; 62 F3 F5 08 19 C2 00
+        _emit 0x62
+        _emit 0xF3
+        _emit 0xF5
+        _emit 0x08
+        _emit 0x19
+        _emit 0xC2
+        _emit 0x00
+
+        ; VINSERTI64X2 (W=1): EVEX.128.66.0F3A.W1 38
+        ; 62 F3 F5 08 38 C2 00
+        _emit 0x62
+        _emit 0xF3
+        _emit 0xF5
+        _emit 0x08
+        _emit 0x38
+        _emit 0xC2
+        _emit 0x00
+
+        ; VEXTRACTI64X2 (W=1): EVEX.128.66.0F3A.W1 39
+        ; 62 F3 F5 08 39 C2 00
+        _emit 0x62
+        _emit 0xF3
+        _emit 0xF5
+        _emit 0x08
+        _emit 0x39
+        _emit 0xC2
+        _emit 0x00
+
+        ; === DQ Conversion instructions (map 1 = 0F) ===
+
+        ; VMOVD xmm0, xmm2 (EVEX.128.66.0F.W0 6E)
+        ; 62 F1 7D 08 6E C2
+        _emit 0x62
+        _emit 0xF1  ; mm=01
+        _emit 0x7D  ; W=0 vvvv=0 pp=01
+        _emit 0x08
+        _emit 0x6E
+        _emit 0xC2
+
+        ; VMOVQ xmm0, xmm2 (EVEX.128.66.0F.W1 6E)
+        ; 62 F1 FD 08 6E C2
+        _emit 0x62
+        _emit 0xF1
+        _emit 0xFD  ; W=1 vvvv=0 pp=01
+        _emit 0x08
+        _emit 0x6E
+        _emit 0xC2
+
+        ; VCVTTPS2UDQ zmm0, zmm2 (EVEX.512.66.0F.W0 78)
+        ; 62 F1 7D 48 78 C2
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x7D  ; W=0 vvvv=0 pp=01
+        _emit 0x48  ; LL=10(512)
+        _emit 0x78
+        _emit 0xC2
+
+        ; VCVTTPD2UDQ zmm0, zmm2 (EVEX.512.66.0F.W1 78)
+        ; 62 F1 FD 48 78 C2
+        _emit 0x62
+        _emit 0xF1
+        _emit 0xFD  ; W=1
+        _emit 0x48
+        _emit 0x78
+        _emit 0xC2
+
+        ; VCVTPS2UDQ zmm0, zmm2 (EVEX.512.66.0F.W0 79)
+        ; 62 F1 7D 48 79 C2
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x7D
+        _emit 0x48
+        _emit 0x79
+        _emit 0xC2
+
+        ; VCVTTPD2QQ zmm0, zmm2 (EVEX.512.66.0F.W1 7A)
+        ; 62 F1 FD 48 7A C2
+        _emit 0x62
+        _emit 0xF1
+        _emit 0xFD
+        _emit 0x48
+        _emit 0x7A
+        _emit 0xC2
+
+        ; VCVTTPS2QQ zmm0, zmm2 (EVEX.512.66.0F.W0 7A)
+        ; 62 F1 7D 48 7A C2
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x7D
+        _emit 0x48
+        _emit 0x7A
+        _emit 0xC2
+
+        ; VCVTPD2QQ zmm0, zmm2 (EVEX.512.66.0F.W1 7B)
+        ; 62 F1 FD 48 7B C2
+        _emit 0x62
+        _emit 0xF1
+        _emit 0xFD
+        _emit 0x48
+        _emit 0x7B
+        _emit 0xC2
+
+        ; VCVTPS2QQ zmm0, zmm2 (EVEX.512.66.0F.W0 7B)
+        ; 62 F1 7D 48 7B C2
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x7D
+        _emit 0x48
+        _emit 0x7B
+        _emit 0xC2
+
+        ; VCVTTPD2DQ zmm0, zmm2 (EVEX.512.66.0F.W0 E6, pp=01)
+        ; 62 F1 7D 48 E6 C2
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x7D
+        _emit 0x48
+        _emit 0xE6
+        _emit 0xC2
+
+        ; VCVTDQ2PD zmm0, zmm2 (EVEX.512.F3.0F.W0 E6, pp=10)
+        ; 62 F1 7E 48 E6 C2
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x7E  ; W=0 vvvv=0 pp=10(F3)
+        _emit 0x48
+        _emit 0xE6
+        _emit 0xC2
+
+        ; VMOVD xmm0, xmm2 (EVEX.128.66.0F.W0 7E) - store form
+        ; 62 F1 7D 08 7E C2
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x7D
+        _emit 0x08
+        _emit 0x7E
+        _emit 0xC2
+    }
+}
+
+/* ---- EVEX: AVX-512 DQ/BW new instructions ---- */
+__declspec(noinline) void test_evex_avx512dq_bw_new(void)
+{
+    __asm {
+        ; === VCVTQQ2PS (EVEX.NP.0F.W1 5B, pp=0) zmm ===
+        ; 62 F1 FC 48 5B C2  (mm=01, W=1, pp=00, LL=10)
+        _emit 0x62
+        _emit 0xF1  ; mm=01
+        _emit 0xFC  ; W=1 vvvv=0 pp=00
+        _emit 0x48  ; LL=10(512)
+        _emit 0x5B
+        _emit 0xC2
+
+        ; === VCVTQQ2PD (EVEX.F3.0F.W1 E6, pp=2) zmm ===
+        ; 62 F1 FE 48 E6 C2  (mm=01, W=1, pp=10)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0xFE  ; W=1 vvvv=0 pp=10(F3)
+        _emit 0x48
+        _emit 0xE6
+        _emit 0xC2
+
+        ; === Truncation: VPMOVUSWB (EVEX.F3.0F38 10, pp=2) zmm->ymm ===
+        ; 62 F2 7E 48 10 C2  (mm=10, W=0, pp=10, LL=10)
+        _emit 0x62
+        _emit 0xF2  ; mm=10
+        _emit 0x7E  ; W=0 vvvv=0 pp=10(F3)
+        _emit 0x48
+        _emit 0x10
+        _emit 0xC2
+
+        ; === VPMOVUSDB (EVEX.F3.0F38 11, pp=2) zmm->xmm ===
+        ; 62 F2 7E 48 11 C2
+        _emit 0x62
+        _emit 0xF2
+        _emit 0x7E
+        _emit 0x48
+        _emit 0x11
+        _emit 0xC2
+
+        ; === VPMOVUSQB (EVEX.F3.0F38 12, pp=2) zmm->xmm ===
+        ; 62 F2 7E 48 12 C2
+        _emit 0x62
+        _emit 0xF2
+        _emit 0x7E
+        _emit 0x48
+        _emit 0x12
+        _emit 0xC2
+
+        ; === VPMOVUSDW (EVEX.F3.0F38 13, pp=2) zmm->ymm ===
+        ; 62 F2 7E 48 13 C2
+        _emit 0x62
+        _emit 0xF2
+        _emit 0x7E
+        _emit 0x48
+        _emit 0x13
+        _emit 0xC2
+
+        ; === VPMOVUSQW (EVEX.F3.0F38 14, pp=2) zmm->xmm ===
+        ; 62 F2 7E 48 14 C2
+        _emit 0x62
+        _emit 0xF2
+        _emit 0x7E
+        _emit 0x48
+        _emit 0x14
+        _emit 0xC2
+
+        ; === VPMOVUSQD (EVEX.F3.0F38 15, pp=2) zmm->ymm ===
+        ; 62 F2 7E 48 15 C2
+        _emit 0x62
+        _emit 0xF2
+        _emit 0x7E
+        _emit 0x48
+        _emit 0x15
+        _emit 0xC2
+
+        ; === VPMOVSWB (EVEX.F3.0F38 20, pp=2) zmm->ymm ===
+        ; 62 F2 7E 48 20 C2
+        _emit 0x62
+        _emit 0xF2
+        _emit 0x7E
+        _emit 0x48
+        _emit 0x20
+        _emit 0xC2
+
+        ; === VPMOVSDB (EVEX.F3.0F38 21, pp=2) zmm->xmm ===
+        ; 62 F2 7E 48 21 C2
+        _emit 0x62
+        _emit 0xF2
+        _emit 0x7E
+        _emit 0x48
+        _emit 0x21
+        _emit 0xC2
+
+        ; === VPMOVSQB (EVEX.F3.0F38 22, pp=2) zmm->xmm ===
+        ; 62 F2 7E 48 22 C2
+        _emit 0x62
+        _emit 0xF2
+        _emit 0x7E
+        _emit 0x48
+        _emit 0x22
+        _emit 0xC2
+
+        ; === VPMOVSDW (EVEX.F3.0F38 23, pp=2) zmm->ymm ===
+        ; 62 F2 7E 48 23 C2
+        _emit 0x62
+        _emit 0xF2
+        _emit 0x7E
+        _emit 0x48
+        _emit 0x23
+        _emit 0xC2
+
+        ; === VPMOVSQW (EVEX.F3.0F38 24, pp=2) zmm->xmm ===
+        ; 62 F2 7E 48 24 C2
+        _emit 0x62
+        _emit 0xF2
+        _emit 0x7E
+        _emit 0x48
+        _emit 0x24
+        _emit 0xC2
+
+        ; === VPMOVSQD (EVEX.F3.0F38 25, pp=2) zmm->ymm ===
+        ; 62 F2 7E 48 25 C2
+        _emit 0x62
+        _emit 0xF2
+        _emit 0x7E
+        _emit 0x48
+        _emit 0x25
+        _emit 0xC2
+
+        ; === VPMOVWB (EVEX.F3.0F38 30, pp=2) zmm->ymm ===
+        ; 62 F2 7E 48 30 C2
+        _emit 0x62
+        _emit 0xF2
+        _emit 0x7E
+        _emit 0x48
+        _emit 0x30
+        _emit 0xC2
+
+        ; === VPMOVDB (EVEX.F3.0F38 31, pp=2) zmm->xmm ===
+        ; 62 F2 7E 48 31 C2
+        _emit 0x62
+        _emit 0xF2
+        _emit 0x7E
+        _emit 0x48
+        _emit 0x31
+        _emit 0xC2
+
+        ; === VPMOVQB (EVEX.F3.0F38 32, pp=2) zmm->xmm ===
+        ; 62 F2 7E 48 32 C2
+        _emit 0x62
+        _emit 0xF2
+        _emit 0x7E
+        _emit 0x48
+        _emit 0x32
+        _emit 0xC2
+
+        ; === VPMOVDW (EVEX.F3.0F38 33, pp=2) zmm->ymm ===
+        ; 62 F2 7E 48 33 C2
+        _emit 0x62
+        _emit 0xF2
+        _emit 0x7E
+        _emit 0x48
+        _emit 0x33
+        _emit 0xC2
+
+        ; === VPMOVQW (EVEX.F3.0F38 34, pp=2) zmm->xmm ===
+        ; 62 F2 7E 48 34 C2
+        _emit 0x62
+        _emit 0xF2
+        _emit 0x7E
+        _emit 0x48
+        _emit 0x34
+        _emit 0xC2
+
+        ; === VPMOVQD (EVEX.F3.0F38 35, pp=2) zmm->ymm ===
+        ; 62 F2 7E 48 35 C2
+        _emit 0x62
+        _emit 0xF2
+        _emit 0x7E
+        _emit 0x48
+        _emit 0x35
+        _emit 0xC2
+
+        ; === VPMOVM2B (EVEX.F3.0F38.W0 28, pp=2) zmm, k ===
+        ; 62 F2 7E 08 28 C2  (LL=00, W=0)
+        _emit 0x62
+        _emit 0xF2
+        _emit 0x7E  ; W=0 vvvv=0 pp=10(F3)
+        _emit 0x08  ; LL=00(128)
+        _emit 0x28
+        _emit 0xC2  ; REG=0(xmm0), RM=2(k2)
+
+        ; === VPMOVM2W (EVEX.F3.0F38.W1 28, pp=2) zmm, k ===
+        ; 62 F2 FE 08 28 C2
+        _emit 0x62
+        _emit 0xF2
+        _emit 0xFE  ; W=1 vvvv=0 pp=10(F3)
+        _emit 0x08
+        _emit 0x28
+        _emit 0xC2
+
+        ; === VPMOVB2M (EVEX.F3.0F38.W0 29, pp=2) k, xmm ===
+        ; 62 F2 7E 08 29 C2
+        _emit 0x62
+        _emit 0xF2
+        _emit 0x7E
+        _emit 0x08
+        _emit 0x29
+        _emit 0xC2
+
+        ; === VPMOVW2M (EVEX.F3.0F38.W1 29, pp=2) k, xmm ===
+        ; 62 F2 FE 08 29 C2
+        _emit 0x62
+        _emit 0xF2
+        _emit 0xFE
+        _emit 0x08
+        _emit 0x29
+        _emit 0xC2
+
+        ; === VPMOVM2D (EVEX.F3.0F38.W0 38, pp=2) zmm, k ===
+        ; 62 F2 7E 08 38 C2
+        _emit 0x62
+        _emit 0xF2
+        _emit 0x7E
+        _emit 0x08
+        _emit 0x38
+        _emit 0xC2
+
+        ; === VPMOVM2Q (EVEX.F3.0F38.W1 38, pp=2) zmm, k ===
+        ; 62 F2 FE 08 38 C2
+        _emit 0x62
+        _emit 0xF2
+        _emit 0xFE
+        _emit 0x08
+        _emit 0x38
+        _emit 0xC2
+
+        ; === VPMOVD2M (EVEX.F3.0F38.W0 39, pp=2) k, xmm ===
+        ; 62 F2 7E 08 39 C2
+        _emit 0x62
+        _emit 0xF2
+        _emit 0x7E
+        _emit 0x08
+        _emit 0x39
+        _emit 0xC2
+
+        ; === VPMOVQ2M (EVEX.F3.0F38.W1 39, pp=2) k, xmm ===
+        ; 62 F2 FE 08 39 C2
+        _emit 0x62
+        _emit 0xF2
+        _emit 0xFE
+        _emit 0x08
+        _emit 0x39
+        _emit 0xC2
+
+        ; === VRANGEPS (EVEX.66.0F3A.W0 50) zmm, zmm, zmm, imm8 ===
+        ; 62 F3 75 48 50 C2 01
+        _emit 0x62
+        _emit 0xF3  ; mm=11
+        _emit 0x75  ; W=0 vvvv=1 pp=01(66)
+        _emit 0x48
+        _emit 0x50
+        _emit 0xC2
+        _emit 0x01
+
+        ; === VRANGEPD (EVEX.66.0F3A.W1 50) zmm, zmm, zmm, imm8 ===
+        ; 62 F3 F5 48 50 C2 02
+        _emit 0x62
+        _emit 0xF3
+        _emit 0xF5  ; W=1
+        _emit 0x48
+        _emit 0x50
+        _emit 0xC2
+        _emit 0x02
+
+        ; === VRANGESS (EVEX.66.0F3A.W0 51) xmm, xmm, xmm, imm8 ===
+        ; 62 F3 75 08 51 C2 03
+        _emit 0x62
+        _emit 0xF3
+        _emit 0x75
+        _emit 0x08
+        _emit 0x51
+        _emit 0xC2
+        _emit 0x03
+
+        ; === VRANGESD (EVEX.66.0F3A.W1 51) xmm, xmm, xmm, imm8 ===
+        ; 62 F3 F5 08 51 C2 04
+        _emit 0x62
+        _emit 0xF3
+        _emit 0xF5
+        _emit 0x08
+        _emit 0x51
+        _emit 0xC2
+        _emit 0x04
+
+        ; === VFPCLASSPS (EVEX.66.0F3A.W0 66) k, zmm, imm8 ===
+        ; 62 F3 7D 48 66 C2 05
+        _emit 0x62
+        _emit 0xF3
+        _emit 0x7D  ; W=0 vvvv=0 pp=01(66)
+        _emit 0x48
+        _emit 0x66
+        _emit 0xC2
+        _emit 0x05
+
+        ; === VFPCLASSPD (EVEX.66.0F3A.W1 66) k, zmm, imm8 ===
+        ; 62 F3 FD 48 66 C2 06
+        _emit 0x62
+        _emit 0xF3
+        _emit 0xFD  ; W=1 vvvv=0 pp=01(66)
+        _emit 0x48
+        _emit 0x66
+        _emit 0xC2
+        _emit 0x06
+
+        ; === VFPCLASSSS (EVEX.66.0F3A.W0 67) k, xmm, imm8 ===
+        ; 62 F3 7D 08 67 C2 07
+        _emit 0x62
+        _emit 0xF3
+        _emit 0x7D
+        _emit 0x08
+        _emit 0x67
+        _emit 0xC2
+        _emit 0x07
+
+        ; === VFPCLASSSD (EVEX.66.0F3A.W1 67) k, xmm, imm8 ===
+        ; 62 F3 FD 08 67 C2 08
+        _emit 0x62
+        _emit 0xF3
+        _emit 0xFD
+        _emit 0x08
+        _emit 0x67
+        _emit 0xC2
+        _emit 0x08
+    }
+}
+
+/* ---- EVEX: AVX-512 BW (integer byte/word ops) ---- */
+__declspec(noinline) void test_evex_avx512bw(void)
+{
+    /*
+     * All use EVEX.512.66.0F (P0=F1, P1=75[W=0]/F5[W=1] with vvvv=1, P2=48)
+     * ModRM C2 = mod=11 reg=0 rm=2
+     */
+    __asm {
+        ; VPUNPCKLBW zmm0, zmm1, zmm2 (60)
+        ; 62 F1 75 48 60 C2
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0x60
+        _emit 0xC2
+
+        ; VPUNPCKLWD zmm0, zmm1, zmm2 (61)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0x61
+        _emit 0xC2
+
+        ; VPUNPCKLDQ zmm0, zmm1, zmm2 (62)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0x62
+        _emit 0xC2
+
+        ; VPACKSSWB zmm0, zmm1, zmm2 (63)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0x63
+        _emit 0xC2
+
+        ; VPCMPGTB zmm0, zmm1, zmm2 (64)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0x64
+        _emit 0xC2
+
+        ; VPCMPGTW zmm0, zmm1, zmm2 (65)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0x65
+        _emit 0xC2
+
+        ; VPACKUSWB zmm0, zmm1, zmm2 (67)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0x67
+        _emit 0xC2
+
+        ; VPUNPCKHBW zmm0, zmm1, zmm2 (68)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0x68
+        _emit 0xC2
+
+        ; VPUNPCKHWD zmm0, zmm1, zmm2 (69)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0x69
+        _emit 0xC2
+
+        ; VPUNPCKHDQ zmm0, zmm1, zmm2 (6A)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0x6A
+        _emit 0xC2
+
+        ; VPACKSSDW zmm0, zmm1, zmm2 (6B)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0x6B
+        _emit 0xC2
+
+        ; VPUNPCKLQDQ zmm0, zmm1, zmm2 (6C)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0x6C
+        _emit 0xC2
+
+        ; VPUNPCKHQDQ zmm0, zmm1, zmm2 (6D)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0x6D
+        _emit 0xC2
+
+        ; VPSHUFD zmm0, zmm2, 01h (EVEX.512.66.0F 70, pp=01)
+        ; 62 F1 7D 48 70 C2 01
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x7D  ; W=0 vvvv=0 pp=01(66)
+        _emit 0x48
+        _emit 0x70
+        _emit 0xC2
+        _emit 0x01
+
+        ; VPSHUFHW zmm0, zmm2, 01h (EVEX.512.F3.0F 70, pp=10)
+        ; 62 F1 7E 48 70 C2 01
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x7E  ; W=0 vvvv=0 pp=10(F3)
+        _emit 0x48
+        _emit 0x70
+        _emit 0xC2
+        _emit 0x01
+
+        ; VPSHUFLW zmm0, zmm2, 01h (EVEX.512.F2.0F 70, pp=11)
+        ; 62 F1 7F 48 70 C2 01
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x7F  ; W=0 vvvv=0 pp=11(F2)
+        _emit 0x48
+        _emit 0x70
+        _emit 0xC2
+        _emit 0x01
+
+        ; VPCMPEQB zmm0, zmm1, zmm2 (74)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0x74
+        _emit 0xC2
+
+        ; VPCMPEQW zmm0, zmm1, zmm2 (75)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0x75
+        _emit 0xC2
+
+        ; VPSRLW zmm0, zmm1, zmm2 (D1)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0xD1
+        _emit 0xC2
+
+        ; VPSRLD zmm0, zmm1, zmm2 (D2)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0xD2
+        _emit 0xC2
+
+        ; VPSRLQ zmm0, zmm1, zmm2 (D3)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0xD3
+        _emit 0xC2
+
+        ; VPMULLW zmm0, zmm1, zmm2 (D5)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0xD5
+        _emit 0xC2
+
+        ; VPSUBUSB zmm0, zmm1, zmm2 (D8)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0xD8
+        _emit 0xC2
+
+        ; VPMINUB zmm0, zmm1, zmm2 (DA)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0xDA
+        _emit 0xC2
+
+        ; VPADDUSB zmm0, zmm1, zmm2 (DC)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0xDC
+        _emit 0xC2
+
+        ; VPMAXUB zmm0, zmm1, zmm2 (DE)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0xDE
+        _emit 0xC2
+
+        ; VPAVGB zmm0, zmm1, zmm2 (E0)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0xE0
+        _emit 0xC2
+
+        ; VPSRAW zmm0, zmm1, zmm2 (E1)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0xE1
+        _emit 0xC2
+
+        ; VPMULHUW zmm0, zmm1, zmm2 (E4)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0xE4
+        _emit 0xC2
+
+        ; VPMULHW zmm0, zmm1, zmm2 (E5)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0xE5
+        _emit 0xC2
+
+        ; VPSUBSB zmm0, zmm1, zmm2 (E8)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0xE8
+        _emit 0xC2
+
+        ; VPMINSW zmm0, zmm1, zmm2 (EA)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0xEA
+        _emit 0xC2
+
+        ; VPADDSB zmm0, zmm1, zmm2 (EC)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0xEC
+        _emit 0xC2
+
+        ; VPMAXSW zmm0, zmm1, zmm2 (EE)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0xEE
+        _emit 0xC2
+
+        ; VPSLLW zmm0, zmm1, zmm2 (F1)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0xF1
+        _emit 0xC2
+
+        ; VPSLLD zmm0, zmm1, zmm2 (F2)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0xF2
+        _emit 0xC2
+
+        ; VPSLLQ zmm0, zmm1, zmm2 (F3)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0xF3
+        _emit 0xC2
+
+        ; VPMADDWD zmm0, zmm1, zmm2 (F5)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0xF5
+        _emit 0xC2
+
+        ; VPSADBW zmm0, zmm1, zmm2 (F6)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0xF6
+        _emit 0xC2
+
+        ; VPSUBB zmm0, zmm1, zmm2 (F8)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0xF8
+        _emit 0xC2
+
+        ; VPSUBW zmm0, zmm1, zmm2 (F9)
+        _emit 0x62
+        _emit 0xF1
+        _emit 0x75
+        _emit 0x48
+        _emit 0xF9
+        _emit 0xC2
+    }
+}
+
 int main(void)
 {
     test_data_transfer();
@@ -917,5 +2173,14 @@ int main(void)
     test_endbr();
     test_bmi();
     test_vmx_extended();
+    test_tsx_extended();
+    test_cet_extended();
+    test_gfni_legacy();
+    test_gfni_vaes_vex();
+    test_evex_gfni_vaes_vpclmul();
+    test_evex_ifma_vbmi();
+    test_evex_avx512dq();
+    test_evex_avx512dq_bw_new();
+    test_evex_avx512bw();
     return 0;
 }
