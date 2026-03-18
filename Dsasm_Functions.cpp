@@ -8651,6 +8651,12 @@ void DecodeEVEX(
         wsprintf(destStr,"%s",KRegs[REG_field & 7]);
     }
 
+    // VCVTQQ2PS (0x5B, pp=0, W=1): dest is half-size (qword->dword narrows)
+    if(mm == 1 && OpByte == 0x5B && pp == 0 && W){
+        const char **rr = (LL==2)?YMMRegs:XMMRegs;
+        wsprintf(destStr,"%s",rr[REG_field & 15]);
+    }
+
     // Broadcast decorator
     char bcastStr[16]="";
     if(b_bit && MOD != 0x03){
@@ -8681,6 +8687,9 @@ void DecodeEVEX(
         twoOperand = TRUE;
     // VFPCLASS (k dest + imm8, 2-operand)
     if(mm == 3 && (OpByte == 0x66 || OpByte == 0x67))
+        twoOperand = TRUE;
+    // VCVTQQ2PS (0x5B pp=0 W=1) and VCVTQQ2PD (0xE6 pp=2 W=1)
+    if(mm == 1 && W && ((OpByte == 0x5B && pp == 0) || (OpByte == 0xE6 && pp == 2)))
         twoOperand = TRUE;
 
     // Build full assembly string
