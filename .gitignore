@@ -6,5 +6,6 @@
 .claude
 Backups
 *.exe
-tests/chip8.bin
+tests/*.bin
 tests/*.asm
+tests/*.lst
