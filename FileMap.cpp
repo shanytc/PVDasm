@@ -235,6 +235,37 @@ void BuildCodeMapData()
             }
         }
     }
+
+    // Second pass: detect function bodies via prologue/epilogue patterns.
+    // Many functions have PUSH EBP/RBP prologues that the auto-comment system
+    // detects, but they are NOT added to fFunctionInfo. Scan the mnemonics
+    // directly to find prologue->RET ranges and mark them as CMAP_FUNCTION.
+    bool inFunction = false;
+    for (size_t i = 0; i < count; i++) {
+        char* mnem = DisasmDataLines[i].GetMnemonic();
+        if (!mnem || !mnem[0]) continue;
+
+        if (!inFunction) {
+            // Look for function prologue: "PUSH EBP" or "PUSH RBP"
+            if (_strnicmp(mnem, "push ebp", 8) == 0 || _strnicmp(mnem, "push rbp", 8) == 0) {
+                inFunction = true;
+                if (g_CodeMapTypes[i] == CMAP_CODE)
+                    g_CodeMapTypes[i] = CMAP_FUNCTION;
+            }
+        } else {
+            // Inside a function body — mark as FUNCTION unless it's import/data
+            if (g_CodeMapTypes[i] == CMAP_CODE)
+                g_CodeMapTypes[i] = CMAP_FUNCTION;
+
+            // Check for function end: RET, RETN, RETF
+            if (_strnicmp(mnem, "ret", 3) == 0) {
+                // Verify it's actually a return (not "retf" prefix of something else)
+                char c = mnem[3];
+                if (c == '\0' || c == ' ' || c == 'n' || c == 'N' || c == 'f' || c == 'F')
+                    inFunction = false;
+            }
+        }
+    }
 }
 
 static COLORREF GetCodeMapColor(BYTE type)
