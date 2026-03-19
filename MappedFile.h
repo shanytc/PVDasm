@@ -93,7 +93,7 @@ typedef MapTree::iterator					TreeMapItr;
 // =========================  DEFINES  ============================
 // ================================================================
 
-#define PVDASM_VERSION "1.9c"
+#define PVDASM_VERSION "1.9d"
 
 #ifdef _M_X64
 #define PVDASM "PVDasm v" PVDASM_VERSION " Disassembler (64Bit)"
