@@ -3846,25 +3846,56 @@ void WINAPI Disassembler(/*LPVOID lpParam*/) // Thread Worker for Decoding Instr
                 ListIndex++;
             }
 
+			// Check if address matches a known function from first-pass analysis
+			bool fInfoBanner = false;
 			for(fIndex=0;fIndex<fFunctionInfo.size();fIndex++){
 				if(fFunctionInfo[fIndex].FunctionStart==Disasm.Address && Disasm.Address!=ImageBase+EntryPoint){
 					disop.ShowAddr=FALSE; // Disable Showing Address
 
 					if(lstrcmp(fFunctionInfo[fIndex].FunctionName,"")==0){
-						wsprintf(Disasm.Assembly,"; ====== Proc_%08X Proc ======",Disasm.Address);
+						if(disop.CPU == x86_64)
+							wsprintf(Disasm.Assembly,"; ====== Proc_%08X%08X ======",(DWORD)(Disasm.Address>>32),(DWORD)Disasm.Address);
+						else
+							wsprintf(Disasm.Assembly,"; ====== Proc_%08X ======",Disasm.Address);
 					}
 					else{
-						wsprintf(Disasm.Assembly,"; ====== %s Proc ======",fFunctionInfo[fIndex].FunctionName);
+						wsprintf(Disasm.Assembly,"; ====== %s ======",fFunctionInfo[fIndex].FunctionName);
 					}
 
 					SaveDecoded(Disasm,disop,ListIndex);
 					FlushDecoded(&Disasm);  // reset all content
-					disop.ShowAddr=TRUE; // Enable Showing Address 
+					disop.ShowAddr=TRUE; // Enable Showing Address
 					ListIndex++;
                     if(fFunctionInfo[fIndex].FunctionEnd != 0)
                         FuncEnd=fFunctionInfo[fIndex].FunctionEnd;
                     ProcAddr=fFunctionInfo[fIndex].FunctionStart;
+					fInfoBanner = true;
 					break;
+				}
+			}
+
+			// Detect function prologues not already covered by fFunctionInfo or EP
+			if(!fInfoBanner && Disasm.Address != OEP){
+				BYTE curByte = (BYTE)(*(Linear+Index));
+				bool isPrologue = false;
+				if(curByte == 0x55){  // PUSH EBP or PUSH RBP (with REX prefix handled below)
+					isPrologue = true;
+				}
+				// x64: REX.W prefix (0x48) + PUSH RBP (0x55)
+				if(!isPrologue && disop.CPU == x86_64 && curByte == 0x48 && (Index+1) < BytesToDecode){
+					if((BYTE)(*(Linear+Index+1)) == 0x55)
+						isPrologue = true;
+				}
+				if(isPrologue){
+					disop.ShowAddr=FALSE;
+					if(disop.CPU == x86_64)
+						wsprintf(Disasm.Assembly,"; ====== Proc_%08X%08X ======",(DWORD)(Disasm.Address>>32),(DWORD)Disasm.Address);
+					else
+						wsprintf(Disasm.Assembly,"; ====== Proc_%08X ======",Disasm.Address);
+					SaveDecoded(Disasm,disop,ListIndex);
+					FlushDecoded(&Disasm);
+					disop.ShowAddr=TRUE;
+					ListIndex++;
 				}
 			}
         
