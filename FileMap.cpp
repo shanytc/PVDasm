@@ -321,7 +321,21 @@ static int DrawLegendItem(HDC hdc, int x, int y, int height, COLORREF color, con
 // Code map zoom state: visible fraction of the total data range [0.0 .. 1.0]
 static double g_CodeMapZoomStart = 0.0;
 static double g_CodeMapZoomEnd   = 1.0;
+static bool     g_CodeMapDragging = false;
+static DWORD_PTR g_CodeMapDragIdx = 0;        // Current drag target index
+static DWORD_PTR g_CodeMapLastScrollIdx = (DWORD_PTR)-1; // Last index sent to listview
 #define CODEMAP_ZOOM_FACTOR 1.3  // Each scroll step zooms by this factor
+#define CODEMAP_DRAG_TIMER_ID 9001
+#define CODEMAP_DRAG_TIMER_MS 40  // Throttle listview scrolling to ~25fps
+
+// Cached bitmap for the color bar + legend (avoids redrawing on every paint)
+static HBITMAP g_CodeMapCacheBmp = NULL;
+static int     g_CodeMapCacheWidth = 0;
+static int     g_CodeMapCacheHeight = 0;
+static double  g_CodeMapCacheZoomStart = -1.0;
+static double  g_CodeMapCacheZoomEnd   = -1.0;
+static size_t  g_CodeMapCacheCount = 0;
+static bool    g_CodeMapCacheDark = false;
 
 LRESULT CALLBACK CodeMapWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -336,99 +350,137 @@ LRESULT CALLBACK CodeMapWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
             GetClientRect(hWnd, &rc);
             int totalWidth = rc.right - rc.left;
             int totalHeight = rc.bottom - rc.top;
-
-            // Fill entire background
-            COLORREF bgColor = g_DarkMode ? CODEMAP_COLOR_BG_DK : CODEMAP_COLOR_BG;
-            HBRUSH hBgBrush = CreateSolidBrush(bgColor);
-            FillRect(hdc, &rc, hBgBrush);
-            DeleteObject(hBgBrush);
-
-            // --- Draw the color bar in the top portion ---
             int barHeight = CODE_MAP_BAR_HEIGHT;
             size_t count = DisasmDataLines.size();
-            if (count > 0 && g_CodeMapTypes.size() == count && totalWidth > 0) {
-                // Zoom: map pixels to the visible sub-range of the data
-                double zStart = g_CodeMapZoomStart;
-                double zEnd   = g_CodeMapZoomEnd;
-                double zRange = zEnd - zStart;
 
-                COLORREF prevColor = 0;
-                int runStart = 0;
+            // --- Rebuild cached bitmap if needed (zoom/size/data changed) ---
+            bool cacheValid = (g_CodeMapCacheBmp != NULL
+                && g_CodeMapCacheWidth == totalWidth
+                && g_CodeMapCacheHeight == totalHeight
+                && g_CodeMapCacheZoomStart == g_CodeMapZoomStart
+                && g_CodeMapCacheZoomEnd == g_CodeMapZoomEnd
+                && g_CodeMapCacheCount == count
+                && g_CodeMapCacheDark == g_DarkMode);
 
-                for (int x = 0; x <= totalWidth; x++) {
-                    COLORREF color = 0;
-                    if (x < totalWidth) {
-                        double frac0 = (double)x / totalWidth;
-                        double frac1 = (double)(x + 1) / totalWidth;
-                        size_t startIdx = (size_t)((zStart + frac0 * zRange) * count);
-                        size_t endIdx   = (size_t)((zStart + frac1 * zRange) * count);
-                        if (endIdx > count) endIdx = count;
-                        if (startIdx >= count) startIdx = count - 1;
-                        if (endIdx <= startIdx) endIdx = startIdx + 1;
+            if (!cacheValid) {
+                // (Re)create the cache bitmap
+                if (g_CodeMapCacheBmp) DeleteObject(g_CodeMapCacheBmp);
+                HDC hdcMem = CreateCompatibleDC(hdc);
+                g_CodeMapCacheBmp = CreateCompatibleBitmap(hdc, totalWidth, totalHeight);
+                HBITMAP hOldBmp = (HBITMAP)SelectObject(hdcMem, g_CodeMapCacheBmp);
 
-                        BYTE bestType = CMAP_CODE;
-                        for (size_t i = startIdx; i < endIdx; i++) {
-                            BYTE t = g_CodeMapTypes[i];
-                            if (t == CMAP_IMPORT) { bestType = CMAP_IMPORT; break; }
-                            if (t == CMAP_FUNCTION && bestType < CMAP_FUNCTION) bestType = CMAP_FUNCTION;
-                            if (t == CMAP_DATA && bestType < CMAP_DATA) bestType = CMAP_DATA;
+                // Fill entire background
+                COLORREF bgColor = g_DarkMode ? CODEMAP_COLOR_BG_DK : CODEMAP_COLOR_BG;
+                HBRUSH hBgBrush = CreateSolidBrush(bgColor);
+                FillRect(hdcMem, &rc, hBgBrush);
+                DeleteObject(hBgBrush);
+
+                // Draw the color bar
+                if (count > 0 && g_CodeMapTypes.size() == count && totalWidth > 0) {
+                    double zStart = g_CodeMapZoomStart;
+                    double zEnd   = g_CodeMapZoomEnd;
+                    double zRange = zEnd - zStart;
+
+                    COLORREF prevColor = 0;
+                    int runStart = 0;
+
+                    for (int x = 0; x <= totalWidth; x++) {
+                        COLORREF color = 0;
+                        if (x < totalWidth) {
+                            double frac0 = (double)x / totalWidth;
+                            double frac1 = (double)(x + 1) / totalWidth;
+                            size_t startIdx = (size_t)((zStart + frac0 * zRange) * count);
+                            size_t endIdx   = (size_t)((zStart + frac1 * zRange) * count);
+                            if (endIdx > count) endIdx = count;
+                            if (startIdx >= count) startIdx = count - 1;
+                            if (endIdx <= startIdx) endIdx = startIdx + 1;
+
+                            BYTE bestType = CMAP_CODE;
+                            for (size_t i = startIdx; i < endIdx; i++) {
+                                BYTE t = g_CodeMapTypes[i];
+                                if (t == CMAP_IMPORT) { bestType = CMAP_IMPORT; break; }
+                                if (t == CMAP_FUNCTION && bestType < CMAP_FUNCTION) bestType = CMAP_FUNCTION;
+                                if (t == CMAP_DATA && bestType < CMAP_DATA) bestType = CMAP_DATA;
+                            }
+                            color = GetCodeMapColor(bestType);
                         }
-                        color = GetCodeMapColor(bestType);
-                    }
 
-                    if (x == 0) {
-                        prevColor = color;
-                        runStart = 0;
-                    } else if (color != prevColor || x == totalWidth) {
-                        RECT fillRc = { runStart, 0, x, barHeight };
-                        HBRUSH hBr = CreateSolidBrush(prevColor);
-                        FillRect(hdc, &fillRc, hBr);
-                        DeleteObject(hBr);
-                        prevColor = color;
-                        runStart = x;
+                        if (x == 0) {
+                            prevColor = color;
+                            runStart = 0;
+                        } else if (color != prevColor || x == totalWidth) {
+                            RECT fillRc = { runStart, 0, x, barHeight };
+                            HBRUSH hBr = CreateSolidBrush(prevColor);
+                            FillRect(hdcMem, &fillRc, hBr);
+                            DeleteObject(hBr);
+                            prevColor = color;
+                            runStart = x;
+                        }
                     }
                 }
 
-                // Helper lambda: convert a data index to pixel X in zoomed view
+                // Draw legend row
+                int legendY = barHeight;
+                HFONT hSmallFont = CreateFontA(CODE_MAP_LEGEND_HEIGHT - 1, 0, 0, 0, FW_NORMAL,
+                    FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
+                    CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, "MS Shell Dlg");
+                HFONT hOldFont = (HFONT)SelectObject(hdcMem, hSmallFont);
+
+                int xPos = 4;
+                xPos = DrawLegendItem(hdcMem, xPos, legendY, CODE_MAP_LEGEND_HEIGHT,
+                    g_DarkMode ? CODEMAP_COLOR_FUNCTION_DK : CODEMAP_COLOR_FUNCTION, "Function");
+                xPos = DrawLegendItem(hdcMem, xPos, legendY, CODE_MAP_LEGEND_HEIGHT,
+                    g_DarkMode ? CODEMAP_COLOR_IMPORT_DK : CODEMAP_COLOR_IMPORT, "Import");
+                xPos = DrawLegendItem(hdcMem, xPos, legendY, CODE_MAP_LEGEND_HEIGHT,
+                    g_DarkMode ? CODEMAP_COLOR_DATA_DK : CODEMAP_COLOR_DATA, "Data");
+                xPos = DrawLegendItem(hdcMem, xPos, legendY, CODE_MAP_LEGEND_HEIGHT,
+                    g_DarkMode ? CODEMAP_COLOR_CODE_DK : CODEMAP_COLOR_CODE, "Code");
+
+                SelectObject(hdcMem, hOldFont);
+                DeleteObject(hSmallFont);
+
+                SelectObject(hdcMem, hOldBmp);
+                DeleteDC(hdcMem);
+
+                // Update cache keys
+                g_CodeMapCacheWidth = totalWidth;
+                g_CodeMapCacheHeight = totalHeight;
+                g_CodeMapCacheZoomStart = g_CodeMapZoomStart;
+                g_CodeMapCacheZoomEnd = g_CodeMapZoomEnd;
+                g_CodeMapCacheCount = count;
+                g_CodeMapCacheDark = g_DarkMode;
+            }
+
+            // --- Blit cached bitmap to screen ---
+            HDC hdcBlit = CreateCompatibleDC(hdc);
+            HBITMAP hOldBlit = (HBITMAP)SelectObject(hdcBlit, g_CodeMapCacheBmp);
+            BitBlt(hdc, 0, 0, totalWidth, totalHeight, hdcBlit, 0, 0, SRCCOPY);
+            SelectObject(hdcBlit, hOldBlit);
+            DeleteDC(hdcBlit);
+
+            // --- Draw arrow indicator on top ---
+            if (count > 0 && g_CodeMapTypes.size() == count && totalWidth > 0) {
+                double zStart = g_CodeMapZoomStart;
+                double zRange = g_CodeMapZoomEnd - zStart;
                 #define IDX_TO_PX(idx) ((int)(((double)(idx) / count - zStart) / zRange * totalWidth))
 
-                // Draw current view position indicator
                 HWND hDisasm = GetDlgItem(Main_hWnd, IDC_DISASM);
                 if (hDisasm) {
-                    int topIndex = (int)SendMessage(hDisasm, LVM_GETTOPINDEX, 0, 0);
-                    int visibleCount = (int)SendMessage(hDisasm, LVM_GETCOUNTPERPAGE, 0, 0);
-
-                    int x1 = IDX_TO_PX(topIndex);
-                    int x2 = IDX_TO_PX(topIndex + visibleCount);
-                    if (x2 <= x1) x2 = x1 + 2;
-                    // Clamp to bar area
-                    if (x1 < 0) x1 = 0;
-                    if (x2 > totalWidth) x2 = totalWidth;
-
-                    if (x2 > 0 && x1 < totalWidth) {
-                        HPEN hIndicatorPen = CreatePen(PS_SOLID, 1, g_DarkMode ? RGB(255, 255, 255) : RGB(0, 0, 0));
-                        HPEN hOldPen = (HPEN)SelectObject(hdc, hIndicatorPen);
-                        HBRUSH hOldBrush = (HBRUSH)SelectObject(hdc, GetStockObject(NULL_BRUSH));
-                        Rectangle(hdc, x1, 0, x2, barHeight);
-                        SelectObject(hdc, hOldPen);
-                        SelectObject(hdc, hOldBrush);
-                        DeleteObject(hIndicatorPen);
-                    }
-
-                    // Draw small arrow indicator: follows focused item when visible,
-                    // otherwise falls back to viewport center (e.g. during scroll)
-                    int topIdx = topIndex;
-                    int perPage = visibleCount;
-                    int focusedIdx = (int)SendMessage(hDisasm, LVM_GETNEXTITEM, -1, LVNI_FOCUSED);
                     int cursorIdx;
-                    if (focusedIdx >= topIdx && focusedIdx <= topIdx + perPage)
-                        cursorIdx = focusedIdx;
-                    else
-                        cursorIdx = topIdx + perPage / 2;
+                    if (g_CodeMapDragging) {
+                        cursorIdx = (int)g_CodeMapDragIdx;
+                    } else {
+                        int topIndex = (int)SendMessage(hDisasm, LVM_GETTOPINDEX, 0, 0);
+                        int visibleCount = (int)SendMessage(hDisasm, LVM_GETCOUNTPERPAGE, 0, 0);
+                        int focusedIdx = (int)SendMessage(hDisasm, LVM_GETNEXTITEM, -1, LVNI_FOCUSED);
+                        if (focusedIdx >= topIndex && focusedIdx <= topIndex + visibleCount)
+                            cursorIdx = focusedIdx;
+                        else
+                            cursorIdx = topIndex + visibleCount / 2;
+                    }
                     if (cursorIdx >= 0 && cursorIdx < (int)count) {
                         int cx = IDX_TO_PX(cursorIdx);
                         if (cx >= 0 && cx < totalWidth) {
-                            // Small downward-pointing triangle (5px wide, 4px tall)
                             POINT arrow[3] = {
                                 { cx - 4, 0 },
                                 { cx + 4, 0 },
@@ -449,32 +501,16 @@ LRESULT CALLBACK CodeMapWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
                 #undef IDX_TO_PX
             }
 
-            // --- Draw legend row below the bar ---
-            int legendY = barHeight;
-            HFONT hSmallFont = CreateFontA(CODE_MAP_LEGEND_HEIGHT - 1, 0, 0, 0, FW_NORMAL,
-                FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
-                CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, "MS Shell Dlg");
-            HFONT hOldFont = (HFONT)SelectObject(hdc, hSmallFont);
-
-            int xPos = 4;
-            xPos = DrawLegendItem(hdc, xPos, legendY, CODE_MAP_LEGEND_HEIGHT,
-                g_DarkMode ? CODEMAP_COLOR_FUNCTION_DK : CODEMAP_COLOR_FUNCTION, "Function");
-            xPos = DrawLegendItem(hdc, xPos, legendY, CODE_MAP_LEGEND_HEIGHT,
-                g_DarkMode ? CODEMAP_COLOR_IMPORT_DK : CODEMAP_COLOR_IMPORT, "Import");
-            xPos = DrawLegendItem(hdc, xPos, legendY, CODE_MAP_LEGEND_HEIGHT,
-                g_DarkMode ? CODEMAP_COLOR_DATA_DK : CODEMAP_COLOR_DATA, "Data");
-            xPos = DrawLegendItem(hdc, xPos, legendY, CODE_MAP_LEGEND_HEIGHT,
-                g_DarkMode ? CODEMAP_COLOR_CODE_DK : CODEMAP_COLOR_CODE, "Code");
-
-            SelectObject(hdc, hOldFont);
-            DeleteObject(hSmallFont);
-
             EndPaint(hWnd, &ps);
             return 0;
         }
 
         case WM_LBUTTONDOWN: {
             SetCapture(hWnd);
+            g_CodeMapDragging = true;
+            g_CodeMapLastScrollIdx = (DWORD_PTR)-1;
+            // Start a timer to throttle listview scrolling
+            SetTimer(hWnd, CODEMAP_DRAG_TIMER_ID, CODEMAP_DRAG_TIMER_MS, NULL);
             // Fall through to mouse move handling
         }
         case WM_MOUSEMOVE: {
@@ -496,18 +532,52 @@ LRESULT CALLBACK CodeMapWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
                 DWORD_PTR index = (DWORD_PTR)(frac * count);
                 if (index >= count) index = count - 1;
 
-                HWND hDisasm = GetDlgItem(Main_hWnd, IDC_DISASM);
-                if (hDisasm) {
-                    SelectItem(hDisasm, index);
-                    ListView_EnsureVisible(hDisasm, (int)index, FALSE);
-                }
+                // Always update the drag index (arrow follows mouse instantly)
+                g_CodeMapDragIdx = index;
                 InvalidateRect(hWnd, NULL, FALSE);
             }
             return 0;
         }
 
+        case WM_TIMER: {
+            if (wParam == CODEMAP_DRAG_TIMER_ID) {
+                // Throttled: scroll listview to center on drag position (no selection change)
+                if (g_CodeMapDragging && g_CodeMapDragIdx != g_CodeMapLastScrollIdx) {
+                    g_CodeMapLastScrollIdx = g_CodeMapDragIdx;
+                    HWND hDisasm = GetDlgItem(Main_hWnd, IDC_DISASM);
+                    if (hDisasm) {
+                        int topIdx = (int)SendMessage(hDisasm, LVM_GETTOPINDEX, 0, 0);
+                        int perPage = (int)SendMessage(hDisasm, LVM_GETCOUNTPERPAGE, 0, 0);
+                        // Desired top = center the drag target in view
+                        int desiredTop = (int)g_CodeMapDragIdx - perPage / 2;
+                        int deltaItems = desiredTop - topIdx;
+                        if (deltaItems != 0) {
+                            // Get item height from first visible item's rect
+                            RECT itemRc;
+                            ListView_GetItemRect(hDisasm, topIdx, &itemRc, LVIR_BOUNDS);
+                            int itemHeight = itemRc.bottom - itemRc.top;
+                            if (itemHeight > 0) {
+                                SendMessage(hDisasm, LVM_SCROLL, 0, deltaItems * itemHeight);
+                            }
+                        }
+                    }
+                }
+                return 0;
+            }
+            break;
+        }
+
         case WM_LBUTTONUP: {
             ReleaseCapture();
+            KillTimer(hWnd, CODEMAP_DRAG_TIMER_ID);
+            g_CodeMapDragging = false;
+
+            // Final select
+            HWND hDisasm = GetDlgItem(Main_hWnd, IDC_DISASM);
+            if (hDisasm) {
+                SelectItem(hDisasm, g_CodeMapDragIdx);
+            }
+            InvalidateRect(hWnd, NULL, FALSE);
             return 0;
         }
 
@@ -5304,6 +5374,7 @@ void CloseLoadedFile(HWND hWnd)
                 RepositionDisasmForCodeMap(hWnd, FALSE);
             }
             g_CodeMapTypes.clear();
+            if (g_CodeMapCacheBmp) { DeleteObject(g_CodeMapCacheBmp); g_CodeMapCacheBmp = NULL; }
         }
 
         // Hide window When file is closed
