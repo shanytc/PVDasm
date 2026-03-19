@@ -534,7 +534,7 @@ LRESULT CALLBACK CodeMapWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
                 InvalidateRect(hWnd, NULL, FALSE);
                 UpdateWindow(hWnd);
 
-                // Scroll listview — cheap for virtual listview (just LVN_GETDISPINFO)
+                // Scroll + select listview — cheap for virtual listview (just LVN_GETDISPINFO)
                 if (index != g_CodeMapLastScrollIdx) {
                     g_CodeMapLastScrollIdx = index;
                     HWND hDisasm = GetDlgItem(Main_hWnd, IDC_DISASM);
@@ -550,6 +550,7 @@ LRESULT CALLBACK CodeMapWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
                             if (itemHeight > 0)
                                 SendMessage(hDisasm, LVM_SCROLL, 0, deltaItems * itemHeight);
                         }
+                        SelectItem(hDisasm, index);
                     }
                 }
             }
