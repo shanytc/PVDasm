@@ -9,4 +9,9 @@ Backups
 tests/*.bin
 tests/*.asm
 tests/*.lst
+tests/*.id0
+tests/*.id1
+tests/*.id2
+tests/*.nam
+tests/*.til
 __pycache__/
