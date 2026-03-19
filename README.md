@@ -13,7 +13,7 @@
 
 <p align="center">
   <strong>32/64-Bit Multi Disassembler</strong><br>
-  Build Version: <code>v1.9a</code><br>
+  Build Version: <code>v1.9d</code><br>
   &copy; Shany Golan 2003&ndash;2026
 </p>
 
@@ -54,12 +54,35 @@ ProView is an educational project aimed at building a custom disassembler and de
 | **Color Schemes** | SoftICE, IDA, OllyDbg, W32Asm, and custom themes. |
 | **Save/Load Projects** | Persist analysis state including functions, data, and comments. |
 | **Map File Support** | Import/export MAP files (IDA-compatible.) |
-| **Multi CPU Support** | Support Intel x86, Chip8, Visual Basic architectures. |
+| **x86-64 Disassembly** | Full AMD64 long mode support for PE+ (64-bit) executables. |
+| **Multi CPU Support** | Support Intel x86, x86-64, Chip8, Visual Basic architectures. |
 ---
 
 ## Changelog
 
 ### 2026
+
+#### March 18–19, 2026
+- Implemented **VMX extended instructions**: VMREAD, VMWRITE, VMPTRLD, VMPTRST, VMCLEAR, VMXON, INVEPT, INVVPID
+- Implemented remaining **AVX-512 DQ & BW** instruction gaps
+- Added `INCSSPD`/`INCSSPQ` (F3 0F AE) prefix recognition
+- Fixed `VCVTQQ2PS`/`VCVTQQ2PD` operand format (2-operand form, half-size destination)
+- Added PVDasm vs IDA comparison scripts with `.lst` format support
+- Added cpu_architecture docs for CHIP-8, VB5, and VB6 P-Code
+
+#### March 15–16, 2026
+- Added **x86-64 (AMD64) long mode disassembly** for PE+ executables
+  - REX prefix decoding and 64-bit register promotion
+  - RIP-relative addressing
+  - Widened address column for 16-digit 64-bit addresses
+  - Fixed EVEX fall-through, PE64 section headers, and REX register promotion
+  - Fixed MOVSXD operand order, `CALL`/`JMP QWORD PTR`, and `JMP RAX` in 64-bit mode
+  - Fixed goto entrypoint crash and auto-goto entrypoint on 64-bit PE files
+  - Fixed buffer overflow and address truncation in jump/call navigation for 64-bit PE
+- Fixed `MOVBE` memory operand decoding and `FNCLEX`/`FNINIT` mnemonics
+- Added function prologue analysis in areas marked as data sections
+- Fixed 6 x64 disassembly bugs found by comparing against IDA/objdump
+- Bumped version to **v1.9d**
 
 #### March 14, 2026
 - Added **Function Graph (CFG) Viewer** — interactive control flow graph for functions
