@@ -5166,9 +5166,10 @@ LRESULT CALLBACK ListViewSubClass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
     if (g_CodeMapVisible && (uMsg == WM_VSCROLL || uMsg == WM_MOUSEWHEEL || uMsg == WM_KEYDOWN || uMsg == WM_KEYUP || uMsg == WM_LBUTTONUP)) {
         HWND hBar = GetDlgItem(Main_hWnd, IDC_CODE_MAP_BAR);
         if (hBar) {
-            // Post a delayed invalidate so the listview processes the scroll first
+            // Let the listview process the scroll first, then repaint the code map immediately
             LRESULT result = CallWindowProc(LVOldWndProc, hWnd, uMsg, wParam, lParam);
             InvalidateRect(hBar, NULL, FALSE);
+            UpdateWindow(hBar);
             return result;
         }
     }
