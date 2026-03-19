@@ -221,6 +221,8 @@ void BuildCodeMapData()
             g_CodeMapTypes[i] = CMAP_IMPORT;
         } else if (isData[i]) {
             g_CodeMapTypes[i] = CMAP_DATA;
+        } else if (_strnicmp(DisasmDataLines[i].GetMnemonic(), "DB ", 3) == 0) {
+            g_CodeMapTypes[i] = CMAP_DATA;
         } else {
             // Check if inside a known function
             char* addrStr = DisasmDataLines[i].GetAddress();
