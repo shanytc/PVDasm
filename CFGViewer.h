@@ -63,6 +63,9 @@ typedef struct CFGBasicBlock {
     // Function label
     char        FunctionLabel[64]; // Function/proc name if this is a function entry
 
+    // Cached rendering data
+    COLORREF    CachedBgColor;     // Pre-computed background color
+
 } CFG_BASIC_BLOCK;
 
 // Represents an edge between two basic blocks
@@ -73,6 +76,15 @@ typedef struct CFGEdge {
     bool            IsBackEdge;        // Loop back edge (target layer < source layer)
 
 } CFG_EDGE;
+
+// Cached edge route for rendering (computed once after layout, reused per frame)
+typedef struct CFGEdgeRoute {
+    POINT Points[12];              // Polyline vertices
+    int   PointCount;              // Number of valid points
+    int   ArrowFromX, ArrowFromY;  // Penultimate point (for arrowhead angle)
+    int   ArrowToX, ArrowToY;     // Arrowhead tip
+    int   LabelX, LabelY;         // T/F/C label position
+} CFG_EDGE_ROUTE;
 
 // Main CFG data structure
 typedef struct CFGGraph {
@@ -91,6 +103,10 @@ typedef struct CFGGraph {
     // Maps for quick lookup
     std::map<DWORD_PTR, size_t>         AddressToBlockIndex;   // StartAddress -> index in Blocks
     std::map<DWORD_PTR, size_t>         BlockIDToIndex;        // BlockID -> index in Blocks
+
+    // Cached rendering data
+    std::vector<CFG_EDGE_ROUTE>         EdgeRoutes;            // Parallel to Edges[]
+    bool                                EdgeRoutesDirty;       // Recompute before next render
 
 } CFG_GRAPH;
 
@@ -146,9 +162,11 @@ void CalculateBlockDimensions(HDC hDC, CFG_GRAPH* graph);
 
 // Rendering
 void RenderCFG(HWND hWnd, HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState);
-void RenderBlocks(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState);
-void RenderEdges(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState);
+void RenderBlocks(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState, RECT* visibleRect = NULL);
+void RenderEdges(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState, RECT* visibleRect = NULL);
 void DrawArrowhead(HDC hDC, int fromX, int fromY, int toX, int toY, COLORREF color);
+void ComputeEdgeRoutes(CFG_GRAPH* graph);
+void ComputeBlockColors(CFG_GRAPH* graph);
 
 // Interaction
 POINT ScreenToGraph(CFG_VIEW_STATE* viewState, POINT screenPt);

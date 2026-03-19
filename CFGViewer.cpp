@@ -52,6 +52,12 @@ static HFONT            g_hCFGFont = NULL;
 static HWND             g_hCFGViewerWnd = NULL;  // Handle to modeless CFG viewer window
 static ULONG_PTR        g_GdiplusToken = 0;
 
+// Cached GDI objects for edge rendering (created once in WM_INITDIALOG)
+static HPEN     g_EdgePens[5] = {};       // Width-2 pens: uncond, true, false, backedge, call
+static HPEN     g_ArrowPens[5] = {};      // Width-1 pens for arrowhead outlines
+static HBRUSH   g_ArrowBrushes[5] = {};   // Solid brushes for arrowhead fill
+static COLORREF g_EdgeColors[5] = {};     // Color values for text labels
+
 // ================================================================
 // ====================  HELPER FUNCTIONS  ========================
 // ================================================================
@@ -372,6 +378,8 @@ void ClearCFGGraph(CFG_GRAPH* graph)
 
     graph->Blocks.clear();
     graph->Edges.clear();
+    graph->EdgeRoutes.clear();
+    graph->EdgeRoutesDirty = true;
     graph->AddressToBlockIndex.clear();
     graph->BlockIDToIndex.clear();
     graph->FunctionStart = 0;
@@ -709,6 +717,28 @@ void DrawArrowhead(HDC hDC, int fromX, int fromY, int toX, int toY, COLORREF col
     DeleteObject(hBrush);
 }
 
+// Fast arrowhead drawing using pre-cached GDI objects (pen index 0-4)
+static void DrawArrowheadCached(HDC hDC, int fromX, int fromY, int toX, int toY, int penIdx)
+{
+    double angle = atan2((double)(toY - fromY), (double)(toX - fromX));
+
+    POINT arrowPts[3];
+    arrowPts[0].x = toX;
+    arrowPts[0].y = toY;
+    arrowPts[1].x = toX - (int)(CFG_ARROW_SIZE * cos(angle - 0.4));
+    arrowPts[1].y = toY - (int)(CFG_ARROW_SIZE * sin(angle - 0.4));
+    arrowPts[2].x = toX - (int)(CFG_ARROW_SIZE * cos(angle + 0.4));
+    arrowPts[2].y = toY - (int)(CFG_ARROW_SIZE * sin(angle + 0.4));
+
+    HBRUSH hOldBrush = (HBRUSH)SelectObject(hDC, g_ArrowBrushes[penIdx]);
+    HPEN hOldPen = (HPEN)SelectObject(hDC, g_ArrowPens[penIdx]);
+
+    Polygon(hDC, arrowPts, 3);
+
+    SelectObject(hDC, hOldPen);
+    SelectObject(hDC, hOldBrush);
+}
+
 // Compute a spread X position for a port along a block edge.
 // portIndex is 0-based, totalPorts is the count of ports on that edge.
 static int ComputePortX(CFG_BASIC_BLOCK& block, int portIndex, int totalPorts)
@@ -722,20 +752,18 @@ static int ComputePortX(CFG_BASIC_BLOCK& block, int portIndex, int totalPorts)
     return block.X + margin + (portIndex * usable) / (totalPorts - 1);
 }
 
-void RenderEdges(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
-{
-    if (!graph || !viewState) return;
+// ================================================================
+// ====================  EDGE ROUTE CACHING  ======================
+// ================================================================
 
-    // Edge colors
-    COLORREF unconditionalColor = g_DarkMode ? RGB(150, 150, 150) : RGB(100, 100, 100);
-    COLORREF trueColor = RGB(0, 180, 0);              // Green (branch taken)
-    COLORREF falseColor = RGB(220, 50, 50);           // Red (fall-through)
-    COLORREF backEdgeColor = RGB(0, 120, 220);        // Blue (loop)
-    COLORREF callColor = RGB(100, 50, 200);           // Purple (CALL)
+void ComputeEdgeRoutes(CFG_GRAPH* graph)
+{
+    if (!graph) return;
+
+    graph->EdgeRoutes.resize(graph->Edges.size());
+    graph->EdgeRoutesDirty = false;
 
     // ── Pre-pass: build per-block port assignments ──────────────────
-    // outgoing[blockID] = list of edge indices leaving that block (non-back-edges)
-    // incoming[blockID] = list of edge indices arriving at that block (all edges including back edges)
     std::map<DWORD_PTR, std::vector<size_t>> outgoingEdges;
     std::map<DWORD_PTR, std::vector<size_t>> incomingEdges;
     std::set<size_t> backEdgeSet;
@@ -743,9 +771,9 @@ void RenderEdges(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
     for (size_t i = 0; i < graph->Edges.size(); i++) {
         CFG_EDGE& edge = graph->Edges[i];
 
-        // Skip edges with missing blocks
         if (graph->BlockIDToIndex.find(edge.SourceBlockID) == graph->BlockIDToIndex.end() ||
             graph->BlockIDToIndex.find(edge.TargetBlockID) == graph->BlockIDToIndex.end()) {
+            graph->EdgeRoutes[i].PointCount = 0;
             continue;
         }
 
@@ -754,7 +782,6 @@ void RenderEdges(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
         } else {
             outgoingEdges[edge.SourceBlockID].push_back(i);
         }
-        // All edges (including back edges) get a port on the target's top edge
         incomingEdges[edge.TargetBlockID].push_back(i);
     }
 
@@ -762,10 +789,8 @@ void RenderEdges(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
     for (auto& pair : outgoingEdges) {
         std::sort(pair.second.begin(), pair.second.end(),
             [&](size_t a, size_t b) {
-                CFG_EDGE& ea = graph->Edges[a];
-                CFG_EDGE& eb = graph->Edges[b];
-                CFG_BASIC_BLOCK& da = graph->Blocks[graph->BlockIDToIndex[ea.TargetBlockID]];
-                CFG_BASIC_BLOCK& db = graph->Blocks[graph->BlockIDToIndex[eb.TargetBlockID]];
+                CFG_BASIC_BLOCK& da = graph->Blocks[graph->BlockIDToIndex[graph->Edges[a].TargetBlockID]];
+                CFG_BASIC_BLOCK& db = graph->Blocks[graph->BlockIDToIndex[graph->Edges[b].TargetBlockID]];
                 return da.X < db.X;
             });
     }
@@ -774,17 +799,13 @@ void RenderEdges(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
     for (auto& pair : incomingEdges) {
         std::sort(pair.second.begin(), pair.second.end(),
             [&](size_t a, size_t b) {
-                CFG_EDGE& ea = graph->Edges[a];
-                CFG_EDGE& eb = graph->Edges[b];
-                CFG_BASIC_BLOCK& sa = graph->Blocks[graph->BlockIDToIndex[ea.SourceBlockID]];
-                CFG_BASIC_BLOCK& sb = graph->Blocks[graph->BlockIDToIndex[eb.SourceBlockID]];
+                CFG_BASIC_BLOCK& sa = graph->Blocks[graph->BlockIDToIndex[graph->Edges[a].SourceBlockID]];
+                CFG_BASIC_BLOCK& sb = graph->Blocks[graph->BlockIDToIndex[graph->Edges[b].SourceBlockID]];
                 return sa.X < sb.X;
             });
     }
 
-    // Build index-within-port-list lookup for each edge
-    // outPortIndex[edgeIdx] = position of this edge in its source block's outgoing list
-    // inPortIndex[edgeIdx]  = position of this edge in its target block's incoming list
+    // Build port index lookups
     std::map<size_t, int> outPortIndex, inPortIndex;
     std::map<size_t, int> outPortTotal, inPortTotal;
 
@@ -803,19 +824,20 @@ void RenderEdges(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
         }
     }
 
-    // Track used segments to prevent overlapping edge lines
+    // Collision tracking
     struct UsedHSeg { int y; int minX; int maxX; };
     std::vector<UsedHSeg> usedHorizontalSegs;
     struct UsedVSeg { int x; int minY; int maxY; };
     std::vector<UsedVSeg> usedVerticalSegs;
 
-    // ── Draw loop ───────────────────────────────────────────────────
+    // ── Compute route for each edge ─────────────────────────────────
     for (size_t i = 0; i < graph->Edges.size(); i++) {
         CFG_EDGE& edge = graph->Edges[i];
+        CFG_EDGE_ROUTE& route = graph->EdgeRoutes[i];
 
-        // Find source and target blocks
         if (graph->BlockIDToIndex.find(edge.SourceBlockID) == graph->BlockIDToIndex.end() ||
             graph->BlockIDToIndex.find(edge.TargetBlockID) == graph->BlockIDToIndex.end()) {
+            route.PointCount = 0;
             continue;
         }
 
@@ -826,53 +848,26 @@ void RenderEdges(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
         int startX, startY, endX, endY;
 
         if (edge.IsBackEdge) {
-            // Back edges: leave from left side of source, arrive at top of target
             startX = srcBlock.X;
             startY = srcBlock.Y + srcBlock.Height / 2;
-
-            // Use port spread along target's top edge (shared with normal incoming edges)
             endX = ComputePortX(dstBlock, inPortIndex[i], inPortTotal[i]);
             endY = dstBlock.Y;
         } else {
-            // Normal edge — choose attachment sides based on relative block positions
             startX = ComputePortX(srcBlock, outPortIndex[i], outPortTotal[i]);
             endX = ComputePortX(dstBlock, inPortIndex[i], inPortTotal[i]);
 
             if (srcBlock.Y >= dstBlock.Y + dstBlock.Height) {
-                // Source is below target — leave from top, arrive at bottom
                 startY = srcBlock.Y;
                 endY = dstBlock.Y + dstBlock.Height;
             } else {
-                // Source is above or overlapping target — normal downward flow
                 startY = srcBlock.Y + srcBlock.Height;
                 endY = dstBlock.Y;
             }
         }
 
-        // Choose color based on edge type
-        COLORREF edgeColor = unconditionalColor;
         if (edge.IsBackEdge) {
-            edgeColor = backEdgeColor;
-        } else {
-            switch (edge.Type) {
-                case EDGE_CONDITIONAL_TRUE:  edgeColor = trueColor; break;
-                case EDGE_CONDITIONAL_FALSE: edgeColor = falseColor; break;
-                case EDGE_CALL:             edgeColor = callColor; break;
-                default: edgeColor = unconditionalColor; break;
-            }
-        }
+            // 4-segment orthogonal route for back edges
 
-        // Draw edge line
-        HPEN hPen = CreatePen(PS_SOLID, 2, edgeColor);
-        HPEN hOldPen = (HPEN)SelectObject(hDC, hPen);
-
-        int labelX, labelY;  // Position for True/False label
-
-        if (edge.IsBackEdge) {
-            // 4-segment orthogonal route:
-            // src left side -> left to channel -> UP to above target -> right to port X -> down into top
-
-            // Count back edges before this one for staggering
             int backEdgeIndex = 0;
             for (size_t be : backEdgeSet) {
                 if (be >= i) break;
@@ -882,13 +877,12 @@ void RenderEdges(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
             int channelX = min(srcBlock.X, endX) - 30 - (backEdgeIndex * 15);
             int aboveY = dstBlock.Y - CFG_BLOCK_V_SPACING / 2;
 
-            // Obstacle avoidance for back edges
+            // Obstacle avoidance
             for (size_t bi = 0; bi < graph->Blocks.size(); bi++) {
                 CFG_BASIC_BLOCK& blk = graph->Blocks[bi];
                 if (blk.BlockID == edge.SourceBlockID || blk.BlockID == edge.TargetBlockID)
                     continue;
 
-                // Push vertical channel left if it passes through a block
                 if (channelX >= blk.X - 5 && channelX <= blk.X + blk.Width + 5) {
                     int segMinY = min(startY, aboveY);
                     int segMaxY = max(startY, aboveY);
@@ -897,7 +891,6 @@ void RenderEdges(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
                     }
                 }
 
-                // Push horizontal segment up if it passes through a block
                 int hMinX = min(channelX, endX);
                 int hMaxX = max(channelX, endX);
                 if (aboveY >= blk.Y - 5 && aboveY <= blk.Y + blk.Height + 5) {
@@ -907,7 +900,7 @@ void RenderEdges(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
                 }
             }
 
-            // Stagger horizontal segment if it overlaps a previously used one
+            // Stagger horizontal segment
             {
                 int hMinX = min(channelX, endX);
                 int hMaxX = max(channelX, endX);
@@ -927,13 +920,19 @@ void RenderEdges(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
                 usedHorizontalSegs.push_back(seg);
             }
 
-            MoveToEx(hDC, startX, startY, NULL);
-            LineTo(hDC, channelX, startY);    // Left to channel
-            LineTo(hDC, channelX, aboveY);    // Up to above target
-            LineTo(hDC, endX, aboveY);        // Right to port X
-            LineTo(hDC, endX, endY);          // Down into top
+            // Store route points
+            route.Points[0].x = startX;   route.Points[0].y = startY;
+            route.Points[1].x = channelX; route.Points[1].y = startY;
+            route.Points[2].x = channelX; route.Points[2].y = aboveY;
+            route.Points[3].x = endX;     route.Points[3].y = aboveY;
+            route.Points[4].x = endX;     route.Points[4].y = endY;
+            route.PointCount = 5;
+            route.ArrowFromX = endX;  route.ArrowFromY = aboveY;
+            route.ArrowToX = endX;    route.ArrowToY = endY;
+            route.LabelX = channelX - 5;
+            route.LabelY = (startY + aboveY) / 2;
 
-            // Record back-edge vertical segments for collision avoidance
+            // Record segments for collision avoidance
             {
                 int vMinY = min(startY, aboveY);
                 int vMaxY = max(startY, aboveY);
@@ -942,18 +941,11 @@ void RenderEdges(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
                 vMaxY = max(aboveY, endY);
                 usedVerticalSegs.push_back({ endX, vMinY, vMaxY });
             }
-
-            // Arrowhead points downward into the block top
-            DrawArrowhead(hDC, endX, aboveY, endX, endY, edgeColor);
-
-            labelX = channelX - 5;
-            labelY = (startY + aboveY) / 2;
         } else {
-            // 3-segment orthogonal route:
-            // source port -> vertical down -> horizontal -> vertical down -> target port
+            // 3-segment orthogonal route for normal edges
             int midY = (startY + endY) / 2;
 
-            // Obstacle avoidance: push midY above any block the horizontal segment crosses
+            // Obstacle avoidance
             for (size_t bi = 0; bi < graph->Blocks.size(); bi++) {
                 CFG_BASIC_BLOCK& blk = graph->Blocks[bi];
                 if (blk.BlockID == edge.SourceBlockID || blk.BlockID == edge.TargetBlockID)
@@ -961,28 +953,23 @@ void RenderEdges(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
 
                 int hMinX = min(startX, endX);
                 int hMaxX = max(startX, endX);
-
-                // Check if horizontal segment overlaps block's X range
                 if (hMaxX >= blk.X && hMinX <= blk.X + blk.Width) {
-                    // Check if midY is within block's Y range (with margin)
                     if (midY >= blk.Y - 5 && midY <= blk.Y + blk.Height + 5) {
                         midY = blk.Y - 15;
                     }
                 }
             }
 
-            // Clamp midY between start and end
+            // Clamp midY
             if (startY < endY) {
-                // Downward flow
                 if (midY < startY + 5) midY = startY + 5;
                 if (midY > endY - 5) midY = endY - 5;
             } else if (startY > endY) {
-                // Upward flow
                 if (midY > startY - 5) midY = startY - 5;
                 if (midY < endY + 5) midY = endY + 5;
             }
 
-            // Stagger horizontal segment if it overlaps a previously used one
+            // Stagger horizontal segment
             {
                 int hMinX = min(startX, endX);
                 int hMaxX = max(startX, endX);
@@ -1002,11 +989,10 @@ void RenderEdges(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
                 usedHorizontalSegs.push_back(seg);
             }
 
-            // Check vertical segments for overlap and compute jog offsets
+            // Compute vertical jog offsets
             int drawStartX = startX;
             int drawEndX = endX;
             {
-                // Check start-side vertical (startY <-> midY)
                 int vMinY = min(startY, midY);
                 int vMaxY = max(startY, midY);
                 if (vMaxY - vMinY > 5) {
@@ -1025,7 +1011,6 @@ void RenderEdges(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
                 }
                 usedVerticalSegs.push_back({ drawStartX, vMinY, vMaxY });
 
-                // Check end-side vertical (midY <-> endY)
                 vMinY = min(midY, endY);
                 vMaxY = max(midY, endY);
                 if (vMaxY - vMinY > 5) {
@@ -1045,55 +1030,152 @@ void RenderEdges(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
                 usedVerticalSegs.push_back({ drawEndX, vMinY, vMaxY });
             }
 
-            // Draw route with jogs where vertical segments were shifted
-            MoveToEx(hDC, startX, startY, NULL);
-            if (drawStartX != startX)
-                LineTo(hDC, drawStartX, startY);  // horizontal jog from source port
-            LineTo(hDC, drawStartX, midY);         // vertical from source
-            LineTo(hDC, drawEndX, midY);           // horizontal to target column
-            if (drawEndX != endX) {
-                // Jog back to the target port with a short final vertical approach
-                int jogY = (midY < endY) ? endY - 12 : endY + 12;
-                LineTo(hDC, drawEndX, jogY);       // shifted vertical, stopping short
-                LineTo(hDC, endX, jogY);           // horizontal jog back to port
-                LineTo(hDC, endX, endY);           // final short vertical into target
-                DrawArrowhead(hDC, endX, jogY, endX, endY, edgeColor);
-            } else {
-                LineTo(hDC, endX, endY);           // vertical into target
-                DrawArrowhead(hDC, endX, midY, endX, endY, edgeColor);
+            // Store route points
+            int pc = 0;
+            route.Points[pc].x = startX; route.Points[pc].y = startY; pc++;
+            if (drawStartX != startX) {
+                route.Points[pc].x = drawStartX; route.Points[pc].y = startY; pc++;
             }
+            route.Points[pc].x = drawStartX; route.Points[pc].y = midY; pc++;
+            route.Points[pc].x = drawEndX;   route.Points[pc].y = midY; pc++;
 
-            labelX = startX + 4;
-            labelY = (startY < endY) ? startY + 8 : startY - 16;
+            if (drawEndX != endX) {
+                int jogY = (midY < endY) ? endY - 12 : endY + 12;
+                route.Points[pc].x = drawEndX; route.Points[pc].y = jogY; pc++;
+                route.Points[pc].x = endX;     route.Points[pc].y = jogY; pc++;
+                route.Points[pc].x = endX;     route.Points[pc].y = endY; pc++;
+                route.ArrowFromX = endX; route.ArrowFromY = jogY;
+            } else {
+                route.Points[pc].x = endX; route.Points[pc].y = endY; pc++;
+                route.ArrowFromX = endX; route.ArrowFromY = midY;
+            }
+            route.PointCount = pc;
+            route.ArrowToX = endX; route.ArrowToY = endY;
+            route.LabelX = startX + 4;
+            route.LabelY = (startY < endY) ? startY + 8 : startY - 16;
+        }
+    }
+}
+
+// ================================================================
+// ====================  BLOCK COLOR CACHING  =====================
+// ================================================================
+
+void ComputeBlockColors(CFG_GRAPH* graph)
+{
+    if (!graph) return;
+
+    COLORREF blockBg      = g_DarkMode ? RGB(50, 50, 50) : RGB(255, 255, 245);
+    COLORREF trueBranchBg = g_DarkMode ? RGB(40, 70, 40) : RGB(220, 255, 220);
+    COLORREF falseBranchBg= g_DarkMode ? RGB(70, 40, 40) : RGB(255, 220, 220);
+    COLORREF exitBlockBg  = g_DarkMode ? RGB(40, 50, 70) : RGB(210, 230, 255);
+
+    // Single pass over edges to collect incoming info per block
+    std::map<DWORD_PTR, int> inCount;
+    std::map<DWORD_PTR, CFG_EDGE_TYPE> inType;
+    for (size_t e = 0; e < graph->Edges.size(); e++) {
+        DWORD_PTR target = graph->Edges[e].TargetBlockID;
+        inCount[target]++;
+        inType[target] = graph->Edges[e].Type;
+    }
+
+    // Single pass over blocks to assign colors
+    for (size_t i = 0; i < graph->Blocks.size(); i++) {
+        CFG_BASIC_BLOCK& block = graph->Blocks[i];
+        COLORREF bgColor = blockBg;
+
+        if (block.IsExitBlock) {
+            bgColor = exitBlockBg;
+        } else if (inCount[block.BlockID] == 1) {
+            if (inType[block.BlockID] == EDGE_CONDITIONAL_TRUE)
+                bgColor = trueBranchBg;
+            else if (inType[block.BlockID] == EDGE_CONDITIONAL_FALSE)
+                bgColor = falseBranchBg;
+        }
+        block.CachedBgColor = bgColor;
+    }
+}
+
+// ================================================================
+// ====================  EDGE & BLOCK RENDERING  ==================
+// ================================================================
+
+// Map edge type + back-edge flag to pen cache index (0-4)
+static int GetEdgePenIndex(const CFG_EDGE& edge)
+{
+    if (edge.IsBackEdge) return 3;
+    switch (edge.Type) {
+        case EDGE_CONDITIONAL_TRUE:  return 1;
+        case EDGE_CONDITIONAL_FALSE: return 2;
+        case EDGE_CALL:              return 4;
+        default:                     return 0;
+    }
+}
+
+void RenderEdges(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState, RECT* visibleRect)
+{
+    if (!graph || !viewState) return;
+
+    // Ensure routes are computed
+    if (graph->EdgeRoutesDirty || graph->EdgeRoutes.size() != graph->Edges.size()) {
+        ComputeEdgeRoutes(graph);
+    }
+
+    for (size_t i = 0; i < graph->Edges.size(); i++) {
+        CFG_EDGE& edge = graph->Edges[i];
+        CFG_EDGE_ROUTE& route = graph->EdgeRoutes[i];
+
+        if (route.PointCount < 2) continue;
+
+        // Viewport culling: compute bounding box of route polyline
+        if (visibleRect) {
+            int minRX = route.Points[0].x, maxRX = route.Points[0].x;
+            int minRY = route.Points[0].y, maxRY = route.Points[0].y;
+            for (int p = 1; p < route.PointCount; p++) {
+                if (route.Points[p].x < minRX) minRX = route.Points[p].x;
+                if (route.Points[p].x > maxRX) maxRX = route.Points[p].x;
+                if (route.Points[p].y < minRY) minRY = route.Points[p].y;
+                if (route.Points[p].y > maxRY) maxRY = route.Points[p].y;
+            }
+            RECT routeRect = { minRX - CFG_ARROW_SIZE, minRY - CFG_ARROW_SIZE,
+                               maxRX + CFG_ARROW_SIZE, maxRY + CFG_ARROW_SIZE };
+            RECT dummy;
+            if (!IntersectRect(&dummy, &routeRect, visibleRect)) continue;
         }
 
-        // Draw True/False/Call label for conditional and call edges
+        int penIdx = GetEdgePenIndex(edge);
+
+        // Draw polyline using cached pen
+        HPEN hOldPen = (HPEN)SelectObject(hDC, g_EdgePens[penIdx]);
+        Polyline(hDC, route.Points, route.PointCount);
+        SelectObject(hDC, hOldPen);
+
+        // Draw arrowhead using cached brush/pen
+        DrawArrowheadCached(hDC, route.ArrowFromX, route.ArrowFromY,
+                            route.ArrowToX, route.ArrowToY, penIdx);
+
+        // Draw T/F/C label
         if (edge.Type == EDGE_CONDITIONAL_TRUE || edge.Type == EDGE_CONDITIONAL_FALSE || edge.Type == EDGE_CALL) {
             const char* label = (edge.Type == EDGE_CONDITIONAL_TRUE) ? "T" :
                                 (edge.Type == EDGE_CONDITIONAL_FALSE) ? "F" : "C";
             SetBkMode(hDC, TRANSPARENT);
-            SetTextColor(hDC, edgeColor);
-            TextOut(hDC, labelX, labelY, label, 1);
+            SetTextColor(hDC, g_EdgeColors[penIdx]);
+            TextOut(hDC, route.LabelX, route.LabelY, label, 1);
         }
-
-        SelectObject(hDC, hOldPen);
-        DeleteObject(hPen);
     }
 }
 
-void RenderBlocks(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
+void RenderBlocks(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState, RECT* visibleRect)
 {
     if (!graph || !viewState) return;
 
     // Colors based on dark mode
-    COLORREF blockBg = g_DarkMode ? RGB(50, 50, 50) : RGB(255, 255, 245);
     COLORREF blockBorder = g_DarkMode ? RGB(100, 100, 100) : RGB(0, 0, 0);
     COLORREF selectedBorder = RGB(0, 120, 215);
-    COLORREF trueBranchBg = g_DarkMode ? RGB(40, 70, 40) : RGB(220, 255, 220);    // Light green
-    COLORREF falseBranchBg = g_DarkMode ? RGB(70, 40, 40) : RGB(255, 220, 220);   // Light red
-    COLORREF exitBlockBg = g_DarkMode ? RGB(40, 50, 70) : RGB(210, 230, 255);     // Light blue
     COLORREF textColor = g_DarkMode ? g_DarkTextColor : RGB(0, 0, 0);
     COLORREF addrColor = g_DarkMode ? RGB(130, 130, 130) : RGB(100, 100, 100);
+
+    bool drawText = true;
 
     HFONT hOldFont = NULL;
     if (g_hCFGFont) {
@@ -1105,26 +1187,14 @@ void RenderBlocks(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
 
         RECT blockRect = {block.X, block.Y, block.X + block.Width, block.Y + block.Height};
 
-        // Choose background color based on incoming edges
-        COLORREF bgColor = blockBg;
-        int incomingCount = 0;
-        CFG_EDGE_TYPE singleIncomingType = EDGE_UNCONDITIONAL;
-        for (size_t e = 0; e < graph->Edges.size(); e++) {
-            if (graph->Edges[e].TargetBlockID == block.BlockID) {
-                incomingCount++;
-                singleIncomingType = graph->Edges[e].Type;
-            }
-        }
-        if (block.IsExitBlock) {
-            bgColor = exitBlockBg;
-        } else if (incomingCount == 1 && singleIncomingType == EDGE_CONDITIONAL_TRUE) {
-            bgColor = trueBranchBg;
-        } else if (incomingCount == 1 && singleIncomingType == EDGE_CONDITIONAL_FALSE) {
-            bgColor = falseBranchBg;
+        // Viewport culling
+        if (visibleRect) {
+            RECT dummy;
+            if (!IntersectRect(&dummy, &blockRect, visibleRect)) continue;
         }
 
-        // Draw block background
-        HBRUSH hBgBrush = CreateSolidBrush(bgColor);
+        // Use pre-computed background color
+        HBRUSH hBgBrush = CreateSolidBrush(block.CachedBgColor);
         FillRect(hDC, &blockRect, hBgBrush);
         DeleteObject(hBgBrush);
 
@@ -1140,6 +1210,9 @@ void RenderBlocks(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
         SelectObject(hDC, hOldBrush);
         SelectObject(hDC, hOldPen);
         DeleteObject(hPen);
+
+        // Skip text rendering at low zoom (LOD optimization)
+        if (!drawText) continue;
 
         // Draw instructions inside block
         SetBkMode(hDC, TRANSPARENT);
@@ -1315,8 +1388,8 @@ static void SaveGraphToFile(HWND hWnd, CFG_GRAPH* graph)
     CFG_VIEW_STATE exportView;
     InitCFGViewState(&exportView);
 
-    RenderEdges(hMemDC, graph, &exportView);
-    RenderBlocks(hMemDC, graph, &exportView);
+    RenderEdges(hMemDC, graph, &exportView, NULL);
+    RenderBlocks(hMemDC, graph, &exportView, NULL);
 
     if (hOldFont) {
         SelectObject(hMemDC, hOldFont);
@@ -1386,11 +1459,18 @@ void RenderCFG(HWND hWnd, HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
     xform.eDy = (FLOAT)viewState->PanOffsetY;
     SetWorldTransform(hdcMem, &xform);
 
+    // Compute visible rectangle in graph coordinates for viewport culling
+    RECT visibleRect;
+    visibleRect.left   = (int)(-viewState->PanOffsetX / viewState->ZoomLevel);
+    visibleRect.top    = (int)(-viewState->PanOffsetY / viewState->ZoomLevel);
+    visibleRect.right  = visibleRect.left + (int)(clientRect.right / viewState->ZoomLevel);
+    visibleRect.bottom = visibleRect.top + (int)(clientRect.bottom / viewState->ZoomLevel);
+
     // Draw edges first (behind blocks)
-    RenderEdges(hdcMem, graph, viewState);
+    RenderEdges(hdcMem, graph, viewState, &visibleRect);
 
     // Draw blocks
-    RenderBlocks(hdcMem, graph, viewState);
+    RenderBlocks(hdcMem, graph, viewState, &visibleRect);
 
     // Reset transform
     ModifyWorldTransform(hdcMem, NULL, MWT_IDENTITY);
@@ -1434,6 +1514,18 @@ BOOL CALLBACK CFGViewerDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lP
                                     DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
                                     CLEARTYPE_QUALITY, FIXED_PITCH | FF_MODERN, "Consolas");
 
+            // Create cached GDI objects for edge rendering
+            g_EdgeColors[0] = g_DarkMode ? RGB(150, 150, 150) : RGB(100, 100, 100);  // unconditional
+            g_EdgeColors[1] = RGB(0, 180, 0);      // true (green)
+            g_EdgeColors[2] = RGB(220, 50, 50);    // false (red)
+            g_EdgeColors[3] = RGB(0, 120, 220);    // back-edge (blue)
+            g_EdgeColors[4] = RGB(100, 50, 200);   // call (purple)
+            for (int c = 0; c < 5; c++) {
+                g_EdgePens[c] = CreatePen(PS_SOLID, 2, g_EdgeColors[c]);
+                g_ArrowPens[c] = CreatePen(PS_SOLID, 1, g_EdgeColors[c]);
+                g_ArrowBrushes[c] = CreateSolidBrush(g_EdgeColors[c]);
+            }
+
             // Get function bounds from lParam
             DWORD_PTR* funcBounds = (DWORD_PTR*)lParam;
             BOOL buildSuccess = FALSE;
@@ -1455,6 +1547,8 @@ BOOL CALLBACK CFGViewerDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lP
 
                 if (buildSuccess) {
                     LayoutCFG(&g_CurrentGraph);
+                    ComputeEdgeRoutes(&g_CurrentGraph);
+                    ComputeBlockColors(&g_CurrentGraph);
                     CenterGraphInView(hWnd, &g_CurrentGraph, &g_ViewState);
 
                     // Set window title
@@ -1569,6 +1663,9 @@ BOOL CALLBACK CFGViewerDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lP
                 g_ViewState.IsDraggingBlock = FALSE;
                 g_ViewState.DraggingBlockID = (DWORD_PTR)-1;
                 ReleaseCapture();
+                // Recompute edge routes after block was moved
+                ComputeEdgeRoutes(&g_CurrentGraph);
+                InvalidateRect(hWnd, NULL, FALSE);
             }
             if (g_ViewState.IsPanning) {
                 g_ViewState.IsPanning = FALSE;
@@ -1695,6 +1792,12 @@ BOOL CALLBACK CFGViewerDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lP
             if (g_hCFGFont) {
                 DeleteObject(g_hCFGFont);
                 g_hCFGFont = NULL;
+            }
+            // Clean up cached GDI objects
+            for (int c = 0; c < 5; c++) {
+                if (g_EdgePens[c])     { DeleteObject(g_EdgePens[c]);     g_EdgePens[c] = NULL; }
+                if (g_ArrowPens[c])    { DeleteObject(g_ArrowPens[c]);    g_ArrowPens[c] = NULL; }
+                if (g_ArrowBrushes[c]) { DeleteObject(g_ArrowBrushes[c]); g_ArrowBrushes[c] = NULL; }
             }
             if (g_GdiplusToken) {
                 Gdiplus::GdiplusShutdown(g_GdiplusToken);
