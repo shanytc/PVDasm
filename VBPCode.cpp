@@ -712,6 +712,7 @@ void VBPCode()
     // Wrap up
     // ------------------------------------------------------------------
     DisassemblerReady = TRUE;
+    RefreshCodeMapBar();
     ShowWindow(GetDlgItem(Main_hWnd, IDC_DISASM_PROGRESS), SW_HIDE);
     SendDlgItemMessage(Main_hWnd, IDC_DISASM_PROGRESS, PBM_SETPOS, 0, 0);
     ListView_SetItemCountEx(hDisasm, (int)ListIndex, NULL);

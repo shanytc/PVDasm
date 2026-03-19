@@ -4194,7 +4194,8 @@ void WINAPI Disassembler(/*LPVOID lpParam*/) // Thread Worker for Decoding Instr
 
     // Hide the Progress Bar
     ShowWindow(GetDlgItem(mainhWnd,IDC_DISASM_PROGRESS),SW_HIDE);
-    DisassemblerReady=TRUE; // Dissassembler is ready    
+    DisassemblerReady=TRUE; // Dissassembler is ready
+    RefreshCodeMapBar();
 
     // Number of items
     ListView_SetItemCountEx(hDisasm,ListIndex,NULL);

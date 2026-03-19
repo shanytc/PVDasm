@@ -1686,6 +1686,7 @@ void Custom_Schem(){
 //////////////////////////////////////////////////////////////////////////
 
 bool g_DarkMode = false;
+bool g_CodeMapVisible = true;
 HBRUSH g_hDarkBrush = NULL;
 COLORREF g_DarkBkColor = RGB(30, 30, 30);
 COLORREF g_DarkTextColor = RGB(200, 200, 200);
@@ -1743,6 +1744,7 @@ void LoadSettings() {
     if (lastSlash) *(lastSlash + 1) = '\0';
     strcat_s(szPath, "PVDasm.ini");
     g_DarkMode = GetPrivateProfileIntA("Settings", "DarkMode", 0, szPath) != 0;
+    g_CodeMapVisible = GetPrivateProfileIntA("Settings", "CodeMap", 1, szPath) != 0;
 }
 
 void SaveSettings() {
@@ -1752,6 +1754,7 @@ void SaveSettings() {
     if (lastSlash) *(lastSlash + 1) = '\0';
     strcat_s(szPath, "PVDasm.ini");
     WritePrivateProfileStringA("Settings", "DarkMode", g_DarkMode ? "1" : "0", szPath);
+    WritePrivateProfileStringA("Settings", "CodeMap", g_CodeMapVisible ? "1" : "0", szPath);
 }
 
 void ApplyDarkMode(bool dark) {

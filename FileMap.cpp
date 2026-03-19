@@ -135,6 +135,364 @@ char				TempAddress[20];			// used when we want to display the address in the to
 LRESULT ProcessHeaderCustomDraw(LPARAM lParam);
 LRESULT CALLBACK MessageListSubClass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
+// ================================================================
+// ======================  CODE MAP BAR  ==========================
+// ================================================================
+#define CODE_MAP_BAR_HEIGHT  14  // The color-coded navigation strip
+#define CODE_MAP_LEGEND_HEIGHT 16 // Legend text row below the strip
+#define CODE_MAP_HEIGHT (CODE_MAP_BAR_HEIGHT + CODE_MAP_LEGEND_HEIGHT) // Total height
+
+// Code map type classification
+#define CMAP_CODE      0
+#define CMAP_FUNCTION  1
+#define CMAP_IMPORT    2
+#define CMAP_DATA      3
+
+// Code map colors (light mode)
+#define CODEMAP_COLOR_CODE       RGB(255, 255, 192)  // Light yellow - plain code
+#define CODEMAP_COLOR_FUNCTION   RGB(0, 0, 180)      // Dark blue - function body
+#define CODEMAP_COLOR_IMPORT     RGB(0, 180, 255)    // Cyan - import call
+#define CODEMAP_COLOR_DATA       RGB(128, 128, 128)  // Gray - data
+#define CODEMAP_COLOR_BG         RGB(220, 220, 220)  // Light gray - background
+
+// Code map colors (dark mode)
+#define CODEMAP_COLOR_CODE_DK    RGB(180, 180, 120)
+#define CODEMAP_COLOR_FUNCTION_DK RGB(0, 0, 140)
+#define CODEMAP_COLOR_IMPORT_DK  RGB(0, 140, 200)
+#define CODEMAP_COLOR_DATA_DK    RGB(100, 100, 100)
+#define CODEMAP_COLOR_BG_DK      RGB(50, 50, 50)
+
+static std::vector<BYTE> g_CodeMapTypes;  // One byte per DisasmDataLines entry
+static bool g_CodeMapClassRegistered = false;
+
+// Forward declarations
+LRESULT CALLBACK CodeMapWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+void BuildCodeMapData();
+void RepositionDisasmForCodeMap(HWND hWnd, BOOL show);
+
+// Helper: get the Y pixel position where the disassembly listview starts
+static int GetDisasmTopY(HWND hWnd)
+{
+    HWND hDisasm = GetDlgItem(hWnd, IDC_DISASM);
+    if (!hDisasm) return 22; // fallback
+    RECT rc;
+    GetWindowRect(hDisasm, &rc);
+    MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rc, 2);
+    return rc.top;
+}
+
+// ================================================================
+// =================  CODE MAP IMPLEMENTATION  ====================
+// ================================================================
+
+void BuildCodeMapData()
+{
+    g_CodeMapTypes.clear();
+    if (DisasmDataLines.size() == 0) return;
+
+    size_t count = DisasmDataLines.size();
+    g_CodeMapTypes.resize(count, CMAP_CODE);
+
+    // Build a sorted set of import line indices for fast lookup
+    std::vector<bool> isImport(count, false);
+    for (size_t i = 0; i < ImportsLines.size(); i++) {
+        int idx = ImportsLines[i];
+        if (idx >= 0 && idx < (int)count)
+            isImport[idx] = true;
+    }
+
+    // Build a sorted set of data addresses for fast lookup
+    // DataAddersses is a multimap<const int, int> keyed by address
+    std::vector<bool> isData(count, false);
+    if (DataAddersses.size() > 0) {
+        for (size_t i = 0; i < count; i++) {
+            char* addrStr = DisasmDataLines[i].GetAddress();
+            if (addrStr && addrStr[0]) {
+                DWORD_PTR addr = (DWORD_PTR)strtoul(addrStr, NULL, 16);
+                if (DataAddersses.find((int)addr) != DataAddersses.end())
+                    isData[i] = true;
+            }
+        }
+    }
+
+    // Classify each entry
+    for (size_t i = 0; i < count; i++) {
+        if (isImport[i]) {
+            g_CodeMapTypes[i] = CMAP_IMPORT;
+        } else if (isData[i]) {
+            g_CodeMapTypes[i] = CMAP_DATA;
+        } else {
+            // Check if inside a known function
+            char* addrStr = DisasmDataLines[i].GetAddress();
+            if (addrStr && addrStr[0]) {
+                DWORD_PTR addr = (DWORD_PTR)strtoul(addrStr, NULL, 16);
+                for (size_t j = 0; j < fFunctionInfo.size(); j++) {
+                    if (addr >= fFunctionInfo[j].FunctionStart && addr <= fFunctionInfo[j].FunctionEnd) {
+                        g_CodeMapTypes[i] = CMAP_FUNCTION;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+}
+
+static COLORREF GetCodeMapColor(BYTE type)
+{
+    if (g_DarkMode) {
+        switch (type) {
+            case CMAP_FUNCTION: return CODEMAP_COLOR_FUNCTION_DK;
+            case CMAP_IMPORT:   return CODEMAP_COLOR_IMPORT_DK;
+            case CMAP_DATA:     return CODEMAP_COLOR_DATA_DK;
+            default:            return CODEMAP_COLOR_CODE_DK;
+        }
+    } else {
+        switch (type) {
+            case CMAP_FUNCTION: return CODEMAP_COLOR_FUNCTION;
+            case CMAP_IMPORT:   return CODEMAP_COLOR_IMPORT;
+            case CMAP_DATA:     return CODEMAP_COLOR_DATA;
+            default:            return CODEMAP_COLOR_CODE;
+        }
+    }
+}
+
+// Draw a small colored square followed by label text; returns the X position after it
+static int DrawLegendItem(HDC hdc, int x, int y, int height, COLORREF color, const char* label)
+{
+    int swatchSize = height - 2;
+    int swatchY = y + 1;
+
+    // Draw color swatch
+    RECT swatchRc = { x, swatchY, x + swatchSize, swatchY + swatchSize };
+    HBRUSH hBr = CreateSolidBrush(color);
+    FillRect(hdc, &swatchRc, hBr);
+    DeleteObject(hBr);
+    // Swatch border
+    HPEN hPen = CreatePen(PS_SOLID, 1, g_DarkMode ? RGB(120, 120, 120) : RGB(80, 80, 80));
+    HPEN hOld = (HPEN)SelectObject(hdc, hPen);
+    HBRUSH hOldBr = (HBRUSH)SelectObject(hdc, GetStockObject(NULL_BRUSH));
+    Rectangle(hdc, x, swatchY, x + swatchSize, swatchY + swatchSize);
+    SelectObject(hdc, hOld);
+    SelectObject(hdc, hOldBr);
+    DeleteObject(hPen);
+
+    // Draw label text
+    RECT textRc = { x + swatchSize + 2, y, x + swatchSize + 200, y + height };
+    SetBkMode(hdc, TRANSPARENT);
+    SetTextColor(hdc, g_DarkMode ? RGB(180, 180, 180) : RGB(0, 0, 0));
+    DrawTextA(hdc, label, -1, &textRc, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
+
+    SIZE sz;
+    GetTextExtentPoint32A(hdc, label, lstrlenA(label), &sz);
+    return x + swatchSize + 2 + sz.cx + 8;  // 8px gap between items
+}
+
+LRESULT CALLBACK CodeMapWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    switch (uMsg) {
+        case WM_ERASEBKGND:
+            return 1;  // We paint the entire surface in WM_PAINT
+
+        case WM_PAINT: {
+            PAINTSTRUCT ps;
+            HDC hdc = BeginPaint(hWnd, &ps);
+            RECT rc;
+            GetClientRect(hWnd, &rc);
+            int totalWidth = rc.right - rc.left;
+            int totalHeight = rc.bottom - rc.top;
+
+            // Fill entire background
+            COLORREF bgColor = g_DarkMode ? CODEMAP_COLOR_BG_DK : CODEMAP_COLOR_BG;
+            HBRUSH hBgBrush = CreateSolidBrush(bgColor);
+            FillRect(hdc, &rc, hBgBrush);
+            DeleteObject(hBgBrush);
+
+            // --- Draw the color bar in the top portion ---
+            int barHeight = CODE_MAP_BAR_HEIGHT;
+            size_t count = DisasmDataLines.size();
+            if (count > 0 && g_CodeMapTypes.size() == count && totalWidth > 0) {
+                COLORREF prevColor = 0;
+                int runStart = 0;
+
+                for (int x = 0; x <= totalWidth; x++) {
+                    COLORREF color = 0;
+                    if (x < totalWidth) {
+                        size_t startIdx = (size_t)((double)x / totalWidth * count);
+                        size_t endIdx   = (size_t)((double)(x + 1) / totalWidth * count);
+                        if (endIdx > count) endIdx = count;
+                        if (startIdx >= count) startIdx = count - 1;
+                        if (endIdx <= startIdx) endIdx = startIdx + 1;
+
+                        BYTE bestType = CMAP_CODE;
+                        for (size_t i = startIdx; i < endIdx; i++) {
+                            BYTE t = g_CodeMapTypes[i];
+                            if (t == CMAP_IMPORT) { bestType = CMAP_IMPORT; break; }
+                            if (t == CMAP_FUNCTION && bestType < CMAP_FUNCTION) bestType = CMAP_FUNCTION;
+                            if (t == CMAP_DATA && bestType < CMAP_DATA) bestType = CMAP_DATA;
+                        }
+                        color = GetCodeMapColor(bestType);
+                    }
+
+                    if (x == 0) {
+                        prevColor = color;
+                        runStart = 0;
+                    } else if (color != prevColor || x == totalWidth) {
+                        RECT fillRc = { runStart, 0, x, barHeight };
+                        HBRUSH hBr = CreateSolidBrush(prevColor);
+                        FillRect(hdc, &fillRc, hBr);
+                        DeleteObject(hBr);
+                        prevColor = color;
+                        runStart = x;
+                    }
+                }
+
+                // Draw current view position indicator
+                HWND hDisasm = GetDlgItem(Main_hWnd, IDC_DISASM);
+                if (hDisasm) {
+                    int topIndex = (int)SendMessage(hDisasm, LVM_GETTOPINDEX, 0, 0);
+                    int visibleCount = (int)SendMessage(hDisasm, LVM_GETCOUNTPERPAGE, 0, 0);
+
+                    int x1 = (int)((double)topIndex / count * totalWidth);
+                    int x2 = (int)((double)(topIndex + visibleCount) / count * totalWidth);
+                    if (x2 <= x1) x2 = x1 + 2;
+                    if (x2 > totalWidth) x2 = totalWidth;
+
+                    HPEN hIndicatorPen = CreatePen(PS_SOLID, 1, g_DarkMode ? RGB(255, 255, 255) : RGB(0, 0, 0));
+                    HPEN hOldPen = (HPEN)SelectObject(hdc, hIndicatorPen);
+                    HBRUSH hOldBrush = (HBRUSH)SelectObject(hdc, GetStockObject(NULL_BRUSH));
+                    Rectangle(hdc, x1, 0, x2, barHeight);
+                    SelectObject(hdc, hOldPen);
+                    SelectObject(hdc, hOldBrush);
+                    DeleteObject(hIndicatorPen);
+
+                    // Draw small arrow indicator at the current cursor position
+                    int cursorIdx = (int)SendMessage(hDisasm, LVM_GETNEXTITEM, -1, LVNI_FOCUSED);
+                    if (cursorIdx >= 0 && cursorIdx < (int)count) {
+                        int cx = (int)((double)cursorIdx / count * totalWidth);
+                        // Small downward-pointing triangle (5px wide, 4px tall)
+                        POINT arrow[3] = {
+                            { cx - 4, 0 },
+                            { cx + 4, 0 },
+                            { cx, 5 }
+                        };
+                        HBRUSH hArrowBrush = CreateSolidBrush(RGB(255, 255, 0));
+                        HPEN hArrowPen = CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
+                        HPEN hOldPen2 = (HPEN)SelectObject(hdc, hArrowPen);
+                        HBRUSH hOldBr2 = (HBRUSH)SelectObject(hdc, hArrowBrush);
+                        Polygon(hdc, arrow, 3);
+                        SelectObject(hdc, hOldPen2);
+                        SelectObject(hdc, hOldBr2);
+                        DeleteObject(hArrowPen);
+                        DeleteObject(hArrowBrush);
+                    }
+                }
+            }
+
+            // --- Draw legend row below the bar ---
+            int legendY = barHeight;
+            HFONT hSmallFont = CreateFontA(CODE_MAP_LEGEND_HEIGHT - 1, 0, 0, 0, FW_NORMAL,
+                FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
+                CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, "MS Shell Dlg");
+            HFONT hOldFont = (HFONT)SelectObject(hdc, hSmallFont);
+
+            int xPos = 4;
+            xPos = DrawLegendItem(hdc, xPos, legendY, CODE_MAP_LEGEND_HEIGHT,
+                g_DarkMode ? CODEMAP_COLOR_FUNCTION_DK : CODEMAP_COLOR_FUNCTION, "Function");
+            xPos = DrawLegendItem(hdc, xPos, legendY, CODE_MAP_LEGEND_HEIGHT,
+                g_DarkMode ? CODEMAP_COLOR_IMPORT_DK : CODEMAP_COLOR_IMPORT, "Import");
+            xPos = DrawLegendItem(hdc, xPos, legendY, CODE_MAP_LEGEND_HEIGHT,
+                g_DarkMode ? CODEMAP_COLOR_DATA_DK : CODEMAP_COLOR_DATA, "Data");
+            xPos = DrawLegendItem(hdc, xPos, legendY, CODE_MAP_LEGEND_HEIGHT,
+                g_DarkMode ? CODEMAP_COLOR_CODE_DK : CODEMAP_COLOR_CODE, "Code");
+
+            SelectObject(hdc, hOldFont);
+            DeleteObject(hSmallFont);
+
+            EndPaint(hWnd, &ps);
+            return 0;
+        }
+
+        case WM_LBUTTONDOWN: {
+            SetCapture(hWnd);
+            // Fall through to mouse move handling
+        }
+        case WM_MOUSEMOVE: {
+            if (uMsg == WM_MOUSEMOVE && !(wParam & MK_LBUTTON))
+                break;
+
+            RECT rc;
+            GetClientRect(hWnd, &rc);
+            int barWidth = rc.right - rc.left;
+            int mouseX = (short)LOWORD(lParam);
+
+            size_t count = DisasmDataLines.size();
+            if (count > 0 && barWidth > 0) {
+                if (mouseX < 0) mouseX = 0;
+                if (mouseX >= barWidth) mouseX = barWidth - 1;
+                DWORD_PTR index = (DWORD_PTR)((double)mouseX / barWidth * count);
+                if (index >= count) index = count - 1;
+
+                HWND hDisasm = GetDlgItem(Main_hWnd, IDC_DISASM);
+                if (hDisasm) {
+                    SelectItem(hDisasm, index);
+                    ListView_EnsureVisible(hDisasm, (int)index, FALSE);
+                }
+                InvalidateRect(hWnd, NULL, FALSE);
+            }
+            return 0;
+        }
+
+        case WM_LBUTTONUP: {
+            ReleaseCapture();
+            return 0;
+        }
+    }
+    return DefWindowProc(hWnd, uMsg, wParam, lParam);
+}
+
+void RefreshCodeMapBar()
+{
+    if (!g_CodeMapVisible || !Main_hWnd) return;
+    BuildCodeMapData();
+    HWND hBar = GetDlgItem(Main_hWnd, IDC_CODE_MAP_BAR);
+    if (!hBar) return;
+
+    // Auto-show the bar if it isn't visible yet (first disassembly after launch/close)
+    if (!IsWindowVisible(hBar)) {
+        RepositionDisasmForCodeMap(Main_hWnd, TRUE);
+        ShowWindow(hBar, SW_SHOW);
+    }
+    InvalidateRect(hBar, NULL, TRUE);
+}
+
+void RepositionDisasmForCodeMap(HWND hWnd, BOOL show)
+{
+    HWND hDisasm = GetDlgItem(hWnd, IDC_DISASM);
+    HWND hBar = GetDlgItem(hWnd, IDC_CODE_MAP_BAR);
+    if (!hDisasm) return;
+
+    RECT rc;
+    GetWindowRect(hDisasm, &rc);
+    MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rc, 2);
+
+    if (show) {
+        // Place code map at the disasm listview's current top
+        RECT rcClient;
+        GetClientRect(hWnd, &rcClient);
+        if (hBar) MoveWindow(hBar, 0, rc.top, rcClient.right, CODE_MAP_HEIGHT, TRUE);
+        // Push listview down
+        MoveWindow(hDisasm, rc.left, rc.top + CODE_MAP_HEIGHT,
+                   rc.right - rc.left, (rc.bottom - rc.top) - CODE_MAP_HEIGHT, TRUE);
+    } else {
+        // Pull listview back up
+        MoveWindow(hDisasm, rc.left, rc.top - CODE_MAP_HEIGHT,
+                   rc.right - rc.left, (rc.bottom - rc.top) + CODE_MAP_HEIGHT, TRUE);
+    }
+
+    // Re-initialize resize anchors so future WM_SIZE works correctly
+    InitializeResizeControls(hWnd);
+}
+
 // Stretch last column of ListView to fill remaining width (fixes white areas in dark mode)
 void StretchLastColumn(HWND hListView)
 {
@@ -480,6 +838,19 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// controls on the window
 		case WM_SIZE:{
 			ResizeControls(hWnd);
+			// Resize Code Map bar to match window width and repaint
+			if (g_CodeMapVisible) {
+				HWND hBar = GetDlgItem(hWnd, IDC_CODE_MAP_BAR);
+				if (hBar && IsWindowVisible(hBar)) {
+					RECT rcBar;
+					GetWindowRect(hBar, &rcBar);
+					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rcBar, 2);
+					RECT rcClient;
+					GetClientRect(hWnd, &rcClient);
+					MoveWindow(hBar, 0, rcBar.top, rcClient.right, CODE_MAP_HEIGHT, TRUE);
+					InvalidateRect(hBar, NULL, FALSE);
+				}
+			}
 			// Stretch last column to fill width (fixes white areas in dark mode)
 			StretchLastColumn(GetDlgItem(hWnd, IDC_DISASM));
 			StretchLastColumn(GetDlgItem(hWnd, IDC_LIST));
@@ -670,6 +1041,33 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
             // Hide the Progress bar (Show only when disassembling).
             ShowWindow(GetDlgItem(hWnd,IDC_DISASM_PROGRESS),SW_HIDE);
+
+            // Register and create the Code Map bar
+            if (!g_CodeMapClassRegistered) {
+                WNDCLASSA wc = {0};
+                wc.lpfnWndProc = CodeMapWndProc;
+                wc.hInstance = hInst;
+                wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+                wc.lpszClassName = "PVDasmCodeMap";
+                RegisterClassA(&wc);
+                g_CodeMapClassRegistered = true;
+            }
+            {
+                // Place code map right at the disassembly listview's current top
+                int cmapY = GetDisasmTopY(hWnd);
+                RECT rcClient;
+                GetClientRect(hWnd, &rcClient);
+                HWND hCodeMap = CreateWindowExA(0, "PVDasmCodeMap", NULL,
+                    WS_CHILD,  // Initially hidden
+                    0, cmapY, rcClient.right, CODE_MAP_HEIGHT,
+                    hWnd, (HMENU)(UINT_PTR)IDC_CODE_MAP_BAR, hInst, NULL);
+                SetWindowLongPtr(hCodeMap, GWL_USERDATA, ANCHOR_RIGHT);
+            }
+
+            // Check the menu item if Code Map is enabled (bar stays hidden until disassembly completes)
+            if (g_CodeMapVisible) {
+                CheckMenuItem(GetMenu(hWnd), IDC_CODE_MAP, MF_CHECKED);
+            }
 
             // Subclass the disassembly window
             LVOldWndProc=(WNDPROC)SetWindowLongPtr(GetDlgItem(hWnd,IDC_DISASM),GWL_WNDPROC,(LONG_PTR)ListViewSubClass);
@@ -1239,6 +1637,22 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 // Toggle Dark Mode
                 case IDC_DARK_MODE:{
                     ToggleDarkMode(hWnd);
+                }
+                break;
+
+                // Toggle Code Map bar
+                case IDC_CODE_MAP:{
+                    HWND hBar = GetDlgItem(hWnd, IDC_CODE_MAP_BAR);
+                    BOOL visible = IsWindowVisible(hBar);
+                    ShowWindow(hBar, visible ? SW_HIDE : SW_SHOW);
+                    CheckMenuItem(GetMenu(hWnd), IDC_CODE_MAP, visible ? MF_UNCHECKED : MF_CHECKED);
+                    RepositionDisasmForCodeMap(hWnd, !visible);
+                    g_CodeMapVisible = !visible;
+                    SaveSettings();
+                    if (g_CodeMapVisible && DisassemblerReady) {
+                        BuildCodeMapData();
+                        InvalidateRect(hBar, NULL, TRUE);
+                    }
                 }
                 break;
 
@@ -4564,6 +4978,17 @@ LRESULT CALLBACK ListViewSubClass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
         break;
     }
 
+    // Update Code Map position indicator on scroll/navigation events
+    if (g_CodeMapVisible && (uMsg == WM_VSCROLL || uMsg == WM_MOUSEWHEEL || uMsg == WM_KEYDOWN || uMsg == WM_KEYUP || uMsg == WM_LBUTTONUP)) {
+        HWND hBar = GetDlgItem(Main_hWnd, IDC_CODE_MAP_BAR);
+        if (hBar) {
+            // Post a delayed invalidate so the listview processes the scroll first
+            LRESULT result = CallWindowProc(LVOldWndProc, hWnd, uMsg, wParam, lParam);
+            InvalidateRect(hBar, NULL, FALSE);
+            return result;
+        }
+    }
+
     return CallWindowProc(LVOldWndProc, hWnd, uMsg, wParam, lParam);
 }
 
@@ -4745,6 +5170,16 @@ void CloseLoadedFile(HWND hWnd)
         EnableMenuItem(hWinMenu, IDM_FIND,					MF_GRAYED);
         EnableMenuItem(hWinMenu, IDC_DISASM_ADD_COMMENT,	MF_GRAYED);
         EnableMenuItem(hWinMenu, IDC_VIEW_CFG,			MF_GRAYED);
+
+        // Hide Code Map bar when file is closed
+        {
+            HWND hBar = GetDlgItem(hWnd, IDC_CODE_MAP_BAR);
+            if (hBar && IsWindowVisible(hBar)) {
+                ShowWindow(hBar, SW_HIDE);
+                RepositionDisasmForCodeMap(hWnd, FALSE);
+            }
+            g_CodeMapTypes.clear();
+        }
 
         // Hide window When file is closed
 	    ShowWindow(GetDlgItem(hWnd,IDC_DISASM),SW_HIDE);

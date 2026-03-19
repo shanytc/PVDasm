@@ -104,6 +104,10 @@ void    W32dasm_Schem				(																);
 void    Custom_Schem				(																);
 // Dark Mode functions
 extern bool g_DarkMode;
+// Code Map
+extern bool g_CodeMapVisible;
+void    BuildCodeMapData			(																);
+void    RefreshCodeMapBar			(																);
 void    LoadSettings				(																);
 void    SaveSettings				(																);
 void    ApplyDarkMode				( bool dark														);

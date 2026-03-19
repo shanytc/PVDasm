@@ -940,6 +940,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Disassembly Themes\tAlt+A",   IDC_DISASM_APPEARANCE
         MENUITEM "Dark Mode",                   IDC_DARK_MODE
+        MENUITEM "Code Map",                    IDC_CODE_MAP
         MENUITEM SEPARATOR
         MENUITEM "Find...\tCtrl+F",             IDM_FIND
         POPUP "Copy"

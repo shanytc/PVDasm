@@ -429,13 +429,13 @@ void LoadProject()
     if(FilesInMemory==TRUE)
     {   
         // Unmaping File
-        if(UnmapViewOfFile(OrignalData)==0) // свйшъ ойфей дчебх оджйлшеп        	
+        if(UnmapViewOfFile(OrignalData)==0) // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ        	
             return;
         // Close the map handle
-        if(CloseHandle(hFileMap)==NULL) // свйшъ дождд щм дофд        	
+        if(CloseHandle(hFileMap)==NULL) // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ        	
             return;
         // Close the file handle
-        if(CloseHandle(hFile)==NULL) // свйшъ дождд щм дчебх        		
+        if(CloseHandle(hFile)==NULL) // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ        		
             return;
         
 		// clear the content of the information,
@@ -745,7 +745,7 @@ void LoadProject()
     FilesInMemory=TRUE;
     DisassemblerReady=TRUE;
     LoadedPe=TRUE;
-
+    RefreshCodeMapBar();
 
     ShowWindow(GetDlgItem(Main_hWnd,IDC_DISASM),SW_SHOW);
     ListView_SetItemCountEx(GetDlgItem(Main_hWnd,IDC_DISASM),DisasmDataLines.size(),NULL);

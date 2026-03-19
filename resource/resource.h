@@ -447,13 +447,16 @@
 #define IDM_CFG_FIT_GRAPH               40113
 #define IDM_CFG_SAVE_IMAGE              40114
 
+#define IDC_CODE_MAP                    40115
+#define IDC_CODE_MAP_BAR                1337
+
 // Next default values for new objects
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        246
-#define _APS_NEXT_COMMAND_VALUE         40115
-#define _APS_NEXT_CONTROL_VALUE         1337
+#define _APS_NEXT_COMMAND_VALUE         40116
+#define _APS_NEXT_CONTROL_VALUE         1338
 #define _APS_NEXT_SYMED_VALUE           121
 #endif
 #endif
