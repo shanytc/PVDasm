@@ -324,6 +324,10 @@ static double g_CodeMapZoomEnd   = 1.0;
 static bool     g_CodeMapDragging = false;
 static DWORD_PTR g_CodeMapDragIdx = 0;        // Current drag target index
 static DWORD_PTR g_CodeMapLastScrollIdx = (DWORD_PTR)-1; // Last index sent to listview
+static bool   g_CodeMapPanning = false;   // Middle-mouse pan state
+static int    g_CodeMapPanStartX = 0;     // Mouse X at pan start
+static double g_CodeMapPanStartZoomS = 0; // Zoom start at pan start
+static double g_CodeMapPanStartZoomE = 0; // Zoom end at pan start
 #define CODEMAP_ZOOM_FACTOR 1.3  // Each scroll step zooms by this factor
 
 // Cached bitmap for the color bar + legend (avoids redrawing on every paint)
@@ -480,9 +484,9 @@ LRESULT CALLBACK CodeMapWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
                         int cx = IDX_TO_PX(cursorIdx);
                         if (cx >= 0 && cx < totalWidth) {
                             POINT arrow[3] = {
-                                { cx - 4, 0 },
-                                { cx + 4, 0 },
-                                { cx, 5 }
+                                { cx - 6, 0 },
+                                { cx + 6, 0 },
+                                { cx, 8 }
                             };
                             HBRUSH hArrowBrush = CreateSolidBrush(RGB(255, 255, 0));
                             HPEN hArrowPen = CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
@@ -627,6 +631,51 @@ LRESULT CALLBACK CodeMapWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
             InvalidateRect(hWnd, NULL, FALSE);
             return 0;
         }
+
+        case WM_MBUTTONDOWN: {
+            // Middle-click + drag to pan when zoomed in
+            double zRange = g_CodeMapZoomEnd - g_CodeMapZoomStart;
+            if (zRange < 1.0) {
+                SetCapture(hWnd);
+                g_CodeMapPanning = true;
+                g_CodeMapPanStartX = (short)LOWORD(lParam);
+                g_CodeMapPanStartZoomS = g_CodeMapZoomStart;
+                g_CodeMapPanStartZoomE = g_CodeMapZoomEnd;
+            }
+            return 0;
+        }
+
+        case WM_MBUTTONUP: {
+            if (g_CodeMapPanning) {
+                ReleaseCapture();
+                g_CodeMapPanning = false;
+            }
+            return 0;
+        }
+    }
+
+    // Handle pan drag in WM_MOUSEMOVE (outside switch so left-drag still works)
+    if (uMsg == WM_MOUSEMOVE && g_CodeMapPanning) {
+        RECT rc;
+        GetClientRect(hWnd, &rc);
+        int barWidth = rc.right - rc.left;
+        if (barWidth > 0) {
+            int mouseX = (short)LOWORD(lParam);
+            int dx = mouseX - g_CodeMapPanStartX;
+            double zRange = g_CodeMapPanStartZoomE - g_CodeMapPanStartZoomS;
+            // Convert pixel delta to data fraction delta
+            double shift = -(double)dx / barWidth * zRange;
+            double newStart = g_CodeMapPanStartZoomS + shift;
+            double newEnd   = g_CodeMapPanStartZoomE + shift;
+            // Clamp to [0, 1]
+            if (newStart < 0.0) { newEnd -= newStart; newStart = 0.0; }
+            if (newEnd > 1.0)   { newStart -= (newEnd - 1.0); newEnd = 1.0; }
+            if (newStart < 0.0) newStart = 0.0;
+            g_CodeMapZoomStart = newStart;
+            g_CodeMapZoomEnd   = newEnd;
+            InvalidateRect(hWnd, NULL, FALSE);
+        }
+        return 0;
     }
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
