@@ -138,7 +138,7 @@ LRESULT CALLBACK MessageListSubClass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
 // ================================================================
 // ======================  CODE MAP BAR  ==========================
 // ================================================================
-#define CODE_MAP_BAR_HEIGHT  14  // The color-coded navigation strip
+#define CODE_MAP_BAR_HEIGHT  20  // The color-coded navigation strip
 #define CODE_MAP_LEGEND_HEIGHT 16 // Legend text row below the strip
 #define CODE_MAP_HEIGHT (CODE_MAP_BAR_HEIGHT + CODE_MAP_LEGEND_HEIGHT) // Total height
 
@@ -396,8 +396,16 @@ LRESULT CALLBACK CodeMapWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
                     SelectObject(hdc, hOldBrush);
                     DeleteObject(hIndicatorPen);
 
-                    // Draw small arrow indicator at the current cursor position
-                    int cursorIdx = (int)SendMessage(hDisasm, LVM_GETNEXTITEM, -1, LVNI_FOCUSED);
+                    // Draw small arrow indicator: follows focused item when visible,
+                    // otherwise falls back to viewport center (e.g. during scroll)
+                    int topIdx = (int)SendMessage(hDisasm, LVM_GETTOPINDEX, 0, 0);
+                    int perPage = (int)SendMessage(hDisasm, LVM_GETCOUNTPERPAGE, 0, 0);
+                    int focusedIdx = (int)SendMessage(hDisasm, LVM_GETNEXTITEM, -1, LVNI_FOCUSED);
+                    int cursorIdx;
+                    if (focusedIdx >= topIdx && focusedIdx <= topIdx + perPage)
+                        cursorIdx = focusedIdx;
+                    else
+                        cursorIdx = topIdx + perPage / 2;
                     if (cursorIdx >= 0 && cursorIdx < (int)count) {
                         int cx = (int)((double)cursorIdx / count * totalWidth);
                         // Small downward-pointing triangle (5px wide, 4px tall)
