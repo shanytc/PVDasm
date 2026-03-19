@@ -325,8 +325,6 @@ static bool     g_CodeMapDragging = false;
 static DWORD_PTR g_CodeMapDragIdx = 0;        // Current drag target index
 static DWORD_PTR g_CodeMapLastScrollIdx = (DWORD_PTR)-1; // Last index sent to listview
 #define CODEMAP_ZOOM_FACTOR 1.3  // Each scroll step zooms by this factor
-#define CODEMAP_DRAG_TIMER_ID 9001
-#define CODEMAP_DRAG_TIMER_MS 40  // Throttle listview scrolling to ~25fps
 
 // Cached bitmap for the color bar + legend (avoids redrawing on every paint)
 static HBITMAP g_CodeMapCacheBmp = NULL;
@@ -509,8 +507,6 @@ LRESULT CALLBACK CodeMapWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
             SetCapture(hWnd);
             g_CodeMapDragging = true;
             g_CodeMapLastScrollIdx = (DWORD_PTR)-1;
-            // Start a timer to throttle listview scrolling
-            SetTimer(hWnd, CODEMAP_DRAG_TIMER_ID, CODEMAP_DRAG_TIMER_MS, NULL);
             // Fall through to mouse move handling
         }
         case WM_MOUSEMOVE: {
@@ -532,47 +528,39 @@ LRESULT CALLBACK CodeMapWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
                 DWORD_PTR index = (DWORD_PTR)(frac * count);
                 if (index >= count) index = count - 1;
 
-                // Always update the drag index (arrow follows mouse instantly)
                 g_CodeMapDragIdx = index;
-                InvalidateRect(hWnd, NULL, FALSE);
-            }
-            return 0;
-        }
 
-        case WM_TIMER: {
-            if (wParam == CODEMAP_DRAG_TIMER_ID) {
-                // Throttled: scroll listview to center on drag position (no selection change)
-                if (g_CodeMapDragging && g_CodeMapDragIdx != g_CodeMapLastScrollIdx) {
-                    g_CodeMapLastScrollIdx = g_CodeMapDragIdx;
+                // Paint arrow immediately BEFORE scrolling listview
+                InvalidateRect(hWnd, NULL, FALSE);
+                UpdateWindow(hWnd);
+
+                // Scroll listview — cheap for virtual listview (just LVN_GETDISPINFO)
+                if (index != g_CodeMapLastScrollIdx) {
+                    g_CodeMapLastScrollIdx = index;
                     HWND hDisasm = GetDlgItem(Main_hWnd, IDC_DISASM);
                     if (hDisasm) {
                         int topIdx = (int)SendMessage(hDisasm, LVM_GETTOPINDEX, 0, 0);
                         int perPage = (int)SendMessage(hDisasm, LVM_GETCOUNTPERPAGE, 0, 0);
-                        // Desired top = center the drag target in view
-                        int desiredTop = (int)g_CodeMapDragIdx - perPage / 2;
+                        int desiredTop = (int)index - perPage / 2;
                         int deltaItems = desiredTop - topIdx;
                         if (deltaItems != 0) {
-                            // Get item height from first visible item's rect
                             RECT itemRc;
                             ListView_GetItemRect(hDisasm, topIdx, &itemRc, LVIR_BOUNDS);
                             int itemHeight = itemRc.bottom - itemRc.top;
-                            if (itemHeight > 0) {
+                            if (itemHeight > 0)
                                 SendMessage(hDisasm, LVM_SCROLL, 0, deltaItems * itemHeight);
-                            }
                         }
                     }
                 }
-                return 0;
             }
-            break;
+            return 0;
         }
 
         case WM_LBUTTONUP: {
             ReleaseCapture();
-            KillTimer(hWnd, CODEMAP_DRAG_TIMER_ID);
             g_CodeMapDragging = false;
 
-            // Final select
+            // Final select to set focus/highlight
             HWND hDisasm = GetDlgItem(Main_hWnd, IDC_DISASM);
             if (hDisasm) {
                 SelectItem(hDisasm, g_CodeMapDragIdx);
