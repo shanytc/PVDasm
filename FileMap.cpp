@@ -248,8 +248,19 @@ void BuildCodeMapData()
         if (!mnem || !mnem[0]) continue;
 
         if (!inFunction) {
-            // Look for function prologue: "PUSH EBP" or "PUSH RBP"
+            bool isPrologue = false;
+            // Classic prologue: PUSH EBP/RBP followed by MOV EBP,ESP / MOV RBP,RSP
             if (_strnicmp(mnem, "push ebp", 8) == 0 || _strnicmp(mnem, "push rbp", 8) == 0) {
+                if (i + 1 < count) {
+                    char* nextMnem = DisasmDataLines[i+1].GetMnemonic();
+                    if (nextMnem && (_strnicmp(nextMnem, "mov ebp", 7) == 0 || _strnicmp(nextMnem, "mov rbp", 7) == 0))
+                        isPrologue = true;
+                }
+            }
+            // FPO prologue: SUB ESP/RSP, imm
+            if (!isPrologue && (_strnicmp(mnem, "sub esp", 7) == 0 || _strnicmp(mnem, "sub rsp", 7) == 0))
+                isPrologue = true;
+            if (isPrologue) {
                 inFunction = true;
                 if (g_CodeMapTypes[i] == CMAP_CODE)
                     g_CodeMapTypes[i] = CMAP_FUNCTION;

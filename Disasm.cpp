@@ -53,6 +53,7 @@ Disassembler
 #include <vector>
 #include <map>
 #include <algorithm>
+#include <set>
 #include <shlwapi.h>
 #pragma comment(lib, "shlwapi.lib")
 
@@ -146,6 +147,7 @@ IMAGE_NT_HEADERS*		NTheader;
 IMAGE_NT_HEADERS64*		NTheader64;
 MapTree					DataAddersses;	// Sets all range of valid Code
 IntArray				BranchTargets;		// Branch/jump targets found by FirstPass
+std::set<DWORD_PTR>	CallTargets;		// CALL target addresses found by FirstPass
 MapTree					SEHAddresses;		// SEH filter/handler addresses (value: 1=filter, 2=handler)
 bool					CallApi;
 bool					CallAddrApi;
@@ -527,6 +529,9 @@ BOOL CALLBACK DisasmDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lPara
 						// Clear Function Information
 						///fFunctionInfo.clear();
 						//FunctionInfo(fFunctionInfo).swap(fFunctionInfo);
+
+						// Clear CALL targets
+						CallTargets.clear();
 					}
 
 					SetDlgItemText(mainhWnd,IDC_MESSAGE1,"");
@@ -3763,6 +3768,20 @@ void WINAPI Disassembler(/*LPVOID lpParam*/) // Thread Worker for Decoding Instr
     ListIndex=0;
     FlushDecoded(&Disasm);
 
+    bool prevWasFuncBoundary = true;  // Start of section is a boundary (for FPO prologue detection)
+    bool inHeuristicFunc = false;     // True when inside a heuristic-detected function (until RET)
+
+    // Pre-scan for near CALL targets (E8 rel32) to detect functions not found by FirstPass
+    for(DWORD_PTR ci = 0; ci + 4 < BytesToDecode; ci++){
+        if((BYTE)(*(Linear + ci)) == 0xE8){
+            INT32 rel = *(INT32*)(Linear + ci + 1);
+            DWORD_PTR callAddr = StartSection + ci + 5 + (DWORD_PTR)rel;
+            if(callAddr >= StartSection && callAddr < EndSection)
+                CallTargets.insert(callAddr);
+            ci += 4; // Skip the rel32 operand
+        }
+    }
+
     try{ // Start try{} block to protect in case of exceptions.
 		for(;Index<BytesToDecode;Index++,ListIndex++){ // Loop instructions
             // Clear References
@@ -3799,10 +3818,10 @@ void WINAPI Disassembler(/*LPVOID lpParam*/) // Thread Worker for Decoding Instr
 					else{
 						wsprintf(Disasm.Assembly,"db %02Xh",(BYTE)(*(Linear+Index)));
 					}
-					
+
 					if(disop.UpperCased_Disasm==PV_TRUE)
 						CharUpper(Disasm.Assembly);
-					
+
 					if((BYTE)(*(Linear+Index)) != 0x00){
 						if((BYTE)(*(Linear+Index)) == 0x0A){ // new line hex code
 							lstrcpy(Disasm.Remarks,"; ''");
@@ -3814,21 +3833,22 @@ void WINAPI Disassembler(/*LPVOID lpParam*/) // Thread Worker for Decoding Instr
 					else{
 						wsprintf(Disasm.Remarks,"; 0");
 					}
-					
+
 					// Show Decoded instruction, size, remarks...
 					SaveDecoded(Disasm,disop,ListIndex);
 					// Clear all information
-					FlushDecoded(&Disasm);	
-					Disasm.Address++; // 1 Byte Opcode 
-					
+					FlushDecoded(&Disasm);
+					Disasm.Address++; // 1 Byte Opcode
+
 					// Progress-Bar Position
 					Position++;
-					if(percent>step){   
+					if(percent>step){
 						step=percent;
 						PostMessage(GetDlgItem(mainhWnd,IDC_DISASM_PROGRESS),PBM_SETPOS,(WPARAM)Position,0);
 						PostMessage(GetDlgItem(mainhWnd,IDC_DISASM_PROGRESS),PBM_STEPIT,0,0);
 						PostMessage(mainhWnd,WM_USER+MY_MSG,0,(LPARAM)Disasm.Address);
 					}
+					prevWasFuncBoundary = true; // Data region is a function boundary
 					continue;
 				}
 			}
@@ -3870,21 +3890,70 @@ void WINAPI Disassembler(/*LPVOID lpParam*/) // Thread Worker for Decoding Instr
                         FuncEnd=fFunctionInfo[fIndex].FunctionEnd;
                     ProcAddr=fFunctionInfo[fIndex].FunctionStart;
 					fInfoBanner = true;
+					inHeuristicFunc = false; // Known function overrides heuristic tracking
 					break;
 				}
 			}
 
-			// Detect function prologues not already covered by fFunctionInfo or EP
-			if(!fInfoBanner && Disasm.Address != OEP){
+			// Check if current address is a known CALL target (from FirstPass)
+			if(!fInfoBanner && Disasm.Address != OEP && CallTargets.count(Disasm.Address)){
+				disop.ShowAddr=FALSE;
+				if(disop.CPU == x86_64)
+					wsprintf(Disasm.Assembly,"; ====== Proc_%08X%08X ======",(DWORD)(Disasm.Address>>32),(DWORD)Disasm.Address);
+				else
+					wsprintf(Disasm.Assembly,"; ====== Proc_%08X ======",Disasm.Address);
+				SaveDecoded(Disasm,disop,ListIndex);
+				FlushDecoded(&Disasm);
+				disop.ShowAddr=TRUE;
+				ListIndex++;
+				fInfoBanner = true;
+				inHeuristicFunc = true; // Track function scope
+			}
+
+			// Detect function prologues not already covered by fFunctionInfo, CALL targets, or EP
+			// Skip if inside a known function's range (FuncEnd != -1) or heuristic-detected function
+			if(!fInfoBanner && Disasm.Address != OEP && FuncEnd == (DWORD_PTR)-1 && !inHeuristicFunc){
 				BYTE curByte = (BYTE)(*(Linear+Index));
 				bool isPrologue = false;
-				if(curByte == 0x55){  // PUSH EBP or PUSH RBP (with REX prefix handled below)
-					isPrologue = true;
-				}
-				// x64: REX.W prefix (0x48) + PUSH RBP (0x55)
-				if(!isPrologue && disop.CPU == x86_64 && curByte == 0x48 && (Index+1) < BytesToDecode){
-					if((BYTE)(*(Linear+Index+1)) == 0x55)
+				// Classic x86 prologue: PUSH EBP; MOV EBP, ESP (55 8B EC)
+				if(curByte == 0x55 && (Index+2) < BytesToDecode){
+					BYTE b1 = (BYTE)(*(Linear+Index+1));
+					BYTE b2 = (BYTE)(*(Linear+Index+2));
+					if(b1 == 0x8B && b2 == 0xEC)
 						isPrologue = true;
+				}
+				// x64 prologue: PUSH RBP; MOV RBP, RSP
+				if(!isPrologue && disop.CPU == x86_64){
+					// 55 48 89 E5 or 55 48 8B EC (PUSH RBP; REX.W MOV RBP, RSP)
+					if(curByte == 0x55 && (Index+3) < BytesToDecode){
+						if((BYTE)(*(Linear+Index+1)) == 0x48){
+							BYTE movOp = (BYTE)(*(Linear+Index+2));
+							BYTE modrm = (BYTE)(*(Linear+Index+3));
+							if((movOp == 0x89 && modrm == 0xE5) || (movOp == 0x8B && modrm == 0xEC))
+								isPrologue = true;
+						}
+					}
+					// 48 55 48 89 E5 or 48 55 48 8B EC (REX.W PUSH RBP; REX.W MOV RBP, RSP)
+					if(!isPrologue && curByte == 0x48 && (Index+4) < BytesToDecode){
+						if((BYTE)(*(Linear+Index+1)) == 0x55 && (BYTE)(*(Linear+Index+2)) == 0x48){
+							BYTE movOp = (BYTE)(*(Linear+Index+3));
+							BYTE modrm = (BYTE)(*(Linear+Index+4));
+							if((movOp == 0x89 && modrm == 0xE5) || (movOp == 0x8B && modrm == 0xEC))
+								isPrologue = true;
+						}
+					}
+				}
+				// FPO prologue: SUB ESP, imm (only after RET/INT3 boundary)
+				if(!isPrologue && prevWasFuncBoundary && (Index+1) < BytesToDecode){
+					// x86: SUB ESP, imm8 (83 EC) or SUB ESP, imm32 (81 EC)
+					if((curByte == 0x83 || curByte == 0x81) && (BYTE)(*(Linear+Index+1)) == 0xEC)
+						isPrologue = true;
+					// x64: REX.W + SUB RSP (48 83 EC or 48 81 EC)
+					if(!isPrologue && disop.CPU == x86_64 && curByte == 0x48 && (Index+2) < BytesToDecode){
+						BYTE next = (BYTE)(*(Linear+Index+1));
+						if((next == 0x83 || next == 0x81) && (BYTE)(*(Linear+Index+2)) == 0xEC)
+							isPrologue = true;
+					}
 				}
 				if(isPrologue){
 					disop.ShowAddr=FALSE;
@@ -3896,6 +3965,7 @@ void WINAPI Disassembler(/*LPVOID lpParam*/) // Thread Worker for Decoding Instr
 					FlushDecoded(&Disasm);
 					disop.ShowAddr=TRUE;
 					ListIndex++;
+					inHeuristicFunc = true; // Track that we're inside this function
 				}
 			}
         
@@ -3922,6 +3992,7 @@ void WINAPI Disassembler(/*LPVOID lpParam*/) // Thread Worker for Decoding Instr
                         PostMessage(GetDlgItem(mainhWnd,IDC_DISASM_PROGRESS),PBM_STEPIT,0,0);
                         PostMessage(mainhWnd,WM_USER+MY_MSG,0,(LPARAM)Disasm.Address);
                     }
+                    prevWasFuncBoundary = false;
                     continue; // Continue for loop
                 }
             }
@@ -3976,6 +4047,7 @@ void WINAPI Disassembler(/*LPVOID lpParam*/) // Thread Worker for Decoding Instr
                     
                     Index--;
                     // Continue the Loop, No Decode.
+                    prevWasFuncBoundary = true; // Zero padding is a function boundary
                     continue;
                 }
                 else Index-=Padding;  // else return back from where we started
@@ -4175,6 +4247,17 @@ void WINAPI Disassembler(/*LPVOID lpParam*/) // Thread Worker for Decoding Instr
                PostMessage(GetDlgItem(mainhWnd,IDC_DISASM_PROGRESS),PBM_STEPIT,0,0);
                PostMessage(mainhWnd,WM_USER+MY_MSG,0,(LPARAM)Disasm.Address);
             }
+
+            // Track function boundaries for FPO prologue detection (SUB ESP/RSP)
+            prevWasFuncBoundary = (Disasm.CodeFlow.Ret == TRUE) ||
+                                  (Disasm.CodeFlow.Jump == TRUE && DirectJmp == TRUE) ||
+                                  (_strnicmp(Disasm.Assembly, "int 3", 5) == 0) ||
+                                  (_strnicmp(Disasm.Assembly, "int3", 4) == 0) ||
+                                  (_strnicmp(Disasm.Assembly, "nop", 3) == 0);
+
+            // Clear heuristic function tracking on RET (function boundary)
+            if(Disasm.CodeFlow.Ret == TRUE)
+                inHeuristicFunc = false;
 
             //=============================================//
             // Clear all information in the disasm struct  //
@@ -5229,6 +5312,10 @@ void FirstPass(
 			// Branch Destination is in codeSection (only trace within current section).
 			// Jumps to other executable sections are valid but not traced here.
 			if( ( Address >= StartSection ) && ( Address <= EndSection ) ){
+				// Always record CALL targets for function detection
+				if(Disasm.CodeFlow.Call == TRUE)
+					CallTargets.insert((DWORD_PTR)Address);
+
 				TraceAddress=TRUE;
 				EndSegment=Disasm.Address;
 				// Mark Code_Block.
@@ -5237,7 +5324,7 @@ void FirstPass(
 				if(itr!=CodeSegments.end()){
 					// Are we going back to already waled address?
 					if( (Address >= (*itr).first) && (Address <= (*itr).second)){
-						TraceAddress=FALSE;  
+						TraceAddress=FALSE;
 						StartSegment=EndSegment;
 					}
 				}
@@ -5306,13 +5393,20 @@ void FirstPass(
 		if(isBranchTarget)
 			continue;
 
-		// Skip addresses that start with a function prologue (PUSH EBP; MOV EBP,ESP)
+		// Skip addresses that start with a function prologue
 		DWORD_PTR dataOfs = Address - StartSection;
 		if(dataOfs + 2 < NumOfDecode){
 			BYTE b0 = (BYTE)(*(Linear + dataOfs));
 			BYTE b1 = (BYTE)(*(Linear + dataOfs + 1));
 			BYTE b2 = (BYTE)(*(Linear + dataOfs + 2));
+			// Classic prologue: PUSH EBP; MOV EBP, ESP (55 8B EC)
 			if(b0 == 0x55 && b1 == 0x8B && b2 == 0xEC)
+				continue;
+			// FPO prologue: SUB ESP, imm8 (83 EC) or SUB ESP, imm32 (81 EC)
+			if((b0 == 0x83 || b0 == 0x81) && b1 == 0xEC)
+				continue;
+			// x64 FPO prologue: REX.W + SUB RSP (48 83 EC or 48 81 EC)
+			if(b0 == 0x48 && (b1 == 0x83 || b1 == 0x81) && b2 == 0xEC)
 				continue;
 		}
 
