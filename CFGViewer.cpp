@@ -638,6 +638,52 @@ void CenterGraphInView(HWND hWnd, CFG_GRAPH* graph, CFG_VIEW_STATE* state)
     state->PanOffsetY = (clientHeight - scaledHeight) / 2.0;
 }
 
+// Focus on the entry block at a readable zoom level.
+// Falls back to CenterGraphInView if no entry block exists.
+static void FocusOnEntryBlock(HWND hWnd, CFG_GRAPH* graph, CFG_VIEW_STATE* state)
+{
+    if (!hWnd || !graph || !state) return;
+
+    // Find entry block
+    int entryIdx = -1;
+    for (size_t i = 0; i < graph->Blocks.size(); i++) {
+        if (graph->Blocks[i].IsEntryBlock) {
+            entryIdx = (int)i;
+            break;
+        }
+    }
+
+    if (entryIdx < 0) {
+        // No entry block — fall back to fit-all view
+        CenterGraphInView(hWnd, graph, state);
+        return;
+    }
+
+    CFG_BASIC_BLOCK& entry = graph->Blocks[entryIdx];
+
+    RECT clientRect;
+    GetClientRect(hWnd, &clientRect);
+    int clientWidth = clientRect.right - clientRect.left;
+    int clientHeight = clientRect.bottom - clientRect.top;
+
+    // Choose zoom: try 1.0, but shrink if the entry block doesn't fit
+    double zoom = 1.0;
+    if (entry.Width * zoom > clientWidth * 0.9)
+        zoom = (clientWidth * 0.9) / entry.Width;
+    if (entry.Height * zoom > clientHeight * 0.9)
+        zoom = (clientHeight * 0.9) / entry.Height;
+    if (zoom < CFG_MIN_ZOOM) zoom = CFG_MIN_ZOOM;
+    if (zoom > CFG_MAX_ZOOM) zoom = CFG_MAX_ZOOM;
+
+    state->ZoomLevel = zoom;
+
+    // Center the entry block in the viewport
+    double blockCenterX = entry.X + entry.Width / 2.0;
+    double blockCenterY = entry.Y + entry.Height / 2.0;
+    state->PanOffsetX = clientWidth / 2.0 - blockCenterX * zoom;
+    state->PanOffsetY = clientHeight / 2.0 - blockCenterY * zoom;
+}
+
 POINT ScreenToGraph(CFG_VIEW_STATE* viewState, POINT screenPt)
 {
     POINT graphPt;
@@ -864,6 +910,10 @@ void ComputeEdgeRoutes(CFG_GRAPH* graph)
                 endY = dstBlock.Y;
             }
         }
+
+        // Store port offsets relative to block position (preserved during drag)
+        route.StartPortOffsetX = startX - srcBlock.X;
+        route.EndPortOffsetX = endX - dstBlock.X;
 
         if (edge.IsBackEdge) {
             // 4-segment orthogonal route for back edges
@@ -1093,6 +1143,73 @@ void ComputeBlockColors(CFG_GRAPH* graph)
                 bgColor = falseBranchBg;
         }
         block.CachedBgColor = bgColor;
+    }
+}
+
+// Lightweight route update for edges connected to a single block (used during drag).
+// Preserves the original port spread offsets so T/F edges stay separated.
+static void UpdateRoutesForDraggedBlock(CFG_GRAPH* graph, DWORD_PTR blockID)
+{
+    if (!graph || graph->EdgeRoutes.size() != graph->Edges.size()) return;
+
+    for (size_t i = 0; i < graph->Edges.size(); i++) {
+        CFG_EDGE& edge = graph->Edges[i];
+        if (edge.SourceBlockID != blockID && edge.TargetBlockID != blockID) continue;
+
+        CFG_EDGE_ROUTE& route = graph->EdgeRoutes[i];
+
+        if (graph->BlockIDToIndex.find(edge.SourceBlockID) == graph->BlockIDToIndex.end() ||
+            graph->BlockIDToIndex.find(edge.TargetBlockID) == graph->BlockIDToIndex.end()) {
+            route.PointCount = 0;
+            continue;
+        }
+
+        CFG_BASIC_BLOCK& srcBlock = graph->Blocks[graph->BlockIDToIndex[edge.SourceBlockID]];
+        CFG_BASIC_BLOCK& dstBlock = graph->Blocks[graph->BlockIDToIndex[edge.TargetBlockID]];
+
+        // Recompute start/end using the saved port offsets (preserves T/F spread)
+        int startX = srcBlock.X + route.StartPortOffsetX;
+        int startY, endY;
+        int endX = dstBlock.X + route.EndPortOffsetX;
+
+        if (edge.IsBackEdge) {
+            startY = srcBlock.Y + srcBlock.Height / 2;
+            endY = dstBlock.Y;
+
+            int channelX = min(srcBlock.X, endX) - 30;
+            int aboveY = dstBlock.Y - CFG_BLOCK_V_SPACING / 2;
+
+            route.Points[0].x = startX;   route.Points[0].y = startY;
+            route.Points[1].x = channelX; route.Points[1].y = startY;
+            route.Points[2].x = channelX; route.Points[2].y = aboveY;
+            route.Points[3].x = endX;     route.Points[3].y = aboveY;
+            route.Points[4].x = endX;     route.Points[4].y = endY;
+            route.PointCount = 5;
+            route.ArrowFromX = endX;  route.ArrowFromY = aboveY;
+            route.ArrowToX = endX;    route.ArrowToY = endY;
+            route.LabelX = channelX - 5;
+            route.LabelY = (startY + aboveY) / 2;
+        } else {
+            if (srcBlock.Y >= dstBlock.Y + dstBlock.Height) {
+                startY = srcBlock.Y;
+                endY = dstBlock.Y + dstBlock.Height;
+            } else {
+                startY = srcBlock.Y + srcBlock.Height;
+                endY = dstBlock.Y;
+            }
+
+            int midY = (startY + endY) / 2;
+
+            route.Points[0].x = startX; route.Points[0].y = startY;
+            route.Points[1].x = startX; route.Points[1].y = midY;
+            route.Points[2].x = endX;   route.Points[2].y = midY;
+            route.Points[3].x = endX;   route.Points[3].y = endY;
+            route.PointCount = 4;
+            route.ArrowFromX = endX; route.ArrowFromY = midY;
+            route.ArrowToX = endX;   route.ArrowToY = endY;
+            route.LabelX = startX + 4;
+            route.LabelY = (startY < endY) ? startY + 8 : startY - 16;
+        }
     }
 }
 
@@ -1549,7 +1666,7 @@ BOOL CALLBACK CFGViewerDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lP
                     LayoutCFG(&g_CurrentGraph);
                     ComputeEdgeRoutes(&g_CurrentGraph);
                     ComputeBlockColors(&g_CurrentGraph);
-                    CenterGraphInView(hWnd, &g_CurrentGraph, &g_ViewState);
+                    FocusOnEntryBlock(hWnd, &g_CurrentGraph, &g_ViewState);
 
                     // Set window title
                     char title[128];
@@ -1646,6 +1763,9 @@ BOOL CALLBACK CFGViewerDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lP
                     block.X = g_ViewState.DragBlockStartX + deltaX;
                     block.Y = g_ViewState.DragBlockStartY + deltaY;
 
+                    // Update only the edges connected to this block (fast)
+                    UpdateRoutesForDraggedBlock(&g_CurrentGraph, g_ViewState.DraggingBlockID);
+
                     InvalidateRect(hWnd, NULL, FALSE);
                 }
             } else if (g_ViewState.IsPanning) {
@@ -1738,9 +1858,6 @@ BOOL CALLBACK CFGViewerDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lP
         }
 
         case WM_SIZE: {
-            if (wParam != SIZE_MINIMIZED) {
-                CenterGraphInView(hWnd, &g_CurrentGraph, &g_ViewState);
-            }
             InvalidateRect(hWnd, NULL, FALSE);
             return 0;
         }

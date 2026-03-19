@@ -84,6 +84,8 @@ typedef struct CFGEdgeRoute {
     int   ArrowFromX, ArrowFromY;  // Penultimate point (for arrowhead angle)
     int   ArrowToX, ArrowToY;     // Arrowhead tip
     int   LabelX, LabelY;         // T/F/C label position
+    int   StartPortOffsetX;        // startX - srcBlock.X (preserved during drag)
+    int   EndPortOffsetX;          // endX - dstBlock.X   (preserved during drag)
 } CFG_EDGE_ROUTE;
 
 // Main CFG data structure
