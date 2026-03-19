@@ -35,6 +35,7 @@
 extern DisasmDataArray      DisasmDataLines;
 extern CodeBranch           DisasmCodeFlow;
 extern FunctionInfo         fFunctionInfo;
+extern std::set<DWORD_PTR> CallTargets;
 extern HWND                 Main_hWnd;
 extern bool                 g_DarkMode;
 extern COLORREF             g_DarkBkColor;
@@ -288,8 +289,9 @@ BOOL BuildCFGFromFunction(DWORD_PTR funcStart, DWORD_PTR funcEnd, const char* fu
             block.IsExitBlock = IsReturnInstruction(lastMnemonic);
         }
 
-        // Check if this block starts a known function
+        // Check if this block starts a known function (fFunctionInfo or CallTargets)
         block.FunctionLabel[0] = '\0';
+        bool foundLabel = false;
         for (size_t fi = 0; fi < fFunctionInfo.size(); fi++) {
             if (fFunctionInfo[fi].FunctionStart == block.StartAddress) {
                 if (fFunctionInfo[fi].FunctionName[0] != '\0')
@@ -300,8 +302,15 @@ BOOL BuildCFGFromFunction(DWORD_PTR funcStart, DWORD_PTR funcEnd, const char* fu
                     else
                         wsprintf(block.FunctionLabel, "Proc_%08X", (DWORD)block.StartAddress);
                 block.FunctionLabel[63] = '\0';
+                foundLabel = true;
                 break;
             }
+        }
+        if (!foundLabel && CallTargets.count(block.StartAddress)) {
+            if(LoadedPe64)
+                wsprintf(block.FunctionLabel, "Proc_%08X%08X", (DWORD)(block.StartAddress>>32), (DWORD)block.StartAddress);
+            else
+                wsprintf(block.FunctionLabel, "Proc_%08X", (DWORD)block.StartAddress);
         }
 
         outGraph->Blocks.push_back(block);
@@ -2237,8 +2246,9 @@ BOOL BuildCFGByTracing(DWORD_PTR startIndex, CFG_GRAPH* outGraph)
         const char* lastMnemonic = DisasmDataLines[endIdx].GetMnemonic();
         block.IsExitBlock = IsReturnInstruction(lastMnemonic);
 
-        // Check if this block starts a known function
+        // Check if this block starts a known function (fFunctionInfo or CallTargets)
         block.FunctionLabel[0] = '\0';
+        bool foundLabel = false;
         for (size_t fi = 0; fi < fFunctionInfo.size(); fi++) {
             if (fFunctionInfo[fi].FunctionStart == block.StartAddress) {
                 if (fFunctionInfo[fi].FunctionName[0] != '\0')
@@ -2249,8 +2259,15 @@ BOOL BuildCFGByTracing(DWORD_PTR startIndex, CFG_GRAPH* outGraph)
                     else
                         wsprintf(block.FunctionLabel, "Proc_%08X", (DWORD)block.StartAddress);
                 block.FunctionLabel[63] = '\0';
+                foundLabel = true;
                 break;
             }
+        }
+        if (!foundLabel && CallTargets.count(block.StartAddress)) {
+            if(LoadedPe64)
+                wsprintf(block.FunctionLabel, "Proc_%08X%08X", (DWORD)(block.StartAddress>>32), (DWORD)block.StartAddress);
+            else
+                wsprintf(block.FunctionLabel, "Proc_%08X", (DWORD)block.StartAddress);
         }
 
         outGraph->Blocks.push_back(block);

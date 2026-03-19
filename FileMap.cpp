@@ -247,6 +247,12 @@ void BuildCodeMapData()
         char* mnem = DisasmDataLines[i].GetMnemonic();
         if (!mnem || !mnem[0]) continue;
 
+        // Detect function banners ("; ====== Proc_" or "; ====== " from fFunctionInfo)
+        if (_strnicmp(mnem, "; ======", 8) == 0) {
+            inFunction = true;
+            continue; // Banner line itself is not code
+        }
+
         if (!inFunction) {
             bool isPrologue = false;
             // Classic prologue: PUSH EBP/RBP followed by MOV EBP,ESP / MOV RBP,RSP
