@@ -318,6 +318,11 @@ static int DrawLegendItem(HDC hdc, int x, int y, int height, COLORREF color, con
     return x + swatchSize + 2 + sz.cx + 8;  // 8px gap between items
 }
 
+// Code map zoom state: visible fraction of the total data range [0.0 .. 1.0]
+static double g_CodeMapZoomStart = 0.0;
+static double g_CodeMapZoomEnd   = 1.0;
+#define CODEMAP_ZOOM_FACTOR 1.3  // Each scroll step zooms by this factor
+
 LRESULT CALLBACK CodeMapWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg) {
@@ -342,14 +347,21 @@ LRESULT CALLBACK CodeMapWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
             int barHeight = CODE_MAP_BAR_HEIGHT;
             size_t count = DisasmDataLines.size();
             if (count > 0 && g_CodeMapTypes.size() == count && totalWidth > 0) {
+                // Zoom: map pixels to the visible sub-range of the data
+                double zStart = g_CodeMapZoomStart;
+                double zEnd   = g_CodeMapZoomEnd;
+                double zRange = zEnd - zStart;
+
                 COLORREF prevColor = 0;
                 int runStart = 0;
 
                 for (int x = 0; x <= totalWidth; x++) {
                     COLORREF color = 0;
                     if (x < totalWidth) {
-                        size_t startIdx = (size_t)((double)x / totalWidth * count);
-                        size_t endIdx   = (size_t)((double)(x + 1) / totalWidth * count);
+                        double frac0 = (double)x / totalWidth;
+                        double frac1 = (double)(x + 1) / totalWidth;
+                        size_t startIdx = (size_t)((zStart + frac0 * zRange) * count);
+                        size_t endIdx   = (size_t)((zStart + frac1 * zRange) * count);
                         if (endIdx > count) endIdx = count;
                         if (startIdx >= count) startIdx = count - 1;
                         if (endIdx <= startIdx) endIdx = startIdx + 1;
@@ -377,29 +389,36 @@ LRESULT CALLBACK CodeMapWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
                     }
                 }
 
+                // Helper lambda: convert a data index to pixel X in zoomed view
+                #define IDX_TO_PX(idx) ((int)(((double)(idx) / count - zStart) / zRange * totalWidth))
+
                 // Draw current view position indicator
                 HWND hDisasm = GetDlgItem(Main_hWnd, IDC_DISASM);
                 if (hDisasm) {
                     int topIndex = (int)SendMessage(hDisasm, LVM_GETTOPINDEX, 0, 0);
                     int visibleCount = (int)SendMessage(hDisasm, LVM_GETCOUNTPERPAGE, 0, 0);
 
-                    int x1 = (int)((double)topIndex / count * totalWidth);
-                    int x2 = (int)((double)(topIndex + visibleCount) / count * totalWidth);
+                    int x1 = IDX_TO_PX(topIndex);
+                    int x2 = IDX_TO_PX(topIndex + visibleCount);
                     if (x2 <= x1) x2 = x1 + 2;
+                    // Clamp to bar area
+                    if (x1 < 0) x1 = 0;
                     if (x2 > totalWidth) x2 = totalWidth;
 
-                    HPEN hIndicatorPen = CreatePen(PS_SOLID, 1, g_DarkMode ? RGB(255, 255, 255) : RGB(0, 0, 0));
-                    HPEN hOldPen = (HPEN)SelectObject(hdc, hIndicatorPen);
-                    HBRUSH hOldBrush = (HBRUSH)SelectObject(hdc, GetStockObject(NULL_BRUSH));
-                    Rectangle(hdc, x1, 0, x2, barHeight);
-                    SelectObject(hdc, hOldPen);
-                    SelectObject(hdc, hOldBrush);
-                    DeleteObject(hIndicatorPen);
+                    if (x2 > 0 && x1 < totalWidth) {
+                        HPEN hIndicatorPen = CreatePen(PS_SOLID, 1, g_DarkMode ? RGB(255, 255, 255) : RGB(0, 0, 0));
+                        HPEN hOldPen = (HPEN)SelectObject(hdc, hIndicatorPen);
+                        HBRUSH hOldBrush = (HBRUSH)SelectObject(hdc, GetStockObject(NULL_BRUSH));
+                        Rectangle(hdc, x1, 0, x2, barHeight);
+                        SelectObject(hdc, hOldPen);
+                        SelectObject(hdc, hOldBrush);
+                        DeleteObject(hIndicatorPen);
+                    }
 
                     // Draw small arrow indicator: follows focused item when visible,
                     // otherwise falls back to viewport center (e.g. during scroll)
-                    int topIdx = (int)SendMessage(hDisasm, LVM_GETTOPINDEX, 0, 0);
-                    int perPage = (int)SendMessage(hDisasm, LVM_GETCOUNTPERPAGE, 0, 0);
+                    int topIdx = topIndex;
+                    int perPage = visibleCount;
                     int focusedIdx = (int)SendMessage(hDisasm, LVM_GETNEXTITEM, -1, LVNI_FOCUSED);
                     int cursorIdx;
                     if (focusedIdx >= topIdx && focusedIdx <= topIdx + perPage)
@@ -407,24 +426,27 @@ LRESULT CALLBACK CodeMapWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
                     else
                         cursorIdx = topIdx + perPage / 2;
                     if (cursorIdx >= 0 && cursorIdx < (int)count) {
-                        int cx = (int)((double)cursorIdx / count * totalWidth);
-                        // Small downward-pointing triangle (5px wide, 4px tall)
-                        POINT arrow[3] = {
-                            { cx - 4, 0 },
-                            { cx + 4, 0 },
-                            { cx, 5 }
-                        };
-                        HBRUSH hArrowBrush = CreateSolidBrush(RGB(255, 255, 0));
-                        HPEN hArrowPen = CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
-                        HPEN hOldPen2 = (HPEN)SelectObject(hdc, hArrowPen);
-                        HBRUSH hOldBr2 = (HBRUSH)SelectObject(hdc, hArrowBrush);
-                        Polygon(hdc, arrow, 3);
-                        SelectObject(hdc, hOldPen2);
-                        SelectObject(hdc, hOldBr2);
-                        DeleteObject(hArrowPen);
-                        DeleteObject(hArrowBrush);
+                        int cx = IDX_TO_PX(cursorIdx);
+                        if (cx >= 0 && cx < totalWidth) {
+                            // Small downward-pointing triangle (5px wide, 4px tall)
+                            POINT arrow[3] = {
+                                { cx - 4, 0 },
+                                { cx + 4, 0 },
+                                { cx, 5 }
+                            };
+                            HBRUSH hArrowBrush = CreateSolidBrush(RGB(255, 255, 0));
+                            HPEN hArrowPen = CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
+                            HPEN hOldPen2 = (HPEN)SelectObject(hdc, hArrowPen);
+                            HBRUSH hOldBr2 = (HBRUSH)SelectObject(hdc, hArrowBrush);
+                            Polygon(hdc, arrow, 3);
+                            SelectObject(hdc, hOldPen2);
+                            SelectObject(hdc, hOldBr2);
+                            DeleteObject(hArrowPen);
+                            DeleteObject(hArrowBrush);
+                        }
                     }
                 }
+                #undef IDX_TO_PX
             }
 
             // --- Draw legend row below the bar ---
@@ -468,7 +490,10 @@ LRESULT CALLBACK CodeMapWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
             if (count > 0 && barWidth > 0) {
                 if (mouseX < 0) mouseX = 0;
                 if (mouseX >= barWidth) mouseX = barWidth - 1;
-                DWORD_PTR index = (DWORD_PTR)((double)mouseX / barWidth * count);
+                // Map pixel to data index using zoom range
+                double zRange = g_CodeMapZoomEnd - g_CodeMapZoomStart;
+                double frac = g_CodeMapZoomStart + (double)mouseX / barWidth * zRange;
+                DWORD_PTR index = (DWORD_PTR)(frac * count);
                 if (index >= count) index = count - 1;
 
                 HWND hDisasm = GetDlgItem(Main_hWnd, IDC_DISASM);
@@ -485,6 +510,64 @@ LRESULT CALLBACK CodeMapWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
             ReleaseCapture();
             return 0;
         }
+
+        case WM_MOUSEWHEEL: {
+            // Zoom in/out centered on mouse position
+            int delta = GET_WHEEL_DELTA_WPARAM(wParam);
+            RECT rc;
+            GetClientRect(hWnd, &rc);
+            int barWidth = rc.right - rc.left;
+
+            // Get mouse X relative to our window
+            POINT pt = { (short)LOWORD(lParam), (short)HIWORD(lParam) };
+            ScreenToClient(hWnd, &pt);
+            int mouseX = pt.x;
+            if (mouseX < 0) mouseX = 0;
+            if (mouseX >= barWidth) mouseX = barWidth - 1;
+
+            size_t count = DisasmDataLines.size();
+            if (count > 0 && barWidth > 0) {
+                double zRange = g_CodeMapZoomEnd - g_CodeMapZoomStart;
+                // The data fraction under the mouse cursor
+                double anchor = g_CodeMapZoomStart + (double)mouseX / barWidth * zRange;
+
+                double newRange;
+                if (delta > 0) // scroll up = zoom in
+                    newRange = zRange / CODEMAP_ZOOM_FACTOR;
+                else           // scroll down = zoom out
+                    newRange = zRange * CODEMAP_ZOOM_FACTOR;
+
+                // Clamp: can't zoom out beyond full range
+                if (newRange > 1.0) newRange = 1.0;
+                // Minimum zoom: at least 100 entries visible
+                double minRange = 100.0 / count;
+                if (minRange < 0.001) minRange = 0.001;
+                if (newRange < minRange) newRange = minRange;
+
+                // Keep the anchor point at the same pixel position
+                double anchorFrac = (double)mouseX / barWidth;
+                double newStart = anchor - anchorFrac * newRange;
+                double newEnd   = newStart + newRange;
+
+                // Clamp to [0, 1]
+                if (newStart < 0.0) { newEnd -= newStart; newStart = 0.0; }
+                if (newEnd > 1.0)   { newStart -= (newEnd - 1.0); newEnd = 1.0; }
+                if (newStart < 0.0) newStart = 0.0;
+
+                g_CodeMapZoomStart = newStart;
+                g_CodeMapZoomEnd   = newEnd;
+                InvalidateRect(hWnd, NULL, FALSE);
+            }
+            return 0;
+        }
+
+        case WM_RBUTTONDOWN: {
+            // Right-click resets zoom to default
+            g_CodeMapZoomStart = 0.0;
+            g_CodeMapZoomEnd   = 1.0;
+            InvalidateRect(hWnd, NULL, FALSE);
+            return 0;
+        }
     }
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
@@ -493,6 +576,9 @@ void RefreshCodeMapBar()
 {
     if (!g_CodeMapVisible || !Main_hWnd) return;
     BuildCodeMapData();
+    // Reset zoom when new data is loaded
+    g_CodeMapZoomStart = 0.0;
+    g_CodeMapZoomEnd   = 1.0;
     HWND hBar = GetDlgItem(Main_hWnd, IDC_CODE_MAP_BAR);
     if (!hBar) return;
 
