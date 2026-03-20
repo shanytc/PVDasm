@@ -2757,6 +2757,12 @@ int Open(HWND hWnd)
 	if(GetOpenFileName(&ofn)!=0){	
 		// Do we have already a file loaded ?
 		if(FilesInMemory==true){
+            // Hide code map from previous file before freeing memory
+            HWND hBar = GetDlgItem(hWnd, IDC_CODE_MAP_BAR);
+            if (hBar && IsWindowVisible(hBar)) {
+                ShowWindow(hBar, SW_HIDE);
+                RepositionDisasmForCodeMap(hWnd, FALSE);
+            }
             FreeMemory(hWnd);
         }
 		//צור/פתח קובץ שאנו נבחר מתוך הדיאלוג
