@@ -3219,7 +3219,7 @@ BOOL CALLBACK StringRefDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lP
             LVITEM		LvItem;
             HWND		hList;
             DWORD		i=0,Index=0,j=0,len;
-            char		Api[128],temp[128],*ptr;
+            char		Api[512],temp[512],*ptr;
             
             // Set Radio Button Checked
             SendDlgItemMessage(hWnd,IDC_REF_CONTAIN,BM_SETCHECK,(WPARAM)BST_CHECKED,(LPARAM)0);
@@ -3255,16 +3255,17 @@ BOOL CALLBACK StringRefDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lP
                     SendMessage(hList,LVM_INSERTITEM,0,(LPARAM)&LvItem);
                     LvItem.mask=LVIF_TEXT;
 
-                    strcpy_s(temp,StringLen(DisasmDataLines[i].GetComments())+1,DisasmDataLines[i].GetComments());
-                    ptr=temp;
-					while(*ptr!=':'){
-                        ptr++;
-					}
-                    ptr+=2;
-                    strcpy_s(Api,StringLen(ptr)+1,ptr);
-					len=StringLen(Api);
-					if(Api[len-1]==']')
-						Api[len-1]=NULL;
+                    char* comments = DisasmDataLines[i].GetComments();
+                    if(!comments || !comments[0]) continue;
+                    strcpy_s(temp, sizeof(temp), comments);
+                    ptr = strchr(temp, ':');
+                    if(!ptr) continue;
+                    ptr++; // skip ':'
+                    if(*ptr == ' ') ptr++; // skip space after ':'
+                    strcpy_s(Api, sizeof(Api), ptr);
+                    len=StringLen(Api);
+                    if(len > 0 && Api[len-1]==']')
+                        Api[len-1]='\0';
                     
                     LvItem.iItem=Index;
                     LvItem.iSubItem=1;
