@@ -450,13 +450,22 @@
 #define IDC_CODE_MAP                    40115
 #define IDC_CODE_MAP_BAR                1337
 
+#define IDC_SHOW_FUNCTIONS              40116
+#define IDD_FUNCTION_REF                247
+#define IDC_FUNCTION_REF_LV             1338
+#define IDC_FUNCTION_FIND               1339
+#define IDC_FUNCTION_CANCEL             1340
+#define IDC_FUNCTION_EXACT              1341
+#define IDC_FUNCTION_CONTAIN            1342
+#define IDC_FUNCTION_FINDNEXT           1343
+
 // Next default values for new objects
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        246
-#define _APS_NEXT_COMMAND_VALUE         40116
-#define _APS_NEXT_CONTROL_VALUE         1338
+#define _APS_NEXT_RESOURCE_VALUE        248
+#define _APS_NEXT_COMMAND_VALUE         40117
+#define _APS_NEXT_CONTROL_VALUE         1344
 #define _APS_NEXT_SYMED_VALUE           121
 #endif
 #endif

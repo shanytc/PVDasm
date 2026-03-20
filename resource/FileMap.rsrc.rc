@@ -185,6 +185,22 @@ BEGIN
     GROUPBOX        "",IDC_STATIC,201,2,113,24
 END
 
+IDD_FUNCTION_REF DIALOGEX 0, 0, 320, 236
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_TOOLWINDOW
+CAPTION " Show Functions"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_FUNCTION_FIND,73,9,90,13,ES_AUTOHSCROLL
+    PUSHBUTTON      "Find Next",IDC_FUNCTION_FINDNEXT,166,8,38,14
+    CONTROL         "Exact",IDC_FUNCTION_EXACT,"Button",BS_AUTORADIOBUTTON | WS_GROUP,211,11,34,10
+    CONTROL         "Contains",IDC_FUNCTION_CONTAIN,"Button",BS_AUTORADIOBUTTON,263,11,43,10
+    CONTROL         "List1",IDC_FUNCTION_REF_LV,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,7,30,306,184
+    PUSHBUTTON      "Close",IDC_FUNCTION_CANCEL,263,218,50,14
+    LTEXT           "Search Function:",IDC_STATIC,7,11,61,8
+    GROUPBOX        "",IDC_STATIC,201,2,113,24
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -901,6 +917,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "String References\tCtrl+R",   IDC_STR_REFERENCES
         MENUITEM "Show Comments\tCtrl+K",       IDC_SHOW_COMMENTS
+        MENUITEM "Show Functions\tCtrl+J",      IDC_SHOW_FUNCTIONS
         MENUITEM SEPARATOR
         MENUITEM "XReferences\tCtrl+Space",     IDC_XREF_MENU
         MENUITEM "View Function Graph\tCtrl+G", IDC_VIEW_CFG
@@ -1186,6 +1203,7 @@ BEGIN
     "P",            ID_PE_EDIT,             VIRTKEY, CONTROL, NOINVERT
     "P",            IDC_PAUSE_DISASM,       VIRTKEY, ALT, NOINVERT
     "R",            IDC_STR_REFERENCES,     VIRTKEY, CONTROL, NOINVERT
+    "J",            IDC_SHOW_FUNCTIONS,     VIRTKEY, CONTROL, NOINVERT
     "K",            IDC_SHOW_COMMENTS,      VIRTKEY, CONTROL, NOINVERT
     "R",            IDC_START_DISASM,       VIRTKEY, ALT, NOINVERT
     "S",            ID_SCRIPT,              VIRTKEY, CONTROL, NOINVERT

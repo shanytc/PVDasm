@@ -74,6 +74,9 @@ extern DISASM_OPTIONS       disop;
 
 #endif
 
+// Forward declarations
+BOOL CALLBACK FunctionRefDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam);
+
 // ================================================================
 // =====================  GLOBAL VARIABLES  =======================
 // ================================================================
@@ -1273,6 +1276,7 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             EnableMenuItem(GetMenu(hWnd),IDC_DISASM_IMP,MF_GRAYED);
             EnableMenuItem(GetMenu(hWnd),IDC_STR_REFERENCES,MF_GRAYED);
             EnableMenuItem(GetMenu(hWnd),IDC_SHOW_COMMENTS,MF_GRAYED);
+            EnableMenuItem(GetMenu(hWnd),IDC_SHOW_FUNCTIONS,MF_GRAYED);
             EnableMenuItem(GetMenu(hWnd),IDC_XREF_MENU,MF_GRAYED);
             EnableMenuItem(GetMenu(hWnd),IDM_PATCHER,MF_GRAYED);
             EnableMenuItem(GetMenu(hWnd),IDC_DISASM_ADD_COMMENT,MF_GRAYED);
@@ -1876,6 +1880,12 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 // Show Comments
                 case IDC_SHOW_COMMENTS:{
                     DialogBox(GetModuleHandle(NULL),MAKEINTRESOURCE(IDD_COMMENT_REF), hWnd, (DLGPROC)CommentRefDlgProc);
+                }
+                break;
+
+                // Show Functions
+                case IDC_SHOW_FUNCTIONS:{
+                    DialogBox(GetModuleHandle(NULL),MAKEINTRESOURCE(IDD_FUNCTION_REF), hWnd, (DLGPROC)FunctionRefDlgProc);
                 }
                 break;
 
@@ -2601,6 +2611,7 @@ void DebugNonPE(HWND hWnd)
     EnableMenuItem ( hMenu, IDC_DISASM_IMP,			MF_GRAYED  );
     EnableMenuItem ( hMenu, IDC_STR_REFERENCES,		MF_GRAYED  );
     EnableMenuItem ( hMenu, IDC_SHOW_COMMENTS,		MF_GRAYED  );
+    EnableMenuItem ( hMenu, IDC_SHOW_FUNCTIONS,		MF_GRAYED  );
     EnableMenuItem ( hMenu, IDC_XREF_MENU,			MF_GRAYED  );
     EnableMenuItem ( hMenu, IDM_PATCHER,			MF_GRAYED  );
     EnableMenuItem ( hMenu, ID_PE_EDIT,				MF_GRAYED  );
@@ -3573,6 +3584,282 @@ BOOL CALLBACK CommentRefDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM l
                         LVITEM      LvItem;
                         DWORD_PTR   dwSelectedItem;
                         HWND        hRefList=GetDlgItem(hWnd,IDC_COMMENT_REF_LV);
+
+                        memset(&LvItem,0,sizeof(LvItem));
+                        LvItem.mask=LVIF_PARAM|LVIF_TEXT|LVIF_STATE;
+                        LvItem.cchTextMax = 256;
+                        LvItem.state=LVIS_FOCUSED|LVIS_SELECTED;
+                        dwSelectedItem=SendMessage(hRefList,LVM_GETNEXTITEM,-1,LVNI_FOCUSED);
+                        LvItem.iItem=(DWORD)dwSelectedItem;
+                        LvItem.iSubItem=0;
+                        SendMessage(hRefList,LVM_GETITEM,0,(LPARAM)&LvItem);
+                        dwSelectedItem=LvItem.lParam;
+                        SelectItem(GetDlgItem(Main_hWnd,IDC_DISASM),dwSelectedItem);
+                    }
+                }
+                break;
+            }
+        }
+        break;
+
+        case WM_CLOSE:{
+            EndDialog(hWnd,0);
+        }
+        break;
+    }
+    return 0;
+}
+
+//======================================================================================
+//============================  FunctionRefDlgProc =====================================
+//======================================================================================
+
+static HWND Function_hWnd = NULL;
+static WNDPROC OldFunctionWndProc = NULL;
+
+// Helper function to find a function match starting from a given index
+int FindFunctionMatch(HWND hDlg, int startIndex, bool wrapAround)
+{
+    char SearchText[256], Temp[256];
+    HWND hList = GetDlgItem(hDlg, IDC_FUNCTION_REF_LV);
+    int totalItems = ListView_GetItemCount(hList);
+
+    if(totalItems == 0) return -1;
+
+    SendDlgItemMessage(hDlg, IDC_FUNCTION_FIND, WM_GETTEXT, (WPARAM)256, (LPARAM)SearchText);
+    if(StringLen(SearchText) == 0) return -1;
+
+    bool useContains = (SendDlgItemMessage(hDlg, IDC_FUNCTION_CONTAIN, BM_GETCHECK, (WPARAM)BST_CHECKED, (LPARAM)0) == BST_CHECKED);
+
+    char SearchLower[256];
+    lstrcpy(SearchLower, SearchText);
+    CharLower(SearchLower);
+
+    int searchCount = wrapAround ? totalItems : (totalItems - startIndex);
+
+    for(int i = 0; i < searchCount; i++){
+        int idx = (startIndex + i) % totalItems;
+
+        ListView_GetItemText(hList, idx, 1, Temp, 256);
+
+        bool found = false;
+        if(useContains){
+            char TempLower[256];
+            lstrcpy(TempLower, Temp);
+            CharLower(TempLower);
+            if(strstr(TempLower, SearchLower) != NULL){
+                found = true;
+            }
+        }
+        else{
+            if(lstrcmpi(Temp, SearchText) == 0){
+                found = true;
+            }
+        }
+
+        if(found){
+            return idx;
+        }
+    }
+
+    return -1;
+}
+
+// Helper to deselect all items in the function ListView
+void DeselectAllFunctions(HWND hList)
+{
+    int count = ListView_GetItemCount(hList);
+    for(int i = 0; i < count; i++){
+        ListView_SetItemState(hList, i, 0, LVIS_SELECTED | LVIS_FOCUSED);
+    }
+}
+
+// Helper to perform search and select result
+void DoFunctionSearch(HWND hDlg, int startIndex)
+{
+    HWND hList = GetDlgItem(hDlg, IDC_FUNCTION_REF_LV);
+    int foundIdx = FindFunctionMatch(hDlg, startIndex, true);
+
+    if(foundIdx != -1){
+        SetFocus(hList);
+        SelectItem(hList, foundIdx);
+        SetFocus(GetDlgItem(hDlg, IDC_FUNCTION_FIND));
+    }
+    else{
+        DeselectAllFunctions(hList);
+    }
+}
+
+LRESULT CALLBACK FunctionSearchProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    switch(uMsg){
+        case WM_KEYDOWN:
+        {
+            if(wParam == VK_F3){
+                HWND hList = GetDlgItem(Function_hWnd, IDC_FUNCTION_REF_LV);
+                int currentSel = (int)SendMessage(hList, LVM_GETNEXTITEM, -1, LVNI_FOCUSED);
+                int startIdx = (currentSel >= 0) ? currentSel + 1 : 0;
+                DoFunctionSearch(Function_hWnd, startIdx);
+                return 0;
+            }
+        }
+        break;
+
+        case WM_KEYUP:
+        {
+            if(wParam == VK_F3) break;
+
+            char SearchText[256];
+            SendDlgItemMessage(Function_hWnd, IDC_FUNCTION_FIND, WM_GETTEXT, (WPARAM)256, (LPARAM)SearchText);
+            if(StringLen(SearchText) == 0){
+                SetWindowText(Function_hWnd, " Show Functions");
+                DeselectAllFunctions(GetDlgItem(Function_hWnd, IDC_FUNCTION_REF_LV));
+            }
+            else{
+                SetWindowText(Function_hWnd, SearchText);
+                DoFunctionSearch(Function_hWnd, 0);
+            }
+        }
+        break;
+    }
+
+    return CallWindowProc(OldFunctionWndProc, hWnd, uMsg, wParam, lParam);
+}
+
+BOOL CALLBACK FunctionRefDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
+{
+    switch(Message){
+        case WM_INITDIALOG:{
+            LV_COLUMN   LvCol;
+            LVITEM      LvItem;
+            HWND        hList;
+            DWORD       Index=0;
+            char        *mnemonic;
+
+            // Set Radio Button Checked
+            SendDlgItemMessage(hWnd,IDC_FUNCTION_CONTAIN,BM_SETCHECK,(WPARAM)BST_CHECKED,(LPARAM)0);
+            SetFocus(GetDlgItem(hWnd,IDC_FUNCTION_FIND));
+
+            // Subclass the edit control for search
+            OldFunctionWndProc=(WNDPROC)SetWindowLongPtr(GetDlgItem(hWnd,IDC_FUNCTION_FIND),GWL_WNDPROC,(LONG_PTR)FunctionSearchProc);
+            Function_hWnd=hWnd;
+
+            hList=GetDlgItem(hWnd,IDC_FUNCTION_REF_LV);
+            SendMessage(hList,LVM_SETEXTENDEDLISTVIEWSTYLE,0,LVS_EX_FULLROWSELECT);
+
+            // Add Columns
+            memset(&LvCol,0,sizeof(LvCol));
+            LvCol.mask=LVCF_TEXT|LVCF_WIDTH|LVCF_SUBITEM;
+            LvCol.pszText="Address";
+            LvCol.cx=0x50;
+            SendMessage(hList,LVM_INSERTCOLUMN,0,(LPARAM)&LvCol);
+            LvCol.pszText="Function";
+            LvCol.cx=0x140;
+            SendMessage(hList,LVM_INSERTCOLUMN,1,(LPARAM)&LvCol);
+
+            memset(&LvItem,0,sizeof(LvItem));
+            LvItem.cchTextMax = 256;
+
+            try{
+                // Iterate through all disassembly lines and find function banners
+                for(DWORD i=0; i < DisasmDataLines.size(); i++){
+                    mnemonic = DisasmDataLines[i].GetMnemonic();
+                    // Function banners start with "; ======"
+                    if(mnemonic != NULL && strncmp(mnemonic, "; ======", 8) == 0){
+                        // Extract function name from banner
+                        // Format 1: "; ====== FuncName ======"
+                        // Format 2: "; ===========[ Program Entry Point ]==========="
+                        char funcName[256];
+                        const char* openBracket = strchr(mnemonic, '[');
+                        if(openBracket != NULL){
+                            // Format 2: extract text between [ and ]
+                            const char* closeBracket = strchr(openBracket, ']');
+                            if(closeBracket != NULL && (closeBracket - openBracket - 1) < 255){
+                                int len = (int)(closeBracket - openBracket - 1);
+                                memcpy(funcName, openBracket + 1, len);
+                                funcName[len] = '\0';
+                            }
+                            else{
+                                lstrcpyn(funcName, openBracket + 1, 255);
+                            }
+                        }
+                        else{
+                            // Format 1: extract text between "; ====== " and " ======"
+                            const char* start = mnemonic + 9; // skip "; ====== "
+                            const char* end = strstr(start, " ======");
+                            if(end != NULL && (end - start) < 255){
+                                int len = (int)(end - start);
+                                memcpy(funcName, start, len);
+                                funcName[len] = '\0';
+                            }
+                            else{
+                                lstrcpyn(funcName, start, 255);
+                            }
+                        }
+
+                        // Use the next line's address (the actual function start)
+                        DWORD nextIdx = i + 1;
+                        char* addr = "";
+                        if(nextIdx < DisasmDataLines.size()){
+                            addr = DisasmDataLines[nextIdx].GetAddress();
+                        }
+
+                        LvItem.iItem=Index;
+                        LvItem.iSubItem=0;
+                        LvItem.pszText = addr;
+                        LvItem.lParam = nextIdx;  // Store the line index of the first instruction
+                        LvItem.mask=LVIF_TEXT|LVIF_PARAM|LVIF_STATE;
+                        SendMessage(hList,LVM_INSERTITEM,0,(LPARAM)&LvItem);
+                        LvItem.mask=LVIF_TEXT;
+
+                        LvItem.iItem=Index;
+                        LvItem.iSubItem=1;
+                        LvItem.pszText=funcName;
+                        SendMessage(hList,LVM_SETITEM,0,(LPARAM)&LvItem);
+
+                        Index++;
+                    }
+                }
+            }
+            catch(...){
+            }
+        }
+        break;
+
+        case WM_PAINT:{
+            PAINTSTRUCT psRepaintPictures;
+            HDC dcRepaintPictures;
+            dcRepaintPictures = BeginPaint(hWnd,&psRepaintPictures);
+            RepaintPictures(hWnd,dcRepaintPictures);
+            EndPaint(hWnd,&psRepaintPictures);
+        }
+        break;
+
+        case WM_COMMAND:{
+            switch(LOWORD(wParam)){
+                case IDC_FUNCTION_CANCEL:{
+                    EndDialog(hWnd,0);
+                }
+                break;
+
+                case IDC_FUNCTION_FINDNEXT:{
+                    HWND hList = GetDlgItem(hWnd, IDC_FUNCTION_REF_LV);
+                    int currentSel = (int)SendMessage(hList, LVM_GETNEXTITEM, -1, LVNI_FOCUSED);
+                    int startIdx = (currentSel >= 0) ? currentSel + 1 : 0;
+                    DoFunctionSearch(hWnd, startIdx);
+                }
+                break;
+            }
+        }
+        break;
+
+        case WM_NOTIFY:{
+            switch(LOWORD(wParam)){
+                case IDC_FUNCTION_REF_LV:{
+                    if(((LPNMHDR)lParam)->code == NM_CLICK || ((LPNMHDR)lParam)->code == LVN_ITEMCHANGED){
+                        LVITEM      LvItem;
+                        DWORD_PTR   dwSelectedItem;
+                        HWND        hRefList=GetDlgItem(hWnd,IDC_FUNCTION_REF_LV);
 
                         memset(&LvItem,0,sizeof(LvItem));
                         LvItem.mask=LVIF_PARAM|LVIF_TEXT|LVIF_STATE;
@@ -5419,6 +5706,7 @@ void CloseLoadedFile(HWND hWnd)
         EnableMenuItem(hWinMenu, IDC_DISASM_IMP,			MF_GRAYED);
         EnableMenuItem(hWinMenu, IDC_STR_REFERENCES,		MF_GRAYED);
         EnableMenuItem(hWinMenu, IDC_SHOW_COMMENTS,			MF_GRAYED);
+        EnableMenuItem(hWinMenu, IDC_SHOW_FUNCTIONS,		MF_GRAYED);
         EnableMenuItem(hWinMenu, IDC_XREF_MENU,				MF_GRAYED);
         EnableMenuItem(hWinMenu, IDM_PATCHER,				MF_GRAYED);
         EnableMenuItem(hWinMenu, IDM_FIND,					MF_GRAYED);

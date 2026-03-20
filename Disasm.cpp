@@ -4351,6 +4351,7 @@ void WINAPI Disassembler(/*LPVOID lpParam*/) // Thread Worker for Decoding Instr
     EnableMenuItem ( hMenu, IDM_PATCHER,            MF_ENABLED );
     EnableMenuItem ( hMenu, IDC_DISASM_ADD_COMMENT, MF_ENABLED );
     EnableMenuItem ( hMenu, IDC_SHOW_COMMENTS,      MF_ENABLED );
+    EnableMenuItem ( hMenu, IDC_SHOW_FUNCTIONS,     MF_ENABLED );
 	EnableMenuItem ( hMenu, IDM_COPY_DISASM_FILE,   MF_ENABLED );
 	EnableMenuItem ( hMenu, IDM_COPY_DISASM_CLIP,   MF_ENABLED );
 	EnableMenuItem ( hMenu, IDM_SELECT_ALL_ITEMS,   MF_ENABLED );
