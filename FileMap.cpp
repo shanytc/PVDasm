@@ -2549,6 +2549,18 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 }
                 break;
 
+				// Copy address of selected line to clipboard
+				case IDM_COPY_ADDRESS:{
+                    int iSel = (int)SendMessage(GetDlgItem(hWnd,IDC_DISASM), LVM_GETNEXTITEM, (WPARAM)-1, LVNI_FOCUSED);
+                    if(iSel >= 0 && iSel < (int)DisasmDataLines.size()){
+                        char* addr = DisasmDataLines[iSel].GetAddress();
+                        if(addr && addr[0]){
+                            CopyToClipboard(addr, hWnd);
+                        }
+                    }
+                }
+                break;
+
 				// Select all items in disassembly view
 				case IDM_SELECT_ALL_ITEMS:
                 case IDM_SELECT_ALL:{

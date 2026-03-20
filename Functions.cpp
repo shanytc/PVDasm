@@ -2417,7 +2417,7 @@ void CopyToClipboard(char *stringbuffer, HWND window)
         
         //alloc enough mem for the string;
         //must be GMEM_DDESHARE to work with the clipboard
-        clipbuffer = GlobalAlloc(GHND, StringLen(stringbuffer));
+        clipbuffer = GlobalAlloc(GHND, StringLen(stringbuffer)+1);
         buffer = (char*)GlobalLock(clipbuffer);
         strcpy_s(buffer,StringLen(LPCSTR(stringbuffer))+1 ,LPCSTR(stringbuffer));
         GlobalUnlock(clipbuffer);

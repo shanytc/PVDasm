@@ -469,13 +469,14 @@
 #define IDC_VIEW_DISASSEMBLY            40121
 #define IDC_VIEW_GRAPH                  40122
 #define IDM_CFG_SHOW_DISASM             40123
+#define IDM_COPY_ADDRESS                40124
 
 // Next default values for new objects
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        248
-#define _APS_NEXT_COMMAND_VALUE         40124
+#define _APS_NEXT_COMMAND_VALUE         40125
 #define _APS_NEXT_CONTROL_VALUE         1346
 #define _APS_NEXT_SYMED_VALUE           121
 #endif

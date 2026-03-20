@@ -970,6 +970,7 @@ BEGIN
         BEGIN
             MENUITEM "Copy To File...\tCtrl+Alt+C", IDM_COPY_DISASM_FILE
             MENUITEM "Copy To ClipBoard\tCtrl+C",   IDM_COPY_DISASM_CLIP
+            MENUITEM "Address",                     IDM_COPY_ADDRESS
             MENUITEM SEPARATOR
             MENUITEM "Select All\tCtrl+Alt+A",      IDM_SELECT_ALL_ITEMS
         END
@@ -1057,6 +1058,7 @@ BEGIN
         BEGIN
             MENUITEM "Copy To Clipboard\tCtrl+C",   IDM_COPY_DISASM
             MENUITEM "Copy To File...\tCtrl+Alt+C", IDM_COPY_FILE
+            MENUITEM "Address",                     IDM_COPY_ADDRESS
             MENUITEM SEPARATOR
             MENUITEM "Select All\tCtrl+Alt+A",      IDM_SELECT_ALL
         END

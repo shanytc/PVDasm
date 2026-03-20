@@ -1948,6 +1948,17 @@ void RenderBlocks(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState, RECT* vi
             DeleteObject(hSepPen);
         }
 
+        // Measure address column width from first line in block
+        int addrColWidth = 75; // default for x86
+        if (block.StartIndex < DisasmDataLines.size()) {
+            char* firstAddr = DisasmDataLines[block.StartIndex].GetAddress();
+            if (firstAddr && firstAddr[0]) {
+                SIZE addrSize;
+                GetTextExtentPoint32(hDC, firstAddr, lstrlen(firstAddr), &addrSize);
+                addrColWidth = addrSize.cx + 8; // add gap between address and mnemonic
+            }
+        }
+
         for (DWORD_PTR idx = block.StartIndex; idx <= block.EndIndex && idx < DisasmDataLines.size(); idx++) {
             char* addrText = DisasmDataLines[idx].GetAddress();
             char* asmText = DisasmDataLines[idx].GetMnemonic();
@@ -1958,7 +1969,7 @@ void RenderBlocks(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState, RECT* vi
 
             // Draw mnemonic
             SetTextColor(hDC, textColor);
-            TextOut(hDC, block.X + CFG_BLOCK_PADDING + 75, y, asmText, lstrlen(asmText));
+            TextOut(hDC, block.X + CFG_BLOCK_PADDING + addrColWidth, y, asmText, lstrlen(asmText));
 
             // Draw comment if present
             char* comment = DisasmDataLines[idx].GetComments();
@@ -1966,7 +1977,7 @@ void RenderBlocks(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState, RECT* vi
                 // Measure mnemonic width to position comment after it
                 SIZE asmSize;
                 GetTextExtentPoint32(hDC, asmText, lstrlen(asmText), &asmSize);
-                int commentX = block.X + CFG_BLOCK_PADDING + 75 + asmSize.cx;
+                int commentX = block.X + CFG_BLOCK_PADDING + addrColWidth + asmSize.cx;
 
                 char commentBuf[256];
                 wsprintf(commentBuf, "  %s", comment);
