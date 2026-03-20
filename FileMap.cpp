@@ -124,6 +124,7 @@ bool				DCodeFlow;					// Read to jump to address from code flow
 bool				bToolTip=false;				// Process New Colors when viewing toolTip
 bool				bSplitterDragging=false;	// Splitter drag state
 int					nSplitterDragY=0;			// Y position when drag started
+static int			g_nActiveTab=0;				// 0 = Disassembly, 1 = Graph
 BYTE				Opcode;						// Absulote 
 char				*OrignalData;				// Copy of pointer to memory map data
 char				*Data;						// Pointer to the maped file in memory
@@ -144,6 +145,7 @@ LRESULT CALLBACK MessageListSubClass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
 #define CODE_MAP_BAR_HEIGHT  20  // The color-coded navigation strip
 #define CODE_MAP_LEGEND_HEIGHT 16 // Legend text row below the strip
 #define CODE_MAP_HEIGHT (CODE_MAP_BAR_HEIGHT + CODE_MAP_LEGEND_HEIGHT) // Total height
+#define TAB_HEIGHT 24 // Height of the tab control above the disassembly/graph area
 
 // Code map type classification
 #define CMAP_CODE      0
@@ -182,6 +184,53 @@ static int GetDisasmTopY(HWND hWnd)
     GetWindowRect(hDisasm, &rc);
     MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rc, 2);
     return rc.top;
+}
+
+// ================================================================
+// =================  TAB SWITCHING  ==============================
+// ================================================================
+
+static void SwitchTab(HWND hWnd, int tabIndex)
+{
+    HWND hDisasm = GetDlgItem(hWnd, IDC_DISASM);
+    HWND hCFGChild = GetDlgItem(hWnd, IDC_CFG_CHILD);
+    HWND hTab = GetDlgItem(hWnd, IDC_TAB_MAIN);
+    HWND hCodeMapBar = GetDlgItem(hWnd, IDC_CODE_MAP_BAR);
+
+    g_nActiveTab = tabIndex;
+
+    // Update tab selection
+    if (hTab) TabCtrl_SetCurSel(hTab, tabIndex);
+
+    if (tabIndex == 0) {
+        // Disassembly tab
+        if (hDisasm) ShowWindow(hDisasm, SW_SHOW);
+        if (hCFGChild) ShowWindow(hCFGChild, SW_HIDE);
+        // Restore code map bar if it was enabled
+        if (hCodeMapBar && g_CodeMapVisible && DisassemblerReady)
+            ShowWindow(hCodeMapBar, SW_SHOW);
+    } else {
+        // Graph tab
+        if (hDisasm) ShowWindow(hDisasm, SW_HIDE);
+        // Hide code map bar on graph tab
+        if (hCodeMapBar && IsWindowVisible(hCodeMapBar))
+            ShowWindow(hCodeMapBar, SW_HIDE);
+        // Sync CFG child position to disasm rect
+        if (hCFGChild && hDisasm) {
+            RECT disasmRect;
+            GetWindowRect(hDisasm, &disasmRect);
+            MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&disasmRect, 2);
+            MoveWindow(hCFGChild, disasmRect.left, disasmRect.top,
+                       disasmRect.right - disasmRect.left,
+                       disasmRect.bottom - disasmRect.top, TRUE);
+            ShowWindow(hCFGChild, SW_SHOW);
+            SetFocus(hCFGChild);
+        }
+        // Build graph for the function at the current cursor position
+        if (DisassemblerReady) {
+            LoadCFGForCurrentFunction_Embedded();
+        }
+    }
 }
 
 // ================================================================
@@ -1109,6 +1158,17 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			// Stretch last column to fill width (fixes white areas in dark mode)
 			StretchLastColumn(GetDlgItem(hWnd, IDC_DISASM));
 			StretchLastColumn(GetDlgItem(hWnd, IDC_LIST));
+			// Sync CFG child window to disasm position when graph tab is active
+			if (g_nActiveTab == 1) {
+				HWND hCFGChild = GetDlgItem(hWnd, IDC_CFG_CHILD);
+				HWND hDisasm = GetDlgItem(hWnd, IDC_DISASM);
+				if (hCFGChild && hDisasm) {
+					RECT dr;
+					GetWindowRect(hDisasm, &dr);
+					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&dr, 2);
+					MoveWindow(hCFGChild, dr.left, dr.top, dr.right - dr.left, dr.bottom - dr.top, TRUE);
+				}
+			}
 		}
 		break;
 
@@ -1154,7 +1214,8 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 					if (newDisasmHeight >= minHeight && newListHeight >= minHeight) {
 						// Use deferred window positioning for smoother updates
-						HDWP hdwp = BeginDeferWindowPos(3);
+						HWND hCFGChild = GetDlgItem(hWnd, IDC_CFG_CHILD);
+						HDWP hdwp = BeginDeferWindowPos(hCFGChild ? 4 : 3);
 						if (hdwp) {
 							// Resize disassembly view
 							hdwp = DeferWindowPos(hdwp, hDisasm, NULL, 0, 0,
@@ -1175,6 +1236,15 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 								listRect.right - listRect.left,
 								newListHeight,
 								SWP_NOZORDER);
+
+							// Keep CFG child in sync with disasm
+							if (hCFGChild) {
+								hdwp = DeferWindowPos(hdwp, hCFGChild, NULL,
+									disasmRect.left, disasmRect.top,
+									disasmRect.right - disasmRect.left,
+									newDisasmHeight,
+									SWP_NOZORDER);
+							}
 
 							EndDeferWindowPos(hdwp);
 						}
@@ -1298,6 +1368,51 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             // Hide the Progress bar (Show only when disassembling).
             ShowWindow(GetDlgItem(hWnd,IDC_DISASM_PROGRESS),SW_HIDE);
 
+            // Create tab control above the disassembly listview
+            {
+                HWND hDisasm = GetDlgItem(hWnd, IDC_DISASM);
+                RECT disasmRect;
+                GetWindowRect(hDisasm, &disasmRect);
+                MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&disasmRect, 2);
+                RECT rcClient;
+                GetClientRect(hWnd, &rcClient);
+
+                // Create tab control at the disasm top position
+                HWND hTab = CreateWindowEx(0, WC_TABCONTROL, NULL,
+                    WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | TCS_FIXEDWIDTH,
+                    0, disasmRect.top, rcClient.right, TAB_HEIGHT,
+                    hWnd, (HMENU)(UINT_PTR)IDC_TAB_MAIN, hInst, NULL);
+                SendMessage(hTab, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), TRUE);
+
+                // Insert tabs
+                TCITEM tie = {0};
+                tie.mask = TCIF_TEXT;
+                tie.pszText = (LPSTR)"Disassembly";
+                TabCtrl_InsertItem(hTab, 0, &tie);
+                tie.pszText = (LPSTR)"Graph";
+                TabCtrl_InsertItem(hTab, 1, &tie);
+
+                SetWindowLongPtr(hTab, GWL_USERDATA, ANCHOR_RIGHT);
+
+                // Push the disasm listview down by tab height
+                MoveWindow(hDisasm, disasmRect.left, disasmRect.top + TAB_HEIGHT,
+                           disasmRect.right - disasmRect.left,
+                           (disasmRect.bottom - disasmRect.top) - TAB_HEIGHT, TRUE);
+
+                // Register and create CFG child window (same position as disasm, hidden initially)
+                RegisterCFGChildClass(hInst);
+                RECT newDisasmRect;
+                GetWindowRect(hDisasm, &newDisasmRect);
+                MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&newDisasmRect, 2);
+                HWND hCFGChild = CreateWindowExA(0, "PVDasmCFGChild", NULL,
+                    WS_CHILD | WS_CLIPSIBLINGS,
+                    newDisasmRect.left, newDisasmRect.top,
+                    newDisasmRect.right - newDisasmRect.left,
+                    newDisasmRect.bottom - newDisasmRect.top,
+                    hWnd, (HMENU)(UINT_PTR)IDC_CFG_CHILD, hInst, NULL);
+                SetWindowLongPtr(hCFGChild, GWL_USERDATA, ANCHOR_RIGHT | ANCHOR_BOTTOM);
+            }
+
             // Register and create the Code Map bar
             if (!g_CodeMapClassRegistered) {
                 WNDCLASSA wc = {0};
@@ -1361,6 +1476,16 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WM_NOTIFY:{ // Notify Messages
         switch(LOWORD(wParam)){
+                    // Tab control selection change
+                    case IDC_TAB_MAIN: {
+                        LPNMHDR pnmh = (LPNMHDR)lParam;
+                        if (pnmh->code == TCN_SELCHANGE) {
+                            int sel = TabCtrl_GetCurSel(GetDlgItem(hWnd, IDC_TAB_MAIN));
+                            SwitchTab(hWnd, sel);
+                        }
+                    }
+                    break;
+
             //Disassembler Control (Virtual List View)
                     // Message Window ListView (Dark Mode)
                     case IDC_LIST: {
@@ -2092,7 +2217,8 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 // Control Flow Graph Viewer
                 case IDC_VIEW_CFG:{
                     if(DisassemblerReady==TRUE){
-                        ShowCFGViewerForCurrentFunction(hWnd);
+                        SwitchTab(hWnd, 1);
+                        LoadCFGForCurrentFunction_Embedded();
                     }
                 }
                 break;
@@ -2297,6 +2423,13 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 		}
 		break;
+
+	// Custom message from CFG child window to switch back to Disassembly tab
+	case WM_USER + 300: {
+		SwitchTab(hWnd, 0);
+		SetFocus(GetDlgItem(hWnd, IDC_DISASM));
+		return 0;
+	}
 	}
 	return 0;
 }
@@ -5712,6 +5845,10 @@ void CloseLoadedFile(HWND hWnd)
         EnableMenuItem(hWinMenu, IDM_FIND,					MF_GRAYED);
         EnableMenuItem(hWinMenu, IDC_DISASM_ADD_COMMENT,	MF_GRAYED);
         EnableMenuItem(hWinMenu, IDC_VIEW_CFG,			MF_GRAYED);
+
+        // Clear embedded CFG and switch back to disassembly tab
+        ClearEmbeddedCFG();
+        SwitchTab(hWnd, 0);
 
         // Hide Code Map bar when file is closed
         {

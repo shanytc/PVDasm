@@ -463,13 +463,16 @@
 #define IDC_FUNCTION_CONTAIN            1342
 #define IDC_FUNCTION_FINDNEXT           1343
 
+#define IDC_TAB_MAIN                    1344
+#define IDC_CFG_CHILD                   1345
+
 // Next default values for new objects
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        248
 #define _APS_NEXT_COMMAND_VALUE         40121
-#define _APS_NEXT_CONTROL_VALUE         1344
+#define _APS_NEXT_CONTROL_VALUE         1346
 #define _APS_NEXT_SYMED_VALUE           121
 #endif
 #endif

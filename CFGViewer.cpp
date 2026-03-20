@@ -59,6 +59,7 @@ static HPEN     g_ArrowPens[5] = {};      // Width-1 pens for arrowhead outlines
 static HBRUSH   g_ArrowBrushes[5] = {};   // Solid brushes for arrowhead fill
 static COLORREF g_EdgeColors[5] = {};     // Color values for text labels
 static bool     g_OverviewEnabled = TRUE; // Overview minimap enabled by default
+bool            g_CFGGraphValid = false; // True when embedded CFG child has a valid graph
 
 // ================================================================
 // ====================  HELPER FUNCTIONS  ========================
@@ -2380,6 +2381,401 @@ void PanFromOverviewClick(CFG_VIEW_STATE* viewState, CFG_GRAPH* graph, POINT scr
 }
 
 // ================================================================
+// ====================  GDI RESOURCE HELPERS  =====================
+// ================================================================
+
+static void InitCFGGDIResources()
+{
+    // Initialize GDI+
+    if (!g_GdiplusToken) {
+        Gdiplus::GdiplusStartupInput gdipStartup;
+        Gdiplus::GdiplusStartup(&g_GdiplusToken, &gdipStartup, NULL);
+    }
+
+    // Create font for drawing
+    if (g_hCFGFont) {
+        DeleteObject(g_hCFGFont);
+    }
+    g_hCFGFont = CreateFont(14, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
+                            DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+                            CLEARTYPE_QUALITY, FIXED_PITCH | FF_MODERN, "Consolas");
+
+    // Create cached GDI objects for edge rendering
+    g_EdgeColors[0] = g_DarkMode ? RGB(150, 150, 150) : RGB(100, 100, 100);  // unconditional
+    g_EdgeColors[1] = RGB(0, 180, 0);      // true (green)
+    g_EdgeColors[2] = RGB(220, 50, 50);    // false (red)
+    g_EdgeColors[3] = RGB(0, 120, 220);    // back-edge (blue)
+    g_EdgeColors[4] = RGB(100, 50, 200);   // call (purple)
+    for (int c = 0; c < 5; c++) {
+        if (g_EdgePens[c])     DeleteObject(g_EdgePens[c]);
+        if (g_ArrowPens[c])    DeleteObject(g_ArrowPens[c]);
+        if (g_ArrowBrushes[c]) DeleteObject(g_ArrowBrushes[c]);
+        g_EdgePens[c] = CreatePen(PS_SOLID, 2, g_EdgeColors[c]);
+        g_ArrowPens[c] = CreatePen(PS_SOLID, 1, g_EdgeColors[c]);
+        g_ArrowBrushes[c] = CreateSolidBrush(g_EdgeColors[c]);
+    }
+}
+
+static void CleanupCFGGDIResources()
+{
+    g_HoverOnNavigable = false;
+    if (g_hCFGFont) {
+        DeleteObject(g_hCFGFont);
+        g_hCFGFont = NULL;
+    }
+    for (int c = 0; c < 5; c++) {
+        if (g_EdgePens[c])     { DeleteObject(g_EdgePens[c]);     g_EdgePens[c] = NULL; }
+        if (g_ArrowPens[c])    { DeleteObject(g_ArrowPens[c]);    g_ArrowPens[c] = NULL; }
+        if (g_ArrowBrushes[c]) { DeleteObject(g_ArrowBrushes[c]); g_ArrowBrushes[c] = NULL; }
+    }
+    if (g_GdiplusToken) {
+        Gdiplus::GdiplusShutdown(g_GdiplusToken);
+        g_GdiplusToken = 0;
+    }
+}
+
+// ================================================================
+// ====================  SHARED MESSAGE HANDLERS  ==================
+// ================================================================
+
+static LRESULT HandleCFG_MouseWheel(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+    int delta = GET_WHEEL_DELTA_WPARAM(wParam);
+    POINT pt;
+    pt.x = GET_X_LPARAM(lParam);
+    pt.y = GET_Y_LPARAM(lParam);
+    ScreenToClient(hWnd, &pt);
+
+    double zoomFactor = (delta > 0) ? CFG_ZOOM_FACTOR : (1.0 / CFG_ZOOM_FACTOR);
+    ZoomAtPoint(&g_ViewState, pt, zoomFactor);
+
+    InvalidateRect(hWnd, NULL, FALSE);
+    return 0;
+}
+
+static LRESULT HandleCFG_LButtonDown(HWND hWnd, LPARAM lParam)
+{
+    POINT pt;
+    pt.x = GET_X_LPARAM(lParam);
+    pt.y = GET_Y_LPARAM(lParam);
+
+    // Check if clicked on overview minimap
+    if (g_ViewState.ShowOverview) {
+        RECT cr;
+        GetClientRect(hWnd, &cr);
+        if (HitTestOverview(pt, &cr)) {
+            g_ViewState.IsDraggingOverview = TRUE;
+            SetCapture(hWnd);
+            PanFromOverviewClick(&g_ViewState, &g_CurrentGraph, pt, &cr);
+            InvalidateRect(hWnd, NULL, FALSE);
+            return 0;
+        }
+    }
+
+    // Check if clicked on a block
+    POINT graphPt = ScreenToGraph(&g_ViewState, pt);
+    DWORD_PTR clickedBlock = HitTestBlocks(&g_CurrentGraph, graphPt);
+
+    if (clickedBlock != (DWORD_PTR)-1) {
+        g_ViewState.SelectedBlockID = clickedBlock;
+        g_ViewState.DraggingBlockID = clickedBlock;
+        g_ViewState.IsDraggingBlock = TRUE;
+        g_ViewState.DragStartPoint = pt;
+
+        if (g_CurrentGraph.BlockIDToIndex.count(clickedBlock)) {
+            CFG_BASIC_BLOCK& block = g_CurrentGraph.Blocks[g_CurrentGraph.BlockIDToIndex[clickedBlock]];
+            g_ViewState.DragBlockStartX = block.X;
+            g_ViewState.DragBlockStartY = block.Y;
+        }
+
+        SetCapture(hWnd);
+        InvalidateRect(hWnd, NULL, FALSE);
+    } else {
+        g_ViewState.IsPanning = TRUE;
+        g_ViewState.DragStartPoint = pt;
+        g_ViewState.DragStartPanX = g_ViewState.PanOffsetX;
+        g_ViewState.DragStartPanY = g_ViewState.PanOffsetY;
+        SetCapture(hWnd);
+    }
+    return 0;
+}
+
+static LRESULT HandleCFG_MouseMove(HWND hWnd, LPARAM lParam)
+{
+    POINT pt;
+    pt.x = GET_X_LPARAM(lParam);
+    pt.y = GET_Y_LPARAM(lParam);
+
+    if (g_ViewState.IsDraggingOverview) {
+        RECT cr;
+        GetClientRect(hWnd, &cr);
+        PanFromOverviewClick(&g_ViewState, &g_CurrentGraph, pt, &cr);
+        InvalidateRect(hWnd, NULL, FALSE);
+        return 0;
+    }
+
+    if (g_ViewState.IsDraggingBlock) {
+        if (g_CurrentGraph.BlockIDToIndex.count(g_ViewState.DraggingBlockID)) {
+            CFG_BASIC_BLOCK& block = g_CurrentGraph.Blocks[g_CurrentGraph.BlockIDToIndex[g_ViewState.DraggingBlockID]];
+            int deltaX = (int)((pt.x - g_ViewState.DragStartPoint.x) / g_ViewState.ZoomLevel);
+            int deltaY = (int)((pt.y - g_ViewState.DragStartPoint.y) / g_ViewState.ZoomLevel);
+            block.X = g_ViewState.DragBlockStartX + deltaX;
+            block.Y = g_ViewState.DragBlockStartY + deltaY;
+            UpdateRoutesForDraggedBlock(&g_CurrentGraph, g_ViewState.DraggingBlockID);
+            InvalidateRect(hWnd, NULL, FALSE);
+        }
+    } else if (g_ViewState.IsPanning) {
+        g_ViewState.PanOffsetX = g_ViewState.DragStartPanX + (pt.x - g_ViewState.DragStartPoint.x);
+        g_ViewState.PanOffsetY = g_ViewState.DragStartPanY + (pt.y - g_ViewState.DragStartPoint.y);
+        InvalidateRect(hWnd, NULL, FALSE);
+    } else {
+        // Not dragging/panning - check for hover over navigable instruction
+        bool wasHover = g_HoverOnNavigable;
+        g_HoverOnNavigable = false;
+
+        POINT graphPt = ScreenToGraph(&g_ViewState, pt);
+        DWORD_PTR blockID = HitTestBlocks(&g_CurrentGraph, graphPt);
+
+        if (blockID != (DWORD_PTR)-1 && g_CurrentGraph.BlockIDToIndex.count(blockID)) {
+            CFG_BASIC_BLOCK& block = g_CurrentGraph.Blocks[g_CurrentGraph.BlockIDToIndex[blockID]];
+            DWORD_PTR instrIndex = HitTestInstruction(&block, graphPt);
+
+            if (instrIndex != (DWORD_PTR)-1) {
+                const char* mnemonic = DisasmDataLines[instrIndex].GetMnemonic();
+                if (IsConditionalJump(mnemonic) || IsUnconditionalJump(mnemonic) || IsCallInstruction(mnemonic)) {
+                    g_HoverOnNavigable = true;
+                }
+            }
+        }
+
+        if (wasHover != g_HoverOnNavigable) {
+            SetCursor(LoadCursor(NULL, g_HoverOnNavigable ? IDC_HAND : IDC_ARROW));
+        }
+    }
+    return 0;
+}
+
+static LRESULT HandleCFG_LButtonUp(HWND hWnd)
+{
+    if (g_ViewState.IsDraggingOverview) {
+        g_ViewState.IsDraggingOverview = FALSE;
+        ReleaseCapture();
+        return 0;
+    }
+
+    if (g_ViewState.IsDraggingBlock) {
+        g_ViewState.IsDraggingBlock = FALSE;
+        g_ViewState.DraggingBlockID = (DWORD_PTR)-1;
+        ReleaseCapture();
+        ComputeEdgeRoutes(&g_CurrentGraph);
+        InvalidateRect(hWnd, NULL, FALSE);
+    }
+    if (g_ViewState.IsPanning) {
+        g_ViewState.IsPanning = FALSE;
+        ReleaseCapture();
+    }
+    return 0;
+}
+
+static LRESULT HandleCFG_LButtonDblClk(HWND hWnd, LPARAM lParam)
+{
+    // Cancel any drag state started by the preceding WM_LBUTTONDOWN
+    if (g_ViewState.IsDraggingBlock) {
+        if (g_CurrentGraph.BlockIDToIndex.count(g_ViewState.DraggingBlockID)) {
+            CFG_BASIC_BLOCK& dragBlock = g_CurrentGraph.Blocks[g_CurrentGraph.BlockIDToIndex[g_ViewState.DraggingBlockID]];
+            dragBlock.X = g_ViewState.DragBlockStartX;
+            dragBlock.Y = g_ViewState.DragBlockStartY;
+            UpdateRoutesForDraggedBlock(&g_CurrentGraph, g_ViewState.DraggingBlockID);
+        }
+        g_ViewState.IsDraggingBlock = FALSE;
+        g_ViewState.DraggingBlockID = (DWORD_PTR)-1;
+        ReleaseCapture();
+    }
+    if (g_ViewState.IsPanning) {
+        g_ViewState.IsPanning = FALSE;
+        ReleaseCapture();
+    }
+
+    POINT pt;
+    pt.x = GET_X_LPARAM(lParam);
+    pt.y = GET_Y_LPARAM(lParam);
+
+    POINT graphPt = ScreenToGraph(&g_ViewState, pt);
+    DWORD_PTR blockID = HitTestBlocks(&g_CurrentGraph, graphPt);
+
+    if (blockID != (DWORD_PTR)-1 && g_CurrentGraph.BlockIDToIndex.count(blockID)) {
+        CFG_BASIC_BLOCK& block = g_CurrentGraph.Blocks[g_CurrentGraph.BlockIDToIndex[blockID]];
+        DWORD_PTR instrIndex = HitTestInstruction(&block, graphPt);
+
+        if (instrIndex != (DWORD_PTR)-1) {
+            const char* mnemonic = DisasmDataLines[instrIndex].GetMnemonic();
+
+            if (IsConditionalJump(mnemonic) || IsUnconditionalJump(mnemonic)) {
+                DWORD_PTR targetAddr = ResolveTargetAddress(instrIndex);
+                if (targetAddr != 0 && g_CurrentGraph.AddressToBlockIndex.count(targetAddr)) {
+                    size_t targetIdx = g_CurrentGraph.AddressToBlockIndex[targetAddr];
+                    PanToBlock(hWnd, &g_CurrentGraph, &g_ViewState, targetIdx);
+                } else {
+                    NavigateMainDisasmTo(instrIndex);
+                }
+            } else if (IsCallInstruction(mnemonic)) {
+                DWORD_PTR targetAddr = ResolveTargetAddress(instrIndex);
+                if (targetAddr != 0) {
+                    NavigateToFunction(hWnd, targetAddr);
+                } else {
+                    MessageBeep(MB_ICONEXCLAMATION);
+                }
+            } else {
+                NavigateMainDisasmTo(instrIndex);
+            }
+        } else {
+            NavigateMainDisasmTo(block.StartIndex);
+        }
+    }
+    return 0;
+}
+
+static LRESULT HandleCFG_ContextMenu(HWND hWnd, LPARAM lParam)
+{
+    POINT pt;
+    pt.x = GET_X_LPARAM(lParam);
+    pt.y = GET_Y_LPARAM(lParam);
+
+    if (pt.x == -1 && pt.y == -1) {
+        RECT rc;
+        GetClientRect(hWnd, &rc);
+        pt.x = rc.right / 2;
+        pt.y = rc.bottom / 2;
+        ClientToScreen(hWnd, &pt);
+    }
+
+    POINT clientPt = pt;
+    ScreenToClient(hWnd, &clientPt);
+    POINT graphPt = ScreenToGraph(&g_ViewState, clientPt);
+    g_ContextMenuBlockID = HitTestBlocks(&g_CurrentGraph, graphPt);
+
+    bool hasConditionalCaller = false;
+    if (g_ContextMenuBlockID != (DWORD_PTR)-1) {
+        hasConditionalCaller = (FindConditionalCaller(&g_CurrentGraph, g_ContextMenuBlockID) != (size_t)-1);
+    }
+
+    HMENU hMenu = CreatePopupMenu();
+    AppendMenu(hMenu, MF_STRING, IDM_CFG_GOTO_START, "Goto Start");
+    AppendMenu(hMenu, MF_STRING, IDM_CFG_GOTO_END, "Goto End");
+    AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
+    AppendMenu(hMenu, hasConditionalCaller ? MF_STRING : MF_STRING | MF_GRAYED,
+               IDM_CFG_GOTO_CALLER, "Goto Caller");
+    AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
+    AppendMenu(hMenu, MF_STRING, IDM_CFG_FIT_GRAPH, "Fit Graph to Screen");
+    AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
+    AppendMenu(hMenu, MF_STRING, IDM_CFG_SAVE_IMAGE, "Save as Image...");
+    AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
+    AppendMenu(hMenu, g_OverviewEnabled ? MF_STRING | MF_CHECKED : MF_STRING,
+               IDM_CFG_TOGGLE_OVERVIEW, "Show Overview");
+
+    TrackPopupMenu(hMenu, TPM_RIGHTBUTTON, pt.x, pt.y, 0, hWnd, NULL);
+    DestroyMenu(hMenu);
+    return 0;
+}
+
+static LRESULT HandleCFG_Command(HWND hWnd, WPARAM wParam)
+{
+    switch (LOWORD(wParam)) {
+        case IDM_CFG_FIT_GRAPH:
+            CenterGraphInView(hWnd, &g_CurrentGraph, &g_ViewState);
+            InvalidateRect(hWnd, NULL, FALSE);
+            break;
+
+        case IDM_CFG_SAVE_IMAGE:
+            SaveGraphToFile(hWnd, &g_CurrentGraph);
+            break;
+
+        case IDM_CFG_GOTO_CALLER: {
+            if (g_ContextMenuBlockID != (DWORD_PTR)-1) {
+                size_t callerIdx = FindConditionalCaller(&g_CurrentGraph, g_ContextMenuBlockID);
+                if (callerIdx != (size_t)-1) {
+                    PanToBlock(hWnd, &g_CurrentGraph, &g_ViewState, callerIdx);
+                }
+            }
+            break;
+        }
+
+        case IDM_CFG_GOTO_START: {
+            size_t entryIdx = FindEntryBlockIndex(&g_CurrentGraph);
+            if (entryIdx != (size_t)-1) {
+                PanToBlock(hWnd, &g_CurrentGraph, &g_ViewState, entryIdx);
+            }
+            break;
+        }
+
+        case IDM_CFG_GOTO_END: {
+            size_t exitIdx = FindExitBlockIndex(&g_CurrentGraph);
+            if (exitIdx != (size_t)-1) {
+                PanToBlock(hWnd, &g_CurrentGraph, &g_ViewState, exitIdx);
+            }
+            break;
+        }
+
+        case IDM_CFG_TOGGLE_OVERVIEW:
+            g_OverviewEnabled = !g_OverviewEnabled;
+            g_ViewState.ShowOverview = g_OverviewEnabled;
+            InvalidateRect(hWnd, NULL, FALSE);
+            break;
+    }
+    return 0;
+}
+
+static LRESULT HandleCFG_KeyDown(HWND hWnd, WPARAM wParam, bool isChildWindow)
+{
+    switch (wParam) {
+        case VK_HOME:
+            CenterGraphInView(hWnd, &g_CurrentGraph, &g_ViewState);
+            InvalidateRect(hWnd, NULL, FALSE);
+            break;
+
+        case VK_ESCAPE:
+            if (isChildWindow) {
+                // Embedded child: send message to main window to switch back to tab 0
+                SendMessage(Main_hWnd, WM_USER + 300, 0, 0);
+            } else {
+                DestroyWindow(hWnd);
+            }
+            break;
+
+        case VK_BACK:
+            NavigateBack(hWnd);
+            break;
+
+        case VK_ADD:
+        case VK_OEM_PLUS: {
+            RECT rect;
+            GetClientRect(hWnd, &rect);
+            POINT center = {rect.right / 2, rect.bottom / 2};
+            ZoomAtPoint(&g_ViewState, center, CFG_ZOOM_FACTOR);
+            InvalidateRect(hWnd, NULL, FALSE);
+            break;
+        }
+
+        case VK_SUBTRACT:
+        case VK_OEM_MINUS: {
+            RECT rect;
+            GetClientRect(hWnd, &rect);
+            POINT center = {rect.right / 2, rect.bottom / 2};
+            ZoomAtPoint(&g_ViewState, center, 1.0 / CFG_ZOOM_FACTOR);
+            InvalidateRect(hWnd, NULL, FALSE);
+            break;
+        }
+
+        case 'M':
+            g_OverviewEnabled = !g_OverviewEnabled;
+            g_ViewState.ShowOverview = g_OverviewEnabled;
+            InvalidateRect(hWnd, NULL, FALSE);
+            break;
+    }
+    return 0;
+}
+
+// ================================================================
 // ====================  DIALOG PROCEDURE  ========================
 // ================================================================
 
@@ -2387,32 +2783,8 @@ BOOL CALLBACK CFGViewerDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lP
 {
     switch (Message) {
         case WM_INITDIALOG: {
-            // Initialize GDI+
-            Gdiplus::GdiplusStartupInput gdipStartup;
-            Gdiplus::GdiplusStartup(&g_GdiplusToken, &gdipStartup, NULL);
-
-            // Initialize view state
+            InitCFGGDIResources();
             InitCFGViewState(&g_ViewState);
-
-            // Create font for drawing
-            if (g_hCFGFont) {
-                DeleteObject(g_hCFGFont);
-            }
-            g_hCFGFont = CreateFont(14, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
-                                    DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
-                                    CLEARTYPE_QUALITY, FIXED_PITCH | FF_MODERN, "Consolas");
-
-            // Create cached GDI objects for edge rendering
-            g_EdgeColors[0] = g_DarkMode ? RGB(150, 150, 150) : RGB(100, 100, 100);  // unconditional
-            g_EdgeColors[1] = RGB(0, 180, 0);      // true (green)
-            g_EdgeColors[2] = RGB(220, 50, 50);    // false (red)
-            g_EdgeColors[3] = RGB(0, 120, 220);    // back-edge (blue)
-            g_EdgeColors[4] = RGB(100, 50, 200);   // call (purple)
-            for (int c = 0; c < 5; c++) {
-                g_EdgePens[c] = CreatePen(PS_SOLID, 2, g_EdgeColors[c]);
-                g_ArrowPens[c] = CreatePen(PS_SOLID, 1, g_EdgeColors[c]);
-                g_ArrowBrushes[c] = CreateSolidBrush(g_EdgeColors[c]);
-            }
 
             // Get function bounds from lParam
             DWORD_PTR* funcBounds = (DWORD_PTR*)lParam;
@@ -2465,134 +2837,16 @@ BOOL CALLBACK CFGViewerDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lP
         }
 
         case WM_ERASEBKGND:
-            return 1;  // Prevent flicker
+            return 1;
 
-        case WM_MOUSEWHEEL: {
-            int delta = GET_WHEEL_DELTA_WPARAM(wParam);
-            POINT pt;
-            pt.x = GET_X_LPARAM(lParam);
-            pt.y = GET_Y_LPARAM(lParam);
-            ScreenToClient(hWnd, &pt);
+        case WM_MOUSEWHEEL:
+            return (BOOL)HandleCFG_MouseWheel(hWnd, wParam, lParam);
 
-            double zoomFactor = (delta > 0) ? CFG_ZOOM_FACTOR : (1.0 / CFG_ZOOM_FACTOR);
-            ZoomAtPoint(&g_ViewState, pt, zoomFactor);
+        case WM_LBUTTONDOWN:
+            return (BOOL)HandleCFG_LButtonDown(hWnd, lParam);
 
-            InvalidateRect(hWnd, NULL, FALSE);
-            return 0;
-        }
-
-        case WM_LBUTTONDOWN: {
-            POINT pt;
-            pt.x = GET_X_LPARAM(lParam);
-            pt.y = GET_Y_LPARAM(lParam);
-
-            // Check if clicked on overview minimap
-            if (g_ViewState.ShowOverview) {
-                RECT cr;
-                GetClientRect(hWnd, &cr);
-                if (HitTestOverview(pt, &cr)) {
-                    g_ViewState.IsDraggingOverview = TRUE;
-                    SetCapture(hWnd);
-                    PanFromOverviewClick(&g_ViewState, &g_CurrentGraph, pt, &cr);
-                    InvalidateRect(hWnd, NULL, FALSE);
-                    return 0;
-                }
-            }
-
-            // Check if clicked on a block
-            POINT graphPt = ScreenToGraph(&g_ViewState, pt);
-            DWORD_PTR clickedBlock = HitTestBlocks(&g_CurrentGraph, graphPt);
-
-            if (clickedBlock != (DWORD_PTR)-1) {
-                // Block clicked - select it and start dragging the block
-                g_ViewState.SelectedBlockID = clickedBlock;
-                g_ViewState.DraggingBlockID = clickedBlock;
-                g_ViewState.IsDraggingBlock = TRUE;
-                g_ViewState.DragStartPoint = pt;
-
-                // Store block's original position
-                if (g_CurrentGraph.BlockIDToIndex.count(clickedBlock)) {
-                    CFG_BASIC_BLOCK& block = g_CurrentGraph.Blocks[g_CurrentGraph.BlockIDToIndex[clickedBlock]];
-                    g_ViewState.DragBlockStartX = block.X;
-                    g_ViewState.DragBlockStartY = block.Y;
-                }
-
-                SetCapture(hWnd);
-                InvalidateRect(hWnd, NULL, FALSE);
-            } else {
-                // Start dragging to pan
-                g_ViewState.IsPanning = TRUE;
-                g_ViewState.DragStartPoint = pt;
-                g_ViewState.DragStartPanX = g_ViewState.PanOffsetX;
-                g_ViewState.DragStartPanY = g_ViewState.PanOffsetY;
-                SetCapture(hWnd);
-            }
-            return 0;
-        }
-
-        case WM_MOUSEMOVE: {
-            POINT pt;
-            pt.x = GET_X_LPARAM(lParam);
-            pt.y = GET_Y_LPARAM(lParam);
-
-            if (g_ViewState.IsDraggingOverview) {
-                RECT cr;
-                GetClientRect(hWnd, &cr);
-                PanFromOverviewClick(&g_ViewState, &g_CurrentGraph, pt, &cr);
-                InvalidateRect(hWnd, NULL, FALSE);
-                return 0;
-            }
-
-            if (g_ViewState.IsDraggingBlock) {
-                // Move the block
-                if (g_CurrentGraph.BlockIDToIndex.count(g_ViewState.DraggingBlockID)) {
-                    CFG_BASIC_BLOCK& block = g_CurrentGraph.Blocks[g_CurrentGraph.BlockIDToIndex[g_ViewState.DraggingBlockID]];
-
-                    // Calculate delta in graph coordinates
-                    int deltaX = (int)((pt.x - g_ViewState.DragStartPoint.x) / g_ViewState.ZoomLevel);
-                    int deltaY = (int)((pt.y - g_ViewState.DragStartPoint.y) / g_ViewState.ZoomLevel);
-
-                    block.X = g_ViewState.DragBlockStartX + deltaX;
-                    block.Y = g_ViewState.DragBlockStartY + deltaY;
-
-                    // Update only the edges connected to this block (fast)
-                    UpdateRoutesForDraggedBlock(&g_CurrentGraph, g_ViewState.DraggingBlockID);
-
-                    InvalidateRect(hWnd, NULL, FALSE);
-                }
-            } else if (g_ViewState.IsPanning) {
-                // Pan the view
-                g_ViewState.PanOffsetX = g_ViewState.DragStartPanX + (pt.x - g_ViewState.DragStartPoint.x);
-                g_ViewState.PanOffsetY = g_ViewState.DragStartPanY + (pt.y - g_ViewState.DragStartPoint.y);
-
-                InvalidateRect(hWnd, NULL, FALSE);
-            } else {
-                // Not dragging/panning - check for hover over navigable instruction
-                bool wasHover = g_HoverOnNavigable;
-                g_HoverOnNavigable = false;
-
-                POINT graphPt = ScreenToGraph(&g_ViewState, pt);
-                DWORD_PTR blockID = HitTestBlocks(&g_CurrentGraph, graphPt);
-
-                if (blockID != (DWORD_PTR)-1 && g_CurrentGraph.BlockIDToIndex.count(blockID)) {
-                    CFG_BASIC_BLOCK& block = g_CurrentGraph.Blocks[g_CurrentGraph.BlockIDToIndex[blockID]];
-                    DWORD_PTR instrIndex = HitTestInstruction(&block, graphPt);
-
-                    if (instrIndex != (DWORD_PTR)-1) {
-                        const char* mnemonic = DisasmDataLines[instrIndex].GetMnemonic();
-                        if (IsConditionalJump(mnemonic) || IsUnconditionalJump(mnemonic) || IsCallInstruction(mnemonic)) {
-                            g_HoverOnNavigable = true;
-                        }
-                    }
-                }
-
-                // Only update cursor if hover state changed
-                if (wasHover != g_HoverOnNavigable) {
-                    SetCursor(LoadCursor(NULL, g_HoverOnNavigable ? IDC_HAND : IDC_ARROW));
-                }
-            }
-            return 0;
-        }
+        case WM_MOUSEMOVE:
+            return (BOOL)HandleCFG_MouseMove(hWnd, lParam);
 
         case WM_SETCURSOR: {
             if (LOWORD(lParam) == HTCLIENT) {
@@ -2602,238 +2856,25 @@ BOOL CALLBACK CFGViewerDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lP
             break;
         }
 
-        case WM_LBUTTONUP: {
-            if (g_ViewState.IsDraggingOverview) {
-                g_ViewState.IsDraggingOverview = FALSE;
-                ReleaseCapture();
-                return 0;
-            }
+        case WM_LBUTTONUP:
+            return (BOOL)HandleCFG_LButtonUp(hWnd);
 
-            if (g_ViewState.IsDraggingBlock) {
-                g_ViewState.IsDraggingBlock = FALSE;
-                g_ViewState.DraggingBlockID = (DWORD_PTR)-1;
-                ReleaseCapture();
-                // Recompute edge routes after block was moved
-                ComputeEdgeRoutes(&g_CurrentGraph);
-                InvalidateRect(hWnd, NULL, FALSE);
-            }
-            if (g_ViewState.IsPanning) {
-                g_ViewState.IsPanning = FALSE;
-                ReleaseCapture();
-            }
-            return 0;
-        }
+        case WM_LBUTTONDBLCLK:
+            return (BOOL)HandleCFG_LButtonDblClk(hWnd, lParam);
 
-        case WM_LBUTTONDBLCLK: {
-            // Cancel any drag state started by the preceding WM_LBUTTONDOWN
-            if (g_ViewState.IsDraggingBlock) {
-                // Restore block to its original position
-                if (g_CurrentGraph.BlockIDToIndex.count(g_ViewState.DraggingBlockID)) {
-                    CFG_BASIC_BLOCK& dragBlock = g_CurrentGraph.Blocks[g_CurrentGraph.BlockIDToIndex[g_ViewState.DraggingBlockID]];
-                    dragBlock.X = g_ViewState.DragBlockStartX;
-                    dragBlock.Y = g_ViewState.DragBlockStartY;
-                    UpdateRoutesForDraggedBlock(&g_CurrentGraph, g_ViewState.DraggingBlockID);
-                }
-                g_ViewState.IsDraggingBlock = FALSE;
-                g_ViewState.DraggingBlockID = (DWORD_PTR)-1;
-                ReleaseCapture();
-            }
-            if (g_ViewState.IsPanning) {
-                g_ViewState.IsPanning = FALSE;
-                ReleaseCapture();
-            }
+        case WM_CONTEXTMENU:
+            return (BOOL)HandleCFG_ContextMenu(hWnd, lParam);
 
-            POINT pt;
-            pt.x = GET_X_LPARAM(lParam);
-            pt.y = GET_Y_LPARAM(lParam);
-
-            POINT graphPt = ScreenToGraph(&g_ViewState, pt);
-            DWORD_PTR blockID = HitTestBlocks(&g_CurrentGraph, graphPt);
-
-            if (blockID != (DWORD_PTR)-1 && g_CurrentGraph.BlockIDToIndex.count(blockID)) {
-                CFG_BASIC_BLOCK& block = g_CurrentGraph.Blocks[g_CurrentGraph.BlockIDToIndex[blockID]];
-
-                // Hit-test specific instruction line within the block
-                DWORD_PTR instrIndex = HitTestInstruction(&block, graphPt);
-
-                if (instrIndex != (DWORD_PTR)-1) {
-                    const char* mnemonic = DisasmDataLines[instrIndex].GetMnemonic();
-
-                    if (IsConditionalJump(mnemonic) || IsUnconditionalJump(mnemonic)) {
-                        // Jump instruction: navigate to target block within CFG
-                        DWORD_PTR targetAddr = ResolveTargetAddress(instrIndex);
-                        if (targetAddr != 0 && g_CurrentGraph.AddressToBlockIndex.count(targetAddr)) {
-                            size_t targetIdx = g_CurrentGraph.AddressToBlockIndex[targetAddr];
-                            PanToBlock(hWnd, &g_CurrentGraph, &g_ViewState, targetIdx);
-                        } else {
-                            // Target not in graph - navigate in main disassembly
-                            NavigateMainDisasmTo(instrIndex);
-                        }
-                    } else if (IsCallInstruction(mnemonic)) {
-                        // Call instruction: navigate into the called function
-                        DWORD_PTR targetAddr = ResolveTargetAddress(instrIndex);
-                        if (targetAddr != 0) {
-                            NavigateToFunction(hWnd, targetAddr);
-                        } else {
-                            // Register-indirect call - can't resolve
-                            MessageBeep(MB_ICONEXCLAMATION);
-                        }
-                    } else {
-                        // Non-branch instruction: navigate to it in main disassembly
-                        NavigateMainDisasmTo(instrIndex);
-                    }
-                } else {
-                    // Clicked on header/padding: navigate to block start in main disassembly
-                    NavigateMainDisasmTo(block.StartIndex);
-                }
-            }
-            return 0;
-        }
-
-        case WM_CONTEXTMENU: {
-            POINT pt;
-            pt.x = GET_X_LPARAM(lParam);
-            pt.y = GET_Y_LPARAM(lParam);
-
-            // If invoked via keyboard (Shift+F10), use center of window
-            if (pt.x == -1 && pt.y == -1) {
-                RECT rc;
-                GetClientRect(hWnd, &rc);
-                pt.x = rc.right / 2;
-                pt.y = rc.bottom / 2;
-                ClientToScreen(hWnd, &pt);
-            }
-
-            // Determine which block was right-clicked
-            POINT clientPt = pt;
-            ScreenToClient(hWnd, &clientPt);
-            POINT graphPt = ScreenToGraph(&g_ViewState, clientPt);
-            g_ContextMenuBlockID = HitTestBlocks(&g_CurrentGraph, graphPt);
-
-            // Check if "Goto Caller" is available for the right-clicked block
-            bool hasConditionalCaller = false;
-            if (g_ContextMenuBlockID != (DWORD_PTR)-1) {
-                hasConditionalCaller = (FindConditionalCaller(&g_CurrentGraph, g_ContextMenuBlockID) != (size_t)-1);
-            }
-
-            HMENU hMenu = CreatePopupMenu();
-            AppendMenu(hMenu, MF_STRING, IDM_CFG_GOTO_START, "Goto Start");
-            AppendMenu(hMenu, MF_STRING, IDM_CFG_GOTO_END, "Goto End");
-            AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
-            AppendMenu(hMenu, hasConditionalCaller ? MF_STRING : MF_STRING | MF_GRAYED,
-                       IDM_CFG_GOTO_CALLER, "Goto Caller");
-            AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
-            AppendMenu(hMenu, MF_STRING, IDM_CFG_FIT_GRAPH, "Fit Graph to Screen");
-            AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
-            AppendMenu(hMenu, MF_STRING, IDM_CFG_SAVE_IMAGE, "Save as Image...");
-            AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
-            AppendMenu(hMenu, g_OverviewEnabled ? MF_STRING | MF_CHECKED : MF_STRING,
-                       IDM_CFG_TOGGLE_OVERVIEW, "Show Overview");
-
-            TrackPopupMenu(hMenu, TPM_RIGHTBUTTON, pt.x, pt.y, 0, hWnd, NULL);
-            DestroyMenu(hMenu);
-            return 0;
-        }
-
-        case WM_COMMAND: {
-            switch (LOWORD(wParam)) {
-                case IDM_CFG_FIT_GRAPH:
-                    CenterGraphInView(hWnd, &g_CurrentGraph, &g_ViewState);
-                    InvalidateRect(hWnd, NULL, FALSE);
-                    break;
-
-                case IDM_CFG_SAVE_IMAGE:
-                    SaveGraphToFile(hWnd, &g_CurrentGraph);
-                    break;
-
-                case IDM_CFG_GOTO_CALLER: {
-                    if (g_ContextMenuBlockID != (DWORD_PTR)-1) {
-                        size_t callerIdx = FindConditionalCaller(&g_CurrentGraph, g_ContextMenuBlockID);
-                        if (callerIdx != (size_t)-1) {
-                            PanToBlock(hWnd, &g_CurrentGraph, &g_ViewState, callerIdx);
-                        }
-                    }
-                    break;
-                }
-
-                case IDM_CFG_GOTO_START: {
-                    size_t entryIdx = FindEntryBlockIndex(&g_CurrentGraph);
-                    if (entryIdx != (size_t)-1) {
-                        PanToBlock(hWnd, &g_CurrentGraph, &g_ViewState, entryIdx);
-                    }
-                    break;
-                }
-
-                case IDM_CFG_GOTO_END: {
-                    size_t exitIdx = FindExitBlockIndex(&g_CurrentGraph);
-                    if (exitIdx != (size_t)-1) {
-                        PanToBlock(hWnd, &g_CurrentGraph, &g_ViewState, exitIdx);
-                    }
-                    break;
-                }
-
-                case IDM_CFG_TOGGLE_OVERVIEW:
-                    g_OverviewEnabled = !g_OverviewEnabled;
-                    g_ViewState.ShowOverview = g_OverviewEnabled;
-                    InvalidateRect(hWnd, NULL, FALSE);
-                    break;
-            }
-            return 0;
-        }
+        case WM_COMMAND:
+            return (BOOL)HandleCFG_Command(hWnd, wParam);
 
         case WM_SIZE: {
             InvalidateRect(hWnd, NULL, FALSE);
             return 0;
         }
 
-        case WM_KEYDOWN: {
-            switch (wParam) {
-                case VK_HOME:
-                    // Reset view to fit graph
-                    CenterGraphInView(hWnd, &g_CurrentGraph, &g_ViewState);
-                    InvalidateRect(hWnd, NULL, FALSE);
-                    break;
-
-                case VK_ESCAPE:
-                    DestroyWindow(hWnd);
-                    break;
-
-                case VK_BACK:
-                    // Navigate back to previous function's CFG
-                    NavigateBack(hWnd);
-                    break;
-
-                case VK_ADD:
-                case VK_OEM_PLUS: {
-                    // Zoom in
-                    RECT rect;
-                    GetClientRect(hWnd, &rect);
-                    POINT center = {rect.right / 2, rect.bottom / 2};
-                    ZoomAtPoint(&g_ViewState, center, CFG_ZOOM_FACTOR);
-                    InvalidateRect(hWnd, NULL, FALSE);
-                    break;
-                }
-
-                case VK_SUBTRACT:
-                case VK_OEM_MINUS: {
-                    // Zoom out
-                    RECT rect;
-                    GetClientRect(hWnd, &rect);
-                    POINT center = {rect.right / 2, rect.bottom / 2};
-                    ZoomAtPoint(&g_ViewState, center, 1.0 / CFG_ZOOM_FACTOR);
-                    InvalidateRect(hWnd, NULL, FALSE);
-                    break;
-                }
-
-                case 'M':
-                    // Toggle overview minimap
-                    g_OverviewEnabled = !g_OverviewEnabled;
-                    g_ViewState.ShowOverview = g_OverviewEnabled;
-                    InvalidateRect(hWnd, NULL, FALSE);
-                    break;
-            }
-            return 0;
-        }
+        case WM_KEYDOWN:
+            return (BOOL)HandleCFG_KeyDown(hWnd, wParam, false);
 
         case WM_CLOSE: {
             DestroyWindow(hWnd);
@@ -2842,26 +2883,11 @@ BOOL CALLBACK CFGViewerDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lP
 
         case WM_DESTROY: {
             FreeCFGGraph(&g_CurrentGraph);
-            // Clear navigation history
             for (size_t i = 0; i < g_NavHistory.size(); i++) {
                 ClearCFGGraph(&g_NavHistory[i].Graph);
             }
             g_NavHistory.clear();
-            g_HoverOnNavigable = false;
-            if (g_hCFGFont) {
-                DeleteObject(g_hCFGFont);
-                g_hCFGFont = NULL;
-            }
-            // Clean up cached GDI objects
-            for (int c = 0; c < 5; c++) {
-                if (g_EdgePens[c])     { DeleteObject(g_EdgePens[c]);     g_EdgePens[c] = NULL; }
-                if (g_ArrowPens[c])    { DeleteObject(g_ArrowPens[c]);    g_ArrowPens[c] = NULL; }
-                if (g_ArrowBrushes[c]) { DeleteObject(g_ArrowBrushes[c]); g_ArrowBrushes[c] = NULL; }
-            }
-            if (g_GdiplusToken) {
-                Gdiplus::GdiplusShutdown(g_GdiplusToken);
-                g_GdiplusToken = 0;
-            }
+            CleanupCFGGDIResources();
             g_hCFGViewerWnd = NULL;
             return 0;
         }
@@ -3373,8 +3399,183 @@ void ShowCFGViewerForCurrentFunction(HWND hParent)
     }
 }
 
-// Returns the CFG viewer window handle for message loop integration
+// Returns the CFG viewer window handle for message loop integration.
+// Now returns NULL since the embedded child window doesn't need IsDialogMessage.
 HWND GetCFGViewerWindow()
 {
-    return g_hCFGViewerWnd;
+    return NULL;
+}
+
+// ================================================================
+// ====================  EMBEDDED CHILD WINDOW  ====================
+// ================================================================
+
+static bool g_CFGChildClassRegistered = false;
+
+void RegisterCFGChildClass(HINSTANCE hInst)
+{
+    if (g_CFGChildClassRegistered) return;
+
+    WNDCLASSA wc = {0};
+    wc.style = CS_DBLCLKS;
+    wc.lpfnWndProc = CFGChildWndProc;
+    wc.hInstance = hInst;
+    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+    wc.lpszClassName = "PVDasmCFGChild";
+    RegisterClassA(&wc);
+    g_CFGChildClassRegistered = true;
+}
+
+LRESULT CALLBACK CFGChildWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    switch (uMsg) {
+        case WM_CREATE:
+            InitCFGGDIResources();
+            InitCFGViewState(&g_ViewState);
+            return 0;
+
+        case WM_PAINT: {
+            PAINTSTRUCT ps;
+            HDC hDC = BeginPaint(hWnd, &ps);
+            if (g_CFGGraphValid) {
+                RenderCFG(hWnd, hDC, &g_CurrentGraph, &g_ViewState);
+            } else {
+                // Draw placeholder
+                RECT rc;
+                GetClientRect(hWnd, &rc);
+                COLORREF bgColor = g_DarkMode ? g_DarkBkColor : GetSysColor(COLOR_WINDOW);
+                COLORREF txColor = g_DarkMode ? RGB(140, 140, 140) : RGB(128, 128, 128);
+                HBRUSH hBg = CreateSolidBrush(bgColor);
+                FillRect(hDC, &rc, hBg);
+                DeleteObject(hBg);
+                SetBkMode(hDC, TRANSPARENT);
+                SetTextColor(hDC, txColor);
+                HFONT hOld = (HFONT)SelectObject(hDC, GetStockObject(DEFAULT_GUI_FONT));
+                DrawText(hDC, "No graph loaded - use View > Control Flow Graph", -1, &rc,
+                         DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+                SelectObject(hDC, hOld);
+            }
+            EndPaint(hWnd, &ps);
+            return 0;
+        }
+
+        case WM_ERASEBKGND:
+            return 1;
+
+        case WM_MOUSEWHEEL:
+            if (g_CFGGraphValid) return HandleCFG_MouseWheel(hWnd, wParam, lParam);
+            break;
+
+        case WM_LBUTTONDOWN:
+            SetFocus(hWnd);
+            if (g_CFGGraphValid) return HandleCFG_LButtonDown(hWnd, lParam);
+            break;
+
+        case WM_MOUSEMOVE:
+            if (g_CFGGraphValid) return HandleCFG_MouseMove(hWnd, lParam);
+            break;
+
+        case WM_LBUTTONUP:
+            if (g_CFGGraphValid) return HandleCFG_LButtonUp(hWnd);
+            break;
+
+        case WM_LBUTTONDBLCLK:
+            if (g_CFGGraphValid) return HandleCFG_LButtonDblClk(hWnd, lParam);
+            break;
+
+        case WM_CONTEXTMENU:
+            if (g_CFGGraphValid) return HandleCFG_ContextMenu(hWnd, lParam);
+            break;
+
+        case WM_COMMAND:
+            if (g_CFGGraphValid) return HandleCFG_Command(hWnd, wParam);
+            break;
+
+        case WM_SETCURSOR:
+            if (LOWORD(lParam) == HTCLIENT) {
+                SetCursor(LoadCursor(NULL, g_HoverOnNavigable ? IDC_HAND : IDC_ARROW));
+                return TRUE;
+            }
+            break;
+
+        case WM_SIZE:
+            InvalidateRect(hWnd, NULL, FALSE);
+            return 0;
+
+        case WM_KEYDOWN:
+            return HandleCFG_KeyDown(hWnd, wParam, true);
+
+        case WM_DESTROY:
+            CleanupCFGGDIResources();
+            return 0;
+    }
+    return DefWindowProc(hWnd, uMsg, wParam, lParam);
+}
+
+void LoadCFGForCurrentFunction_Embedded()
+{
+    extern bool DisassemblerReady;
+    if (!DisassemblerReady) return;
+    if (DisasmDataLines.empty()) return;
+
+    // Get currently selected line from disassembly listview
+    HWND hDisasm = GetDlgItem(Main_hWnd, IDC_DISASM);
+    if (!hDisasm) return;
+
+    DWORD_PTR selectedItem = SendMessage(hDisasm, LVM_GETNEXTITEM, (WPARAM)-1, LVNI_FOCUSED);
+    if (selectedItem == (DWORD_PTR)-1 || selectedItem >= DisasmDataLines.size()) {
+        selectedItem = 0;
+    }
+
+    // Walk backwards to find function banner
+    DWORD_PTR startIndex = selectedItem;
+    for (DWORD_PTR i = selectedItem; ; i--) {
+        const char* mnemonic = DisasmDataLines[i].GetMnemonic();
+        if (mnemonic && strncmp(mnemonic, "; ======", 8) == 0) {
+            startIndex = i + 1;
+            break;
+        }
+        if (i == 0) break;
+    }
+
+    // Free previous graph
+    FreeCFGGraph(&g_CurrentGraph);
+    // Clear navigation history
+    for (size_t i = 0; i < g_NavHistory.size(); i++) {
+        ClearCFGGraph(&g_NavHistory[i].Graph);
+    }
+    g_NavHistory.clear();
+
+    BOOL success = BuildCFGByTracing(startIndex, &g_CurrentGraph);
+    if (success) {
+        LayoutCFG(&g_CurrentGraph);
+        ComputeEdgeRoutes(&g_CurrentGraph);
+        ComputeBlockColors(&g_CurrentGraph);
+        g_CFGGraphValid = true;
+
+        // Focus on entry block using the child window
+        HWND hChild = GetDlgItem(Main_hWnd, IDC_CFG_CHILD);
+        if (hChild) {
+            FocusOnEntryBlock(hChild, &g_CurrentGraph, &g_ViewState);
+            InvalidateRect(hChild, NULL, FALSE);
+        }
+    } else {
+        g_CFGGraphValid = false;
+        HWND hChild = GetDlgItem(Main_hWnd, IDC_CFG_CHILD);
+        if (hChild) InvalidateRect(hChild, NULL, FALSE);
+    }
+}
+
+void ClearEmbeddedCFG()
+{
+    FreeCFGGraph(&g_CurrentGraph);
+    for (size_t i = 0; i < g_NavHistory.size(); i++) {
+        ClearCFGGraph(&g_NavHistory[i].Graph);
+    }
+    g_NavHistory.clear();
+    g_CFGGraphValid = false;
+    g_HoverOnNavigable = false;
+
+    HWND hChild = GetDlgItem(Main_hWnd, IDC_CFG_CHILD);
+    if (hChild) InvalidateRect(hChild, NULL, FALSE);
 }
