@@ -174,6 +174,7 @@ void ComputeBlockColors(CFG_GRAPH* graph);
 POINT ScreenToGraph(CFG_VIEW_STATE* viewState, POINT screenPt);
 POINT GraphToScreen(CFG_VIEW_STATE* viewState, POINT graphPt);
 DWORD_PTR HitTestBlocks(CFG_GRAPH* graph, POINT graphPt);
+DWORD_PTR HitTestInstruction(CFG_BASIC_BLOCK* block, POINT graphPt);
 
 // View State
 void InitCFGViewState(CFG_VIEW_STATE* state);

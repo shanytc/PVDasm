@@ -63,6 +63,11 @@ static COLORREF g_EdgeColors[5] = {};     // Color values for text labels
 // ====================  HELPER FUNCTIONS  ========================
 // ================================================================
 
+// Forward declarations for functions defined later in the file
+static DWORD_PTR ExtractAddressFromMnemonic(const char* mnemonic);
+static void FocusOnEntryBlock(HWND hWnd, CFG_GRAPH* graph, CFG_VIEW_STATE* state);
+static void UpdateRoutesForDraggedBlock(CFG_GRAPH* graph, DWORD_PTR blockID);
+
 DWORD_PTR GetAddressAtIndex(DWORD_PTR index)
 {
     if (index >= DisasmDataLines.size()) return 0;
@@ -1041,6 +1046,255 @@ DWORD_PTR HitTestBlocks(CFG_GRAPH* graph, POINT graphPt)
     }
 
     return (DWORD_PTR)-1;
+}
+
+// Given a graph-space point inside a block, returns the DisasmDataLines index
+// of the clicked instruction line. Returns (DWORD_PTR)-1 if click is on header,
+// padding, or out of range.
+DWORD_PTR HitTestInstruction(CFG_BASIC_BLOCK* block, POINT graphPt)
+{
+    if (!block) return (DWORD_PTR)-1;
+
+    // Check horizontal bounds
+    if (graphPt.x < block->X || graphPt.x > block->X + block->Width)
+        return (DWORD_PTR)-1;
+
+    // Relative Y within block content area
+    int relY = graphPt.y - (block->Y + CFG_BLOCK_PADDING);
+    if (relY < 0) return (DWORD_PTR)-1;
+
+    int lineIndex = relY / CFG_LINE_HEIGHT;
+
+    // Account for function label header line
+    int headerLines = (block->FunctionLabel[0] != '\0') ? 1 : 0;
+    int instrOffset = lineIndex - headerLines;
+
+    if (instrOffset < 0) return (DWORD_PTR)-1;  // Clicked on header
+
+    DWORD_PTR instrIndex = block->StartIndex + instrOffset;
+    if (instrIndex > block->EndIndex || instrIndex >= DisasmDataLines.size())
+        return (DWORD_PTR)-1;
+
+    return instrIndex;
+}
+
+// Resolve the target address for a branch/call instruction.
+// First checks DisasmCodeFlow for the matching index, then falls back to
+// parsing the address from the mnemonic text.
+// Returns 0 for register-indirect jumps/calls (e.g., jmp eax, call [ebx+4]).
+static DWORD_PTR ResolveTargetAddress(DWORD_PTR instrIndex)
+{
+    // Step 1: Scan DisasmCodeFlow for matching Current_Index
+    for (size_t i = 0; i < DisasmCodeFlow.size(); i++) {
+        if (DisasmCodeFlow[i].Current_Index == instrIndex) {
+            return DisasmCodeFlow[i].Branch_Destination;
+        }
+    }
+
+    // Step 2: Fallback - parse address from mnemonic text
+    if (instrIndex < DisasmDataLines.size()) {
+        const char* mnemonic = DisasmDataLines[instrIndex].GetMnemonic();
+        return ExtractAddressFromMnemonic(mnemonic);
+    }
+
+    return 0;
+}
+
+// Pan the view to center a target block at the current zoom level.
+// Selects the block.
+static void PanToBlock(HWND hWnd, CFG_GRAPH* graph, CFG_VIEW_STATE* state, size_t blockIndex)
+{
+    if (!graph || !state || blockIndex >= graph->Blocks.size()) return;
+
+    CFG_BASIC_BLOCK& block = graph->Blocks[blockIndex];
+
+    // Deselect all, select target
+    state->SelectedBlockID = block.BlockID;
+
+    RECT clientRect;
+    GetClientRect(hWnd, &clientRect);
+    int clientWidth = clientRect.right - clientRect.left;
+    int clientHeight = clientRect.bottom - clientRect.top;
+
+    // Center the block in the viewport at current zoom
+    double blockCenterX = block.X + block.Width / 2.0;
+    double blockCenterY = block.Y + block.Height / 2.0;
+    state->PanOffsetX = clientWidth / 2.0 - blockCenterX * state->ZoomLevel;
+    state->PanOffsetY = clientHeight / 2.0 - blockCenterY * state->ZoomLevel;
+
+    InvalidateRect(hWnd, NULL, FALSE);
+}
+
+// Navigate the main disassembly listview to a specific DisasmDataLines index.
+static void NavigateMainDisasmTo(DWORD_PTR instrIndex)
+{
+    HWND hDisasm = GetDlgItem(Main_hWnd, IDC_DISASM);
+    if (!hDisasm) return;
+
+    ListView_SetItemState(hDisasm, -1, 0, LVIS_SELECTED | LVIS_FOCUSED);
+    ListView_SetItemState(hDisasm, (int)instrIndex,
+                          LVIS_SELECTED | LVIS_FOCUSED,
+                          LVIS_SELECTED | LVIS_FOCUSED);
+    ListView_EnsureVisible(hDisasm, (int)instrIndex, FALSE);
+}
+
+// Navigation history entry - stores a complete graph snapshot + view state
+struct CFGNavEntry {
+    CFG_GRAPH     Graph;
+    CFG_VIEW_STATE ViewState;
+};
+
+static std::vector<CFGNavEntry> g_NavHistory;
+static const size_t CFG_NAV_HISTORY_MAX = 16;
+
+// Navigate into a called function: save current state, rebuild CFG for target.
+// If the target address can't be resolved to a disassembly index, beep.
+static void NavigateToFunction(HWND hWnd, DWORD_PTR targetAddress)
+{
+    if (targetAddress == 0) {
+        MessageBeep(MB_ICONEXCLAMATION);
+        return;
+    }
+
+    // Find the target index in disassembly
+    DWORD_PTR targetIndex = FindIndexByAddress(targetAddress);
+    if (targetIndex == (DWORD_PTR)-1 || targetIndex >= DisasmDataLines.size()) {
+        MessageBeep(MB_ICONEXCLAMATION);
+        return;
+    }
+
+    // Verify the target is actually code (not just closest match)
+    DWORD_PTR actualAddr = GetAddressAtIndex(targetIndex);
+    if (actualAddr != targetAddress) {
+        MessageBeep(MB_ICONEXCLAMATION);
+        return;
+    }
+
+    // Walk backwards from the target to find the function start (banner line)
+    DWORD_PTR startIndex = targetIndex;
+    for (DWORD_PTR i = targetIndex; ; i--) {
+        const char* mnemonic = DisasmDataLines[i].GetMnemonic();
+        if (mnemonic && strncmp(mnemonic, "; ======", 8) == 0) {
+            startIndex = i + 1;
+            break;
+        }
+        if (i == 0) break;
+    }
+
+    // Save current state to navigation history
+    if (g_NavHistory.size() >= CFG_NAV_HISTORY_MAX)
+        g_NavHistory.erase(g_NavHistory.begin());
+
+    CFGNavEntry entry;
+    entry.Graph = g_CurrentGraph;       // Copy current graph
+    entry.ViewState = g_ViewState;      // Copy current view state
+    g_NavHistory.push_back(entry);
+
+    // Clear current graph (don't free - we moved data to history)
+    g_CurrentGraph.Blocks.clear();
+    g_CurrentGraph.Edges.clear();
+    g_CurrentGraph.EdgeRoutes.clear();
+    g_CurrentGraph.AddressToBlockIndex.clear();
+    g_CurrentGraph.BlockIDToIndex.clear();
+
+    // Build new CFG from the target function
+    BOOL success = BuildCFGByTracing(startIndex, &g_CurrentGraph);
+    if (success) {
+        LayoutCFG(&g_CurrentGraph);
+        ComputeEdgeRoutes(&g_CurrentGraph);
+        ComputeBlockColors(&g_CurrentGraph);
+        FocusOnEntryBlock(hWnd, &g_CurrentGraph, &g_ViewState);
+
+        // Update window title
+        char title[128];
+        wsprintf(title, "CFG Viewer - %s", g_CurrentGraph.FunctionName);
+        SetWindowText(hWnd, title);
+
+        InvalidateRect(hWnd, NULL, FALSE);
+    } else {
+        // Restore from history on failure
+        if (!g_NavHistory.empty()) {
+            CFGNavEntry& back = g_NavHistory.back();
+            g_CurrentGraph = back.Graph;
+            g_ViewState = back.ViewState;
+            g_NavHistory.pop_back();
+        }
+        MessageBeep(MB_ICONEXCLAMATION);
+    }
+}
+
+// Navigate back in history (called by Backspace key)
+static void NavigateBack(HWND hWnd)
+{
+    if (g_NavHistory.empty()) {
+        MessageBeep(MB_ICONEXCLAMATION);
+        return;
+    }
+
+    // Free current graph and restore from history
+    ClearCFGGraph(&g_CurrentGraph);
+
+    CFGNavEntry& back = g_NavHistory.back();
+    g_CurrentGraph = back.Graph;
+    g_ViewState = back.ViewState;
+    g_NavHistory.pop_back();
+
+    // Update window title
+    char title[128];
+    wsprintf(title, "CFG Viewer - %s", g_CurrentGraph.FunctionName);
+    SetWindowText(hWnd, title);
+
+    InvalidateRect(hWnd, NULL, FALSE);
+}
+
+// Hover state for hand cursor on navigable instructions
+static bool g_HoverOnNavigable = false;
+
+// Context menu state: the block that was right-clicked
+static DWORD_PTR g_ContextMenuBlockID = (DWORD_PTR)-1;
+
+// Find the source block index of a conditional (T/F) edge targeting the given block.
+// Returns the index into Blocks[], or (size_t)-1 if none found.
+static size_t FindConditionalCaller(CFG_GRAPH* graph, DWORD_PTR targetBlockID)
+{
+    if (!graph) return (size_t)-1;
+
+    for (size_t i = 0; i < graph->Edges.size(); i++) {
+        CFG_EDGE& edge = graph->Edges[i];
+        if (edge.TargetBlockID == targetBlockID &&
+            (edge.Type == EDGE_CONDITIONAL_TRUE || edge.Type == EDGE_CONDITIONAL_FALSE)) {
+            if (graph->BlockIDToIndex.count(edge.SourceBlockID))
+                return graph->BlockIDToIndex[edge.SourceBlockID];
+        }
+    }
+    return (size_t)-1;
+}
+
+// Find the first block (entry block) index. Returns (size_t)-1 if not found.
+static size_t FindEntryBlockIndex(CFG_GRAPH* graph)
+{
+    if (!graph) return (size_t)-1;
+    for (size_t i = 0; i < graph->Blocks.size(); i++) {
+        if (graph->Blocks[i].IsEntryBlock)
+            return i;
+    }
+    // Fallback: first block
+    return graph->Blocks.empty() ? (size_t)-1 : 0;
+}
+
+// Find the last block (exit block or lowest-address exit) index.
+// Returns (size_t)-1 if not found.
+static size_t FindExitBlockIndex(CFG_GRAPH* graph)
+{
+    if (!graph || graph->Blocks.empty()) return (size_t)-1;
+
+    // Prefer an exit block
+    for (size_t i = 0; i < graph->Blocks.size(); i++) {
+        if (graph->Blocks[i].IsExitBlock)
+            return i;
+    }
+    // Fallback: last block in the vector
+    return graph->Blocks.size() - 1;
 }
 
 // ================================================================
@@ -2112,8 +2366,40 @@ BOOL CALLBACK CFGViewerDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lP
                 g_ViewState.PanOffsetY = g_ViewState.DragStartPanY + (pt.y - g_ViewState.DragStartPoint.y);
 
                 InvalidateRect(hWnd, NULL, FALSE);
+            } else {
+                // Not dragging/panning - check for hover over navigable instruction
+                bool wasHover = g_HoverOnNavigable;
+                g_HoverOnNavigable = false;
+
+                POINT graphPt = ScreenToGraph(&g_ViewState, pt);
+                DWORD_PTR blockID = HitTestBlocks(&g_CurrentGraph, graphPt);
+
+                if (blockID != (DWORD_PTR)-1 && g_CurrentGraph.BlockIDToIndex.count(blockID)) {
+                    CFG_BASIC_BLOCK& block = g_CurrentGraph.Blocks[g_CurrentGraph.BlockIDToIndex[blockID]];
+                    DWORD_PTR instrIndex = HitTestInstruction(&block, graphPt);
+
+                    if (instrIndex != (DWORD_PTR)-1) {
+                        const char* mnemonic = DisasmDataLines[instrIndex].GetMnemonic();
+                        if (IsConditionalJump(mnemonic) || IsUnconditionalJump(mnemonic) || IsCallInstruction(mnemonic)) {
+                            g_HoverOnNavigable = true;
+                        }
+                    }
+                }
+
+                // Only update cursor if hover state changed
+                if (wasHover != g_HoverOnNavigable) {
+                    SetCursor(LoadCursor(NULL, g_HoverOnNavigable ? IDC_HAND : IDC_ARROW));
+                }
             }
             return 0;
+        }
+
+        case WM_SETCURSOR: {
+            if (LOWORD(lParam) == HTCLIENT) {
+                SetCursor(LoadCursor(NULL, g_HoverOnNavigable ? IDC_HAND : IDC_ARROW));
+                return TRUE;
+            }
+            break;
         }
 
         case WM_LBUTTONUP: {
@@ -2133,7 +2419,24 @@ BOOL CALLBACK CFGViewerDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lP
         }
 
         case WM_LBUTTONDBLCLK: {
-            // Double-click on block navigates to it in main disassembly
+            // Cancel any drag state started by the preceding WM_LBUTTONDOWN
+            if (g_ViewState.IsDraggingBlock) {
+                // Restore block to its original position
+                if (g_CurrentGraph.BlockIDToIndex.count(g_ViewState.DraggingBlockID)) {
+                    CFG_BASIC_BLOCK& dragBlock = g_CurrentGraph.Blocks[g_CurrentGraph.BlockIDToIndex[g_ViewState.DraggingBlockID]];
+                    dragBlock.X = g_ViewState.DragBlockStartX;
+                    dragBlock.Y = g_ViewState.DragBlockStartY;
+                    UpdateRoutesForDraggedBlock(&g_CurrentGraph, g_ViewState.DraggingBlockID);
+                }
+                g_ViewState.IsDraggingBlock = FALSE;
+                g_ViewState.DraggingBlockID = (DWORD_PTR)-1;
+                ReleaseCapture();
+            }
+            if (g_ViewState.IsPanning) {
+                g_ViewState.IsPanning = FALSE;
+                ReleaseCapture();
+            }
+
             POINT pt;
             pt.x = GET_X_LPARAM(lParam);
             pt.y = GET_Y_LPARAM(lParam);
@@ -2144,14 +2447,38 @@ BOOL CALLBACK CFGViewerDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lP
             if (blockID != (DWORD_PTR)-1 && g_CurrentGraph.BlockIDToIndex.count(blockID)) {
                 CFG_BASIC_BLOCK& block = g_CurrentGraph.Blocks[g_CurrentGraph.BlockIDToIndex[blockID]];
 
-                // Navigate to this block in main disassembly
-                HWND hDisasm = GetDlgItem(Main_hWnd, IDC_DISASM);
-                if (hDisasm) {
-                    ListView_SetItemState(hDisasm, -1, 0, LVIS_SELECTED | LVIS_FOCUSED);
-                    ListView_SetItemState(hDisasm, (int)block.StartIndex,
-                                          LVIS_SELECTED | LVIS_FOCUSED,
-                                          LVIS_SELECTED | LVIS_FOCUSED);
-                    ListView_EnsureVisible(hDisasm, (int)block.StartIndex, FALSE);
+                // Hit-test specific instruction line within the block
+                DWORD_PTR instrIndex = HitTestInstruction(&block, graphPt);
+
+                if (instrIndex != (DWORD_PTR)-1) {
+                    const char* mnemonic = DisasmDataLines[instrIndex].GetMnemonic();
+
+                    if (IsConditionalJump(mnemonic) || IsUnconditionalJump(mnemonic)) {
+                        // Jump instruction: navigate to target block within CFG
+                        DWORD_PTR targetAddr = ResolveTargetAddress(instrIndex);
+                        if (targetAddr != 0 && g_CurrentGraph.AddressToBlockIndex.count(targetAddr)) {
+                            size_t targetIdx = g_CurrentGraph.AddressToBlockIndex[targetAddr];
+                            PanToBlock(hWnd, &g_CurrentGraph, &g_ViewState, targetIdx);
+                        } else {
+                            // Target not in graph - navigate in main disassembly
+                            NavigateMainDisasmTo(instrIndex);
+                        }
+                    } else if (IsCallInstruction(mnemonic)) {
+                        // Call instruction: navigate into the called function
+                        DWORD_PTR targetAddr = ResolveTargetAddress(instrIndex);
+                        if (targetAddr != 0) {
+                            NavigateToFunction(hWnd, targetAddr);
+                        } else {
+                            // Register-indirect call - can't resolve
+                            MessageBeep(MB_ICONEXCLAMATION);
+                        }
+                    } else {
+                        // Non-branch instruction: navigate to it in main disassembly
+                        NavigateMainDisasmTo(instrIndex);
+                    }
+                } else {
+                    // Clicked on header/padding: navigate to block start in main disassembly
+                    NavigateMainDisasmTo(block.StartIndex);
                 }
             }
             return 0;
@@ -2171,7 +2498,25 @@ BOOL CALLBACK CFGViewerDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lP
                 ClientToScreen(hWnd, &pt);
             }
 
+            // Determine which block was right-clicked
+            POINT clientPt = pt;
+            ScreenToClient(hWnd, &clientPt);
+            POINT graphPt = ScreenToGraph(&g_ViewState, clientPt);
+            g_ContextMenuBlockID = HitTestBlocks(&g_CurrentGraph, graphPt);
+
+            // Check if "Goto Caller" is available for the right-clicked block
+            bool hasConditionalCaller = false;
+            if (g_ContextMenuBlockID != (DWORD_PTR)-1) {
+                hasConditionalCaller = (FindConditionalCaller(&g_CurrentGraph, g_ContextMenuBlockID) != (size_t)-1);
+            }
+
             HMENU hMenu = CreatePopupMenu();
+            AppendMenu(hMenu, MF_STRING, IDM_CFG_GOTO_START, "Goto Start");
+            AppendMenu(hMenu, MF_STRING, IDM_CFG_GOTO_END, "Goto End");
+            AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
+            AppendMenu(hMenu, hasConditionalCaller ? MF_STRING : MF_STRING | MF_GRAYED,
+                       IDM_CFG_GOTO_CALLER, "Goto Caller");
+            AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
             AppendMenu(hMenu, MF_STRING, IDM_CFG_FIT_GRAPH, "Fit Graph to Screen");
             AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
             AppendMenu(hMenu, MF_STRING, IDM_CFG_SAVE_IMAGE, "Save as Image...");
@@ -2191,6 +2536,32 @@ BOOL CALLBACK CFGViewerDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lP
                 case IDM_CFG_SAVE_IMAGE:
                     SaveGraphToFile(hWnd, &g_CurrentGraph);
                     break;
+
+                case IDM_CFG_GOTO_CALLER: {
+                    if (g_ContextMenuBlockID != (DWORD_PTR)-1) {
+                        size_t callerIdx = FindConditionalCaller(&g_CurrentGraph, g_ContextMenuBlockID);
+                        if (callerIdx != (size_t)-1) {
+                            PanToBlock(hWnd, &g_CurrentGraph, &g_ViewState, callerIdx);
+                        }
+                    }
+                    break;
+                }
+
+                case IDM_CFG_GOTO_START: {
+                    size_t entryIdx = FindEntryBlockIndex(&g_CurrentGraph);
+                    if (entryIdx != (size_t)-1) {
+                        PanToBlock(hWnd, &g_CurrentGraph, &g_ViewState, entryIdx);
+                    }
+                    break;
+                }
+
+                case IDM_CFG_GOTO_END: {
+                    size_t exitIdx = FindExitBlockIndex(&g_CurrentGraph);
+                    if (exitIdx != (size_t)-1) {
+                        PanToBlock(hWnd, &g_CurrentGraph, &g_ViewState, exitIdx);
+                    }
+                    break;
+                }
             }
             return 0;
         }
@@ -2210,6 +2581,11 @@ BOOL CALLBACK CFGViewerDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lP
 
                 case VK_ESCAPE:
                     DestroyWindow(hWnd);
+                    break;
+
+                case VK_BACK:
+                    // Navigate back to previous function's CFG
+                    NavigateBack(hWnd);
                     break;
 
                 case VK_ADD:
@@ -2244,6 +2620,12 @@ BOOL CALLBACK CFGViewerDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lP
 
         case WM_DESTROY: {
             FreeCFGGraph(&g_CurrentGraph);
+            // Clear navigation history
+            for (size_t i = 0; i < g_NavHistory.size(); i++) {
+                ClearCFGGraph(&g_NavHistory[i].Graph);
+            }
+            g_NavHistory.clear();
+            g_HoverOnNavigable = false;
             if (g_hCFGFont) {
                 DeleteObject(g_hCFGFont);
                 g_hCFGFont = NULL;
