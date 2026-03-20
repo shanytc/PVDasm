@@ -13,7 +13,7 @@
 
 <p align="center">
   <strong>32/64-Bit Multi Disassembler</strong><br>
-  Build Version: <code>v1.9d</code><br>
+  Build Version: <code>v1.9e</code><br>
   &copy; Shany Golan 2003&ndash;2026
 </p>
 
@@ -70,6 +70,7 @@ ProView is an educational project aimed at building a custom disassembler and de
 - Fixed **crash in String References** dialog (buffer overflow from `strcpy_s` misuse, unbounded `while` loop)
 - Added **subroutine banners** for function prologues in disassembly
 - Added **live selection highlight** and **middle-mouse pan** in code map
+- Fixed **CFG viewer**: opens for the currently selected function (not always entry point), stops tracing at function boundaries, reuses window when switching functions, and handles entry point banner at index 0
 
 #### March 18–19, 2026
 - Implemented **VMX extended instructions**: VMREAD, VMWRITE, VMPTRLD, VMPTRST, VMCLEAR, VMXON, INVEPT, INVVPID
