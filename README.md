@@ -13,7 +13,7 @@
 
 <p align="center">
   <strong>32/64-Bit Multi Disassembler</strong><br>
-  Build Version: <code>v1.9e</code><br>
+  Build Version: <code>v2.0</code><br>
   &copy; Shany Golan 2003&ndash;2026
 </p>
 
@@ -69,6 +69,7 @@ ProView is an educational project aimed at building a custom disassembler and de
 - Added **"Copy Address"** to the Copy submenu — copies the selected line's address to clipboard in the correct format (8-char for x86, 16-char for x64)
 - Fixed **CopyToClipboard** off-by-one bug: `GlobalAlloc` was missing +1 for the null terminator, causing truncation on short strings
 - Fixed **CFG block text layout for x64**: address column width is now measured dynamically instead of hardcoded 75px, so 16-char 64-bit addresses no longer overlap the mnemonic column
+- Fixed **stale code map** when opening a new file without closing the previous one — code map is now hidden immediately when a new file is selected
 - Added **CFG instruction-level navigation**: double-click a `jxx` line to pan to its target block, double-click a `call` line to rebuild the CFG for the called function
 - Added **CFG call history**: navigate into called functions and press `Backspace` to return to the previous function's graph (up to 16 levels)
 - Added **CFG context menu**: "Goto Start" (entry block), "Goto End" (exit block), and "Goto Caller" (conditional predecessor block)
