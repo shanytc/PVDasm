@@ -124,6 +124,10 @@ bool				DCodeFlow;					// Read to jump to address from code flow
 bool				bToolTip=false;				// Process New Colors when viewing toolTip
 bool				bSplitterDragging=false;	// Splitter drag state
 int					nSplitterDragY=0;			// Y position when drag started
+static int			g_nActiveTab=0;				// 0 = Disassembly, 1 = Graph
+static bool         g_bDisasmTabVisible = true;
+static bool         g_bGraphTabVisible  = true;
+static WNDPROC      g_OrigTabWndProc = NULL;
 BYTE				Opcode;						// Absulote 
 char				*OrignalData;				// Copy of pointer to memory map data
 char				*Data;						// Pointer to the maped file in memory
@@ -144,6 +148,9 @@ LRESULT CALLBACK MessageListSubClass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
 #define CODE_MAP_BAR_HEIGHT  20  // The color-coded navigation strip
 #define CODE_MAP_LEGEND_HEIGHT 16 // Legend text row below the strip
 #define CODE_MAP_HEIGHT (CODE_MAP_BAR_HEIGHT + CODE_MAP_LEGEND_HEIGHT) // Total height
+#define TAB_HEIGHT 24 // Height of the tab control above the disassembly/graph area
+#define TAB_CLOSE_BTN_SIZE  14
+#define TAB_CLOSE_BTN_PAD    4
 
 // Code map type classification
 #define CMAP_CODE      0
@@ -182,6 +189,198 @@ static int GetDisasmTopY(HWND hWnd)
     GetWindowRect(hDisasm, &rc);
     MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rc, 2);
     return rc.top;
+}
+
+// ================================================================
+// =================  TAB SWITCHING  ==============================
+// ================================================================
+
+// Forward declaration (defined in TAB VISIBILITY HELPERS section below)
+static int LogicalToTabIndex(HWND hTab, int logicalTab);
+
+static void SwitchTab(HWND hWnd, int tabIndex)
+{
+    HWND hDisasm = GetDlgItem(hWnd, IDC_DISASM);
+    HWND hCFGChild = GetDlgItem(hWnd, IDC_CFG_CHILD);
+    HWND hTab = GetDlgItem(hWnd, IDC_TAB_MAIN);
+
+    g_nActiveTab = tabIndex;
+
+    // Update tab selection (resolve logical to physical index)
+    if (hTab) {
+        int physIdx = LogicalToTabIndex(hTab, tabIndex);
+        if (physIdx >= 0) TabCtrl_SetCurSel(hTab, physIdx);
+    }
+
+    if (tabIndex == 0) {
+        // Disassembly tab
+        if (hDisasm) ShowWindow(hDisasm, SW_SHOW);
+        if (hCFGChild) ShowWindow(hCFGChild, SW_HIDE);
+    } else {
+        // Graph tab
+        if (hDisasm) ShowWindow(hDisasm, SW_HIDE);
+        // Sync CFG child position to disasm rect
+        if (hCFGChild && hDisasm) {
+            RECT disasmRect;
+            GetWindowRect(hDisasm, &disasmRect);
+            MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&disasmRect, 2);
+            MoveWindow(hCFGChild, disasmRect.left, disasmRect.top,
+                       disasmRect.right - disasmRect.left,
+                       disasmRect.bottom - disasmRect.top, TRUE);
+            ShowWindow(hCFGChild, SW_SHOW);
+            SetFocus(hCFGChild);
+        }
+        // Build graph for the function at the current cursor position
+        if (DisassemblerReady) {
+            LoadCFGForCurrentFunction_Embedded();
+        }
+    }
+}
+
+// ================================================================
+// =================  TAB VISIBILITY HELPERS  =====================
+// ================================================================
+
+// Map a logical tab ID (0=Disassembly, 1=Graph) to the physical tab index in the control.
+// Returns -1 if not found (tab is hidden).
+static int LogicalToTabIndex(HWND hTab, int logicalTab)
+{
+    int count = TabCtrl_GetItemCount(hTab);
+    for (int i = 0; i < count; i++) {
+        TCITEM tc = {0};
+        tc.mask = TCIF_PARAM;
+        TabCtrl_GetItem(hTab, i, &tc);
+        if ((int)tc.lParam == logicalTab)
+            return i;
+    }
+    return -1;
+}
+
+// Map a physical tab index to a logical tab ID via lParam.
+static int TabIndexToLogical(HWND hTab, int tabIndex)
+{
+    TCITEM tc = {0};
+    tc.mask = TCIF_PARAM;
+    if (TabCtrl_GetItem(hTab, tabIndex, &tc))
+        return (int)tc.lParam;
+    return 0;
+}
+
+// Rebuild the tab control items based on visibility flags.
+static void RebuildTabs(HWND hWnd)
+{
+    HWND hTab = GetDlgItem(hWnd, IDC_TAB_MAIN);
+    if (!hTab) return;
+
+    // Remember current logical tab
+    int curLogical = g_nActiveTab;
+
+    TabCtrl_DeleteAllItems(hTab);
+
+    int insertIdx = 0;
+    if (g_bDisasmTabVisible) {
+        TCITEM tie = {0};
+        tie.mask = TCIF_TEXT | TCIF_PARAM;
+        tie.pszText = (LPSTR)"Disassembly";
+        tie.lParam = 0;
+        TabCtrl_InsertItem(hTab, insertIdx++, &tie);
+    }
+    if (g_bGraphTabVisible) {
+        TCITEM tie = {0};
+        tie.mask = TCIF_TEXT | TCIF_PARAM;
+        tie.pszText = (LPSTR)"Graph";
+        tie.lParam = 1;
+        TabCtrl_InsertItem(hTab, insertIdx++, &tie);
+    }
+
+    if (insertIdx == 0) {
+        // No tabs visible -- shouldn't happen (protected elsewhere), show disasm as fallback
+        ShowWindow(hTab, SW_HIDE);
+        return;
+    }
+    ShowWindow(hTab, SW_SHOW);
+
+    // Select the appropriate tab
+    int physIdx = LogicalToTabIndex(hTab, curLogical);
+    if (physIdx < 0) {
+        // Current tab was hidden, pick the first available
+        physIdx = 0;
+        curLogical = TabIndexToLogical(hTab, 0);
+    }
+    TabCtrl_SetCurSel(hTab, physIdx);
+    SwitchTab(hWnd, curLogical);
+    InvalidateRect(hTab, NULL, TRUE);
+}
+
+// Get the close-button RECT for a given physical tab index.
+static RECT GetTabCloseButtonRect(HWND hTab, int tabIndex)
+{
+    RECT itemRect;
+    TabCtrl_GetItemRect(hTab, tabIndex, &itemRect);
+    RECT btnRect;
+    btnRect.right = itemRect.right - TAB_CLOSE_BTN_PAD;
+    btnRect.left = btnRect.right - TAB_CLOSE_BTN_SIZE;
+    btnRect.top = itemRect.top + (itemRect.bottom - itemRect.top - TAB_CLOSE_BTN_SIZE) / 2;
+    btnRect.bottom = btnRect.top + TAB_CLOSE_BTN_SIZE;
+    return btnRect;
+}
+
+// Toggle visibility of a logical tab.
+static void SetTabVisible(HWND hWnd, int logicalTab, bool visible)
+{
+    if (logicalTab == 0)
+        g_bDisasmTabVisible = visible;
+    else
+        g_bGraphTabVisible = visible;
+
+    // Update menu checkmark
+    UINT menuID = (logicalTab == 0) ? IDC_VIEW_DISASSEMBLY : IDC_VIEW_GRAPH;
+    CheckMenuItem(GetMenu(hWnd), menuID, visible ? MF_CHECKED : MF_UNCHECKED);
+
+    RebuildTabs(hWnd);
+}
+
+// Ensure the disassembly tab is visible and active (called from CFGViewer).
+void ShowDisassemblyTab()
+{
+    if (!Main_hWnd) return;
+    if (!g_bDisasmTabVisible)
+        SetTabVisible(Main_hWnd, 0, true);
+    if (g_nActiveTab != 0)
+        SwitchTab(Main_hWnd, 0);
+}
+
+// Tab subclass proc: intercept mouse clicks on the close X button.
+static LRESULT CALLBACK TabSubClassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    if (uMsg == WM_ERASEBKGND) {
+        // Fill entire tab control background (including empty area right of tabs)
+        HDC hdc = (HDC)wParam;
+        RECT rc;
+        GetClientRect(hWnd, &rc);
+        COLORREF bgColor = g_DarkMode ? RGB(35, 35, 35) : GetSysColor(COLOR_BTNFACE);
+        HBRUSH hBrush = CreateSolidBrush(bgColor);
+        FillRect(hdc, &rc, hBrush);
+        DeleteObject(hBrush);
+        return 1;
+    }
+    if (uMsg == WM_LBUTTONDOWN) {
+        POINT pt = { LOWORD(lParam), HIWORD(lParam) };
+        int count = TabCtrl_GetItemCount(hWnd);
+        // Don't allow closing if only one tab remains
+        if (count > 1) {
+            for (int i = 0; i < count; i++) {
+                RECT closeRect = GetTabCloseButtonRect(hWnd, i);
+                if (PtInRect(&closeRect, pt)) {
+                    int logicalID = TabIndexToLogical(hWnd, i);
+                    HWND hParent = GetParent(hWnd);
+                    SetTabVisible(hParent, logicalID, false);
+                    return 0; // eat the message
+                }
+            }
+        }
+    }
+    return CallWindowProc(g_OrigTabWndProc, hWnd, uMsg, wParam, lParam);
 }
 
 // ================================================================
@@ -530,6 +729,12 @@ LRESULT CALLBACK CodeMapWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
         }
 
         case WM_LBUTTONDOWN: {
+            // If we're not on the disassembly tab, switch to it (show it first if hidden)
+            if (g_nActiveTab != 0) {
+                if (!g_bDisasmTabVisible)
+                    SetTabVisible(Main_hWnd, 0, true);
+                SwitchTab(Main_hWnd, 0);
+            }
             SetCapture(hWnd);
             g_CodeMapDragging = true;
             g_CodeMapLastScrollIdx = (DWORD_PTR)-1;
@@ -724,6 +929,7 @@ void RepositionDisasmForCodeMap(HWND hWnd, BOOL show)
 {
     HWND hDisasm = GetDlgItem(hWnd, IDC_DISASM);
     HWND hBar = GetDlgItem(hWnd, IDC_CODE_MAP_BAR);
+    HWND hTab = GetDlgItem(hWnd, IDC_TAB_MAIN);
     if (!hDisasm) return;
 
     RECT rc;
@@ -731,14 +937,37 @@ void RepositionDisasmForCodeMap(HWND hWnd, BOOL show)
     MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rc, 2);
 
     if (show) {
-        // Place code map at the disasm listview's current top
+        // Get tab rect to place code map above it
+        RECT rcTab;
+        if (hTab) {
+            GetWindowRect(hTab, &rcTab);
+            MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rcTab, 2);
+        }
         RECT rcClient;
         GetClientRect(hWnd, &rcClient);
-        if (hBar) MoveWindow(hBar, 0, rc.top, rcClient.right, CODE_MAP_HEIGHT, TRUE);
-        // Push listview down
+        // Place code map bar at the tab's current top
+        if (hBar && hTab)
+            MoveWindow(hBar, 0, rcTab.top, rcClient.right, CODE_MAP_HEIGHT, TRUE);
+        // Move tab down by CODE_MAP_HEIGHT
+        if (hTab)
+            MoveWindow(hTab, 0, rcTab.top + CODE_MAP_HEIGHT,
+                       rcClient.right, TAB_HEIGHT, TRUE);
+        // Push listview down by CODE_MAP_HEIGHT
         MoveWindow(hDisasm, rc.left, rc.top + CODE_MAP_HEIGHT,
                    rc.right - rc.left, (rc.bottom - rc.top) - CODE_MAP_HEIGHT, TRUE);
     } else {
+        // Get tab rect
+        RECT rcTab;
+        if (hTab) {
+            GetWindowRect(hTab, &rcTab);
+            MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rcTab, 2);
+        }
+        RECT rcClient;
+        GetClientRect(hWnd, &rcClient);
+        // Move tab up by CODE_MAP_HEIGHT
+        if (hTab)
+            MoveWindow(hTab, 0, rcTab.top - CODE_MAP_HEIGHT,
+                       rcClient.right, TAB_HEIGHT, TRUE);
         // Pull listview back up
         MoveWindow(hDisasm, rc.left, rc.top - CODE_MAP_HEIGHT,
                    rc.right - rc.left, (rc.bottom - rc.top) + CODE_MAP_HEIGHT, TRUE);
@@ -1063,6 +1292,62 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		//////////////////////////////////////////////////////////////////////
 
 
+		// Owner-draw tab control (close X buttons)
+		case WM_DRAWITEM:{
+			PDRAWITEMSTRUCT pDIS = (PDRAWITEMSTRUCT)lParam;
+			if (pDIS->CtlID == IDC_TAB_MAIN) {
+				HWND hTab = GetDlgItem(hWnd, IDC_TAB_MAIN);
+				bool isSelected = ((int)pDIS->itemID == TabCtrl_GetCurSel(hTab));
+
+				// Background
+				COLORREF bgColor, textColor;
+				if (g_DarkMode) {
+					bgColor = isSelected ? RGB(60, 60, 60) : RGB(35, 35, 35);
+					textColor = g_DarkTextColor;
+				} else {
+					bgColor = isSelected ? GetSysColor(COLOR_WINDOW) : GetSysColor(COLOR_BTNFACE);
+					textColor = GetSysColor(COLOR_WINDOWTEXT);
+				}
+				HBRUSH hBrush = CreateSolidBrush(bgColor);
+				FillRect(pDIS->hDC, &pDIS->rcItem, hBrush);
+				DeleteObject(hBrush);
+
+				// Get tab text from TCITEM
+				char szTabText[64] = {0};
+				TCITEM tc = {0};
+				tc.mask = TCIF_TEXT;
+				tc.pszText = szTabText;
+				tc.cchTextMax = sizeof(szTabText);
+				TabCtrl_GetItem(hTab, pDIS->itemID, &tc);
+
+				// Draw text (leave room on right for X)
+				RECT textRect = pDIS->rcItem;
+				textRect.left += 6;
+				textRect.right -= TAB_CLOSE_BTN_SIZE + TAB_CLOSE_BTN_PAD + 4;
+				SetTextColor(pDIS->hDC, textColor);
+				SetBkMode(pDIS->hDC, TRANSPARENT);
+				SelectObject(pDIS->hDC, GetStockObject(DEFAULT_GUI_FONT));
+				DrawTextA(pDIS->hDC, szTabText, -1, &textRect, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
+
+				// Draw X close button
+				RECT closeRect = GetTabCloseButtonRect(hTab, pDIS->itemID);
+				COLORREF xColor = g_DarkMode ? RGB(180, 180, 180) : RGB(120, 120, 120);
+				HPEN hPen = CreatePen(PS_SOLID, 1, xColor);
+				HPEN hOldPen = (HPEN)SelectObject(pDIS->hDC, hPen);
+				int margin = 3;
+				MoveToEx(pDIS->hDC, closeRect.left + margin, closeRect.top + margin, NULL);
+				LineTo(pDIS->hDC, closeRect.right - margin, closeRect.bottom - margin);
+				MoveToEx(pDIS->hDC, closeRect.right - margin - 1, closeRect.top + margin, NULL);
+				LineTo(pDIS->hDC, closeRect.left + margin - 1, closeRect.bottom - margin);
+				SelectObject(pDIS->hDC, hOldPen);
+				DeleteObject(hPen);
+
+				SetWindowLongPtr(hWnd, DWL_MSGRESULT, TRUE);
+				return TRUE;
+			}
+		}
+		break;
+
 		// Dark mode: paint dialog and control backgrounds
 		case WM_CTLCOLORDLG:
 		case WM_CTLCOLORSTATIC:
@@ -1109,6 +1394,17 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			// Stretch last column to fill width (fixes white areas in dark mode)
 			StretchLastColumn(GetDlgItem(hWnd, IDC_DISASM));
 			StretchLastColumn(GetDlgItem(hWnd, IDC_LIST));
+			// Sync CFG child window to disasm position when graph tab is active
+			if (g_nActiveTab == 1) {
+				HWND hCFGChild = GetDlgItem(hWnd, IDC_CFG_CHILD);
+				HWND hDisasm = GetDlgItem(hWnd, IDC_DISASM);
+				if (hCFGChild && hDisasm) {
+					RECT dr;
+					GetWindowRect(hDisasm, &dr);
+					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&dr, 2);
+					MoveWindow(hCFGChild, dr.left, dr.top, dr.right - dr.left, dr.bottom - dr.top, TRUE);
+				}
+			}
 		}
 		break;
 
@@ -1154,7 +1450,8 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 					if (newDisasmHeight >= minHeight && newListHeight >= minHeight) {
 						// Use deferred window positioning for smoother updates
-						HDWP hdwp = BeginDeferWindowPos(3);
+						HWND hCFGChild = GetDlgItem(hWnd, IDC_CFG_CHILD);
+						HDWP hdwp = BeginDeferWindowPos(hCFGChild ? 4 : 3);
 						if (hdwp) {
 							// Resize disassembly view
 							hdwp = DeferWindowPos(hdwp, hDisasm, NULL, 0, 0,
@@ -1175,6 +1472,15 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 								listRect.right - listRect.left,
 								newListHeight,
 								SWP_NOZORDER);
+
+							// Keep CFG child in sync with disasm
+							if (hCFGChild) {
+								hdwp = DeferWindowPos(hdwp, hCFGChild, NULL,
+									disasmRect.left, disasmRect.top,
+									disasmRect.right - disasmRect.left,
+									newDisasmHeight,
+									SWP_NOZORDER);
+							}
 
 							EndDeferWindowPos(hdwp);
 						}
@@ -1286,6 +1592,9 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             EnableMenuItem(GetMenu(hWnd),IDC_PRODUCE_VIEW,MF_GRAYED);
             EnableMenuItem(GetMenu(hWnd),IDC_EXPORT_MAP_PVDASM,MF_GRAYED);
             EnableMenuItem(GetMenu(hWnd),IDC_VIEW_CFG,MF_GRAYED);
+            EnableMenuItem(GetMenu(hWnd),IDC_VIEW_DISASSEMBLY,MF_GRAYED);
+            EnableMenuItem(GetMenu(hWnd),IDC_VIEW_GRAPH,MF_GRAYED);
+            EnableMenuItem(GetMenu(hWnd),IDC_CODE_MAP,MF_GRAYED);
 
 			// Create the ToolBar.
 			hWndTB=CreateToolBar(hWnd,hInst);
@@ -1298,7 +1607,7 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             // Hide the Progress bar (Show only when disassembling).
             ShowWindow(GetDlgItem(hWnd,IDC_DISASM_PROGRESS),SW_HIDE);
 
-            // Register and create the Code Map bar
+            // Register and create the Code Map bar (above tabs, initially hidden)
             if (!g_CodeMapClassRegistered) {
                 WNDCLASSA wc = {0};
                 wc.lpfnWndProc = CodeMapWndProc;
@@ -1308,16 +1617,63 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 RegisterClassA(&wc);
                 g_CodeMapClassRegistered = true;
             }
+
+            // Create tab control and content below it
             {
-                // Place code map right at the disassembly listview's current top
-                int cmapY = GetDisasmTopY(hWnd);
+                HWND hDisasm = GetDlgItem(hWnd, IDC_DISASM);
+                RECT disasmRect;
+                GetWindowRect(hDisasm, &disasmRect);
+                MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&disasmRect, 2);
                 RECT rcClient;
                 GetClientRect(hWnd, &rcClient);
+
+                // Create code map bar at disasmRect.top (hidden, WS_CHILD only)
                 HWND hCodeMap = CreateWindowExA(0, "PVDasmCodeMap", NULL,
                     WS_CHILD,  // Initially hidden
-                    0, cmapY, rcClient.right, CODE_MAP_HEIGHT,
+                    0, disasmRect.top, rcClient.right, CODE_MAP_HEIGHT,
                     hWnd, (HMENU)(UINT_PTR)IDC_CODE_MAP_BAR, hInst, NULL);
                 SetWindowLongPtr(hCodeMap, GWL_USERDATA, ANCHOR_RIGHT);
+
+                // Create tab control at disasmRect.top (code map is hidden so tab starts here)
+                HWND hTab = CreateWindowEx(0, WC_TABCONTROL, NULL,
+                    WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | TCS_FIXEDWIDTH | TCS_OWNERDRAWFIXED,
+                    0, disasmRect.top, rcClient.right, TAB_HEIGHT,
+                    hWnd, (HMENU)(UINT_PTR)IDC_TAB_MAIN, hInst, NULL);
+                SendMessage(hTab, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), TRUE);
+                TabCtrl_SetItemSize(hTab, 100, TAB_HEIGHT - 4);
+
+                // Insert tabs with lParam storing logical ID
+                TCITEM tie = {0};
+                tie.mask = TCIF_TEXT | TCIF_PARAM;
+                tie.pszText = (LPSTR)"Disassembly";
+                tie.lParam = 0;
+                TabCtrl_InsertItem(hTab, 0, &tie);
+                tie.pszText = (LPSTR)"Graph";
+                tie.lParam = 1;
+                TabCtrl_InsertItem(hTab, 1, &tie);
+
+                SetWindowLongPtr(hTab, GWL_USERDATA, ANCHOR_RIGHT);
+
+                // Subclass tab control for close button click detection and background painting
+                g_OrigTabWndProc = (WNDPROC)SetWindowLongPtr(hTab, GWL_WNDPROC, (LONG_PTR)TabSubClassProc);
+
+                // Push the disasm listview down by tab height
+                MoveWindow(hDisasm, disasmRect.left, disasmRect.top + TAB_HEIGHT,
+                           disasmRect.right - disasmRect.left,
+                           (disasmRect.bottom - disasmRect.top) - TAB_HEIGHT, TRUE);
+
+                // Register and create CFG child window (same position as disasm, hidden initially)
+                RegisterCFGChildClass(hInst);
+                RECT newDisasmRect;
+                GetWindowRect(hDisasm, &newDisasmRect);
+                MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&newDisasmRect, 2);
+                HWND hCFGChild = CreateWindowExA(0, "PVDasmCFGChild", NULL,
+                    WS_CHILD | WS_CLIPSIBLINGS,
+                    newDisasmRect.left, newDisasmRect.top,
+                    newDisasmRect.right - newDisasmRect.left,
+                    newDisasmRect.bottom - newDisasmRect.top,
+                    hWnd, (HMENU)(UINT_PTR)IDC_CFG_CHILD, hInst, NULL);
+                SetWindowLongPtr(hCFGChild, GWL_USERDATA, ANCHOR_RIGHT | ANCHOR_BOTTOM);
             }
 
             // Check the menu item if Code Map is enabled (bar stays hidden until disassembly completes)
@@ -1361,6 +1717,18 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WM_NOTIFY:{ // Notify Messages
         switch(LOWORD(wParam)){
+                    // Tab control selection change
+                    case IDC_TAB_MAIN: {
+                        LPNMHDR pnmh = (LPNMHDR)lParam;
+                        if (pnmh->code == TCN_SELCHANGE) {
+                            HWND hTab = GetDlgItem(hWnd, IDC_TAB_MAIN);
+                            int sel = TabCtrl_GetCurSel(hTab);
+                            int logicalID = TabIndexToLogical(hTab, sel);
+                            SwitchTab(hWnd, logicalID);
+                        }
+                    }
+                    break;
+
             //Disassembler Control (Virtual List View)
                     // Message Window ListView (Dark Mode)
                     case IDC_LIST: {
@@ -2089,10 +2457,29 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 }
                 break;
 
-                // Control Flow Graph Viewer
+                // Toggle Disassembly tab visibility (Views menu)
+                case IDC_VIEW_DISASSEMBLY:{
+                    if (!DisassemblerReady) break;
+                    bool newState = !g_bDisasmTabVisible;
+                    // Prevent hiding the last visible tab
+                    if (!newState && !g_bGraphTabVisible) break;
+                    SetTabVisible(hWnd, 0, newState);
+                }
+                break;
+
+                // Toggle / show Graph tab (Views menu + Ctrl+G)
+                case IDC_VIEW_GRAPH:
                 case IDC_VIEW_CFG:{
-                    if(DisassemblerReady==TRUE){
-                        ShowCFGViewerForCurrentFunction(hWnd);
+                    if (!DisassemblerReady) break;
+                    if (!g_bGraphTabVisible) {
+                        // Show the graph tab, switch to it, and load CFG
+                        SetTabVisible(hWnd, 1, true);
+                        SwitchTab(hWnd, 1);
+                        LoadCFGForCurrentFunction_Embedded();
+                    } else {
+                        // Already visible, just switch to it
+                        SwitchTab(hWnd, 1);
+                        LoadCFGForCurrentFunction_Embedded();
                     }
                 }
                 break;
@@ -2158,6 +2545,18 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 case IDM_COPY_FILE:{
                     if(DisassemblerReady==TRUE){
                         hDisasmThread=CreateThread(0,0,(LPTHREAD_START_ROUTINE)CopyDisasmToFile,hWnd,0,&DisasmThreadId);
+                    }
+                }
+                break;
+
+				// Copy address of selected line to clipboard
+				case IDM_COPY_ADDRESS:{
+                    int iSel = (int)SendMessage(GetDlgItem(hWnd,IDC_DISASM), LVM_GETNEXTITEM, (WPARAM)-1, LVNI_FOCUSED);
+                    if(iSel >= 0 && iSel < (int)DisasmDataLines.size()){
+                        char* addr = DisasmDataLines[iSel].GetAddress();
+                        if(addr && addr[0]){
+                            CopyToClipboard(addr, hWnd);
+                        }
                     }
                 }
                 break;
@@ -2297,6 +2696,13 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 		}
 		break;
+
+	// Custom message from CFG child window to switch back to Disassembly tab
+	case WM_USER + 300: {
+		SwitchTab(hWnd, 0);
+		SetFocus(GetDlgItem(hWnd, IDC_DISASM));
+		return 0;
+	}
 	}
 	return 0;
 }
@@ -5712,6 +6118,20 @@ void CloseLoadedFile(HWND hWnd)
         EnableMenuItem(hWinMenu, IDM_FIND,					MF_GRAYED);
         EnableMenuItem(hWinMenu, IDC_DISASM_ADD_COMMENT,	MF_GRAYED);
         EnableMenuItem(hWinMenu, IDC_VIEW_CFG,			MF_GRAYED);
+        EnableMenuItem(hWinMenu, IDC_VIEW_DISASSEMBLY,	MF_GRAYED);
+        EnableMenuItem(hWinMenu, IDC_VIEW_GRAPH,		MF_GRAYED);
+        EnableMenuItem(hWinMenu, IDC_CODE_MAP,			MF_GRAYED);
+
+        // Reset tab visibility to defaults
+        g_bDisasmTabVisible = true;
+        g_bGraphTabVisible  = true;
+        CheckMenuItem(GetMenu(hWnd), IDC_VIEW_DISASSEMBLY, MF_CHECKED);
+        CheckMenuItem(GetMenu(hWnd), IDC_VIEW_GRAPH, MF_CHECKED);
+
+        // Clear embedded CFG and switch back to disassembly tab
+        ClearEmbeddedCFG();
+        RebuildTabs(hWnd);
+        SwitchTab(hWnd, 0);
 
         // Hide Code Map bar when file is closed
         {

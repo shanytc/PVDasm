@@ -199,6 +199,13 @@ BOOL CALLBACK CFGViewerDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lP
 void ShowCFGViewerForCurrentFunction(HWND hParent);
 HWND GetCFGViewerWindow();  // Returns handle for message loop integration
 
+// Embedded child window support
+extern bool g_CFGGraphValid;
+void RegisterCFGChildClass(HINSTANCE hInst);
+void LoadCFGForCurrentFunction_Embedded();
+void ClearEmbeddedCFG();
+LRESULT CALLBACK CFGChildWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
 // Helper functions
 DWORD_PTR GetAddressAtIndex(DWORD_PTR index);
 DWORD_PTR FindIndexByAddress(DWORD_PTR address);

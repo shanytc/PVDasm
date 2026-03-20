@@ -920,10 +920,16 @@ BEGIN
         MENUITEM "Show Functions\tCtrl+J",      IDC_SHOW_FUNCTIONS
         MENUITEM SEPARATOR
         MENUITEM "XReferences\tCtrl+Space",     IDC_XREF_MENU
-        MENUITEM "View Function Graph\tCtrl+G", IDC_VIEW_CFG
         MENUITEM SEPARATOR
         MENUITEM "Code Patcher\tAlt+E",         IDM_PATCHER
         MENUITEM "Add Comment\tCtrl+M",         IDC_DISASM_ADD_COMMENT
+    END
+    POPUP "&Views"
+    BEGIN
+        MENUITEM "Disassembly",              IDC_VIEW_DISASSEMBLY, CHECKED
+        MENUITEM "Functions Graph\tCtrl+G",  IDC_VIEW_GRAPH, CHECKED
+        MENUITEM SEPARATOR
+        MENUITEM "Code Map",                 IDC_CODE_MAP
     END
     POPUP "&Goto"
     BEGIN
@@ -964,6 +970,7 @@ BEGIN
         BEGIN
             MENUITEM "Copy To File...\tCtrl+Alt+C", IDM_COPY_DISASM_FILE
             MENUITEM "Copy To ClipBoard\tCtrl+C",   IDM_COPY_DISASM_CLIP
+            MENUITEM "Address",                     IDM_COPY_ADDRESS
             MENUITEM SEPARATOR
             MENUITEM "Select All\tCtrl+Alt+A",      IDM_SELECT_ALL_ITEMS
         END
@@ -1051,6 +1058,7 @@ BEGIN
         BEGIN
             MENUITEM "Copy To Clipboard\tCtrl+C",   IDM_COPY_DISASM
             MENUITEM "Copy To File...\tCtrl+Alt+C", IDM_COPY_FILE
+            MENUITEM "Address",                     IDM_COPY_ADDRESS
             MENUITEM SEPARATOR
             MENUITEM "Select All\tCtrl+Alt+A",      IDM_SELECT_ALL
         END
@@ -1193,7 +1201,7 @@ BEGIN
     "F",            IDM_FIND,               VIRTKEY, CONTROL, NOINVERT
     "F",            IDC_DEBUG_FONT,         VIRTKEY, CONTROL, ALT, NOINVERT
     "F",            IDC_DISASM_FONT,        VIRTKEY, SHIFT, ALT, NOINVERT
-    "G",            IDC_VIEW_CFG,           VIRTKEY, CONTROL, NOINVERT
+    "G",            IDC_VIEW_GRAPH,         VIRTKEY, CONTROL, NOINVERT
     "H",            IDC_HEX_EDITOR,         VIRTKEY, CONTROL, NOINVERT
     "M",            IDC_DISASM_ADD_COMMENT, VIRTKEY, CONTROL, NOINVERT
     "M",            IDC_EXPORT_MAP_PVDASM,  VIRTKEY, ALT, NOINVERT

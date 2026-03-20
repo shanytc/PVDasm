@@ -50,7 +50,7 @@ ProView is an educational project aimed at building a custom disassembler and de
 | **HexEditor** | Embedded hex editor (RadASM add-in.) |
 | **PVScript Engine** | Custom scripting engine for command automation. |
 | **API Recognition** | Automatic API parameter annotation via signature database. |
-| **Function Graph (CFG)** | Interactive control flow graph viewer with draggable blocks, zoom/pan, orthogonal edge routing, instruction-level navigation (double-click jxx/call), call history with back-navigation, and export to PNG/JPEG. |
+| **Function Graph (CFG)** | Interactive control flow graph viewer embedded as a tab with draggable blocks, zoom/pan, orthogonal edge routing, instruction-level navigation (double-click jxx/call), call history with back-navigation, context menu with "Show Disassembly", and export to PNG/JPEG. |
 | **Color Schemes** | SoftICE, IDA, OllyDbg, W32Asm, and custom themes. |
 | **Save/Load Projects** | Persist analysis state including functions, data, and comments. |
 | **Map File Support** | Import/export MAP files (IDA-compatible.) |
@@ -63,6 +63,12 @@ ProView is an educational project aimed at building a custom disassembler and de
 ### 2026
 
 #### March 20, 2026
+- Embedded **CFG viewer as a tab** in the main window — Disassembly and Graph tabs with close buttons, auto-builds CFG for the current function, Escape switches back to Disassembly
+- Added **Views menu** with Disassembly/Graph tab toggles; moved **code map** above the tab row so it stays visible on both tabs
+- Added **"Show Disassembly"** to CFG block context menu — right-click a block to navigate the main listview to that block's first instruction
+- Added **"Copy Address"** to the Copy submenu — copies the selected line's address to clipboard in the correct format (8-char for x86, 16-char for x64)
+- Fixed **CopyToClipboard** off-by-one bug: `GlobalAlloc` was missing +1 for the null terminator, causing truncation on short strings
+- Fixed **CFG block text layout for x64**: address column width is now measured dynamically instead of hardcoded 75px, so 16-char 64-bit addresses no longer overlap the mnemonic column
 - Added **CFG instruction-level navigation**: double-click a `jxx` line to pan to its target block, double-click a `call` line to rebuild the CFG for the called function
 - Added **CFG call history**: navigate into called functions and press `Backspace` to return to the previous function's graph (up to 16 levels)
 - Added **CFG context menu**: "Goto Start" (entry block), "Goto End" (exit block), and "Goto Caller" (conditional predecessor block)

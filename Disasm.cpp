@@ -4285,6 +4285,8 @@ void WINAPI Disassembler(/*LPVOID lpParam*/) // Thread Worker for Decoding Instr
         EnableMenuItem ( hMenu, IDC_GOTO_ENTRYPOINT, MF_GRAYED  );
         EnableMenuItem ( hMenu, IDC_GOTO_ADDRESS,    MF_GRAYED  );
         EnableMenuItem ( hMenu, IDC_VIEW_CFG,        MF_GRAYED  );
+        EnableMenuItem ( hMenu, IDC_VIEW_DISASSEMBLY, MF_GRAYED );
+        EnableMenuItem ( hMenu, IDC_VIEW_GRAPH,      MF_GRAYED  );
         EnableMenuItem ( hMenu, IDM_FIND,            MF_ENABLED );
 
         // Disable ToolBar Buttons
@@ -4361,6 +4363,9 @@ void WINAPI Disassembler(/*LPVOID lpParam*/) // Thread Worker for Decoding Instr
     EnableMenuItem ( hMenu, IDC_EXPORT_MAP_PVDASM,  MF_ENABLED );
     EnableMenuItem ( hMenu, IDC_PVSCRIPT_ENGINE,   MF_ENABLED );
     EnableMenuItem ( hMenu, IDC_VIEW_CFG,          MF_ENABLED );
+    EnableMenuItem ( hMenu, IDC_VIEW_DISASSEMBLY, MF_ENABLED );
+    EnableMenuItem ( hMenu, IDC_VIEW_GRAPH,       MF_ENABLED );
+    EnableMenuItem ( hMenu, IDC_CODE_MAP,         MF_ENABLED );
 
     // If Imports availble, show them
     if(FunctionCounter>0){
