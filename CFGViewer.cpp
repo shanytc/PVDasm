@@ -1352,6 +1352,7 @@ void ComputeEdgeRoutes(CFG_GRAPH* graph)
             int drawStartX = startX;
             int drawEndX = endX;
             {
+                // Avoid other edge segments
                 int vMinY = min(startY, midY);
                 int vMaxY = max(startY, midY);
                 if (vMaxY - vMinY > 5) {
@@ -1368,6 +1369,20 @@ void ComputeEdgeRoutes(CFG_GRAPH* graph)
                         if (!collision) break;
                     }
                 }
+
+                // Avoid blocks on first vertical segment (drawStartX, startY→midY)
+                for (size_t bi = 0; bi < graph->Blocks.size(); bi++) {
+                    CFG_BASIC_BLOCK& blk = graph->Blocks[bi];
+                    if (blk.BlockID == edge.SourceBlockID || blk.BlockID == edge.TargetBlockID)
+                        continue;
+                    if (drawStartX >= blk.X - 5 && drawStartX <= blk.X + blk.Width + 5 &&
+                        vMaxY >= blk.Y && vMinY <= blk.Y + blk.Height) {
+                        int leftX = blk.X - 15;
+                        int rightX = blk.X + blk.Width + 15;
+                        drawStartX = (abs(startX - leftX) <= abs(startX - rightX)) ? leftX : rightX;
+                    }
+                }
+
                 usedVerticalSegs.push_back({ drawStartX, vMinY, vMaxY });
 
                 vMinY = min(midY, endY);
@@ -1386,6 +1401,20 @@ void ComputeEdgeRoutes(CFG_GRAPH* graph)
                         if (!collision) break;
                     }
                 }
+
+                // Avoid blocks on second vertical segment (drawEndX, midY→endY)
+                for (size_t bi = 0; bi < graph->Blocks.size(); bi++) {
+                    CFG_BASIC_BLOCK& blk = graph->Blocks[bi];
+                    if (blk.BlockID == edge.SourceBlockID || blk.BlockID == edge.TargetBlockID)
+                        continue;
+                    if (drawEndX >= blk.X - 5 && drawEndX <= blk.X + blk.Width + 5 &&
+                        vMaxY >= blk.Y && vMinY <= blk.Y + blk.Height) {
+                        int leftX = blk.X - 15;
+                        int rightX = blk.X + blk.Width + 15;
+                        drawEndX = (abs(endX - leftX) <= abs(endX - rightX)) ? leftX : rightX;
+                    }
+                }
+
                 usedVerticalSegs.push_back({ drawEndX, vMinY, vMaxY });
             }
 
