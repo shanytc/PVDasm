@@ -131,6 +131,10 @@ typedef struct CFGViewState {
     DWORD_PTR   SelectedBlockID;   // (DWORD_PTR)-1 if none selected
     DWORD_PTR   DraggingBlockID;   // Block being dragged, (DWORD_PTR)-1 if none
 
+    // Overview minimap
+    bool        ShowOverview;        // Display the minimap
+    bool        IsDraggingOverview;  // Dragging on overview to pan
+
 } CFG_VIEW_STATE;
 
 // ================================================================
@@ -147,6 +151,10 @@ typedef struct CFGViewState {
 #define CFG_MIN_ZOOM            0.25
 #define CFG_MAX_ZOOM            4.0
 #define CFG_ZOOM_FACTOR         1.15
+
+#define CFG_OVERVIEW_WIDTH      200
+#define CFG_OVERVIEW_HEIGHT     160
+#define CFG_OVERVIEW_MARGIN     10
 
 // ================================================================
 // ====================  FUNCTION PROTOTYPES  =====================
@@ -180,6 +188,11 @@ DWORD_PTR HitTestInstruction(CFG_BASIC_BLOCK* block, POINT graphPt);
 void InitCFGViewState(CFG_VIEW_STATE* state);
 void CenterGraphInView(HWND hWnd, CFG_GRAPH* graph, CFG_VIEW_STATE* state);
 void ZoomAtPoint(CFG_VIEW_STATE* viewState, POINT screenPt, double zoomFactor);
+
+// Overview minimap
+void RenderOverview(HDC hDC, HWND hWnd, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState, RECT* clientRect);
+BOOL HitTestOverview(POINT screenPt, RECT* clientRect);
+void PanFromOverviewClick(CFG_VIEW_STATE* viewState, CFG_GRAPH* graph, POINT screenPt, RECT* clientRect);
 
 // Dialog
 BOOL CALLBACK CFGViewerDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam);

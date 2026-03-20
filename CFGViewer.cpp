@@ -58,6 +58,7 @@ static HPEN     g_EdgePens[5] = {};       // Width-2 pens: uncond, true, false, 
 static HPEN     g_ArrowPens[5] = {};      // Width-1 pens for arrowhead outlines
 static HBRUSH   g_ArrowBrushes[5] = {};   // Solid brushes for arrowhead fill
 static COLORREF g_EdgeColors[5] = {};     // Color values for text labels
+static bool     g_OverviewEnabled = TRUE; // Overview minimap enabled by default
 
 // ================================================================
 // ====================  HELPER FUNCTIONS  ========================
@@ -921,6 +922,8 @@ void InitCFGViewState(CFG_VIEW_STATE* state)
     state->DragBlockStartY = 0;
     state->SelectedBlockID = (DWORD_PTR)-1;
     state->DraggingBlockID = (DWORD_PTR)-1;
+    state->ShowOverview = g_OverviewEnabled;
+    state->IsDraggingOverview = false;
 }
 
 void CenterGraphInView(HWND hWnd, CFG_GRAPH* graph, CFG_VIEW_STATE* state)
@@ -2191,6 +2194,10 @@ void RenderCFG(HWND hWnd, HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
     SetTextColor(hdcMem, g_DarkMode ? RGB(180, 180, 180) : RGB(80, 80, 80));
     TextOut(hdcMem, 10, clientRect.bottom - 20, zoomText, lstrlen(zoomText));
 
+    // Draw overview minimap
+    if (viewState->ShowOverview)
+        RenderOverview(hdcMem, hWnd, graph, viewState, &clientRect);
+
     // Blit to screen
     BitBlt(hDC, 0, 0, clientRect.right, clientRect.bottom, hdcMem, 0, 0, SRCCOPY);
 
@@ -2198,6 +2205,178 @@ void RenderCFG(HWND hWnd, HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
     SelectObject(hdcMem, hbmOld);
     DeleteObject(hbmMem);
     DeleteDC(hdcMem);
+}
+
+// ================================================================
+// ====================  OVERVIEW MINIMAP  ========================
+// ================================================================
+
+// Computes the overview panel rectangle and graph-to-overview transform
+static void GetOverviewRect(RECT* clientRect, RECT* outPanel, double* outScale, double* outOffX, double* outOffY,
+                            int graphW, int graphH)
+{
+    outPanel->right  = clientRect->right - CFG_OVERVIEW_MARGIN;
+    outPanel->bottom = clientRect->bottom - CFG_OVERVIEW_MARGIN;
+    outPanel->left   = outPanel->right - CFG_OVERVIEW_WIDTH;
+    outPanel->top    = outPanel->bottom - CFG_OVERVIEW_HEIGHT;
+
+    // Available drawing area inside panel (with 10px inner padding)
+    int innerW = CFG_OVERVIEW_WIDTH - 20;
+    int innerH = CFG_OVERVIEW_HEIGHT - 20;
+
+    if (graphW <= 0 || graphH <= 0) {
+        *outScale = 1.0;
+        *outOffX = outPanel->left + 10;
+        *outOffY = outPanel->top + 10;
+        return;
+    }
+
+    double scaleX = (double)innerW / graphW;
+    double scaleY = (double)innerH / graphH;
+    *outScale = (scaleX < scaleY) ? scaleX : scaleY;
+
+    // Center the graph within the overview panel
+    double scaledW = graphW * (*outScale);
+    double scaledH = graphH * (*outScale);
+    *outOffX = outPanel->left + 10 + (innerW - scaledW) / 2.0;
+    *outOffY = outPanel->top + 10 + (innerH - scaledH) / 2.0;
+}
+
+void RenderOverview(HDC hDC, HWND hWnd, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState, RECT* clientRect)
+{
+    if (!graph || graph->Blocks.empty()) return;
+
+    RECT panel;
+    double scale, offX, offY;
+    GetOverviewRect(clientRect, &panel, &scale, &offX, &offY, graph->GraphWidth, graph->GraphHeight);
+
+    // Fill background
+    COLORREF bgCol = g_DarkMode ? RGB(30, 30, 30) : RGB(240, 240, 240);
+    HBRUSH hBg = CreateSolidBrush(bgCol);
+    FillRect(hDC, &panel, hBg);
+    DeleteObject(hBg);
+
+    // Draw 1px border
+    COLORREF borderCol = g_DarkMode ? RGB(80, 80, 80) : RGB(160, 160, 160);
+    HPEN hBorderPen = CreatePen(PS_SOLID, 1, borderCol);
+    HPEN hOldPen = (HPEN)SelectObject(hDC, hBorderPen);
+    HBRUSH hNullBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
+    HBRUSH hOldBrush = (HBRUSH)SelectObject(hDC, hNullBrush);
+    Rectangle(hDC, panel.left, panel.top, panel.right, panel.bottom);
+
+    // Draw edges as simple 1px lines
+    for (size_t i = 0; i < graph->Edges.size(); i++) {
+        CFG_EDGE& edge = graph->Edges[i];
+        if (!graph->BlockIDToIndex.count(edge.SourceBlockID) || !graph->BlockIDToIndex.count(edge.TargetBlockID))
+            continue;
+
+        CFG_BASIC_BLOCK& src = graph->Blocks[graph->BlockIDToIndex[edge.SourceBlockID]];
+        CFG_BASIC_BLOCK& dst = graph->Blocks[graph->BlockIDToIndex[edge.TargetBlockID]];
+
+        int sx = (int)(offX + (src.X + src.Width / 2) * scale);
+        int sy = (int)(offY + (src.Y + src.Height / 2) * scale);
+        int dx = (int)(offX + (dst.X + dst.Width / 2) * scale);
+        int dy = (int)(offY + (dst.Y + dst.Height / 2) * scale);
+
+        // Determine edge color
+        int penIdx = 0;
+        if (edge.IsBackEdge)           penIdx = 3;
+        else if (edge.Type == EDGE_CONDITIONAL_TRUE)  penIdx = 1;
+        else if (edge.Type == EDGE_CONDITIONAL_FALSE) penIdx = 2;
+        else if (edge.Type == EDGE_CALL)              penIdx = 4;
+
+        HPEN hEdgePen = CreatePen(PS_SOLID, 1, g_EdgeColors[penIdx]);
+        SelectObject(hDC, hEdgePen);
+        MoveToEx(hDC, sx, sy, NULL);
+        LineTo(hDC, dx, dy);
+        SelectObject(hDC, hBorderPen);
+        DeleteObject(hEdgePen);
+    }
+
+    // Draw blocks as small rectangles
+    for (size_t i = 0; i < graph->Blocks.size(); i++) {
+        CFG_BASIC_BLOCK& blk = graph->Blocks[i];
+        int bx = (int)(offX + blk.X * scale);
+        int by = (int)(offY + blk.Y * scale);
+        int bw = (int)(blk.Width * scale);
+        int bh = (int)(blk.Height * scale);
+        if (bw < 2) bw = 2;
+        if (bh < 2) bh = 2;
+
+        HBRUSH hBlkBrush = CreateSolidBrush(blk.CachedBgColor);
+        RECT blkRect = { bx, by, bx + bw, by + bh };
+        FillRect(hDC, &blkRect, hBlkBrush);
+        DeleteObject(hBlkBrush);
+
+        // 1px border around block
+        COLORREF blkBorderCol = g_DarkMode ? RGB(120, 120, 120) : RGB(80, 80, 80);
+        HPEN hBlkPen = CreatePen(PS_SOLID, 1, blkBorderCol);
+        SelectObject(hDC, hBlkPen);
+        SelectObject(hDC, hNullBrush);
+        Rectangle(hDC, bx, by, bx + bw, by + bh);
+        SelectObject(hDC, hBorderPen);
+        DeleteObject(hBlkPen);
+    }
+
+    // Draw viewport rectangle
+    // Compute visible area in graph coords
+    double visL = -viewState->PanOffsetX / viewState->ZoomLevel;
+    double visT = -viewState->PanOffsetY / viewState->ZoomLevel;
+    double visR = visL + clientRect->right / viewState->ZoomLevel;
+    double visB = visT + clientRect->bottom / viewState->ZoomLevel;
+
+    // Map to overview coords
+    int vpL = (int)(offX + visL * scale);
+    int vpT = (int)(offY + visT * scale);
+    int vpR = (int)(offX + visR * scale);
+    int vpB = (int)(offY + visB * scale);
+
+    // Clamp to panel bounds
+    if (vpL < panel.left) vpL = panel.left;
+    if (vpT < panel.top) vpT = panel.top;
+    if (vpR > panel.right) vpR = panel.right;
+    if (vpB > panel.bottom) vpB = panel.bottom;
+
+    // Draw with bright 2px pen
+    HPEN hVpPen = CreatePen(PS_SOLID, 2, RGB(255, 200, 50));
+    SelectObject(hDC, hVpPen);
+    SelectObject(hDC, hNullBrush);
+    Rectangle(hDC, vpL, vpT, vpR, vpB);
+
+    // Cleanup
+    SelectObject(hDC, hOldPen);
+    SelectObject(hDC, hOldBrush);
+    DeleteObject(hBorderPen);
+    DeleteObject(hVpPen);
+}
+
+BOOL HitTestOverview(POINT screenPt, RECT* clientRect)
+{
+    RECT panel;
+    double scale, offX, offY;
+    GetOverviewRect(clientRect, &panel, &scale, &offX, &offY, 1, 1); // graph dims don't matter for panel rect
+
+    return (screenPt.x >= panel.left && screenPt.x <= panel.right &&
+            screenPt.y >= panel.top  && screenPt.y <= panel.bottom);
+}
+
+void PanFromOverviewClick(CFG_VIEW_STATE* viewState, CFG_GRAPH* graph, POINT screenPt, RECT* clientRect)
+{
+    if (!graph || graph->Blocks.empty()) return;
+
+    RECT panel;
+    double scale, offX, offY;
+    GetOverviewRect(clientRect, &panel, &scale, &offX, &offY, graph->GraphWidth, graph->GraphHeight);
+
+    if (scale <= 0) return;
+
+    // Convert screen point within overview to graph coordinates
+    double graphX = (screenPt.x - offX) / scale;
+    double graphY = (screenPt.y - offY) / scale;
+
+    // Center the main viewport on that graph point
+    viewState->PanOffsetX = clientRect->right / 2.0 - graphX * viewState->ZoomLevel;
+    viewState->PanOffsetY = clientRect->bottom / 2.0 - graphY * viewState->ZoomLevel;
 }
 
 // ================================================================
@@ -2307,6 +2486,19 @@ BOOL CALLBACK CFGViewerDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lP
             pt.x = GET_X_LPARAM(lParam);
             pt.y = GET_Y_LPARAM(lParam);
 
+            // Check if clicked on overview minimap
+            if (g_ViewState.ShowOverview) {
+                RECT cr;
+                GetClientRect(hWnd, &cr);
+                if (HitTestOverview(pt, &cr)) {
+                    g_ViewState.IsDraggingOverview = TRUE;
+                    SetCapture(hWnd);
+                    PanFromOverviewClick(&g_ViewState, &g_CurrentGraph, pt, &cr);
+                    InvalidateRect(hWnd, NULL, FALSE);
+                    return 0;
+                }
+            }
+
             // Check if clicked on a block
             POINT graphPt = ScreenToGraph(&g_ViewState, pt);
             DWORD_PTR clickedBlock = HitTestBlocks(&g_CurrentGraph, graphPt);
@@ -2342,6 +2534,14 @@ BOOL CALLBACK CFGViewerDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lP
             POINT pt;
             pt.x = GET_X_LPARAM(lParam);
             pt.y = GET_Y_LPARAM(lParam);
+
+            if (g_ViewState.IsDraggingOverview) {
+                RECT cr;
+                GetClientRect(hWnd, &cr);
+                PanFromOverviewClick(&g_ViewState, &g_CurrentGraph, pt, &cr);
+                InvalidateRect(hWnd, NULL, FALSE);
+                return 0;
+            }
 
             if (g_ViewState.IsDraggingBlock) {
                 // Move the block
@@ -2403,6 +2603,12 @@ BOOL CALLBACK CFGViewerDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lP
         }
 
         case WM_LBUTTONUP: {
+            if (g_ViewState.IsDraggingOverview) {
+                g_ViewState.IsDraggingOverview = FALSE;
+                ReleaseCapture();
+                return 0;
+            }
+
             if (g_ViewState.IsDraggingBlock) {
                 g_ViewState.IsDraggingBlock = FALSE;
                 g_ViewState.DraggingBlockID = (DWORD_PTR)-1;
@@ -2520,6 +2726,9 @@ BOOL CALLBACK CFGViewerDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lP
             AppendMenu(hMenu, MF_STRING, IDM_CFG_FIT_GRAPH, "Fit Graph to Screen");
             AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
             AppendMenu(hMenu, MF_STRING, IDM_CFG_SAVE_IMAGE, "Save as Image...");
+            AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
+            AppendMenu(hMenu, g_OverviewEnabled ? MF_STRING | MF_CHECKED : MF_STRING,
+                       IDM_CFG_TOGGLE_OVERVIEW, "Show Overview");
 
             TrackPopupMenu(hMenu, TPM_RIGHTBUTTON, pt.x, pt.y, 0, hWnd, NULL);
             DestroyMenu(hMenu);
@@ -2562,6 +2771,12 @@ BOOL CALLBACK CFGViewerDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lP
                     }
                     break;
                 }
+
+                case IDM_CFG_TOGGLE_OVERVIEW:
+                    g_OverviewEnabled = !g_OverviewEnabled;
+                    g_ViewState.ShowOverview = g_OverviewEnabled;
+                    InvalidateRect(hWnd, NULL, FALSE);
+                    break;
             }
             return 0;
         }
@@ -2609,6 +2824,13 @@ BOOL CALLBACK CFGViewerDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lP
                     InvalidateRect(hWnd, NULL, FALSE);
                     break;
                 }
+
+                case 'M':
+                    // Toggle overview minimap
+                    g_OverviewEnabled = !g_OverviewEnabled;
+                    g_ViewState.ShowOverview = g_OverviewEnabled;
+                    InvalidateRect(hWnd, NULL, FALSE);
+                    break;
             }
             return 0;
         }
