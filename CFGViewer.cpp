@@ -472,126 +472,352 @@ void LayoutCFG(CFG_GRAPH* graph)
 {
     if (!graph || graph->Blocks.empty()) return;
 
-    // Step 1: Assign layers using BFS from entry block
-    std::map<DWORD_PTR, int> blockLayer;
-    std::queue<DWORD_PTR> bfsQueue;
+    size_t N = graph->Blocks.size();
 
-    // Find entry block
-    DWORD_PTR entryBlockID = 0;
-    for (size_t i = 0; i < graph->Blocks.size(); i++) {
-        if (graph->Blocks[i].IsEntryBlock) {
-            entryBlockID = graph->Blocks[i].BlockID;
-            break;
+    // ================================================================
+    // Phase 0: Calculate block dimensions
+    // ================================================================
+    HDC hDC = GetDC(NULL);
+    CalculateBlockDimensions(hDC, graph);
+    ReleaseDC(NULL, hDC);
+
+    // ================================================================
+    // Phase 1: Layer Assignment (BFS + push-down)
+    // ================================================================
+
+    // Build adjacency lists (by block index)
+    std::map<DWORD_PTR, size_t> idToIdx;
+    for (size_t i = 0; i < N; i++)
+        idToIdx[graph->Blocks[i].BlockID] = i;
+
+    std::vector<std::vector<size_t>> successors(N);
+    std::vector<std::vector<size_t>> predecessors(N);
+    for (size_t e = 0; e < graph->Edges.size(); e++) {
+        auto itS = idToIdx.find(graph->Edges[e].SourceBlockID);
+        auto itT = idToIdx.find(graph->Edges[e].TargetBlockID);
+        if (itS != idToIdx.end() && itT != idToIdx.end()) {
+            successors[itS->second].push_back(itT->second);
+            predecessors[itT->second].push_back(itS->second);
         }
     }
 
-    blockLayer[entryBlockID] = 0;
-    bfsQueue.push(entryBlockID);
+    // BFS from entry block to get initial layer assignment
+    std::vector<int> layer(N, -1);
+    size_t entryIdx = 0;
+    for (size_t i = 0; i < N; i++) {
+        if (graph->Blocks[i].IsEntryBlock) { entryIdx = i; break; }
+    }
 
-    while (!bfsQueue.empty()) {
-        DWORD_PTR current = bfsQueue.front();
-        bfsQueue.pop();
-        int currentLayer = blockLayer[current];
+    std::queue<size_t> bfsQ;
+    layer[entryIdx] = 0;
+    bfsQ.push(entryIdx);
+    while (!bfsQ.empty()) {
+        size_t cur = bfsQ.front(); bfsQ.pop();
+        for (size_t succ : successors[cur]) {
+            if (layer[succ] == -1) {
+                layer[succ] = layer[cur] + 1;
+                bfsQ.push(succ);
+            }
+        }
+    }
 
-        // Find all successor blocks
-        for (size_t i = 0; i < graph->Edges.size(); i++) {
-            if (graph->Edges[i].SourceBlockID == current) {
-                DWORD_PTR target = graph->Edges[i].TargetBlockID;
+    // Assign disconnected blocks
+    int maxLayer = 0;
+    for (size_t i = 0; i < N; i++)
+        if (layer[i] > maxLayer) maxLayer = layer[i];
+    for (size_t i = 0; i < N; i++)
+        if (layer[i] == -1) layer[i] = maxLayer + 1;
 
-                if (blockLayer.find(target) == blockLayer.end()) {
-                    blockLayer[target] = currentLayer + 1;
-                    bfsQueue.push(target);
-                } else if (blockLayer[target] <= currentLayer) {
-                    // This is a back edge (loop)
-                    graph->Edges[i].IsBackEdge = true;
+    // Mark back edges (target layer <= source layer)
+    std::vector<bool> isBackEdge(graph->Edges.size(), false);
+    for (size_t e = 0; e < graph->Edges.size(); e++) {
+        auto itS = idToIdx.find(graph->Edges[e].SourceBlockID);
+        auto itT = idToIdx.find(graph->Edges[e].TargetBlockID);
+        if (itS != idToIdx.end() && itT != idToIdx.end()) {
+            if (layer[itT->second] <= layer[itS->second]) {
+                isBackEdge[e] = true;
+                graph->Edges[e].IsBackEdge = true;
+            }
+        }
+    }
+
+    // Push-down: move each non-entry block to max(predecessor layers) + 1
+    // Process in topological order (by ascending layer, then original order)
+    std::vector<size_t> topoOrder(N);
+    for (size_t i = 0; i < N; i++) topoOrder[i] = i;
+    std::stable_sort(topoOrder.begin(), topoOrder.end(),
+        [&](size_t a, size_t b) { return layer[a] < layer[b]; });
+
+    for (size_t idx : topoOrder) {
+        if (idx == entryIdx) continue;
+        int deepest = -1;
+        for (size_t pred : predecessors[idx]) {
+            // Only consider forward edges (pred is in a higher/earlier layer)
+            if (layer[pred] < layer[idx] || (layer[pred] == layer[idx] - 1)) {
+                if (layer[pred] > deepest) deepest = layer[pred];
+            }
+        }
+        if (deepest >= 0) {
+            layer[idx] = deepest + 1;
+        }
+    }
+
+    // Recalculate max layer and assign to blocks
+    maxLayer = 0;
+    for (size_t i = 0; i < N; i++) {
+        if (layer[i] > maxLayer) maxLayer = layer[i];
+        graph->Blocks[i].Layer = layer[i];
+    }
+
+    // Re-mark back edges after push-down (layers may have changed)
+    for (size_t e = 0; e < graph->Edges.size(); e++) {
+        auto itS = idToIdx.find(graph->Edges[e].SourceBlockID);
+        auto itT = idToIdx.find(graph->Edges[e].TargetBlockID);
+        if (itS != idToIdx.end() && itT != idToIdx.end()) {
+            bool back = (layer[itT->second] <= layer[itS->second]);
+            isBackEdge[e] = back;
+            graph->Edges[e].IsBackEdge = back;
+        }
+    }
+
+    // ================================================================
+    // Phase 2: Crossing Minimization (Barycenter heuristic)
+    // ================================================================
+
+    // Group block indices by layer
+    std::vector<std::vector<size_t>> layerBlocks(maxLayer + 1);
+    for (size_t i = 0; i < N; i++)
+        layerBlocks[layer[i]].push_back(i);
+
+    // Build forward-edge adjacency (excluding back edges)
+    std::vector<std::vector<size_t>> fwdSuccessors(N);
+    std::vector<std::vector<size_t>> fwdPredecessors(N);
+    for (size_t e = 0; e < graph->Edges.size(); e++) {
+        if (isBackEdge[e]) continue;
+        auto itS = idToIdx.find(graph->Edges[e].SourceBlockID);
+        auto itT = idToIdx.find(graph->Edges[e].TargetBlockID);
+        if (itS != idToIdx.end() && itT != idToIdx.end()) {
+            fwdSuccessors[itS->second].push_back(itT->second);
+            fwdPredecessors[itT->second].push_back(itS->second);
+        }
+    }
+
+    // Initialize PositionInLayer
+    std::vector<int> posInLayer(N, 0);
+    for (int L = 0; L <= maxLayer; L++) {
+        for (int p = 0; p < (int)layerBlocks[L].size(); p++) {
+            posInLayer[layerBlocks[L][p]] = p;
+        }
+    }
+
+    // Barycenter sweeps (4 passes: down, up, down, up)
+    for (int pass = 0; pass < 4; pass++) {
+        if (pass % 2 == 0) {
+            // Down sweep: layers 1 -> maxLayer
+            for (int L = 1; L <= maxLayer; L++) {
+                std::vector<std::pair<double, size_t>> baryOrder;
+                for (size_t idx : layerBlocks[L]) {
+                    double bary = -1.0;
+                    if (!fwdPredecessors[idx].empty()) {
+                        double sum = 0.0;
+                        int count = 0;
+                        for (size_t pred : fwdPredecessors[idx]) {
+                            if (layer[pred] == L - 1) {
+                                sum += posInLayer[pred];
+                                count++;
+                            }
+                        }
+                        if (count > 0) bary = sum / count;
+                    }
+                    baryOrder.push_back({ bary, idx });
+                }
+                // Stable sort: blocks with no predecessors in layer above keep position
+                std::stable_sort(baryOrder.begin(), baryOrder.end(),
+                    [](const std::pair<double, size_t>& a, const std::pair<double, size_t>& b) {
+                        if (a.first < 0) return false; // no-bary goes last
+                        if (b.first < 0) return true;
+                        return a.first < b.first;
+                    });
+                layerBlocks[L].clear();
+                for (int p = 0; p < (int)baryOrder.size(); p++) {
+                    layerBlocks[L].push_back(baryOrder[p].second);
+                    posInLayer[baryOrder[p].second] = p;
+                }
+            }
+        } else {
+            // Up sweep: layers maxLayer-1 -> 0
+            for (int L = maxLayer - 1; L >= 0; L--) {
+                std::vector<std::pair<double, size_t>> baryOrder;
+                for (size_t idx : layerBlocks[L]) {
+                    double bary = -1.0;
+                    if (!fwdSuccessors[idx].empty()) {
+                        double sum = 0.0;
+                        int count = 0;
+                        for (size_t succ : fwdSuccessors[idx]) {
+                            if (layer[succ] == L + 1) {
+                                sum += posInLayer[succ];
+                                count++;
+                            }
+                        }
+                        if (count > 0) bary = sum / count;
+                    }
+                    baryOrder.push_back({ bary, idx });
+                }
+                std::stable_sort(baryOrder.begin(), baryOrder.end(),
+                    [](const std::pair<double, size_t>& a, const std::pair<double, size_t>& b) {
+                        if (a.first < 0) return false;
+                        if (b.first < 0) return true;
+                        return a.first < b.first;
+                    });
+                layerBlocks[L].clear();
+                for (int p = 0; p < (int)baryOrder.size(); p++) {
+                    layerBlocks[L].push_back(baryOrder[p].second);
+                    posInLayer[baryOrder[p].second] = p;
                 }
             }
         }
     }
 
-    // Assign layer to any blocks not reached (disconnected)
-    int maxLayer = 0;
-    for (auto& pair : blockLayer) {
-        if (pair.second > maxLayer) maxLayer = pair.second;
-    }
-    for (size_t i = 0; i < graph->Blocks.size(); i++) {
-        if (blockLayer.find(graph->Blocks[i].BlockID) == blockLayer.end()) {
-            blockLayer[graph->Blocks[i].BlockID] = maxLayer + 1;
-        }
-        graph->Blocks[i].Layer = blockLayer[graph->Blocks[i].BlockID];
-    }
-
-    // Recalculate max layer
-    maxLayer = 0;
-    for (size_t i = 0; i < graph->Blocks.size(); i++) {
-        if (graph->Blocks[i].Layer > maxLayer) {
-            maxLayer = graph->Blocks[i].Layer;
+    // Write PositionInLayer back to blocks
+    for (int L = 0; L <= maxLayer; L++) {
+        for (int p = 0; p < (int)layerBlocks[L].size(); p++) {
+            graph->Blocks[layerBlocks[L][p]].PositionInLayer = p;
         }
     }
 
-    // Step 2: Group blocks by layer
-    std::map<int, std::vector<size_t>> layerBlocks;
-    for (size_t i = 0; i < graph->Blocks.size(); i++) {
-        layerBlocks[graph->Blocks[i].Layer].push_back(i);
-    }
+    // ================================================================
+    // Phase 3: Coordinate Assignment (parent-child alignment)
+    // ================================================================
 
-    // Step 3: Calculate block dimensions
-    HDC hDC = GetDC(NULL);
-    CalculateBlockDimensions(hDC, graph);
-    ReleaseDC(NULL, hDC);
-
-    // Step 4: Assign coordinates
+    // Y coordinates: per-layer, spaced by CFG_BLOCK_V_SPACING
+    std::vector<int> layerY(maxLayer + 1, 0);
     int currentY = CFG_BLOCK_V_SPACING;
-    int maxLayerWidth = 0;
-    std::map<int, int> layerWidths;
-
-    for (int layer = 0; layer <= maxLayer; layer++) {
-        if (layerBlocks.find(layer) == layerBlocks.end()) continue;
-
-        std::vector<size_t>& blocksInLayer = layerBlocks[layer];
-
-        // Calculate total width and max height of this layer
-        int layerWidth = 0;
+    for (int L = 0; L <= maxLayer; L++) {
+        layerY[L] = currentY;
         int maxHeight = 0;
-
-        for (size_t idx : blocksInLayer) {
-            CFG_BASIC_BLOCK& block = graph->Blocks[idx];
-            layerWidth += block.Width + CFG_BLOCK_H_SPACING;
-            if (block.Height > maxHeight) maxHeight = block.Height;
+        for (size_t idx : layerBlocks[L]) {
+            if (graph->Blocks[idx].Height > maxHeight)
+                maxHeight = graph->Blocks[idx].Height;
         }
-        layerWidth -= CFG_BLOCK_H_SPACING;  // Remove trailing spacing
-        layerWidths[layer] = layerWidth;
-
-        if (layerWidth > maxLayerWidth) maxLayerWidth = layerWidth;
-
-        // Assign X coordinates (left-aligned initially, will center later)
-        int currentX = CFG_BLOCK_H_SPACING;
-        int posInLayer = 0;
-
-        for (size_t idx : blocksInLayer) {
-            CFG_BASIC_BLOCK& block = graph->Blocks[idx];
-            block.X = currentX;
-            block.Y = currentY;
-            block.PositionInLayer = posInLayer++;
-            currentX += block.Width + CFG_BLOCK_H_SPACING;
-        }
-
         currentY += maxHeight + CFG_BLOCK_V_SPACING;
     }
 
-    // Step 5: Center each layer horizontally (diamond/tree shape)
-    for (int layer = 0; layer <= maxLayer; layer++) {
-        if (layerBlocks.find(layer) == layerBlocks.end()) continue;
+    // X coordinates - Step 1: initial left-to-right packing
+    std::vector<int> blockX(N, 0);
+    for (int L = 0; L <= maxLayer; L++) {
+        int x = CFG_BLOCK_H_SPACING;
+        for (size_t idx : layerBlocks[L]) {
+            blockX[idx] = x;
+            x += graph->Blocks[idx].Width + CFG_BLOCK_H_SPACING;
+        }
+    }
 
-        int offset = (maxLayerWidth - layerWidths[layer]) / 2;
-        if (offset > 0) {
-            for (size_t idx : layerBlocks[layer]) {
-                graph->Blocks[idx].X += offset;
+    // Helper: center X of a block
+    auto centerX = [&](size_t idx, const std::vector<int>& xArr) -> int {
+        return xArr[idx] + graph->Blocks[idx].Width / 2;
+    };
+
+    // X coordinates - Step 2: Top-down alignment (shift toward median predecessor)
+    std::vector<int> downX = blockX;
+    for (int L = 1; L <= maxLayer; L++) {
+        for (size_t idx : layerBlocks[L]) {
+            // Collect center-X of predecessors in forward edges
+            std::vector<int> predCenters;
+            for (size_t pred : fwdPredecessors[idx]) {
+                if (layer[pred] < L)
+                    predCenters.push_back(centerX(pred, downX));
+            }
+            if (predCenters.empty()) continue;
+
+            std::sort(predCenters.begin(), predCenters.end());
+            int medianCenter = predCenters[predCenters.size() / 2];
+            int targetX = medianCenter - graph->Blocks[idx].Width / 2;
+
+            // Clamp so we don't overlap the previous block in this layer
+            int p = posInLayer[idx];
+            if (p > 0) {
+                size_t prevIdx = layerBlocks[L][p - 1];
+                int minX = downX[prevIdx] + graph->Blocks[prevIdx].Width + CFG_BLOCK_H_SPACING;
+                if (targetX < minX) targetX = minX;
+            }
+            if (targetX < CFG_BLOCK_H_SPACING) targetX = CFG_BLOCK_H_SPACING;
+            downX[idx] = targetX;
+        }
+    }
+
+    // X coordinates - Step 3: Bottom-up alignment (shift toward median successor)
+    std::vector<int> upX = blockX;
+    for (int L = maxLayer - 1; L >= 0; L--) {
+        for (int p = (int)layerBlocks[L].size() - 1; p >= 0; p--) {
+            size_t idx = layerBlocks[L][p];
+            std::vector<int> succCenters;
+            for (size_t succ : fwdSuccessors[idx]) {
+                if (layer[succ] > L)
+                    succCenters.push_back(centerX(succ, upX));
+            }
+            if (succCenters.empty()) continue;
+
+            std::sort(succCenters.begin(), succCenters.end());
+            int medianCenter = succCenters[succCenters.size() / 2];
+            int targetX = medianCenter - graph->Blocks[idx].Width / 2;
+
+            if (p > 0) {
+                size_t prevIdx = layerBlocks[L][p - 1];
+                int minX = upX[prevIdx] + graph->Blocks[prevIdx].Width + CFG_BLOCK_H_SPACING;
+                if (targetX < minX) targetX = minX;
+            }
+            if (targetX < CFG_BLOCK_H_SPACING) targetX = CFG_BLOCK_H_SPACING;
+            upX[idx] = targetX;
+        }
+    }
+
+    // X coordinates - Step 4: Average down and up passes
+    std::vector<int> finalX(N);
+    for (size_t i = 0; i < N; i++) {
+        finalX[i] = (downX[i] + upX[i]) / 2;
+    }
+
+    // X coordinates - Step 5: Resolve overlaps (left-to-right sweep per layer)
+    for (int L = 0; L <= maxLayer; L++) {
+        for (int p = 0; p < (int)layerBlocks[L].size(); p++) {
+            size_t idx = layerBlocks[L][p];
+            if (finalX[idx] < CFG_BLOCK_H_SPACING)
+                finalX[idx] = CFG_BLOCK_H_SPACING;
+            if (p > 0) {
+                size_t prevIdx = layerBlocks[L][p - 1];
+                int minX = finalX[prevIdx] + graph->Blocks[prevIdx].Width + CFG_BLOCK_H_SPACING;
+                if (finalX[idx] < minX)
+                    finalX[idx] = minX;
             }
         }
     }
 
-    graph->GraphWidth = maxLayerWidth + 2 * CFG_BLOCK_H_SPACING;
+    // X coordinates - Step 6: Center the graph (find min X, shift so it starts at margin)
+    int globalMinX = INT_MAX;
+    int globalMaxRight = 0;
+    for (size_t i = 0; i < N; i++) {
+        if (finalX[i] < globalMinX) globalMinX = finalX[i];
+        int right = finalX[i] + graph->Blocks[i].Width;
+        if (right > globalMaxRight) globalMaxRight = right;
+    }
+    int shiftX = CFG_BLOCK_H_SPACING - globalMinX;
+    for (size_t i = 0; i < N; i++) {
+        finalX[i] += shiftX;
+    }
+
+    // Write final coordinates to blocks
+    for (size_t i = 0; i < N; i++) {
+        graph->Blocks[i].X = finalX[i];
+        graph->Blocks[i].Y = layerY[layer[i]];
+    }
+
+    // Calculate graph bounds
+    int graphRight = 0;
+    for (size_t i = 0; i < N; i++) {
+        int right = graph->Blocks[i].X + graph->Blocks[i].Width;
+        if (right > graphRight) graphRight = right;
+    }
+    graph->GraphWidth = graphRight + CFG_BLOCK_H_SPACING;
     graph->GraphHeight = currentY;
 }
 
@@ -904,7 +1130,7 @@ void ComputeEdgeRoutes(CFG_GRAPH* graph)
 
         if (edge.IsBackEdge) {
             startX = srcBlock.X;
-            startY = srcBlock.Y + srcBlock.Height / 2;
+            startY = srcBlock.Y + srcBlock.Height - CFG_BLOCK_PADDING - CFG_LINE_HEIGHT / 2;
             endX = ComputePortX(dstBlock, inPortIndex[i], inPortTotal[i]);
             endY = dstBlock.Y;
         } else {
