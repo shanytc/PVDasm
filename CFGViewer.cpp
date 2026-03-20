@@ -2048,9 +2048,14 @@ BOOL BuildCFGByTracing(DWORD_PTR startIndex, CFG_GRAPH* outGraph)
         while (idx < DisasmDataLines.size()) {
             if (visitedIndices.count(idx)) break;
 
-            // Skip proc marker lines (empty address = comment/separator, not real instruction)
+            // Check for proc marker lines (empty address = comment/separator)
             const char* addrStr = DisasmDataLines[idx].GetAddress();
             if (!addrStr || addrStr[0] == '\0') {
+                // If this is a function banner, stop — we've crossed into another function
+                const char* markerText = DisasmDataLines[idx].GetMnemonic();
+                if (markerText && strncmp(markerText, "; ======", 8) == 0) {
+                    break;  // Hit a function boundary, stop tracing
+                }
                 idx++;
                 continue;
             }
@@ -2069,69 +2074,16 @@ BOOL BuildCFGByTracing(DWORD_PTR startIndex, CFG_GRAPH* outGraph)
             }
 
             if (isCall) {
-                // Try to find call destination
-                DWORD_PTR destAddr = 0;
-                bool foundInCodeFlow = false;
-
-                for (size_t j = 0; j < DisasmCodeFlow.size(); j++) {
-                    if (DisasmCodeFlow[j].Current_Index == idx) {
-                        destAddr = DisasmCodeFlow[j].Branch_Destination;
-                        foundInCodeFlow = true;
-                        break;
-                    }
+                // CALL does NOT split blocks — the called function returns
+                // and execution continues at the next instruction.
+                // Only noreturn functions end the block.
+                if (strstr(mnemonic, "ExitProcess") || strstr(mnemonic, "ExitThread") ||
+                    strstr(mnemonic, "TerminateProcess") || strstr(mnemonic, "TerminateThread") ||
+                    strstr(mnemonic, "FatalExit") || strstr(mnemonic, "abort")) {
+                    break;  // Noreturn — stop tracing this path
                 }
 
-                if (!foundInCodeFlow || destAddr == 0) {
-                    destAddr = ExtractAddressFromMnemonic(mnemonic);
-                }
-
-                // Check if target is a numeric local address (not an API call like KERNEL32!ExitProcess)
-                // API calls contain '!' in mnemonic or resolve to address 0
-                bool isLocalCall = (destAddr != 0);
-                if (isLocalCall) {
-                    // Check if mnemonic contains '!' (API call indicator)
-                    const char* p = mnemonic;
-                    while (*p) {
-                        if (*p == '!') { isLocalCall = false; break; }
-                        p++;
-                    }
-                }
-
-                if (isLocalCall) {
-                    DWORD_PTR destIndex = FindIndexByAddress(destAddr);
-
-                    if (destIndex != (DWORD_PTR)-1 && destIndex < DisasmDataLines.size()) {
-                        // Call target starts a new block
-                        blockStartIndices.insert(destIndex);
-                        // Return address (next instruction) starts a new block
-                        if (idx + 1 < DisasmDataLines.size()) {
-                            blockStartIndices.insert(idx + 1);
-                        }
-
-                        // CALL edge to target
-                        successors[idx].push_back(destIndex);
-                        edgeTypes[(idx << 16) | (destIndex & 0xFFFF)] = EDGE_CALL;
-
-                        // Fall-through edge to return address
-                        if (idx + 1 < DisasmDataLines.size()) {
-                            successors[idx].push_back(idx + 1);
-                            edgeTypes[(idx << 16) | ((idx + 1) & 0xFFFF)] = EDGE_UNCONDITIONAL;
-
-                            if (!visitedIndices.count(idx + 1)) {
-                                toVisit.insert(idx + 1);
-                            }
-                        }
-
-                        // Trace the call target
-                        if (!visitedIndices.count(destIndex)) {
-                            toVisit.insert(destIndex);
-                        }
-
-                        break;  // End current block (CALL splits the block)
-                    }
-                }
-
-                // If not a local call, just continue (fall-through)
+                // Regular call (local or API) — just continue
                 idx++;
                 continue;
             }
@@ -2233,10 +2185,6 @@ BOOL BuildCFGByTracing(DWORD_PTR startIndex, CFG_GRAPH* outGraph)
             if (IsConditionalJump(mnemonic) || IsUnconditionalJump(mnemonic) || IsReturnInstruction(mnemonic)) {
                 break;
             }
-            // CALL also ends the block if the next instruction starts a new block
-            if (IsCallInstruction(mnemonic) && blockStartIndices.count(idx + 1)) {
-                break;
-            }
         }
 
         block.EndIndex = endIdx;
@@ -2244,7 +2192,11 @@ BOOL BuildCFGByTracing(DWORD_PTR startIndex, CFG_GRAPH* outGraph)
         block.IsEntryBlock = (blockStartIdx == startIndex);
 
         const char* lastMnemonic = DisasmDataLines[endIdx].GetMnemonic();
-        block.IsExitBlock = IsReturnInstruction(lastMnemonic);
+        block.IsExitBlock = IsReturnInstruction(lastMnemonic) ||
+            (IsCallInstruction(lastMnemonic) && (strstr(lastMnemonic, "ExitProcess") ||
+             strstr(lastMnemonic, "ExitThread") || strstr(lastMnemonic, "TerminateProcess") ||
+             strstr(lastMnemonic, "TerminateThread") || strstr(lastMnemonic, "FatalExit") ||
+             strstr(lastMnemonic, "abort")));
 
         // Check if this block starts a known function (fFunctionInfo or CallTargets)
         block.FunctionLabel[0] = '\0';
@@ -2318,31 +2270,6 @@ BOOL BuildCFGByTracing(DWORD_PTR startIndex, CFG_GRAPH* outGraph)
                 edge.SourceBlockID = block.BlockID;
                 edge.TargetBlockID = outGraph->Blocks[outGraph->AddressToBlockIndex[nextAddr]].BlockID;
                 edge.Type = EDGE_CONDITIONAL_FALSE;  // Fall-through = FALSE (Red)
-                edge.IsBackEdge = false;
-                outGraph->Edges.push_back(edge);
-            }
-        } else if (IsCallInstruction(lastMnemonic)) {
-            // CALL instruction - create edge to call target and fall-through
-            DWORD_PTR destAddr = ExtractAddressFromMnemonic(lastMnemonic);
-            if (destAddr != 0 && outGraph->AddressToBlockIndex.count(destAddr)) {
-                actualJumpTargets.insert(destAddr);
-                CFG_EDGE edge;
-                edge.SourceBlockID = block.BlockID;
-                edge.TargetBlockID = outGraph->Blocks[outGraph->AddressToBlockIndex[destAddr]].BlockID;
-                edge.Type = EDGE_CALL;
-                edge.IsBackEdge = false;
-                outGraph->Edges.push_back(edge);
-            }
-
-            // Fall-through edge (return address)
-            DWORD_PTR nextIdx = lastIdx + 1;
-            DWORD_PTR nextAddr = GetAddressAtIndex(nextIdx);
-            if (outGraph->AddressToBlockIndex.count(nextAddr)) {
-                actualJumpTargets.insert(nextAddr);
-                CFG_EDGE edge;
-                edge.SourceBlockID = block.BlockID;
-                edge.TargetBlockID = outGraph->Blocks[outGraph->AddressToBlockIndex[nextAddr]].BlockID;
-                edge.Type = EDGE_UNCONDITIONAL;
                 edge.IsBackEdge = false;
                 outGraph->Edges.push_back(edge);
             }
@@ -2461,10 +2388,10 @@ BOOL BuildCFGByTracing(DWORD_PTR startIndex, CFG_GRAPH* outGraph)
 
 void ShowCFGViewerForCurrentFunction(HWND hParent)
 {
-    // If window already exists, bring it to front
+    // If window already exists, destroy it so we rebuild for the new function
     if (g_hCFGViewerWnd && IsWindow(g_hCFGViewerWnd)) {
-        SetForegroundWindow(g_hCFGViewerWnd);
-        return;
+        DestroyWindow(g_hCFGViewerWnd);
+        g_hCFGViewerWnd = NULL;
     }
 
     // Get current selection in disassembly
@@ -2479,19 +2406,22 @@ void ShowCFGViewerForCurrentFunction(HWND hParent)
         return;
     }
 
-    // Get entry point address
-    DWORD_PTR entryPointAddr = 0;
-    if (nt_hdr) {
-        entryPointAddr = nt_hdr->OptionalHeader.AddressOfEntryPoint + nt_hdr->OptionalHeader.ImageBase;
+    // Get the currently selected line in the disassembly listview
+    DWORD_PTR selectedItem = SendMessage(hDisasm, LVM_GETNEXTITEM, (WPARAM)-1, LVNI_FOCUSED);
+    if (selectedItem == (DWORD_PTR)-1 || selectedItem >= DisasmDataLines.size()) {
+        selectedItem = 0;
     }
 
-    // Find the entry point in the disassembly
-    DWORD_PTR startIndex = 0;
-    if (entryPointAddr != 0) {
-        startIndex = FindIndexByAddress(entryPointAddr);
-        if (startIndex == (DWORD_PTR)-1) {
-            startIndex = 0;  // Fall back to first instruction
+    // Walk backwards from the selected line to find the function start (banner line)
+    DWORD_PTR startIndex = selectedItem;
+    for (DWORD_PTR i = selectedItem; ; i--) {
+        const char* mnemonic = DisasmDataLines[i].GetMnemonic();
+        if (mnemonic && strncmp(mnemonic, "; ======", 8) == 0) {
+            // Found a function banner — the function starts at the next line
+            startIndex = i + 1;
+            break;
         }
+        if (i == 0) break;  // unsigned — check after processing index 0
     }
 
     // Pass start index to dialog for tracing mode
