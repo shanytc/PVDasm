@@ -340,6 +340,16 @@ static void SetTabVisible(HWND hWnd, int logicalTab, bool visible)
     RebuildTabs(hWnd);
 }
 
+// Ensure the disassembly tab is visible and active (called from CFGViewer).
+void ShowDisassemblyTab()
+{
+    if (!Main_hWnd) return;
+    if (!g_bDisasmTabVisible)
+        SetTabVisible(Main_hWnd, 0, true);
+    if (g_nActiveTab != 0)
+        SwitchTab(Main_hWnd, 0);
+}
+
 // Tab subclass proc: intercept mouse clicks on the close X button.
 static LRESULT CALLBACK TabSubClassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {

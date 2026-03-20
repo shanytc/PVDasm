@@ -42,6 +42,7 @@ extern COLORREF             g_DarkBkColor;
 extern COLORREF             g_DarkTextColor;
 extern IMAGE_NT_HEADERS*    nt_hdr;
 extern bool                 LoadedPe64;
+void ShowDisassemblyTab();  // Defined in FileMap.cpp
 
 // ================================================================
 // ====================  GLOBAL STATE  ============================
@@ -2659,7 +2660,12 @@ static LRESULT HandleCFG_ContextMenu(HWND hWnd, LPARAM lParam)
         hasConditionalCaller = (FindConditionalCaller(&g_CurrentGraph, g_ContextMenuBlockID) != (size_t)-1);
     }
 
+    bool hasBlock = (g_ContextMenuBlockID != (DWORD_PTR)-1);
+
     HMENU hMenu = CreatePopupMenu();
+    AppendMenu(hMenu, hasBlock ? MF_STRING : MF_STRING | MF_GRAYED,
+               IDM_CFG_SHOW_DISASM, "Show Disassembly");
+    AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
     AppendMenu(hMenu, MF_STRING, IDM_CFG_GOTO_START, "Goto Start");
     AppendMenu(hMenu, MF_STRING, IDM_CFG_GOTO_END, "Goto End");
     AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
@@ -2681,6 +2687,17 @@ static LRESULT HandleCFG_ContextMenu(HWND hWnd, LPARAM lParam)
 static LRESULT HandleCFG_Command(HWND hWnd, WPARAM wParam)
 {
     switch (LOWORD(wParam)) {
+        case IDM_CFG_SHOW_DISASM: {
+            if (g_ContextMenuBlockID != (DWORD_PTR)-1 &&
+                g_CurrentGraph.BlockIDToIndex.count(g_ContextMenuBlockID)) {
+                size_t idx = g_CurrentGraph.BlockIDToIndex[g_ContextMenuBlockID];
+                DWORD_PTR startIndex = g_CurrentGraph.Blocks[idx].StartIndex;
+                NavigateMainDisasmTo(startIndex);
+                ShowDisassemblyTab();
+            }
+            break;
+        }
+
         case IDM_CFG_FIT_GRAPH:
             CenterGraphInView(hWnd, &g_CurrentGraph, &g_ViewState);
             InvalidateRect(hWnd, NULL, FALSE);
