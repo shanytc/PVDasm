@@ -39,7 +39,7 @@ ProView is an educational project aimed at building a custom disassembler and de
 | **Disassembler Engine** | Custom x86 engine with MMX, 3DNow!, SSE, and SSE2 support and more. |
 | **PE/PE+ Editor** | View and edit PE (32-bit) and PE+ (64-bit) executable headers + Rebuild Tools. |
 | **Dark Mode** | Light/Dark mode UI support. |
-| **Function Analysis** | Prologue/epilogue detection, parameters, and local variables. |
+| **Function Analysis** | Prologue/epilogue detection, CALL target recognition, FPO prologues, parameters, and local variables. Searchable function list (`Ctrl+J`). |
 | **Process Manager** | View and dump running processes (Win2K/XP/7+) |
 | **Plugin SDK** | Develop and load custom plugins from the `\Plugin\` directory. |
 | **MASM Wizard** | Generate MASM source code from disassembled output. |
@@ -61,6 +61,15 @@ ProView is an educational project aimed at building a custom disassembler and de
 ## Changelog
 
 ### 2026
+
+#### March 20, 2026
+- Added **Show Functions dialog** (`Ctrl+J`) — searchable list of all detected functions with click-to-navigate
+- Improved **function detection**: CALL target recognition via E8 pre-scan, FPO prologue detection (`SUB ESP/RSP`), false positive suppression
+- Fixed prologue comments ("save frame pointer") only appearing at actual function entries, not on stray `PUSH EBP` instructions
+- Synced **code map** and **CFG viewer** with new function detection (CallTargets, heuristic prologues)
+- Fixed **crash in String References** dialog (buffer overflow from `strcpy_s` misuse, unbounded `while` loop)
+- Added **subroutine banners** for function prologues in disassembly
+- Added **live selection highlight** and **middle-mouse pan** in code map
 
 #### March 18–19, 2026
 - Implemented **VMX extended instructions**: VMREAD, VMWRITE, VMPTRLD, VMPTRST, VMCLEAR, VMXON, INVEPT, INVVPID
