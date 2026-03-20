@@ -482,55 +482,104 @@ void LayoutCFG(CFG_GRAPH* graph)
     ReleaseDC(NULL, hDC);
 
     // ================================================================
-    // Phase 1: Layer Assignment (BFS + push-down)
+    // Phase 1: Layer Assignment (DFS back-edges + longest path)
     // ================================================================
 
-    // Build adjacency lists (by block index)
+    // Build adjacency (by block index, with edge indices)
     std::map<DWORD_PTR, size_t> idToIdx;
     for (size_t i = 0; i < N; i++)
         idToIdx[graph->Blocks[i].BlockID] = i;
 
-    std::vector<std::vector<size_t>> successors(N);
-    std::vector<std::vector<size_t>> predecessors(N);
+    std::vector<std::vector<std::pair<size_t, size_t>>> outEdges(N); // (target, edge_idx)
     for (size_t e = 0; e < graph->Edges.size(); e++) {
         auto itS = idToIdx.find(graph->Edges[e].SourceBlockID);
         auto itT = idToIdx.find(graph->Edges[e].TargetBlockID);
-        if (itS != idToIdx.end() && itT != idToIdx.end()) {
-            successors[itS->second].push_back(itT->second);
-            predecessors[itT->second].push_back(itS->second);
-        }
+        if (itS != idToIdx.end() && itT != idToIdx.end())
+            outEdges[itS->second].push_back({ itT->second, e });
     }
 
-    // BFS from entry block to get initial layer assignment
-    std::vector<int> layer(N, -1);
     size_t entryIdx = 0;
     for (size_t i = 0; i < N; i++) {
         if (graph->Blocks[i].IsEntryBlock) { entryIdx = i; break; }
     }
 
-    std::queue<size_t> bfsQ;
-    layer[entryIdx] = 0;
-    bfsQ.push(entryIdx);
-    while (!bfsQ.empty()) {
-        size_t cur = bfsQ.front(); bfsQ.pop();
-        for (size_t succ : successors[cur]) {
-            if (layer[succ] == -1) {
-                layer[succ] = layer[cur] + 1;
-                bfsQ.push(succ);
+    // DFS to identify true back edges (edges to ancestors on DFS stack)
+    std::vector<bool> isBackEdge(graph->Edges.size(), false);
+    {
+        std::vector<int> color(N, 0); // 0=white, 1=gray (on stack), 2=black
+        std::vector<std::pair<size_t, int>> stk; // (node, child_cursor)
+
+        auto runDfs = [&](size_t start) {
+            color[start] = 1;
+            stk.push_back({ start, 0 });
+            while (!stk.empty()) {
+                auto& top = stk.back();
+                size_t u = top.first;
+                if (top.second >= (int)outEdges[u].size()) {
+                    color[u] = 2;
+                    stk.pop_back();
+                    continue;
+                }
+                size_t v = outEdges[u][top.second].first;
+                size_t e = outEdges[u][top.second].second;
+                top.second++;
+                if (color[v] == 1) { // ancestor on stack = back edge
+                    isBackEdge[e] = true;
+                    graph->Edges[e].IsBackEdge = true;
+                } else if (color[v] == 0) {
+                    color[v] = 1;
+                    stk.push_back({ v, 0 });
+                }
+                // color==2 (cross/forward edge) → not a back edge, skip
             }
+        };
+        runDfs(entryIdx);
+        for (size_t i = 0; i < N; i++)
+            if (color[i] == 0) runDfs(i);
+    }
+
+    // Build forward-edge DAG (excluding back edges)
+    std::vector<std::vector<size_t>> fwdSuccs(N), fwdPreds(N);
+    for (size_t e = 0; e < graph->Edges.size(); e++) {
+        if (isBackEdge[e]) continue;
+        auto itS = idToIdx.find(graph->Edges[e].SourceBlockID);
+        auto itT = idToIdx.find(graph->Edges[e].TargetBlockID);
+        if (itS != idToIdx.end() && itT != idToIdx.end()) {
+            fwdSuccs[itS->second].push_back(itT->second);
+            fwdPreds[itT->second].push_back(itS->second);
         }
     }
 
-    // Assign disconnected blocks
-    int maxLayer = 0;
+    // Longest path on forward DAG via topological sort (Kahn's algorithm)
+    // This gives the deepest possible layer → tall/narrow like IDA
+    std::vector<int> layer(N, 0);
+    std::vector<int> inDeg(N, 0);
     for (size_t i = 0; i < N; i++)
-        if (layer[i] > maxLayer) maxLayer = layer[i];
-    for (size_t i = 0; i < N; i++)
-        if (layer[i] == -1) layer[i] = maxLayer + 1;
+        inDeg[i] = (int)fwdPreds[i].size();
 
-    // Mark back edges (target layer <= source layer)
-    std::vector<bool> isBackEdge(graph->Edges.size(), false);
+    std::queue<size_t> topoQ;
+    for (size_t i = 0; i < N; i++)
+        if (inDeg[i] == 0) topoQ.push(i);
+
+    while (!topoQ.empty()) {
+        size_t u = topoQ.front(); topoQ.pop();
+        for (size_t v : fwdSuccs[u]) {
+            if (layer[u] + 1 > layer[v])
+                layer[v] = layer[u] + 1;
+            if (--inDeg[v] == 0)
+                topoQ.push(v);
+        }
+    }
+
+    int maxLayer = 0;
+    for (size_t i = 0; i < N; i++) {
+        if (layer[i] > maxLayer) maxLayer = layer[i];
+        graph->Blocks[i].Layer = layer[i];
+    }
+
+    // Mark back edges on blocks (layer comparison after longest-path assignment)
     for (size_t e = 0; e < graph->Edges.size(); e++) {
+        if (isBackEdge[e]) continue; // already marked by DFS
         auto itS = idToIdx.find(graph->Edges[e].SourceBlockID);
         auto itT = idToIdx.find(graph->Edges[e].TargetBlockID);
         if (itS != idToIdx.end() && itT != idToIdx.end()) {
@@ -538,45 +587,6 @@ void LayoutCFG(CFG_GRAPH* graph)
                 isBackEdge[e] = true;
                 graph->Edges[e].IsBackEdge = true;
             }
-        }
-    }
-
-    // Push-down: move each non-entry block to max(predecessor layers) + 1
-    // Process in topological order (by ascending layer, then original order)
-    std::vector<size_t> topoOrder(N);
-    for (size_t i = 0; i < N; i++) topoOrder[i] = i;
-    std::stable_sort(topoOrder.begin(), topoOrder.end(),
-        [&](size_t a, size_t b) { return layer[a] < layer[b]; });
-
-    for (size_t idx : topoOrder) {
-        if (idx == entryIdx) continue;
-        int deepest = -1;
-        for (size_t pred : predecessors[idx]) {
-            // Only consider forward edges (pred is in a higher/earlier layer)
-            if (layer[pred] < layer[idx] || (layer[pred] == layer[idx] - 1)) {
-                if (layer[pred] > deepest) deepest = layer[pred];
-            }
-        }
-        if (deepest >= 0) {
-            layer[idx] = deepest + 1;
-        }
-    }
-
-    // Recalculate max layer and assign to blocks
-    maxLayer = 0;
-    for (size_t i = 0; i < N; i++) {
-        if (layer[i] > maxLayer) maxLayer = layer[i];
-        graph->Blocks[i].Layer = layer[i];
-    }
-
-    // Re-mark back edges after push-down (layers may have changed)
-    for (size_t e = 0; e < graph->Edges.size(); e++) {
-        auto itS = idToIdx.find(graph->Edges[e].SourceBlockID);
-        auto itT = idToIdx.find(graph->Edges[e].TargetBlockID);
-        if (itS != idToIdx.end() && itT != idToIdx.end()) {
-            bool back = (layer[itT->second] <= layer[itS->second]);
-            isBackEdge[e] = back;
-            graph->Edges[e].IsBackEdge = back;
         }
     }
 
@@ -589,17 +599,78 @@ void LayoutCFG(CFG_GRAPH* graph)
     for (size_t i = 0; i < N; i++)
         layerBlocks[layer[i]].push_back(i);
 
-    // Build forward-edge adjacency (excluding back edges)
-    std::vector<std::vector<size_t>> fwdSuccessors(N);
-    std::vector<std::vector<size_t>> fwdPredecessors(N);
+    // Identify primary (fall-through) successor per block
+    std::vector<size_t> primarySucc(N, (size_t)-1);
     for (size_t e = 0; e < graph->Edges.size(); e++) {
         if (isBackEdge[e]) continue;
         auto itS = idToIdx.find(graph->Edges[e].SourceBlockID);
         auto itT = idToIdx.find(graph->Edges[e].TargetBlockID);
         if (itS != idToIdx.end() && itT != idToIdx.end()) {
-            fwdSuccessors[itS->second].push_back(itT->second);
-            fwdPredecessors[itT->second].push_back(itS->second);
+            size_t s = itS->second, t = itT->second;
+            CFG_EDGE_TYPE etype = graph->Edges[e].Type;
+            if (etype == EDGE_CONDITIONAL_FALSE ||
+                (etype == EDGE_UNCONDITIONAL && primarySucc[s] == (size_t)-1)) {
+                primarySucc[s] = t;
+            }
         }
+    }
+    for (size_t i = 0; i < N; i++) {
+        if (primarySucc[i] == (size_t)-1 && fwdSuccs[i].size() == 1)
+            primarySucc[i] = fwdSuccs[i][0];
+    }
+
+    // DFS ordering: follow primary (fall-through) first for initial layer ordering
+    // This creates IDA-like spine: fall-through path stays in the center
+    std::vector<bool> visited(N, false);
+    std::vector<size_t> dfsOrder;
+    dfsOrder.reserve(N);
+    {
+        std::vector<std::pair<size_t, int>> stk; // (node, child_index)
+        // Push entry's successors: primary first (will be visited first)
+        stk.push_back({ entryIdx, -1 });
+        visited[entryIdx] = true;
+        dfsOrder.push_back(entryIdx);
+
+        while (!stk.empty()) {
+            auto& top = stk.back();
+            size_t node = top.first;
+            top.second++;
+
+            // Build ordered children: primary first, then others
+            std::vector<size_t>& succs = fwdSuccs[node];
+            std::vector<size_t> ordered;
+            if (primarySucc[node] != (size_t)-1) {
+                ordered.push_back(primarySucc[node]);
+            }
+            for (size_t s : succs) {
+                if (s != primarySucc[node]) ordered.push_back(s);
+            }
+
+            if (top.second >= (int)ordered.size()) {
+                stk.pop_back();
+                continue;
+            }
+
+            size_t child = ordered[top.second];
+            if (!visited[child]) {
+                visited[child] = true;
+                dfsOrder.push_back(child);
+                stk.push_back({ child, -1 });
+            }
+        }
+        // Add any unvisited blocks
+        for (size_t i = 0; i < N; i++) {
+            if (!visited[i]) dfsOrder.push_back(i);
+        }
+    }
+
+    // Re-order blocks within each layer by DFS visit order
+    std::vector<int> dfsRank(N, 0);
+    for (int i = 0; i < (int)dfsOrder.size(); i++) dfsRank[dfsOrder[i]] = i;
+
+    for (int L = 0; L <= maxLayer; L++) {
+        std::sort(layerBlocks[L].begin(), layerBlocks[L].end(),
+            [&](size_t a, size_t b) { return dfsRank[a] < dfsRank[b]; });
     }
 
     // Initialize PositionInLayer
@@ -610,31 +681,23 @@ void LayoutCFG(CFG_GRAPH* graph)
         }
     }
 
-    // Barycenter sweeps (4 passes: down, up, down, up)
+    // Barycenter sweeps (4 passes) to refine ordering
     for (int pass = 0; pass < 4; pass++) {
         if (pass % 2 == 0) {
-            // Down sweep: layers 1 -> maxLayer
             for (int L = 1; L <= maxLayer; L++) {
                 std::vector<std::pair<double, size_t>> baryOrder;
                 for (size_t idx : layerBlocks[L]) {
                     double bary = -1.0;
-                    if (!fwdPredecessors[idx].empty()) {
-                        double sum = 0.0;
-                        int count = 0;
-                        for (size_t pred : fwdPredecessors[idx]) {
-                            if (layer[pred] == L - 1) {
-                                sum += posInLayer[pred];
-                                count++;
-                            }
-                        }
-                        if (count > 0) bary = sum / count;
+                    int count = 0; double sum = 0.0;
+                    for (size_t pred : fwdPreds[idx]) {
+                        if (layer[pred] < L) { sum += posInLayer[pred]; count++; }
                     }
+                    if (count > 0) bary = sum / count;
                     baryOrder.push_back({ bary, idx });
                 }
-                // Stable sort: blocks with no predecessors in layer above keep position
                 std::stable_sort(baryOrder.begin(), baryOrder.end(),
                     [](const std::pair<double, size_t>& a, const std::pair<double, size_t>& b) {
-                        if (a.first < 0) return false; // no-bary goes last
+                        if (a.first < 0) return false;
                         if (b.first < 0) return true;
                         return a.first < b.first;
                     });
@@ -645,22 +708,15 @@ void LayoutCFG(CFG_GRAPH* graph)
                 }
             }
         } else {
-            // Up sweep: layers maxLayer-1 -> 0
             for (int L = maxLayer - 1; L >= 0; L--) {
                 std::vector<std::pair<double, size_t>> baryOrder;
                 for (size_t idx : layerBlocks[L]) {
                     double bary = -1.0;
-                    if (!fwdSuccessors[idx].empty()) {
-                        double sum = 0.0;
-                        int count = 0;
-                        for (size_t succ : fwdSuccessors[idx]) {
-                            if (layer[succ] == L + 1) {
-                                sum += posInLayer[succ];
-                                count++;
-                            }
-                        }
-                        if (count > 0) bary = sum / count;
+                    int count = 0; double sum = 0.0;
+                    for (size_t succ : fwdSuccs[idx]) {
+                        if (layer[succ] > L) { sum += posInLayer[succ]; count++; }
                     }
+                    if (count > 0) bary = sum / count;
                     baryOrder.push_back({ bary, idx });
                 }
                 std::stable_sort(baryOrder.begin(), baryOrder.end(),
@@ -686,10 +742,10 @@ void LayoutCFG(CFG_GRAPH* graph)
     }
 
     // ================================================================
-    // Phase 3: Coordinate Assignment (parent-child alignment)
+    // Phase 3: Coordinate Assignment (fall-through spine alignment)
     // ================================================================
 
-    // Y coordinates: per-layer, spaced by CFG_BLOCK_V_SPACING
+    // Y coordinates
     std::vector<int> layerY(maxLayer + 1, 0);
     int currentY = CFG_BLOCK_V_SPACING;
     for (int L = 0; L <= maxLayer; L++) {
@@ -702,83 +758,33 @@ void LayoutCFG(CFG_GRAPH* graph)
         currentY += maxHeight + CFG_BLOCK_V_SPACING;
     }
 
-    // X coordinates - Step 1: initial left-to-right packing
-    std::vector<int> blockX(N, 0);
+    // X coordinates: top-down, center each block under its predecessors
+    // DFS ordering ensures fall-through child is first in each layer,
+    // so the overlap resolver naturally pushes branch targets to the side.
+    std::vector<int> finalX(N, -1);
+    finalX[entryIdx] = 400;
+
     for (int L = 0; L <= maxLayer; L++) {
-        int x = CFG_BLOCK_H_SPACING;
+        // Place blocks: center under median predecessor
         for (size_t idx : layerBlocks[L]) {
-            blockX[idx] = x;
-            x += graph->Blocks[idx].Width + CFG_BLOCK_H_SPACING;
-        }
-    }
+            if (finalX[idx] >= 0) continue;
 
-    // Helper: center X of a block
-    auto centerX = [&](size_t idx, const std::vector<int>& xArr) -> int {
-        return xArr[idx] + graph->Blocks[idx].Width / 2;
-    };
-
-    // X coordinates - Step 2: Top-down alignment (shift toward median predecessor)
-    std::vector<int> downX = blockX;
-    for (int L = 1; L <= maxLayer; L++) {
-        for (size_t idx : layerBlocks[L]) {
-            // Collect center-X of predecessors in forward edges
             std::vector<int> predCenters;
-            for (size_t pred : fwdPredecessors[idx]) {
-                if (layer[pred] < L)
-                    predCenters.push_back(centerX(pred, downX));
+            for (size_t pred : fwdPreds[idx]) {
+                if (finalX[pred] >= 0)
+                    predCenters.push_back(finalX[pred] + graph->Blocks[pred].Width / 2);
             }
-            if (predCenters.empty()) continue;
 
-            std::sort(predCenters.begin(), predCenters.end());
-            int medianCenter = predCenters[predCenters.size() / 2];
-            int targetX = medianCenter - graph->Blocks[idx].Width / 2;
-
-            // Clamp so we don't overlap the previous block in this layer
-            int p = posInLayer[idx];
-            if (p > 0) {
-                size_t prevIdx = layerBlocks[L][p - 1];
-                int minX = downX[prevIdx] + graph->Blocks[prevIdx].Width + CFG_BLOCK_H_SPACING;
-                if (targetX < minX) targetX = minX;
+            if (!predCenters.empty()) {
+                std::sort(predCenters.begin(), predCenters.end());
+                int median = predCenters[predCenters.size() / 2];
+                finalX[idx] = median - graph->Blocks[idx].Width / 2;
+            } else {
+                finalX[idx] = 400;
             }
-            if (targetX < CFG_BLOCK_H_SPACING) targetX = CFG_BLOCK_H_SPACING;
-            downX[idx] = targetX;
         }
-    }
 
-    // X coordinates - Step 3: Bottom-up alignment (shift toward median successor)
-    std::vector<int> upX = blockX;
-    for (int L = maxLayer - 1; L >= 0; L--) {
-        for (int p = (int)layerBlocks[L].size() - 1; p >= 0; p--) {
-            size_t idx = layerBlocks[L][p];
-            std::vector<int> succCenters;
-            for (size_t succ : fwdSuccessors[idx]) {
-                if (layer[succ] > L)
-                    succCenters.push_back(centerX(succ, upX));
-            }
-            if (succCenters.empty()) continue;
-
-            std::sort(succCenters.begin(), succCenters.end());
-            int medianCenter = succCenters[succCenters.size() / 2];
-            int targetX = medianCenter - graph->Blocks[idx].Width / 2;
-
-            if (p > 0) {
-                size_t prevIdx = layerBlocks[L][p - 1];
-                int minX = upX[prevIdx] + graph->Blocks[prevIdx].Width + CFG_BLOCK_H_SPACING;
-                if (targetX < minX) targetX = minX;
-            }
-            if (targetX < CFG_BLOCK_H_SPACING) targetX = CFG_BLOCK_H_SPACING;
-            upX[idx] = targetX;
-        }
-    }
-
-    // X coordinates - Step 4: Average down and up passes
-    std::vector<int> finalX(N);
-    for (size_t i = 0; i < N; i++) {
-        finalX[i] = (downX[i] + upX[i]) / 2;
-    }
-
-    // X coordinates - Step 5: Resolve overlaps (left-to-right sweep per layer)
-    for (int L = 0; L <= maxLayer; L++) {
+        // Resolve overlaps in this layer (left-to-right)
         for (int p = 0; p < (int)layerBlocks[L].size(); p++) {
             size_t idx = layerBlocks[L][p];
             if (finalX[idx] < CFG_BLOCK_H_SPACING)
@@ -792,32 +798,100 @@ void LayoutCFG(CFG_GRAPH* graph)
         }
     }
 
-    // X coordinates - Step 6: Center the graph (find min X, shift so it starts at margin)
-    int globalMinX = INT_MAX;
-    int globalMaxRight = 0;
+    // Bottom-up refinement (3 passes): shift parents to center over children,
+    // then top-down re-align children under parents
+    for (int pass = 0; pass < 3; pass++) {
+        // Bottom-up: center parents over children
+        for (int L = maxLayer - 1; L >= 0; L--) {
+            for (size_t idx : layerBlocks[L]) {
+                if (fwdSuccs[idx].empty()) continue;
+                int sumCenter = 0, cnt = 0;
+                for (size_t s : fwdSuccs[idx]) {
+                    sumCenter += finalX[s] + graph->Blocks[s].Width / 2;
+                    cnt++;
+                }
+                if (cnt == 0) continue;
+                int targetX = sumCenter / cnt - graph->Blocks[idx].Width / 2;
+                if (targetX < CFG_BLOCK_H_SPACING) targetX = CFG_BLOCK_H_SPACING;
+                finalX[idx] = targetX;
+            }
+            // Re-resolve overlaps
+            for (int p = 0; p < (int)layerBlocks[L].size(); p++) {
+                size_t idx = layerBlocks[L][p];
+                if (finalX[idx] < CFG_BLOCK_H_SPACING)
+                    finalX[idx] = CFG_BLOCK_H_SPACING;
+                if (p > 0) {
+                    size_t prevIdx = layerBlocks[L][p - 1];
+                    int minX = finalX[prevIdx] + graph->Blocks[prevIdx].Width + CFG_BLOCK_H_SPACING;
+                    if (finalX[idx] < minX)
+                        finalX[idx] = minX;
+                }
+            }
+        }
+
+        // Top-down: re-align children under parents (fall-through priority)
+        for (int L = 1; L <= maxLayer; L++) {
+            for (size_t idx : layerBlocks[L]) {
+                // If this block is someone's primary (fall-through) successor,
+                // pull it toward that parent's center
+                int targetCenter = -1;
+                for (size_t pred : fwdPreds[idx]) {
+                    if (primarySucc[pred] == idx && finalX[pred] >= 0) {
+                        targetCenter = finalX[pred] + graph->Blocks[pred].Width / 2;
+                        break;
+                    }
+                }
+                if (targetCenter >= 0) {
+                    int targetX = targetCenter - graph->Blocks[idx].Width / 2;
+                    if (targetX < CFG_BLOCK_H_SPACING) targetX = CFG_BLOCK_H_SPACING;
+                    finalX[idx] = targetX;
+                }
+            }
+            // Re-resolve overlaps
+            for (int p = 0; p < (int)layerBlocks[L].size(); p++) {
+                size_t idx = layerBlocks[L][p];
+                if (finalX[idx] < CFG_BLOCK_H_SPACING)
+                    finalX[idx] = CFG_BLOCK_H_SPACING;
+                if (p > 0) {
+                    size_t prevIdx = layerBlocks[L][p - 1];
+                    int minX = finalX[prevIdx] + graph->Blocks[prevIdx].Width + CFG_BLOCK_H_SPACING;
+                    if (finalX[idx] < minX)
+                        finalX[idx] = minX;
+                }
+            }
+        }
+    }
+
+    // Normalize: shift so leftmost block starts at margin
+    int globalMinX = INT_MAX, globalMaxRight = 0;
     for (size_t i = 0; i < N; i++) {
         if (finalX[i] < globalMinX) globalMinX = finalX[i];
         int right = finalX[i] + graph->Blocks[i].Width;
         if (right > globalMaxRight) globalMaxRight = right;
     }
     int shiftX = CFG_BLOCK_H_SPACING - globalMinX;
-    for (size_t i = 0; i < N; i++) {
+    for (size_t i = 0; i < N; i++)
         finalX[i] += shiftX;
-    }
 
-    // Write final coordinates to blocks
+    // Center the graph around the entry block's spine:
+    // make left and right padding symmetric around the entry block center
+    int contentWidth = (globalMaxRight - globalMinX) + 2 * CFG_BLOCK_H_SPACING;
+    int entryCenterX = finalX[entryIdx] + graph->Blocks[entryIdx].Width / 2;
+    int leftExtent = entryCenterX;
+    int rightExtent = contentWidth - entryCenterX;
+    int maxExtent = max(leftExtent, rightExtent);
+    int graphWidth = maxExtent * 2;
+    int centerShift = graphWidth / 2 - entryCenterX;
+    for (size_t i = 0; i < N; i++)
+        finalX[i] += centerShift;
+
+    // Write final coordinates
     for (size_t i = 0; i < N; i++) {
         graph->Blocks[i].X = finalX[i];
         graph->Blocks[i].Y = layerY[layer[i]];
     }
 
-    // Calculate graph bounds
-    int graphRight = 0;
-    for (size_t i = 0; i < N; i++) {
-        int right = graph->Blocks[i].X + graph->Blocks[i].Width;
-        if (right > graphRight) graphRight = right;
-    }
-    graph->GraphWidth = graphRight + CFG_BLOCK_H_SPACING;
+    graph->GraphWidth = graphWidth;
     graph->GraphHeight = currentY;
 }
 
