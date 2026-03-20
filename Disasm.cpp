@@ -3770,6 +3770,7 @@ void WINAPI Disassembler(/*LPVOID lpParam*/) // Thread Worker for Decoding Instr
 
     bool prevWasFuncBoundary = true;  // Start of section is a boundary (for FPO prologue detection)
     bool inHeuristicFunc = false;     // True when inside a heuristic-detected function (until RET)
+    int  funcEntryCountdown = 0;      // Counts down from 3 after function banner — marks prologue instructions
 
     // Pre-scan for near CALL targets (E8 rel32) to detect functions not found by FirstPass
     for(DWORD_PTR ci = 0; ci + 4 < BytesToDecode; ci++){
@@ -3862,8 +3863,9 @@ void WINAPI Disassembler(/*LPVOID lpParam*/) // Thread Worker for Decoding Instr
                 strcpy_s(Disasm.Assembly,EP);
                 SaveDecoded(Disasm,disop,ListIndex);
                 FlushDecoded(&Disasm);  // reset all content
-                disop.ShowAddr=TRUE; // Enable Showing Address 
+                disop.ShowAddr=TRUE; // Enable Showing Address
                 ListIndex++;
+                funcEntryCountdown = 3; // Entry point — next 3 instructions are prologue
             }
 
 			// Check if address matches a known function from first-pass analysis
@@ -3891,6 +3893,7 @@ void WINAPI Disassembler(/*LPVOID lpParam*/) // Thread Worker for Decoding Instr
                     ProcAddr=fFunctionInfo[fIndex].FunctionStart;
 					fInfoBanner = true;
 					inHeuristicFunc = false; // Known function overrides heuristic tracking
+					funcEntryCountdown = 3;  // Next 3 instructions are prologue
 					break;
 				}
 			}
@@ -3908,6 +3911,7 @@ void WINAPI Disassembler(/*LPVOID lpParam*/) // Thread Worker for Decoding Instr
 				ListIndex++;
 				fInfoBanner = true;
 				inHeuristicFunc = true; // Track function scope
+				funcEntryCountdown = 3; // Next 3 instructions are prologue
 			}
 
 			// Detect function prologues not already covered by fFunctionInfo, CALL targets, or EP
@@ -3966,6 +3970,7 @@ void WINAPI Disassembler(/*LPVOID lpParam*/) // Thread Worker for Decoding Instr
 					disop.ShowAddr=TRUE;
 					ListIndex++;
 					inHeuristicFunc = true; // Track that we're inside this function
+					funcEntryCountdown = 3; // Next 3 instructions are prologue
 				}
 			}
         
@@ -4225,7 +4230,8 @@ void WINAPI Disassembler(/*LPVOID lpParam*/) // Thread Worker for Decoding Instr
 			}
 
 			// Show Decoded instruction, size, remarks...
-            SaveDecoded(Disasm,disop,ListIndex);
+            SaveDecoded(Disasm,disop,ListIndex, funcEntryCountdown > 0);
+            if(funcEntryCountdown > 0) funcEntryCountdown--;
             
 			// try show xref
 			//try{
@@ -4941,7 +4947,7 @@ bool GetStringXRef(char *xRef,DWORD_PTR Disasm_Address)
 // Analyze assembly instruction for function prologue/epilogue,
 // stack variables, and heap allocations
 //
-void AnalyzeInstruction(const char* assembly, const char* existingRemarks, char* outComment, size_t outSize)
+void AnalyzeInstruction(const char* assembly, const char* existingRemarks, char* outComment, size_t outSize, bool isFuncEntry)
 {
 	char asmUpper[256];
 	outComment[0] = '\0';
@@ -4950,17 +4956,17 @@ void AnalyzeInstruction(const char* assembly, const char* existingRemarks, char*
 	lstrcpyn(asmUpper, assembly, sizeof(asmUpper));
 	CharUpper(asmUpper);
 
-	// Check for function prologue patterns
-	if(strstr(asmUpper, "PUSH EBP") || strstr(asmUpper, "PUSH RBP"))
+	// Check for function prologue patterns (only at known function entries)
+	if(isFuncEntry && (strstr(asmUpper, "PUSH EBP") || strstr(asmUpper, "PUSH RBP")))
 	{
 		lstrcpyn(outComment, "; Function prologue - save frame pointer", outSize);
 	}
-	else if((strstr(asmUpper, "MOV EBP") && strstr(asmUpper, "ESP")) ||
-			(strstr(asmUpper, "MOV RBP") && strstr(asmUpper, "RSP")))
+	else if(isFuncEntry && ((strstr(asmUpper, "MOV EBP") && strstr(asmUpper, "ESP")) ||
+			(strstr(asmUpper, "MOV RBP") && strstr(asmUpper, "RSP"))))
 	{
 		lstrcpyn(outComment, "; Function prologue - setup frame pointer", outSize);
 	}
-	else if((strstr(asmUpper, "SUB ESP") || strstr(asmUpper, "SUB RSP")) &&
+	else if(isFuncEntry && (strstr(asmUpper, "SUB ESP") || strstr(asmUpper, "SUB RSP")) &&
 			!strstr(asmUpper, "["))
 	{
 		// Extract the size if possible
@@ -5109,7 +5115,7 @@ void AnalyzeInstruction(const char* assembly, const char* existingRemarks, char*
 // Save Decoded Disassembly in to the Vector for later
 // Use with the Virtual List View
 //
-void SaveDecoded(DISASSEMBLY disasm,DISASM_OPTIONS dops,DWORD Index)
+void SaveDecoded(DISASSEMBLY disasm,DISASM_OPTIONS dops,DWORD Index, bool isFuncEntry)
 {
     // disassembly class object
     CDisasmData DisasmData("","","","",0,0,""); // empty members in object  .
@@ -5145,7 +5151,7 @@ void SaveDecoded(DISASSEMBLY disasm,DISASM_OPTIONS dops,DWORD Index)
     if(dops.ShowRemarks==1){
         // Analyze instruction and generate comments for prologue/epilogue/stack vars
         char analyzedComment[512];
-        AnalyzeInstruction(disasm.Assembly, disasm.Remarks, analyzedComment, sizeof(analyzedComment));
+        AnalyzeInstruction(disasm.Assembly, disasm.Remarks, analyzedComment, sizeof(analyzedComment), isFuncEntry);
         // Check for SEH filter/handler annotations
         TreeMapItr sehItr = SEHAddresses.find((DWORD)disasm.Address);
         if(sehItr != SEHAddresses.end()){
