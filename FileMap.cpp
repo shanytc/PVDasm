@@ -1864,6 +1864,11 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					RECT dr;
 					GetWindowRect(hDisasm, &dr);
 					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&dr, 2);
+					// Expand left to cover the hidden flow arrows panel area
+					HWND hArrows = GetDlgItem(hWnd, IDC_FLOW_ARROWS);
+					if (hArrows && g_FlowArrowsVisible && DisassemblerReady) {
+						dr.left -= g_FlowArrowPanelWidth;
+					}
 					MoveWindow(hCFGChild, dr.left, dr.top, dr.right - dr.left, dr.bottom - dr.top, TRUE);
 				}
 			}
@@ -1951,11 +1956,17 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 								newListHeight,
 								SWP_NOZORDER);
 
-							// Keep CFG child in sync with disasm
+							// Keep CFG child in sync with disasm (expand for hidden arrows panel)
 							if (hCFGChild) {
+								int cfgLeft = disasmRect.left;
+								int cfgWidth = disasmRect.right - disasmRect.left;
+								if (g_FlowArrowsVisible && DisassemblerReady) {
+									cfgLeft -= g_FlowArrowPanelWidth;
+									cfgWidth += g_FlowArrowPanelWidth;
+								}
 								hdwp = DeferWindowPos(hdwp, hCFGChild, NULL,
-									disasmRect.left, disasmRect.top,
-									disasmRect.right - disasmRect.left,
+									cfgLeft, disasmRect.top,
+									cfgWidth,
 									newDisasmHeight,
 									SWP_NOZORDER);
 							}
