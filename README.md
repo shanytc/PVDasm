@@ -73,7 +73,7 @@ ProView is an educational project aimed at building a custom disassembler and de
 - Status bar **line info now displays on click** in MESSAGE1 (left panel) for both 32-bit and 64-bit PE files, showing line number, code address, and file offset
 - **Progress bar and middle panel auto-hide** when idle — MESSAGE1 fills the full window width after disassembly completes
 - Fixed **CFG viewer 64-bit address truncation** — graph block addresses were truncated to 32-bit when navigating in PE+ files
-- Fixed **crash on File→Close** after disassembling large PE files (e.g., Scylla_x64.dll) — root cause was heap corruption in `LoadApiSignature()` from out-of-bounds `DisasmDataLines` access when API parameter count exceeded the instruction index
+- Fixed **crash on File→Close** after disassembling large PE files - root cause was heap corruption in `LoadApiSignature()` from out-of-bounds `DisasmDataLines` access when API parameter count exceeded the instruction index
 - Fixed **File→Close hanging indefinitely** — worker thread post-processing (`LocateXrefs`, `LoadApiSignature`) now checks a shutdown flag and exits immediately when close is requested
 - Fixed **race condition** between worker thread and main thread — `FreeMemory()` now waits for the worker thread to finish before freeing data, with message pumping to prevent deadlock
 - Fixed `strcpy_s` misuse in `LoadApiSignature()` (was passing source length as destination buffer size)
