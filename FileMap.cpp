@@ -1304,10 +1304,12 @@ LRESULT CALLBACK FlowArrowWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                         destY = ((int)fa.DestIndex < topIndex) ? 0 : panelH;
                     }
 
-                    // Lane X: lane 0 = rightmost (closest to ListView), scaled by panel width
-                    int laneX = panelW - 6 - fa.NestingLane * laneWidth;
+                    int tipRight = panelW - 2;              // arrowhead tip at panel edge
+                    int stubRight = tipRight - headLen;      // stub ends where arrowhead base starts
+
+                    // Lane X: lane 0 = rightmost (closest to ListView), left of arrowhead base
+                    int laneX = (stubRight - 2) - fa.NestingLane * laneWidth;
                     if (laneX < 2) laneX = 2;
-                    int stubRight = panelW - 3;
 
                     // Pick color and line style based on lane (IDA-style differentiation)
                     int laneIdx = fa.NestingLane % numLaneStyles;
@@ -1331,8 +1333,8 @@ LRESULT CALLBACK FlowArrowWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                     HPEN hOldP = (HPEN)SelectObject(hdcMem, hArrowPen);
 
                     // Draw: horizontal stub at source -> vertical line -> horizontal stub at dest
-                    // Source stub
-                    MoveToEx(hdcMem, stubRight, srcY, NULL);
+                    // Source stub (extends to panel edge, no arrowhead here)
+                    MoveToEx(hdcMem, tipRight, srcY, NULL);
                     LineTo(hdcMem, laneX, srcY);
                     // Vertical line
                     MoveToEx(hdcMem, laneX, srcY, NULL);
@@ -1346,11 +1348,10 @@ LRESULT CALLBACK FlowArrowWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 
                     // Filled triangle arrowhead at destination — crisp connection
                     if (destVisible) {
-                        int tipX = stubRight + headLen;
                         POINT tri[3] = {
-                            { tipX, destY },                       // tip (rightmost)
-                            { tipX - headLen, destY - headSpread },// upper base
-                            { tipX - headLen, destY + headSpread } // lower base
+                            { tipRight, destY },                       // tip (rightmost, at panel edge)
+                            { tipRight - headLen, destY - headSpread },// upper base
+                            { tipRight - headLen, destY + headSpread } // lower base
                         };
                         HBRUSH hHeadBrush = CreateSolidBrush(arrowColor);
                         HPEN hHeadPen = CreatePen(PS_SOLID, 1, arrowColor);
