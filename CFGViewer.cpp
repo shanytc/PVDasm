@@ -74,7 +74,7 @@ static void UpdateRoutesForDraggedBlock(CFG_GRAPH* graph, DWORD_PTR blockID);
 DWORD_PTR GetAddressAtIndex(DWORD_PTR index)
 {
     if (index >= DisasmDataLines.size()) return 0;
-    return StringToDword(DisasmDataLines[index].GetAddress());
+    return (DWORD_PTR)StringToQword(DisasmDataLines[index].GetAddress());
 }
 
 DWORD_PTR FindIndexByAddress(DWORD_PTR address)
@@ -2991,7 +2991,7 @@ static DWORD_PTR ExtractAddressFromMnemonic(const char* mnemonic)
             int copyLen = (hexCount < 19) ? hexCount : 19;
             strncpy(addrStr, start, copyLen);
             addrStr[copyLen] = '\0';
-            return StringToDword(addrStr);
+            return (DWORD_PTR)StringToQword(addrStr);
         }
     }
     return 0;
