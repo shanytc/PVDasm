@@ -819,6 +819,12 @@ LRESULT CALLBACK CodeMapWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
                         }
                         SelectItem(hDisasm, index);
                     }
+                    // Repaint flow arrows panel after scroll
+                    HWND hArrowPanel = GetDlgItem(Main_hWnd, IDC_FLOW_ARROWS);
+                    if (hArrowPanel && IsWindowVisible(hArrowPanel)) {
+                        InvalidateRect(hArrowPanel, NULL, FALSE);
+                        UpdateWindow(hArrowPanel);
+                    }
                 }
             }
             return 0;
@@ -834,6 +840,11 @@ LRESULT CALLBACK CodeMapWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
                 SelectItem(hDisasm, g_CodeMapDragIdx);
             }
             InvalidateRect(hWnd, NULL, FALSE);
+            // Repaint flow arrows panel on release
+            HWND hArrowPanel = GetDlgItem(Main_hWnd, IDC_FLOW_ARROWS);
+            if (hArrowPanel && IsWindowVisible(hArrowPanel)) {
+                InvalidateRect(hArrowPanel, NULL, FALSE);
+            }
             return 0;
         }
 

@@ -77,6 +77,7 @@ ProView is an educational project aimed at building a custom disassembler and de
   - Toggle via Views → Control Flow menu item
   - Synchronized with ListView scrolling, window resize, and splitter drag
   - Dark mode aware — adapts colors to match the current theme
+- Fixed **flow arrows not updating during code map drag** — `LVM_SCROLL` bypasses the ListView subclass, so the code map drag handler now explicitly invalidates the arrows panel
 - Fixed **About dialog version text clipped** — widened `IDC_ABOUT_VERSION` control so the full version string (e.g., `v2.0.1`) is visible
 - Fixed **status bar clipping/destruction on window resize** — replaced fragile anchor-based layout with explicit tiling in `WM_SIZE` that adapts to progress bar visibility
 - Status bar **line info now displays on click** in MESSAGE1 (left panel) for both 32-bit and 64-bit PE files, showing line number, code address, and file offset
