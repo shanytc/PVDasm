@@ -6456,51 +6456,40 @@ LRESULT CALLBACK ListViewSubClass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 				// Bak Trace
                 case VK_LEFT:{
                     if(DisassemblerReady==TRUE){
-                        if(!BranchTrace.empty()) {
-                            BackTrace(); // Tracing Back from history
-                        } else {
-                            // Reverse lookup: find a branch that targets this line
-                            HWND hLV = GetDlgItem(Main_hWnd, IDC_DISASM);
-                            DWORD_PTR sel = SendMessage(hLV, LVM_GETNEXTITEM, (WPARAM)-1, LVNI_FOCUSED|LVNI_SELECTED);
-                            if (sel != (DWORD_PTR)-1 && sel < DisasmDataLines.size()) {
-                                const char* addrStr = DisasmDataLines[sel].GetAddress();
-                                DWORD_PTR addr = LoadedPe64 ? (DWORD_PTR)StringToQword((char*)addrStr)
-                                                            : (DWORD_PTR)StringToDword((char*)addrStr);
-                                // Search DisasmCodeFlow for a branch whose destination is this address
-                                for (unsigned int i = 0; i < DisasmCodeFlow.size(); i++) {
-                                    if (DisasmCodeFlow[i].Branch_Destination == addr) {
-                                        DWORD_PTR srcIndex = DisasmCodeFlow[i].Current_Index;
-                                        // Push current position so next left-arrow returns here
-                                        BRANCH_DATA bd;
-                                        bd.ItemIndex = (DWORD)sel;
-                                        bd.Call = DisasmCodeFlow[i].BranchFlow.Call;
-                                        bd.Jump = DisasmCodeFlow[i].BranchFlow.Jump;
-                                        BranchTrace.insert(BranchTrace.end(), bd);
-                                        // Navigate to the source branch instruction
-                                        char dbg[128];
-                                        wsprintf(dbg, "Tracing Back To -> %s", DisasmDataLines[srcIndex].GetAddress());
-                                        OutDebug(Main_hWnd, dbg);
-                                        SelectLastItem(GetDlgItem(Main_hWnd, IDC_LIST));
-                                        SetFocus(hLV);
-                                        SelectItem(hLV, srcIndex);
-                                        GetBranchDestination(hLV);
-                                        // Enable back-trace menu/toolbar
-                                        HMENU hMenu = GetMenu(Main_hWnd);
-                                        if (bd.Jump) {
-                                            EnableMenuItem(hMenu, ID_GOTO_RETURN_JUMP, MF_ENABLED);
-                                            EnableMenuItem(hMenu, ID_GOTO_RETURN_CALL, MF_GRAYED);
-                                            SendMessage(hWndTB, TB_ENABLEBUTTON, ID_RET_JUMP, (LPARAM)TRUE);
-                                            SendMessage(hWndTB, TB_ENABLEBUTTON, ID_RET_CALL, (LPARAM)FALSE);
-                                        } else if (bd.Call) {
-                                            EnableMenuItem(hMenu, ID_GOTO_RETURN_JUMP, MF_GRAYED);
-                                            EnableMenuItem(hMenu, ID_GOTO_RETURN_CALL, MF_ENABLED);
-                                            SendMessage(hWndTB, TB_ENABLEBUTTON, ID_RET_JUMP, (LPARAM)FALSE);
-                                            SendMessage(hWndTB, TB_ENABLEBUTTON, ID_RET_CALL, (LPARAM)TRUE);
-                                        }
-                                        break;
-                                    }
+                        // Try reverse lookup first: find a branch targeting this line
+                        bool reverseFound = false;
+                        HWND hLV = GetDlgItem(Main_hWnd, IDC_DISASM);
+                        DWORD_PTR sel = SendMessage(hLV, LVM_GETNEXTITEM, (WPARAM)-1, LVNI_FOCUSED|LVNI_SELECTED);
+                        if (sel != (DWORD_PTR)-1 && sel < DisasmDataLines.size()) {
+                            const char* addrStr = DisasmDataLines[sel].GetAddress();
+                            DWORD_PTR addr = LoadedPe64 ? (DWORD_PTR)StringToQword((char*)addrStr)
+                                                        : (DWORD_PTR)StringToDword((char*)addrStr);
+                            for (unsigned int i = 0; i < DisasmCodeFlow.size(); i++) {
+                                if (DisasmCodeFlow[i].Branch_Destination == addr) {
+                                    DWORD_PTR srcIndex = DisasmCodeFlow[i].Current_Index;
+                                    // Clear stale trace history — this is a fresh reverse navigation
+                                    BranchTrace.clear();
+                                    HMENU hMenu = GetMenu(Main_hWnd);
+                                    EnableMenuItem(hMenu, ID_GOTO_RETURN_JUMP, MF_GRAYED);
+                                    EnableMenuItem(hMenu, ID_GOTO_RETURN_CALL, MF_GRAYED);
+                                    SendMessage(hWndTB, TB_ENABLEBUTTON, ID_RET_JUMP, (LPARAM)FALSE);
+                                    SendMessage(hWndTB, TB_ENABLEBUTTON, ID_RET_CALL, (LPARAM)FALSE);
+                                    // Navigate to the source branch instruction
+                                    char dbg[128];
+                                    wsprintf(dbg, "Tracing Back To -> %s", DisasmDataLines[srcIndex].GetAddress());
+                                    OutDebug(Main_hWnd, dbg);
+                                    SelectLastItem(GetDlgItem(Main_hWnd, IDC_LIST));
+                                    SetFocus(hLV);
+                                    SelectItem(hLV, srcIndex);
+                                    GetBranchDestination(hLV);
+                                    reverseFound = true;
+                                    break;
                                 }
                             }
+                        }
+                        // If current line isn't a branch destination, try normal back-trace
+                        if (!reverseFound) {
+                            BackTrace();
                         }
                     }
                 }
