@@ -68,6 +68,7 @@ bool            g_CFGGraphValid = false; // True when embedded CFG child has a v
 
 // Forward declarations for functions defined later in the file
 static DWORD_PTR ExtractAddressFromMnemonic(const char* mnemonic);
+static void FocusOnBlock(HWND hWnd, CFG_GRAPH* graph, CFG_VIEW_STATE* state, int blockIdx);
 static void FocusOnEntryBlock(HWND hWnd, CFG_GRAPH* graph, CFG_VIEW_STATE* state);
 static void UpdateRoutesForDraggedBlock(CFG_GRAPH* graph, DWORD_PTR blockID);
 
@@ -959,6 +960,39 @@ void CenterGraphInView(HWND hWnd, CFG_GRAPH* graph, CFG_VIEW_STATE* state)
 
 // Focus on the entry block at a readable zoom level.
 // Falls back to CenterGraphInView if no entry block exists.
+static void FocusOnBlock(HWND hWnd, CFG_GRAPH* graph, CFG_VIEW_STATE* state, int blockIdx)
+{
+    if (!hWnd || !graph || !state) return;
+    if (blockIdx < 0 || blockIdx >= (int)graph->Blocks.size()) {
+        CenterGraphInView(hWnd, graph, state);
+        return;
+    }
+
+    CFG_BASIC_BLOCK& block = graph->Blocks[blockIdx];
+
+    RECT clientRect;
+    GetClientRect(hWnd, &clientRect);
+    int clientWidth = clientRect.right - clientRect.left;
+    int clientHeight = clientRect.bottom - clientRect.top;
+
+    // Choose zoom: try 1.0, but shrink if the block doesn't fit
+    double zoom = 1.0;
+    if (block.Width * zoom > clientWidth * 0.9)
+        zoom = (clientWidth * 0.9) / block.Width;
+    if (block.Height * zoom > clientHeight * 0.9)
+        zoom = (clientHeight * 0.9) / block.Height;
+    if (zoom < CFG_MIN_ZOOM) zoom = CFG_MIN_ZOOM;
+    if (zoom > CFG_MAX_ZOOM) zoom = CFG_MAX_ZOOM;
+
+    state->ZoomLevel = zoom;
+
+    // Center the block in the viewport
+    double blockCenterX = block.X + block.Width / 2.0;
+    double blockCenterY = block.Y + block.Height / 2.0;
+    state->PanOffsetX = clientWidth / 2.0 - blockCenterX * zoom;
+    state->PanOffsetY = clientHeight / 2.0 - blockCenterY * zoom;
+}
+
 static void FocusOnEntryBlock(HWND hWnd, CFG_GRAPH* graph, CFG_VIEW_STATE* state)
 {
     if (!hWnd || !graph || !state) return;
@@ -972,35 +1006,7 @@ static void FocusOnEntryBlock(HWND hWnd, CFG_GRAPH* graph, CFG_VIEW_STATE* state
         }
     }
 
-    if (entryIdx < 0) {
-        // No entry block — fall back to fit-all view
-        CenterGraphInView(hWnd, graph, state);
-        return;
-    }
-
-    CFG_BASIC_BLOCK& entry = graph->Blocks[entryIdx];
-
-    RECT clientRect;
-    GetClientRect(hWnd, &clientRect);
-    int clientWidth = clientRect.right - clientRect.left;
-    int clientHeight = clientRect.bottom - clientRect.top;
-
-    // Choose zoom: try 1.0, but shrink if the entry block doesn't fit
-    double zoom = 1.0;
-    if (entry.Width * zoom > clientWidth * 0.9)
-        zoom = (clientWidth * 0.9) / entry.Width;
-    if (entry.Height * zoom > clientHeight * 0.9)
-        zoom = (clientHeight * 0.9) / entry.Height;
-    if (zoom < CFG_MIN_ZOOM) zoom = CFG_MIN_ZOOM;
-    if (zoom > CFG_MAX_ZOOM) zoom = CFG_MAX_ZOOM;
-
-    state->ZoomLevel = zoom;
-
-    // Center the entry block in the viewport
-    double blockCenterX = entry.X + entry.Width / 2.0;
-    double blockCenterY = entry.Y + entry.Height / 2.0;
-    state->PanOffsetX = clientWidth / 2.0 - blockCenterX * zoom;
-    state->PanOffsetY = clientHeight / 2.0 - blockCenterY * zoom;
+    FocusOnBlock(hWnd, graph, state, entryIdx);
 }
 
 POINT ScreenToGraph(CFG_VIEW_STATE* viewState, POINT screenPt)
@@ -3581,10 +3587,28 @@ void LoadCFGForCurrentFunction_Embedded()
         ComputeBlockColors(&g_CurrentGraph);
         g_CFGGraphValid = true;
 
-        // Focus on entry block using the child window
+        // Find the block containing the selected disassembly line
+        int focusBlockIdx = -1;
+        for (size_t i = 0; i < g_CurrentGraph.Blocks.size(); i++) {
+            if (selectedItem >= g_CurrentGraph.Blocks[i].StartIndex &&
+                selectedItem <= g_CurrentGraph.Blocks[i].EndIndex) {
+                focusBlockIdx = (int)i;
+                break;
+            }
+        }
+        // Fall back to entry block if selected line isn't in any block
+        if (focusBlockIdx < 0) {
+            for (size_t i = 0; i < g_CurrentGraph.Blocks.size(); i++) {
+                if (g_CurrentGraph.Blocks[i].IsEntryBlock) {
+                    focusBlockIdx = (int)i;
+                    break;
+                }
+            }
+        }
+
         HWND hChild = GetDlgItem(Main_hWnd, IDC_CFG_CHILD);
         if (hChild) {
-            FocusOnEntryBlock(hChild, &g_CurrentGraph, &g_ViewState);
+            FocusOnBlock(hChild, &g_CurrentGraph, &g_ViewState, focusBlockIdx);
             InvalidateRect(hChild, NULL, FALSE);
         }
     } else {
