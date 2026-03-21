@@ -1410,6 +1410,10 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					ShowWindow(hMsg2, SW_HIDE);
 					MoveWindow(hMsg1, -3, statusY, clientW + 3, statusH, TRUE);
 				}
+				// Force full erase+repaint so text doesn't ghost on resize
+				InvalidateRect(hMsg1, NULL, TRUE);
+				InvalidateRect(hMsg2, NULL, TRUE);
+				InvalidateRect(hProg, NULL, TRUE);
 			}
 
 			// Resize Code Map bar to match window width and repaint
