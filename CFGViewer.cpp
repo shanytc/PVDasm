@@ -3606,6 +3606,10 @@ void LoadCFGForCurrentFunction_Embedded()
             }
         }
 
+        // Select the focused block (blue border highlight)
+        if (focusBlockIdx >= 0)
+            g_ViewState.SelectedBlockID = g_CurrentGraph.Blocks[focusBlockIdx].BlockID;
+
         HWND hChild = GetDlgItem(Main_hWnd, IDC_CFG_CHILD);
         if (hChild) {
             FocusOnBlock(hChild, &g_CurrentGraph, &g_ViewState, focusBlockIdx);
