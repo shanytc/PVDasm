@@ -86,18 +86,40 @@ CDisasmData::CDisasmData(char* pcAddress, char* pcCode, char* pcMnemonic, char* 
 // Destructor
 CDisasmData::~CDisasmData()
 {
-	if(m_pcAddress!=NULL)	delete[] m_pcAddress;
-	if(m_pcCode!=NULL)		delete[] m_pcCode;
-	if(m_pcMnemonic!=NULL)	delete[] m_pcMnemonic;
-	if(m_pcComments!=NULL)	delete[] m_pcComments;
-	if(m_pcReference!=NULL)	delete[] m_pcReference;
+	// _strdup uses malloc, so we must use free (not delete/delete[])
+	if(m_pcAddress!=NULL)	free(m_pcAddress);
+	if(m_pcCode!=NULL)		free(m_pcCode);
+	if(m_pcMnemonic!=NULL)	free(m_pcMnemonic);
+	if(m_pcComments!=NULL)	free(m_pcComments);
+	if(m_pcReference!=NULL)	free(m_pcReference);
+}
+
+// Copy Assignment Operator (deep copy, prevents double-free from implicit shallow copy)
+CDisasmData& CDisasmData::operator=(const CDisasmData &obj)
+{
+	if(this != &obj){
+		if(m_pcAddress!=NULL)	free(m_pcAddress);
+		if(m_pcCode!=NULL)		free(m_pcCode);
+		if(m_pcMnemonic!=NULL)	free(m_pcMnemonic);
+		if(m_pcComments!=NULL)	free(m_pcComments);
+		if(m_pcReference!=NULL)	free(m_pcReference);
+
+		m_pcAddress=_strdup(obj.m_pcAddress);
+		m_pcCode=_strdup(obj.m_pcCode);
+		m_pcMnemonic=_strdup(obj.m_pcMnemonic);
+		m_pcComments=_strdup(obj.m_pcComments);
+		m_pcReference=_strdup(obj.m_pcReference);
+		m_InstructionSize=obj.m_InstructionSize;
+		m_PrefixSize=obj.m_PrefixSize;
+	}
+	return *this;
 }
 
 // Set the address of the disassembled line
 void CDisasmData::SetAddress(char* pcAddress)
 {
 	if(m_pcAddress!=NULL)
-		delete m_pcAddress;
+		free(m_pcAddress);
 
 	m_pcAddress = _strdup(pcAddress);
 }
@@ -105,7 +127,7 @@ void CDisasmData::SetAddress(char* pcAddress)
 void CDisasmData::SetCode(char* pcCode)
 {
 	if(m_pcCode!=NULL)
-		delete m_pcCode;
+		free(m_pcCode);
 
 	m_pcCode =_strdup(pcCode);
 }
@@ -113,7 +135,7 @@ void CDisasmData::SetCode(char* pcCode)
 void CDisasmData::SetComments(char* pcComment)
 {
 	if(m_pcComments!=NULL)
-		delete m_pcComments;
+		free(m_pcComments);
 
 	m_pcComments = _strdup(pcComment);
 }
@@ -121,7 +143,7 @@ void CDisasmData::SetComments(char* pcComment)
 void CDisasmData::SetMnemonic(char* pcMnemonic)
 {
 	if(m_pcMnemonic!=NULL)
-		delete m_pcMnemonic;
+		free(m_pcMnemonic);
 
 	m_pcMnemonic = _strdup(pcMnemonic);
 }
@@ -129,7 +151,7 @@ void CDisasmData::SetMnemonic(char* pcMnemonic)
 void CDisasmData::SetReference(char* pcRef)
 {
 	if(m_pcReference!=NULL)
-		delete m_pcReference;
+		free(m_pcReference);
 
 	m_pcReference = _strdup(pcRef);
 }

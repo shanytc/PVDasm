@@ -737,6 +737,5 @@ void VBPCode()
     Sleep(55);
     SelectLastItem(DbgWin);
 
-    CloseHandle(hDisasmThread);
     ExitThread(0);
 }

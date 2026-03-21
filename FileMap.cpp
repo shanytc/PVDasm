@@ -55,6 +55,7 @@ extern bool					DisasmIsWorking;
 extern HMODULE				hRadHex;
 extern DllArray				hDllArray;
 extern MapTree				DataAddersses;
+extern MapTree				SEHAddresses;
 extern IntArray				BranchTargets;
 extern bool					LoadFirstPass;
 extern HBITMAP				hMenuItemBitmap;
@@ -2150,10 +2151,11 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 break;
 
                 // Stop the Disassembly process.
-                case IDC_STOP_DISASM:{    
+                case IDC_STOP_DISASM:{
                      // Terminate the Working Thread.
                      TerminateThread(hDisasmThread,0);
                      CloseHandle(hDisasmThread); // Kill Handle
+                     hDisasmThread = NULL;
                      EnableMenuItem(GetMenu(hWnd),IDC_STOP_DISASM,MF_GRAYED); 
                      EnableMenuItem(GetMenu(hWnd),IDC_DISASM_IMP,MF_GRAYED);
                      EnableMenuItem(GetMenu(hWnd),IDC_PAUSE_DISASM,MF_GRAYED);
@@ -3074,20 +3076,24 @@ bool CloseFiles(HWND hWnd)
 		ErrorMsg=5;
 		return false;
 	}
+	OrignalData=NULL;
+	Data=NULL;
 	OutDebug(hWnd,"UnMapped File Successfuly");
-		
+
 	// Close the map handle
 	if(CloseHandle(hFileMap)==NULL){ // סגירת המזהה של המפה
 		ErrorMsg=6;
 		return false;
-	}	
+	}
+	hFileMap=NULL;
 	OutDebug(hWnd,"Mapped File Closed Successfuly");
-	
+
 	// Close the file handle
 	if(CloseHandle(hFile)==NULL){ // סגירת המזהה של הקובץ
 		ErrorMsg=7;
 		return false;
 	}
+	hFile=NULL;
 	// no errors
 	ErrorMsg=0;
 	OutDebug(hWnd,"File Closed Successfuly");
@@ -3097,7 +3103,8 @@ bool CloseFiles(HWND hWnd)
     LoadedPe=false;
 	LoadedPe64=false;
 	LoadedNe=false;
-	
+	SectionHeader=NULL;
+
 	return true;
 }
 
@@ -6000,40 +6007,82 @@ LRESULT CALLBACK MessageListSubClass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
 // Releases the Memory of all variables and loaded files.
 void FreeMemory(HWND hWnd)
 {
-    // ùçøåø äæéëøåï ò"é îçé÷ú ëîåú îñåééîú ùì ðúåðéí ä÷ééîéí áæéëøåï
-    CloseFiles(hWnd); // close files handles.
-    
+    // Prevent handlers from accessing data while we free it.
+    DisassemblerReady=FALSE;
+
+    // Wait for the disassembly worker thread to finish before freeing data.
+    // The thread may still be running post-processing (LocateXrefs, etc.)
+    // even after setting DisassemblerReady=TRUE.
+    // We pump messages while waiting to prevent deadlock: the worker thread
+    // uses SendMessage for UI updates, which blocks until the UI thread
+    // processes them. Without message pumping, both threads would block.
+    if(hDisasmThread){
+        // DisassemblerReady is FALSE — worker thread checks this flag
+        // in LocateXrefs/LoadApiSignature and exits quickly.
+        // Pump messages while waiting so SendMessage calls from the
+        // worker thread don't deadlock.
+        while(TRUE){
+            DWORD result = MsgWaitForMultipleObjects(1, &hDisasmThread, FALSE, INFINITE, QS_ALLINPUT);
+            if(result == WAIT_OBJECT_0) break;      // Thread finished
+            if(result == WAIT_OBJECT_0 + 1){         // Message arrived
+                MSG msg;
+                while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)){
+                    TranslateMessage(&msg);
+                    DispatchMessage(&msg);
+                }
+            }
+            else break; // WAIT_FAILED or other error
+        }
+        CloseHandle(hDisasmThread);
+        hDisasmThread = NULL;
+    }
+
+    // IMPORTANT: Reset the listview BEFORE clearing data vectors.
+    // This prevents NM_CUSTOMDRAW / LVN_GETDISPINFO callbacks from
+    // accessing freed DisasmDataLines, ImportsLines, or DisasmCodeFlow.
+    HWND hDisasm = GetDlgItem(hWnd, IDC_DISASM);
+    ShowWindow(hDisasm, SW_HIDE);
+    SendMessage(hDisasm, LVM_SETITEMCOUNT, 0, 0);
+    Clear(hDisasm);
+
+    // Close file handles and unmap memory.
+    CloseFiles(hWnd);
+
     //
     // Free Disassembler Information From Memory.
     //
-    
+
     // Free Disasm data from memory.
     DisasmDataLines.clear();
     DisasmDataArray(DisasmDataLines).swap(DisasmDataLines);
-    
+
     // Free Imports data from memory.
     ImportsLines.clear();
     DisasmImportsArray(ImportsLines).swap(ImportsLines);
-    
+
     // Free String ref data from memory.
     StrRefLines.clear();
     DisasmImportsArray(StrRefLines).swap(StrRefLines);
-    
+
     // Free The Data.
     DisasmCodeFlow.clear();
     CodeBranch(DisasmCodeFlow).swap(DisasmCodeFlow);
-    
+
     // Clear Tracing List.
     BranchTrace.clear();
     BranchData(BranchTrace).swap(BranchTrace);
-    
+
     // Clear Xref List.
     XrefData.clear();
     XRef(XrefData).swap(XrefData);
-    
+
     DataAddersses.clear();
     MapTree(DataAddersses).swap(DataAddersses);
-        
+
+    // Clear SEH address data.
+    SEHAddresses.clear();
+    MapTree(SEHAddresses).swap(SEHAddresses);
+
     // clear wizard data vars.
     DataSection.clear();
     DataMapTree(DataSection).swap(DataSection);
@@ -6051,34 +6100,29 @@ void FreeMemory(HWND hWnd)
 	// Clear Branch Targets.
 	BranchTargets.clear();
 	IntArray(BranchTargets).swap(BranchTargets);
-    
-    //////////////////////////////
-    // Clear Wizard's variables //
-    //////////////////////////////
-    if(DataSection.size()!=0){
-        ItrDataMap DItr=DataSection.begin();
-        for(int i=0;i<DataSection.size();i++,DItr++){
-            delete[] (*DItr).second; // delete allocated memory.
-        }
-    }
-    
+
     WizardCodeList.clear();
     WizardList(WizardCodeList).swap(WizardCodeList);
-    
+
     // Set FirstPass ON, on new file loading.
     LoadFirstPass=TRUE;
-    
+
     SetWindowText(hWnd,PVDASM);
-    Clear(GetDlgItem(hWnd,IDC_DISASM));
 }
 
 void ExitPVDasm(HWND hWnd)
 {
 	if( MessageBox(hWnd,"Exit From PVDasm Disassembler?","Notice",MB_YESNO)==IDYES){
+		// Wait for worker thread before exit
+		if(hDisasmThread){
+			WaitForSingleObject(hDisasmThread, 5000);
+			CloseHandle(hDisasmThread);
+			hDisasmThread = NULL;
+		}
 		// Free handlers from memory
 		CloseFiles(hWnd);
 		PostQuitMessage(0);
-		EndDialog(hWnd,0); 
+		EndDialog(hWnd,0);
 	}
 }
 

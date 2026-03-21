@@ -2484,9 +2484,6 @@ void CopyDisasmToClipboard()
 		OutDebug(Main_hWnd,"Error copying to clipbload!");
 	}
 
-    // Close Thread Handle and Kill The Thread
-    CloseHandle(hDisasmThread);
-    TerminateThread(hDisasmThread,0);
     ExitThread(0);
 }
 
@@ -2537,10 +2534,7 @@ void CopyDisasmToFile()
 
     OutDebug(Main_hWnd,"Buffer Copied to File.");
     Sleep(55);
-    SelectLastItem(GetDlgItem(Main_hWnd,IDC_LIST));	
-    // Close Thread Handle and Kill The Thread
-    CloseHandle(hDisasmThread);
-    TerminateThread(hDisasmThread,0);
+    SelectLastItem(GetDlgItem(Main_hWnd,IDC_LIST));
     ExitThread(0);
 }
 
@@ -2912,7 +2906,6 @@ void ProduceDisasm()
 		CloseHandle(hFile);
 	}
 
-	TerminateThread(hDisasmThread,0);
 	ExitThread(0);
 }
 

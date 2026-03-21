@@ -67,6 +67,17 @@ ProView is an educational project aimed at building a custom disassembler and de
 
 ### 2026
 
+#### March 21, 2026
+- Fixed **crash on File→Close** after disassembling large PE files (e.g., Scylla_x64.dll) — root cause was heap corruption in `LoadApiSignature()` from out-of-bounds `DisasmDataLines` access when API parameter count exceeded the instruction index
+- Fixed **File→Close hanging indefinitely** — worker thread post-processing (`LocateXrefs`, `LoadApiSignature`) now checks a shutdown flag and exits immediately when close is requested
+- Fixed **race condition** between worker thread and main thread — `FreeMemory()` now waits for the worker thread to finish before freeing data, with message pumping to prevent deadlock
+- Fixed `strcpy_s` misuse in `LoadApiSignature()` (was passing source length as destination buffer size)
+- Fixed buffer overflow guards in API signature parameter parsing
+- Fixed NULL dereference in API signature search when `StrStrI` returns no match
+- Fixed `LocateXrefs()` incorrectly marking instruction at index 0 as cross-referenced when no matching address was found
+- Fixed `SEHAddresses` data not being cleared on file close, causing stale SEH annotations across file loads
+- Added `CDisasmData` copy assignment operator to prevent double-free from implicit shallow copies
+
 #### March 20, 2026
 - Embedded **CFG viewer as a tab** in the main window — Disassembly and Graph tabs with close buttons, auto-builds CFG for the current function, Escape switches back to Disassembly
 - Added **Views menu** with Disassembly/Graph tab toggles; moved **code map** above the tab row so it stays visible on both tabs

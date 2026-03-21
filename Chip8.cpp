@@ -180,7 +180,6 @@ void Chip8()
 	Sleep(55);
 	SelectLastItem(DbgWin); // Selects the Last Item
 
-	CloseHandle(hDisasmThread);
 	ExitThread(0);
 }
 

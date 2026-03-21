@@ -3732,6 +3732,7 @@ void WINAPI Disassembler(/*LPVOID lpParam*/) // Thread Worker for Decoding Instr
 						EndSection
 						);
 					
+					SendDlgItemMessage(mainhWnd, IDC_DISASM_PROGRESS, PBM_SETPOS, 0, 0);
 					wsprintf(MessageText,"First Pass Analyzer Process... [Success]");
 					OutDebug(mainhWnd,MessageText);
 					Sleep(55);
@@ -4299,8 +4300,7 @@ void WINAPI Disassembler(/*LPVOID lpParam*/) // Thread Worker for Decoding Instr
         SendMessage ( hWndTB, TB_ENABLEBUTTON, ID_PATCH,        (LPARAM) FALSE );
         ShowWindow(GetDlgItem(mainhWnd,IDC_DISASM_PROGRESS),SW_HIDE);
 
-        // Close and exit the Thread.
-		CloseHandle(hDisasmThread);
+        // Exit the Thread (handle closed by FreeMemory).
 		ExitThread(0);
         return;
 	}
@@ -4422,9 +4422,7 @@ void WINAPI Disassembler(/*LPVOID lpParam*/) // Thread Worker for Decoding Instr
     SelectLastItem(GetDlgItem(mainhWnd,IDC_LIST)); // Selects the Last Item.
 
 	RedrawWindow(hDisasm,NULL,NULL,TRUE);
-    // Close Thread Handle and Kill The Thread
-    CloseHandle(hDisasmThread);
-    TerminateThread(hDisasmThread,0);
+    // Thread exits naturally (handle closed by FreeMemory).
     ExitThread(0);
 }
 
@@ -4439,21 +4437,27 @@ void LocateXrefs()
 
 	ItrXref it,itr=XrefData.begin();
 	for(;itr!=XrefData.end();itr++){
+		if(!DisassemblerReady) return; // Abort if shutting down
 		key = (*itr).first;
 		size=DisasmDataLines.size();
+		bool found=false;
 		for(i=0;i<size;i++){
+			if(!DisassemblerReady) return; // Abort if shutting down
 			inst = DisasmDataLines[i].GetMnemonic();
 			transform(inst.begin(), inst.end(), inst.begin(), tolower);
 			// remove 'ret' command, no need self referrenced.
 			if(StringToDword(DisasmDataLines[i].GetAddress())==key && inst.find("ret")==-1){
 				offset=i;
+				found=true;
 				break;
 			}
 		}
 
-		it=XrefData.find((DWORD)key);
-		if(it!=XrefData.end()){
-			DisasmDataLines[offset].SetReference(";Referenced by a (Un)Conditional Jump(s)");
+		if(found){
+			it=XrefData.find((DWORD)key);
+			if(it!=XrefData.end()){
+				DisasmDataLines[offset].SetReference(";Referenced by a (Un)Conditional Jump(s)");
+			}
 		}
 	}
 }
@@ -4531,12 +4535,13 @@ void LoadApiSignature()
 		
 		// Scan Improts/CodeFlow Indexes, only Calls APIs are acceptble for signatures.
 		for(ItrImports ImportCounter=ImportsLines.begin();ImportCounter!=ImportsLines.end();ImportCounter++){
+			if(!DisassemblerReady) break; // Abort if shutting down
 			for(int Codeflow=0;Codeflow<DisasmCodeFlow.size();Codeflow++){
 				if((*ImportCounter)==DisasmCodeFlow[Codeflow].Current_Index){
 					if(DisasmCodeFlow[Codeflow].BranchFlow.Call==TRUE){
 						Loopy=TRUE;
 						Api[0]=NULL;
-						strcpy_s(Api,StringLen(DisasmDataLines[(*ImportCounter)].GetMnemonic())+1,DisasmDataLines[(*ImportCounter)].GetMnemonic()); // Get Function
+						strcpy_s(Api,sizeof(Api),DisasmDataLines[(*ImportCounter)].GetMnemonic()); // Get Function
 						ptr=Api;
 						
 						// Extract the Function's Name
@@ -4563,9 +4568,11 @@ void LoadApiSignature()
 								
 								StartPtr+=2;
 								while(*StartPtr!=',' && *StartPtr!='\r' && *(StartPtr+1)!='\n' ){
-									Params[j]=*StartPtr;
+									if(j < sizeof(Params)-1){
+										Params[j]=*StartPtr;
+										j++;
+									}
 									StartPtr++;
-									j++;
 								}
 								Params[j]=NULL;
 
@@ -4578,12 +4585,20 @@ void LoadApiSignature()
 									}
 									FoundString+=2;
 									StartPtr=StrStrI(FoundString,ptr);
+									if(StartPtr==NULL){
+										Loopy=FALSE;
+										FoundString=NULL;
+										break;
+									}
 									FoundString=StartPtr;
 								}
 							}
 							
+							if(FoundString==NULL)
+								break;
+
 							strcpy_s(Params,"");
-							
+
 							FoundString+=StringLen(ptr);
 							if(*FoundString=='\r' && *(FoundString+1)=='\n'){
 								break;
@@ -4600,39 +4615,46 @@ void LoadApiSignature()
 							do{
 								if(*FoundString==','){
 									Params[j]=NULL;
-									strcpy_s(Comments,StringLen(DisasmDataLines[(*ImportCounter)-ParamCount].GetComments())+1,DisasmDataLines[(*ImportCounter)-ParamCount].GetComments());
-									if(StringLen(Comments)!=0){
-										wsprintf(cFilePath,"; %s [ %s ]",Params,Comments);
+									// Bounds check: prevent underflow/out-of-bounds
+									if(ParamCount <= (DWORD)(*ImportCounter) && (DWORD)((*ImportCounter)-ParamCount) < DisasmDataLines.size()){
+										strcpy_s(Comments,sizeof(Comments),DisasmDataLines[(*ImportCounter)-ParamCount].GetComments());
+										if(StringLen(Comments)!=0){
+											wsprintf(cFilePath,"; %s [ %s ]",Params,Comments);
+										}
+										else{
+											wsprintf(cFilePath,"; %s",Params);
+										}
+										DisasmDataLines[(*ImportCounter)-ParamCount].SetComments(cFilePath);
 									}
-									else{
-										wsprintf(cFilePath,"; %s",Params);
-									}
-									
-									DisasmDataLines[(*ImportCounter)-ParamCount].SetComments(cFilePath);
-									
+
 									FoundString++;
 									strcpy_s(Params,"");
 									j=0;
 									ParamCount++;
 								}
 								else{
-									Params[j] = *FoundString;
-									j++;
+									if(j < sizeof(Params)-1){
+										Params[j] = *FoundString;
+										j++;
+									}
 									FoundString++;
 								}
 							}while(*FoundString!='\r' && *(FoundString+1)!='\n');
-							
+
 							Params[j]=NULL;
-							strcpy_s(Comments,StringLen(DisasmDataLines[(*ImportCounter)-ParamCount].GetComments())+1,DisasmDataLines[(*ImportCounter)-ParamCount].GetComments());
-							
-							if(StringLen(Comments)!=0){
-								wsprintf(cFilePath,"; %s [ %s ]",Params,Comments);
+							// Bounds check: prevent underflow/out-of-bounds
+							if(ParamCount <= (DWORD)(*ImportCounter) && (DWORD)((*ImportCounter)-ParamCount) < DisasmDataLines.size()){
+								strcpy_s(Comments,sizeof(Comments),DisasmDataLines[(*ImportCounter)-ParamCount].GetComments());
+
+								if(StringLen(Comments)!=0){
+									wsprintf(cFilePath,"; %s [ %s ]",Params,Comments);
+								}
+								else{
+									wsprintf(cFilePath,"; %s",Params);
+								}
+
+								DisasmDataLines[(*ImportCounter)-ParamCount].SetComments(cFilePath);
 							}
-							else{
-								wsprintf(cFilePath,"; %s",Params);
-							}
-							
-							DisasmDataLines[(*ImportCounter)-ParamCount].SetComments(cFilePath);
 							MatchedApis++;
 						}
 						else{
@@ -5236,6 +5258,9 @@ void FirstPass(
 	char TraceAddress;
 	char MessageText[256]="";
 	bool TracingCall=FALSE,KeepTrace=FALSE;
+	DWORD_PTR maxIndex = Index;
+	signed int percent, fpStep = -1;
+	std::set<DWORD> VisitedTargets;
 
 	Disasm.Address = EntryPoint = epAddress;
 	FlushDecoded(&Disasm);
@@ -5253,6 +5278,15 @@ void FirstPass(
 		Address=0;
 		
 		Decode(&Disasm,Linear,&Index); // Decode Disasm Address
+
+		// Update progress bar (use maxIndex for monotonic progress)
+		if (Index > maxIndex) maxIndex = Index;
+		percent = (signed int)(((float)maxIndex / (float)NumOfDecode) * 100.0);
+		if (percent > fpStep) {
+			fpStep = percent;
+			PostMessage(GetDlgItem(mainhWnd, IDC_DISASM_PROGRESS), PBM_SETPOS, (WPARAM)maxIndex, 0);
+			PostMessage(GetDlgItem(mainhWnd, IDC_DISASM_PROGRESS), PBM_STEPIT, 0, 0);
+		}
 
 		if(Disasm.CodeFlow.Ret==TRUE){ // RET instruction.
 			EndSegment = Disasm.Address;
@@ -5332,13 +5366,13 @@ void FirstPass(
 				EndSegment=Disasm.Address;
 				// Mark Code_Block.
 				CodeSegments.insert(MapTreeAdd((DWORD)StartSegment,(DWORD)EndSegment));
-				TreeMapItr itr = CodeSegments.find((DWORD)Address);
-				if(itr!=CodeSegments.end()){
-					// Are we going back to already waled address?
-					if( (Address >= (*itr).first) && (Address <= (*itr).second)){
-						TraceAddress=FALSE;
-						StartSegment=EndSegment;
-					}
+
+				// Check if we already traced this target address.
+				// Previous find()-based check only matched exact segment starts,
+				// missing targets in the middle of already-traced segments.
+				if(VisitedTargets.count((DWORD)Address)){
+					TraceAddress=FALSE;
+					StartSegment=EndSegment;
 				}
 
 				if(TraceAddress==TRUE){
@@ -5364,7 +5398,8 @@ void FirstPass(
 
 						// Record branch target as known code address
 						BranchTargets.insert(BranchTargets.end(),(DWORD)Address);
-                       
+						VisitedTargets.insert((DWORD)Address);
+
 						StartSegment=Address;
 						Index += ( (Address - StartSection) - Index-1);
 						Disasm.Address = Address;

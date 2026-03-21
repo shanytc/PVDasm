@@ -2152,7 +2152,6 @@ void BuildSourceCode()
 
     MessageBox(PrevhWnd,"Source Created!","Notice",MB_OK);
     CloseHandle(hFile);
-    TerminateThread(hDisasmThread,0);
     ExitThread(0);
 }
 

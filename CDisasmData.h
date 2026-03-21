@@ -69,7 +69,8 @@ class CDisasmData {
 			           char* pcMnemonic, char* pcComments, 
 					   DWORD dwSize,DWORD dwPrefSize,char* pcRef ); // Advanced constructor                       	
 		~CDisasmData (                                    ); // Destructor
-		
+		CDisasmData& operator=( const CDisasmData &obj    ); // Copy Assignment Operator
+
 		// Set Methods
 		void  SetAddress   ( char* pcAddress	); // Set the address of the disassembled line        
         void  SetCode      ( char* pcCode		); // Set the Opcode of the disassembled line        
