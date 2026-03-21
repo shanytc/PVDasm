@@ -52,6 +52,7 @@ ProView is an educational project aimed at building a custom disassembler and de
 | **API Recognition** | Automatic API parameter annotation via signature database. |
 | **Function Graph (CFG)** | Interactive control flow graph viewer embedded as a tab with draggable blocks, zoom/pan, orthogonal edge routing, instruction-level navigation (double-click jxx/call), call history with back-navigation, context menu with "Show Disassembly", and export to PNG/JPEG. |
 | **Control Flow Arrows** | IDA-style flow arrows panel showing jump connections with color/dash-coded lanes, draggable splitter to resize, and scaled rendering. Toggle via Views menu. |
+| **Drag-and-Drop** | Drop files onto the main window to open and disassemble them. |
 | **Color Schemes** | SoftICE, IDA, OllyDbg, W32Asm, and custom themes. |
 | **Save/Load Projects** | Persist analysis state including functions, data, and comments. |
 | **Map File Support** | Import/export MAP files (IDA-compatible.) |
@@ -69,6 +70,9 @@ ProView is an educational project aimed at building a custom disassembler and de
 ### 2026
 
 #### March 21, 2026
+- Added **Drag-and-Drop file support** — drop an EXE/DLL onto the main window to open it for disassembly with a confirmation prompt
+- Fixed **flow arrows panel not hiding** when opening a new file — the arrow panel and its listview offset are now reset before file processing begins, preventing visual artifacts behind the disassembly options dialog
+- Fixed **flow arrows causing growing gap** on repeated file loads — added a visibility guard to prevent the listview from being shifted right multiple times without a corresponding reset
 - Added **Control Flow Arrows** panel — IDA-style flow arrows to the left of the disassembly view showing jump/branch connections
   - Color-coded and dash-styled lanes (solid, dashed, dotted, dash-dot) for visual distinction between adjacent arrows
   - Filled triangle arrowheads pointing to jump destinations

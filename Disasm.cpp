@@ -4330,13 +4330,17 @@ void WINAPI Disassembler(/*LPVOID lpParam*/) // Thread Worker for Decoding Instr
             RECT dr;
             GetWindowRect(hDisasm, &dr);
             MapWindowPoints(HWND_DESKTOP, mainhWnd, (LPPOINT)&dr, 2);
-            // Shrink ListView from the left to make room
-            MoveWindow(hDisasm, dr.left + g_FlowArrowPanelWidth, dr.top,
-                (dr.right - dr.left) - g_FlowArrowPanelWidth,
-                dr.bottom - dr.top, TRUE);
+            // Only shift ListView if arrow panel is not already visible
+            // (prevents accumulating rightward drift on repeated file loads)
+            if (!IsWindowVisible(hArrowPanel)) {
+                // Shrink ListView from the left to make room
+                MoveWindow(hDisasm, dr.left + g_FlowArrowPanelWidth, dr.top,
+                    (dr.right - dr.left) - g_FlowArrowPanelWidth,
+                    dr.bottom - dr.top, TRUE);
+                GetWindowRect(hDisasm, &dr);
+                MapWindowPoints(HWND_DESKTOP, mainhWnd, (LPPOINT)&dr, 2);
+            }
             // Position arrow panel
-            GetWindowRect(hDisasm, &dr);
-            MapWindowPoints(HWND_DESKTOP, mainhWnd, (LPPOINT)&dr, 2);
             MoveWindow(hArrowPanel, dr.left - g_FlowArrowPanelWidth, dr.top,
                 g_FlowArrowPanelWidth, dr.bottom - dr.top, TRUE);
             ShowWindow(hArrowPanel, SW_SHOW);

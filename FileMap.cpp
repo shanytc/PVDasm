@@ -3288,6 +3288,40 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		SetFocus(GetDlgItem(hWnd, IDC_DISASM));
 		return 0;
 	}
+
+	case WM_DROPFILES: {
+		HDROP hDrop = (HDROP)wParam;
+		char droppedFile[MAX_PATH];
+		// Get only the first file if multiple were dropped
+		if (DragQueryFile(hDrop, 0, droppedFile, MAX_PATH) > 0) {
+			DragFinish(hDrop);
+			// Extract just the filename for the prompt
+			char* fileName = droppedFile;
+			char* p = strrchr(droppedFile, '\\');
+			if (p) fileName = p + 1;
+
+			char msg[MAX_PATH + 32];
+			wsprintf(msg, "Disassemble %s?", fileName);
+
+			if (MessageBox(hWnd, msg, "PVDasm", MB_YESNO | MB_ICONQUESTION) == IDYES) {
+				lstrcpy(szFileName, droppedFile);
+				if (OpenFileByPath(hWnd) == false) {
+					OutDebug(hWnd, "---> Something Went Wrong! <---");
+					ErrorHandling(hWnd);
+					OutDebug(hWnd, "");
+					OutDebug(hWnd, "[ Task Aborted ]");
+				}
+				else {
+					UpdateWindow(hWnd);
+				}
+			}
+		}
+		else {
+			DragFinish(hDrop);
+		}
+	}
+	break;
+
 	}
 	return 0;
 }
@@ -3321,77 +3355,66 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	   הפונקציה פותחת קובץ שנבחר ע"י המשתמש
 	   ממפה אותו לזיכרון ובודקת את סוג הקובץ שנפתח
 */
-int Open(HWND hWnd)
-{  	
-	// File Select dialog struct
-	OPENFILENAME	ofn;
+int OpenFileByPath(HWND hWnd)
+{
 	char			debug[MAX_PATH],temp[MAX_PATH];
 	HANDLE			hReadOnly=NULL;
 
-	// Intialize struct
-	ZeroMemory(&ofn, sizeof(OPENFILENAME));
-	ofn.lStructSize = sizeof(OPENFILENAME); // Set Size of Struct
-    ofn.hwndOwner = hWnd;
-    ofn.lpstrFilter = "Executable files (*.exe, *.dll)\0*.exe;*.dll\0ROM Files (*.gb,*.gbc)\0*.gb;*.gbc\0All Files (*.*)\0*.*\0";
-	ofn.lpstrFile = szFileName;
-	ofn.nMaxFile = MAX_PATH;
-	ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
-	ofn.lpstrDefExt = "exe";
-	
-	// we selected a file ?
-	if(GetOpenFileName(&ofn)!=0){	
-		// Do we have already a file loaded ?
-		if(FilesInMemory==true){
-            // Hide code map from previous file before freeing memory
-            HWND hBar = GetDlgItem(hWnd, IDC_CODE_MAP_BAR);
-            if (hBar && IsWindowVisible(hBar)) {
-                ShowWindow(hBar, SW_HIDE);
-                RepositionDisasmForCodeMap(hWnd, FALSE);
-            }
-            FreeMemory(hWnd);
-        }
-		//צור/פתח קובץ שאנו נבחר מתוך הדיאלוג
-		hFile=CreateFile(szFileName,
-			GENERIC_READ|GENERIC_WRITE,
-			FILE_SHARE_READ,
-			NULL,
-			OPEN_ALWAYS,
-			FILE_ATTRIBUTE_NORMAL,
-			NULL );
-
-		// Delete debug text
-		SendMessage(GetDlgItem(hWnd,IDC_LIST),LVM_DELETEALLITEMS,0,0); // Insert/Show the coloum
-		
-		OutDebug(hWnd,"[ Analyzing File ]");
-		OutDebug(hWnd,"");
-
-        // Disable Menus (Disasm related)
-        HMENU hMenu=GetMenu(hWnd);
-        EnableMenuItem(hMenu,IDC_GOTO_START,MF_GRAYED);
-        EnableMenuItem(hMenu,IDC_GOTO_ENTRYPOINT,MF_GRAYED);
-        EnableMenuItem(hMenu,IDC_GOTO_ADDRESS,MF_GRAYED);
-        EnableMenuItem(hMenu,ID_GOTO_JUMP,MF_GRAYED);
-        EnableMenuItem(hMenu,ID_GOTO_RETURN_JUMP,MF_GRAYED);
-        EnableMenuItem(hMenu,ID_GOTO_EXECUTECALL,MF_GRAYED);
-        EnableMenuItem(hMenu,ID_GOTO_RETURN_CALL,MF_GRAYED);
-        EnableMenuItem(hMenu,IDC_START_DISASM,MF_ENABLED);
-        EnableMenuItem(hMenu,IDC_STOP_DISASM,MF_GRAYED);
-        EnableMenuItem(hMenu,IDC_PAUSE_DISASM,MF_GRAYED);
-	}
-	else{ 
-		if(FilesInMemory!=true){
-			// We pressed cancel
-			// אם ביטלנו את הדיאלוג
-			ErrorMsg=1;
-			SendMessage(hWndTB, TB_ENABLEBUTTON, IDC_PE_EDITOR, (LPARAM)FALSE);	// Disable Buttons
-			SendMessage(hWndTB, TB_ENABLEBUTTON, IDC_SAVE_DISASM, (LPARAM)FALSE); 
-			return false;
+	// Hide flow arrows panel so it doesn't show behind the disasm dialog
+	{
+		HWND hArrowPanel = GetDlgItem(hWnd, IDC_FLOW_ARROWS);
+		HWND hDisasm = GetDlgItem(hWnd, IDC_DISASM);
+		if (hArrowPanel && IsWindowVisible(hArrowPanel)) {
+			ShowWindow(hArrowPanel, SW_HIDE);
+			if (hDisasm) {
+				RECT dr;
+				GetWindowRect(hDisasm, &dr);
+				MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&dr, 2);
+				MoveWindow(hDisasm, dr.left - g_FlowArrowPanelWidth, dr.top,
+					(dr.right - dr.left) + g_FlowArrowPanelWidth,
+					dr.bottom - dr.top, TRUE);
+			}
 		}
-
-		SetWindowText(hWnd,PVDASM);
-		return false;
 	}
-	
+
+	// Do we have already a file loaded ?
+	if(FilesInMemory==true){
+		// Hide code map from previous file before freeing memory
+		HWND hBar = GetDlgItem(hWnd, IDC_CODE_MAP_BAR);
+		if (hBar && IsWindowVisible(hBar)) {
+			ShowWindow(hBar, SW_HIDE);
+			RepositionDisasmForCodeMap(hWnd, FALSE);
+		}
+		FreeMemory(hWnd);
+	}
+	//צור/פתח קובץ שאנו נבחר מתוך הדיאלוג
+	hFile=CreateFile(szFileName,
+		GENERIC_READ|GENERIC_WRITE,
+		FILE_SHARE_READ,
+		NULL,
+		OPEN_ALWAYS,
+		FILE_ATTRIBUTE_NORMAL,
+		NULL );
+
+	// Delete debug text
+	SendMessage(GetDlgItem(hWnd,IDC_LIST),LVM_DELETEALLITEMS,0,0); // Insert/Show the coloum
+
+	OutDebug(hWnd,"[ Analyzing File ]");
+	OutDebug(hWnd,"");
+
+	// Disable Menus (Disasm related)
+	HMENU hMenu=GetMenu(hWnd);
+	EnableMenuItem(hMenu,IDC_GOTO_START,MF_GRAYED);
+	EnableMenuItem(hMenu,IDC_GOTO_ENTRYPOINT,MF_GRAYED);
+	EnableMenuItem(hMenu,IDC_GOTO_ADDRESS,MF_GRAYED);
+	EnableMenuItem(hMenu,ID_GOTO_JUMP,MF_GRAYED);
+	EnableMenuItem(hMenu,ID_GOTO_RETURN_JUMP,MF_GRAYED);
+	EnableMenuItem(hMenu,ID_GOTO_EXECUTECALL,MF_GRAYED);
+	EnableMenuItem(hMenu,ID_GOTO_RETURN_CALL,MF_GRAYED);
+	EnableMenuItem(hMenu,IDC_START_DISASM,MF_ENABLED);
+	EnableMenuItem(hMenu,IDC_STOP_DISASM,MF_GRAYED);
+	EnableMenuItem(hMenu,IDC_PAUSE_DISASM,MF_GRAYED);
+
 	if(hFile==INVALID_HANDLE_VALUE){ // Invalid file
 		// Check mabye the file is Read-Only Flagged.
 		hReadOnly=(int*)GetFileAttributes(szFileName);
@@ -3419,10 +3442,10 @@ int Open(HWND hWnd)
 			return false;
 		}
 	}
-	
+
 	wsprintf(debug,"%s - Loaded",szFileName);
 	OutDebug(hWnd,debug);
-	
+
 	hFileSize=GetFileSize(hFile,NULL);	// Get file size
 	if(hFileSize==INVALID_FILE_SIZE){	// Invalid File Size
 		ErrorMsg=3;
@@ -3431,7 +3454,7 @@ int Open(HWND hWnd)
 
 	wsprintf(debug,"File Size Stored (%d bytes)",hFileSize);
     OutDebug(hWnd,debug);
-	
+
 	// קריאה לפונקציית מיפוי הקובץ לזיכרון
 	// פונקציה תחזיראת המזהה לקובץ הממופה
 	hFileMap=CreateFileMapping(hFile,
@@ -3440,28 +3463,28 @@ int Open(HWND hWnd)
 		0,
 		0,
 		NULL);
-	
+
 	if(hFileMap==NULL){
 		// אם לא ניתן למפות את הקובץ נצא
 		ErrorMsg=4;
 		return false;
 	}
-	
-    /* 
-	   Data = Pointer to the Mapped File 
-	   מכיל את תחילת הקובץ הממופה בזיכרון char * מסוג Data משתנה 
+
+    /*
+	   Data = Pointer to the Mapped File
+	   מכיל את תחילת הקובץ הממופה בזיכרון char * מסוג Data משתנה
 	   תחזיר את כתובתו של הקובץ בזיכרון MapViewOfFile הפונקציה
-	*/	
-	
+	*/
+
 	Data=(char*)MapViewOfFile(hFileMap,
 							FILE_MAP_ALL_ACCESS,
 							0,
 							0,
 							0);
-	
+
 	wsprintf(debug,"File Mapped to Memory Successfuly At 0x%08X",Data);
 	OutDebug(hWnd,debug);
-	
+
 	// Get caption text
 	GetWindowText(hWnd,debug,256);
 	// copy the loaded file + path
@@ -3472,9 +3495,9 @@ int Open(HWND hWnd)
 	wsprintf(debug,"%s - [%s]",debug,temp);
 	SetWindowText(hWnd,debug);
 
-	FilesInMemory=true; 	
-	OrignalData=Data; 
-	
+	FilesInMemory=true;
+	OrignalData=Data;
+
 	// read the dos header
 	doshdr=(IMAGE_DOS_HEADER*)Data;
     nt_hdr=(IMAGE_NT_HEADERS*)(doshdr->e_lfanew+Data);
@@ -3542,8 +3565,8 @@ int Open(HWND hWnd)
         return false;
     }
 
-	EnableID(hWnd); // Make Dump Button Enabled	
-	/* Dumping Area 
+	EnableID(hWnd); // Make Dump Button Enabled
+	/* Dumping Area
 	מכאן אנו מתחילים לקרוא את הקובץ ששמופה לזיכרון
 	אם העלנו קובץ הרצה והוא חוקי (קיים לו מבנה מסוים) אז
 	אנו נקרא לפונקציה המטפלת בכך
@@ -3569,6 +3592,40 @@ int Open(HWND hWnd)
 	}
 
 	return true;    // all tasks went great in the end
+}
+
+int Open(HWND hWnd)
+{
+	// File Select dialog struct
+	OPENFILENAME	ofn;
+
+	// Intialize struct
+	ZeroMemory(&ofn, sizeof(OPENFILENAME));
+	ofn.lStructSize = sizeof(OPENFILENAME); // Set Size of Struct
+    ofn.hwndOwner = hWnd;
+    ofn.lpstrFilter = "Executable files (*.exe, *.dll)\0*.exe;*.dll\0ROM Files (*.gb,*.gbc)\0*.gb;*.gbc\0All Files (*.*)\0*.*\0";
+	ofn.lpstrFile = szFileName;
+	ofn.nMaxFile = MAX_PATH;
+	ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+	ofn.lpstrDefExt = "exe";
+
+	// we selected a file ?
+	if(GetOpenFileName(&ofn)!=0){
+		return OpenFileByPath(hWnd);
+	}
+	else{
+		if(FilesInMemory!=true){
+			// We pressed cancel
+			// אם ביטלנו את הדיאלוג
+			ErrorMsg=1;
+			SendMessage(hWndTB, TB_ENABLEBUTTON, IDC_PE_EDITOR, (LPARAM)FALSE);	// Disable Buttons
+			SendMessage(hWndTB, TB_ENABLEBUTTON, IDC_SAVE_DISASM, (LPARAM)FALSE);
+			return false;
+		}
+
+		SetWindowText(hWnd,PVDASM);
+		return false;
+	}
 }
 
 void DebugNonPE(HWND hWnd)
@@ -6856,15 +6913,18 @@ void CloseLoadedFile(HWND hWnd)
         {
             HWND hArrowPanel = GetDlgItem(hWnd, IDC_FLOW_ARROWS);
             HWND hDisasm = GetDlgItem(hWnd, IDC_DISASM);
-            if (hArrowPanel && IsWindowVisible(hArrowPanel) && hDisasm) {
+            if (hArrowPanel) {
+                bool wasVisible = IsWindowVisible(hArrowPanel) != 0;
                 ShowWindow(hArrowPanel, SW_HIDE);
-                // Expand ListView back
-                RECT dr;
-                GetWindowRect(hDisasm, &dr);
-                MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&dr, 2);
-                MoveWindow(hDisasm, dr.left - g_FlowArrowPanelWidth, dr.top,
-                    (dr.right - dr.left) + g_FlowArrowPanelWidth,
-                    dr.bottom - dr.top, TRUE);
+                // Expand ListView back if it was shifted for the arrow panel
+                if (wasVisible && hDisasm) {
+                    RECT dr;
+                    GetWindowRect(hDisasm, &dr);
+                    MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&dr, 2);
+                    MoveWindow(hDisasm, dr.left - g_FlowArrowPanelWidth, dr.top,
+                        (dr.right - dr.left) + g_FlowArrowPanelWidth,
+                        dr.bottom - dr.top, TRUE);
+                }
             }
             g_FlowArrows.clear();
         }

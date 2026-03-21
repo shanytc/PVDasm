@@ -45,6 +45,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include <windows.h>
+#include <shellapi.h>
 #include <commctrl.h>
 #include "x64.h"
 #include "resource\resource.h"
@@ -126,6 +127,7 @@ typedef MapTree::iterator					TreeMapItr;
 // =========================  FUNCTIONS  ==========================
 // ================================================================
 int		Open				( HWND hWnd					);
+int		OpenFileByPath		( HWND hWnd					);
 int		DumpPE				( HWND hWnd, char *memPtr	);
 void	DebugPE				(							);
 void	DebugNonPE			( HWND hWnd					);
