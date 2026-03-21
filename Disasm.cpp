@@ -3702,6 +3702,9 @@ void WINAPI Disassembler(/*LPVOID lpParam*/) // Thread Worker for Decoding Instr
     
     // Show the progress bar in Disassembly Mode
     ShowWindow(GetDlgItem(mainhWnd,IDC_DISASM_PROGRESS),SW_SHOW);
+    // Trigger status bar re-layout (progress bar now visible)
+    {RECT rc; GetClientRect(mainhWnd, &rc);
+    PostMessage(mainhWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(rc.right, rc.bottom));}
 
     // Disable ToolBar Call/Jump Tracing buttons
     SendMessage ( hWndTB, TB_ENABLEBUTTON, ID_RET_JUMP,  (LPARAM) FALSE );
@@ -4324,12 +4327,16 @@ void WINAPI Disassembler(/*LPVOID lpParam*/) // Thread Worker for Decoding Instr
 
     // reset the progressBar
     SendDlgItemMessage(mainhWnd,IDC_DISASM_PROGRESS,PBM_SETPOS,0,0);
-    
+
     // Show Disassembly Summery:
     // ========================
     SetDlgItemText ( mainhWnd, IDC_MESSAGE1,"Disassembly Analysis Complete.");
     SetDlgItemText ( mainhWnd, IDC_MESSAGE2,"");
     SetDlgItemText ( mainhWnd, IDC_MESSAGE3,"");
+
+    // Trigger status bar re-layout (progress bar now hidden)
+    {RECT rc; GetClientRect(mainhWnd, &rc);
+    PostMessage(mainhWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(rc.right, rc.bottom));}
     
 	// Enable ToolBar Buttons
 	SendMessage ( hWndTB, TB_ENABLEBUTTON, ID_EP_SHOW,   (LPARAM) TRUE );

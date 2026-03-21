@@ -200,8 +200,9 @@ void ResizeControls(HWND hWnd)
 	// We should store the new size of the main window in the main window rect
 	GetClientRect(hWnd,&MainWindowRect);
 
-	// Don't ask me why, but this will fix some painting probs
-	InvalidateRect(hWnd,&MainWindowRect,NULL);
+	// Erase background so vacated areas behind moved controls are repainted.
+	// WS_CLIPCHILDREN on the parent prevents flicker over child controls.
+	InvalidateRect(hWnd, NULL, TRUE);
 }
 
 void InitializeResizeControls(HWND hWnd) 

@@ -95,6 +95,9 @@ void Chip8()
 
 	SendDlgItemMessage(Main_hWnd,IDC_DISASM_PROGRESS,PBM_SETRANGE32,(WPARAM)0,(LPARAM)BytesToDecode);
 	ShowWindow(GetDlgItem(Main_hWnd,IDC_DISASM_PROGRESS),SW_SHOW);
+	// Trigger status bar re-layout (progress bar now visible)
+	{RECT rc; GetClientRect(Main_hWnd, &rc);
+	PostMessage(Main_hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(rc.right, rc.bottom));}
 	EnableMenuItem(hMenu,IDC_START_DISASM,MF_GRAYED);
 	// Disable ToolBar Call/Jump Tracing buttons
 	SendMessage ( hWndTB, TB_ENABLEBUTTON, ID_RET_JUMP,  (LPARAM) FALSE );
@@ -162,7 +165,7 @@ void Chip8()
 	SendDlgItemMessage(Main_hWnd,IDC_DISASM_PROGRESS,PBM_SETPOS,0,0);
 	ListView_SetItemCountEx(hDisasm,ListIndex,NULL);
 	// Disable Stop Disassembly menu item
-	EnableMenuItem ( hMenu, IDC_STOP_DISASM,  MF_GRAYED ); 
+	EnableMenuItem ( hMenu, IDC_STOP_DISASM,  MF_GRAYED );
 	EnableMenuItem ( hMenu, IDC_PAUSE_DISASM, MF_GRAYED );
 	EnableMenuItem ( hMenu, IDC_START_DISASM, MF_ENABLED);
 	SendMessage    ( hWndTB, TB_ENABLEBUTTON, ID_SEARCH, (LPARAM) TRUE );
@@ -173,6 +176,10 @@ void Chip8()
 	SetDlgItemText ( Main_hWnd, IDC_MESSAGE1,"Disassembly Analysis Complete.");
 	SetDlgItemText ( Main_hWnd, IDC_MESSAGE2,"");
 	SetDlgItemText ( Main_hWnd, IDC_MESSAGE3,"");
+
+	// Trigger status bar re-layout (progress bar now hidden)
+	{RECT rc; GetClientRect(Main_hWnd, &rc);
+	PostMessage(Main_hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(rc.right, rc.bottom));}
 
 	OutDebug(Main_hWnd,"");
 	OutDebug(Main_hWnd,"Disassembly Analysis Complete.");

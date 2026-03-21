@@ -1379,6 +1379,39 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// controls on the window
 		case WM_SIZE:{
 			ResizeControls(hWnd);
+
+			// Layout status bar across the bottom
+			{
+				RECT rcClient;
+				GetClientRect(hWnd, &rcClient);
+				int clientW = rcClient.right;
+
+				HWND hMsg1 = GetDlgItem(hWnd, IDC_MESSAGE1);
+				HWND hMsg2 = GetDlgItem(hWnd, IDC_MESSAGE2);
+				HWND hProg = GetDlgItem(hWnd, IDC_DISASM_PROGRESS);
+
+				// Use the current height of MESSAGE1 (set by dialog template / DPI)
+				RECT rcMsg1;
+				GetWindowRect(hMsg1, &rcMsg1);
+				MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rcMsg1, 2);
+				int statusH = rcMsg1.bottom - rcMsg1.top;
+				int statusY = rcClient.bottom - statusH;
+
+				if (IsWindowVisible(hProg)) {
+					// During disassembly: MESSAGE1 | MESSAGE2 | PROGRESS
+					int progW  = 200;
+					int msg2W  = 250;
+					MoveWindow(hProg, clientW - progW, statusY, progW, statusH, TRUE);
+					ShowWindow(hMsg2, SW_SHOW);
+					MoveWindow(hMsg2, clientW - progW - msg2W, statusY, msg2W, statusH, TRUE);
+					MoveWindow(hMsg1, -3, statusY, clientW - progW - msg2W + 3, statusH, TRUE);
+				} else {
+					// Idle: MESSAGE1 fills the entire width
+					ShowWindow(hMsg2, SW_HIDE);
+					MoveWindow(hMsg1, -3, statusY, clientW + 3, statusH, TRUE);
+				}
+			}
+
 			// Resize Code Map bar to match window width and repaint
 			if (g_CodeMapVisible) {
 				HWND hBar = GetDlgItem(hWnd, IDC_CODE_MAP_BAR);
@@ -1534,10 +1567,9 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			// Make the controls in main window sizable/movable
 			SetWindowLongPtr(GetDlgItem(hWnd,IDC_DISASM),			GWL_USERDATA,ANCHOR_RIGHT|ANCHOR_BOTTOM);
             SetWindowLongPtr(GetDlgItem(hWnd,IDC_LIST),				GWL_USERDATA,ANCHOR_RIGHT|ANCHOR_BOTTOM|ANCHOR_NOT_TOP);
-            SetWindowLongPtr(GetDlgItem(hWnd,IDC_MESSAGE1),			GWL_USERDATA,ANCHOR_BOTTOM|ANCHOR_RIGHT|ANCHOR_NOT_TOP);
-            SetWindowLongPtr(GetDlgItem(hWnd,IDC_MESSAGE2),			GWL_USERDATA,ANCHOR_NOT_LEFT|ANCHOR_BOTTOM|ANCHOR_NOT_TOP);
-            SetWindowLongPtr(GetDlgItem(hWnd,IDC_MESSAGE3),			GWL_USERDATA,ANCHOR_NOT_LEFT|ANCHOR_BOTTOM|ANCHOR_NOT_TOP);
-            SetWindowLongPtr(GetDlgItem(hWnd,IDC_DISASM_PROGRESS),	GWL_USERDATA,ANCHOR_NOT_LEFT|ANCHOR_BOTTOM|ANCHOR_NOT_TOP);
+            // STATUS BAR: MESSAGE1, MESSAGE2, and PROGRESS are laid out
+            // explicitly in WM_SIZE rather than using anchor flags, so that
+            // they tile the full window width without gaps or clipping.
             SetWindowLongPtr(GetDlgItem(hWnd,IDC_TOOLBAR_SEP),		GWL_USERDATA,ANCHOR_RIGHT);
             SetWindowLongPtr(GetDlgItem(hWnd,IDC_TOOLBAR_SEP2),		GWL_USERDATA,ANCHOR_RIGHT);
             SetWindowLongPtr(GetDlgItem(hWnd,IDC_SPLITTER),			GWL_USERDATA,ANCHOR_RIGHT|ANCHOR_BOTTOM|ANCHOR_NOT_TOP);
@@ -1959,21 +1991,33 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     strcpy_s(text,StringLen(DisasmDataLines[item].GetAddress())+1 ,DisasmDataLines[item].GetAddress());
 					
                     if(LoadedPe==TRUE){
-                        // Calculate Offset in EXE
+                        // Calculate Offset in EXE (32-bit)
                         if(StringLen(text)!=0){
-                            Offset=StringToDword(text); 
+                            Offset=StringToDword(text);
                             if(!disop.VBPCodeMode && SectionHeader){
                                 Offset -= nt_hdr->OptionalHeader.ImageBase;
                                 Offset = (Offset - SectionHeader->VirtualAddress)+SectionHeader->PointerToRawData;
                             }
                         }
-                        
-                        ////////////////////////////////////////////
-                        // Show the Information For Specific Line //
-                        ////////////////////////////////////////////
-                        SetDlgItemText(hWnd,IDC_MESSAGE2,""); 
                         wsprintf(Message," Line: #%ld Code Address: @%s Code Offset: @%08X",item,text,Offset);
-                        SetDlgItemText(hWnd,IDC_MESSAGE2,Message);
+                        SetDlgItemText(hWnd,IDC_MESSAGE1,Message);
+                    }
+                    else if(LoadedPe64==TRUE){
+                        // Calculate Offset in EXE (64-bit)
+                        if(StringLen(text)!=0){
+                            ULONGLONG Addr64 = StringToQword(text);
+                            ULONGLONG Offset64 = 0;
+                            if(SectionHeader){
+                                Offset64 = Addr64 - nt_hdr64->OptionalHeader.ImageBase;
+                                Offset64 = (Offset64 - SectionHeader->VirtualAddress)+SectionHeader->PointerToRawData;
+                            }
+                            wsprintf(Message," Line: #%ld Code Address: @%s Code Offset: @%08X%08X",
+                                     item, text, (DWORD)(Offset64>>32), (DWORD)Offset64);
+                        }
+                        else{
+                            wsprintf(Message," Line: #%ld Code Address: @%s",item,text);
+                        }
+                        SetDlgItemText(hWnd,IDC_MESSAGE1,Message);
                     }
 					
                     //
@@ -2164,8 +2208,12 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                      SetDlgItemText(hWnd,IDC_MESSAGE1,"Disassembly Process Stoped");
                      SetDlgItemText(hWnd,IDC_MESSAGE2,"");
                      SetDlgItemText(hWnd,IDC_MESSAGE3,"");
-                     // reset the progressBar
+                     // reset and hide the progressBar
                      SendDlgItemMessage(hWnd,IDC_DISASM_PROGRESS,PBM_SETPOS,0,0);
+                     ShowWindow(GetDlgItem(hWnd,IDC_DISASM_PROGRESS),SW_HIDE);
+                     // Trigger status bar re-layout
+                     {RECT rc; GetClientRect(hWnd, &rc);
+                     PostMessage(hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(rc.right, rc.bottom));}
                 }
                 break;
 

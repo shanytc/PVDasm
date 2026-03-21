@@ -584,6 +584,9 @@ void VBPCode()
     SendDlgItemMessage(Main_hWnd, IDC_DISASM_PROGRESS, PBM_SETRANGE32,
                        (WPARAM)0, (LPARAM)fileSize);
     ShowWindow(GetDlgItem(Main_hWnd, IDC_DISASM_PROGRESS), SW_SHOW);
+    // Trigger status bar re-layout (progress bar now visible)
+    {RECT rc; GetClientRect(Main_hWnd, &rc);
+    PostMessage(Main_hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(rc.right, rc.bottom));}
     EnableMenuItem(hMenu, IDC_START_DISASM, MF_GRAYED);
     SendMessage(hWndTB, TB_ENABLEBUTTON, ID_RET_JUMP,  (LPARAM)FALSE);
     SendMessage(hWndTB, TB_ENABLEBUTTON, ID_RET_CALL,  (LPARAM)FALSE);
@@ -730,6 +733,10 @@ void VBPCode()
     SetDlgItemText(Main_hWnd, IDC_MESSAGE1, summary);
     SetDlgItemText(Main_hWnd, IDC_MESSAGE2, "");
     SetDlgItemText(Main_hWnd, IDC_MESSAGE3, "");
+
+    // Trigger status bar re-layout (progress bar now hidden)
+    {RECT rc; GetClientRect(Main_hWnd, &rc);
+    PostMessage(Main_hWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(rc.right, rc.bottom));}
 
     OutDebug(Main_hWnd, "");
     OutDebug(Main_hWnd, summary);
