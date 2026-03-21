@@ -255,11 +255,15 @@ static void SwitchTab(HWND hWnd, int tabIndex)
         // Hide flow arrows panel on graph tab
         HWND hArrows = GetDlgItem(hWnd, IDC_FLOW_ARROWS);
         if (hArrows) ShowWindow(hArrows, SW_HIDE);
-        // Sync CFG child position to disasm rect
+        // Sync CFG child position to full area (disasm + flow arrows)
         if (hCFGChild && hDisasm) {
             RECT disasmRect;
             GetWindowRect(hDisasm, &disasmRect);
             MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&disasmRect, 2);
+            // Expand left to cover the flow arrows panel area
+            if (hArrows && g_FlowArrowsVisible && DisassemblerReady) {
+                disasmRect.left -= g_FlowArrowPanelWidth;
+            }
             MoveWindow(hCFGChild, disasmRect.left, disasmRect.top,
                        disasmRect.right - disasmRect.left,
                        disasmRect.bottom - disasmRect.top, TRUE);

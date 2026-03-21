@@ -79,6 +79,7 @@ ProView is an educational project aimed at building a custom disassembler and de
   - Dark mode aware — adapts colors to match the current theme
 - Fixed **flow arrow vertical line misaligned with arrowhead** — lane positions are now computed relative to the arrowhead base, ensuring the vertical connector stays to the left of the filled triangle
 - Increased **default control flow panel width** from 40px to 130px for better visibility out of the box
+- Fixed **Graph tab offset by flow arrows panel width** — CFG viewer now expands to fill the full area when the flow arrows panel is hidden on the Graph tab
 - Fixed **flow arrows not updating during code map drag** — `LVM_SCROLL` bypasses the ListView subclass, so the code map drag handler now explicitly invalidates the arrows panel
 - Fixed **About dialog version text clipped** — widened `IDC_ABOUT_VERSION` control so the full version string (e.g., `v2.0.1`) is visible
 - Fixed **status bar clipping/destruction on window resize** — replaced fragile anchor-based layout with explicit tiling in `WM_SIZE` that adapts to progress bar visibility
