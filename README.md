@@ -13,7 +13,7 @@
 
 <p align="center">
   <strong>32/64-Bit Multi Disassembler</strong><br>
-  Build Version: <code>v2.0.1</code><br>
+  Build Version: <code>v2.0.2</code><br>
   &copy; Shany Golan 2003&ndash;2026
 </p>
 
