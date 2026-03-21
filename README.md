@@ -13,7 +13,7 @@
 
 <p align="center">
   <strong>32/64-Bit Multi Disassembler</strong><br>
-  Build Version: <code>v2.1</code><br>
+  Build Version: <code>v2.0.1</code><br>
   &copy; Shany Golan 2003&ndash;2026
 </p>
 
@@ -68,6 +68,7 @@ ProView is an educational project aimed at building a custom disassembler and de
 ### 2026
 
 #### March 21, 2026
+- Fixed **About dialog version text clipped** — widened `IDC_ABOUT_VERSION` control so the full version string (e.g., `v2.0.1`) is visible
 - Fixed **status bar clipping/destruction on window resize** — replaced fragile anchor-based layout with explicit tiling in `WM_SIZE` that adapts to progress bar visibility
 - Status bar **line info now displays on click** in MESSAGE1 (left panel) for both 32-bit and 64-bit PE files, showing line number, code address, and file offset
 - **Progress bar and middle panel auto-hide** when idle — MESSAGE1 fills the full window width after disassembly completes
