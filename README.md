@@ -83,7 +83,8 @@ ProView is an educational project aimed at building a custom disassembler and de
   - When a destination has multiple callers, repeated Left presses cycle through them with wrap-around
   - Debug window shows `Tracing Back To -> ADDR (N of M)` when multiple callers exist
   - Cycling resets automatically when navigating to a different line
-- Fixed **Graph tab offset by flow arrows panel width** — CFG viewer now expands to fill the full area when the flow arrows panel is hidden on the Graph tab
+- **Graph tab focuses on current block** — switching from Disassembly to Graph centers and selects (blue border) the block containing the currently selected instruction, falling back to the entry block
+- Fixed **Graph tab offset by flow arrows panel width** — CFG viewer now expands to fill the full area on tab switch, window resize, and splitter drag
 - Fixed **flow arrows not updating during code map drag** — `LVM_SCROLL` bypasses the ListView subclass, so the code map drag handler now explicitly invalidates the arrows panel
 - Fixed **About dialog version text clipped** — widened `IDC_ABOUT_VERSION` control so the full version string (e.g., `v2.0.1`) is visible
 - Fixed **status bar clipping/destruction on window resize** — replaced fragile anchor-based layout with explicit tiling in `WM_SIZE` that adapts to progress bar visibility
