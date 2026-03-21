@@ -747,6 +747,27 @@ void LoadProject()
     LoadedPe=TRUE;
     RefreshCodeMapBar();
 
+    // Build flow arrow data and show the panel if enabled
+    if (g_FlowArrowsVisible) {
+        BuildFlowArrowData();
+        HWND hArrowPanel = GetDlgItem(Main_hWnd, IDC_FLOW_ARROWS);
+        HWND hDisasm2 = GetDlgItem(Main_hWnd, IDC_DISASM);
+        if (hArrowPanel && hDisasm2) {
+            RECT dr;
+            GetWindowRect(hDisasm2, &dr);
+            MapWindowPoints(HWND_DESKTOP, Main_hWnd, (LPPOINT)&dr, 2);
+            MoveWindow(hDisasm2, dr.left + g_FlowArrowPanelWidth, dr.top,
+                (dr.right - dr.left) - g_FlowArrowPanelWidth,
+                dr.bottom - dr.top, TRUE);
+            GetWindowRect(hDisasm2, &dr);
+            MapWindowPoints(HWND_DESKTOP, Main_hWnd, (LPPOINT)&dr, 2);
+            MoveWindow(hArrowPanel, dr.left - g_FlowArrowPanelWidth, dr.top,
+                g_FlowArrowPanelWidth, dr.bottom - dr.top, TRUE);
+            ShowWindow(hArrowPanel, SW_SHOW);
+            InvalidateRect(hArrowPanel, NULL, FALSE);
+        }
+    }
+
     ShowWindow(GetDlgItem(Main_hWnd,IDC_DISASM),SW_SHOW);
     ListView_SetItemCountEx(GetDlgItem(Main_hWnd,IDC_DISASM),DisasmDataLines.size(),NULL);
 
@@ -769,6 +790,7 @@ void LoadProject()
 	EnableMenuItem ( hMenu, IDM_COPY_DISASM_FILE,				MF_ENABLED );
 	EnableMenuItem ( hMenu, IDM_COPY_DISASM_CLIP,				MF_ENABLED );
 	EnableMenuItem ( hMenu, IDM_SELECT_ALL_ITEMS,				MF_ENABLED );
+    EnableMenuItem ( hMenu, IDC_CONTROL_FLOW,    MF_ENABLED );
 
     if(StrRefLines.size() > 0)
     {

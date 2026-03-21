@@ -4322,6 +4322,28 @@ void WINAPI Disassembler(/*LPVOID lpParam*/) // Thread Worker for Decoding Instr
     DisassemblerReady=TRUE; // Dissassembler is ready
     RefreshCodeMapBar();
 
+    // Build flow arrow data and show the panel if enabled
+    if (g_FlowArrowsVisible) {
+        BuildFlowArrowData();
+        HWND hArrowPanel = GetDlgItem(mainhWnd, IDC_FLOW_ARROWS);
+        if (hArrowPanel) {
+            RECT dr;
+            GetWindowRect(hDisasm, &dr);
+            MapWindowPoints(HWND_DESKTOP, mainhWnd, (LPPOINT)&dr, 2);
+            // Shrink ListView from the left to make room
+            MoveWindow(hDisasm, dr.left + g_FlowArrowPanelWidth, dr.top,
+                (dr.right - dr.left) - g_FlowArrowPanelWidth,
+                dr.bottom - dr.top, TRUE);
+            // Position arrow panel
+            GetWindowRect(hDisasm, &dr);
+            MapWindowPoints(HWND_DESKTOP, mainhWnd, (LPPOINT)&dr, 2);
+            MoveWindow(hArrowPanel, dr.left - g_FlowArrowPanelWidth, dr.top,
+                g_FlowArrowPanelWidth, dr.bottom - dr.top, TRUE);
+            ShowWindow(hArrowPanel, SW_SHOW);
+            InvalidateRect(hArrowPanel, NULL, FALSE);
+        }
+    }
+
     // Number of items
     ListView_SetItemCountEx(hDisasm,ListIndex,NULL);
 
@@ -4373,6 +4395,7 @@ void WINAPI Disassembler(/*LPVOID lpParam*/) // Thread Worker for Decoding Instr
     EnableMenuItem ( hMenu, IDC_VIEW_DISASSEMBLY, MF_ENABLED );
     EnableMenuItem ( hMenu, IDC_VIEW_GRAPH,       MF_ENABLED );
     EnableMenuItem ( hMenu, IDC_CODE_MAP,         MF_ENABLED );
+    EnableMenuItem ( hMenu, IDC_CONTROL_FLOW,    MF_ENABLED );
 
     // If Imports availble, show them
     if(FunctionCounter>0){

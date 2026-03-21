@@ -51,6 +51,7 @@ ProView is an educational project aimed at building a custom disassembler and de
 | **PVScript Engine** | Custom scripting engine for command automation. |
 | **API Recognition** | Automatic API parameter annotation via signature database. |
 | **Function Graph (CFG)** | Interactive control flow graph viewer embedded as a tab with draggable blocks, zoom/pan, orthogonal edge routing, instruction-level navigation (double-click jxx/call), call history with back-navigation, context menu with "Show Disassembly", and export to PNG/JPEG. |
+| **Control Flow Arrows** | IDA-style flow arrows panel showing jump connections with color/dash-coded lanes, draggable splitter to resize, and scaled rendering. Toggle via Views menu. |
 | **Color Schemes** | SoftICE, IDA, OllyDbg, W32Asm, and custom themes. |
 | **Save/Load Projects** | Persist analysis state including functions, data, and comments. |
 | **Map File Support** | Import/export MAP files (IDA-compatible.) |
@@ -68,6 +69,14 @@ ProView is an educational project aimed at building a custom disassembler and de
 ### 2026
 
 #### March 21, 2026
+- Added **Control Flow Arrows** panel — IDA-style flow arrows to the left of the disassembly view showing jump/branch connections
+  - Color-coded and dash-styled lanes (solid, dashed, dotted, dash-dot) for visual distinction between adjacent arrows
+  - Filled triangle arrowheads pointing to jump destinations
+  - Draggable right-edge splitter to resize the panel (20–200px), with scaled lane spacing, line thickness, and arrowhead size
+  - Panel width and visibility persisted in settings
+  - Toggle via Views → Control Flow menu item
+  - Synchronized with ListView scrolling, window resize, and splitter drag
+  - Dark mode aware — adapts colors to match the current theme
 - Fixed **About dialog version text clipped** — widened `IDC_ABOUT_VERSION` control so the full version string (e.g., `v2.0.1`) is visible
 - Fixed **status bar clipping/destruction on window resize** — replaced fragile anchor-based layout with explicit tiling in `WM_SIZE` that adapts to progress bar visibility
 - Status bar **line info now displays on click** in MESSAGE1 (left panel) for both 32-bit and 64-bit PE files, showing line number, code address, and file offset

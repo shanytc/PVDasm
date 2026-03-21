@@ -930,6 +930,7 @@ BEGIN
         MENUITEM "Functions Graph\tCtrl+G",  IDC_VIEW_GRAPH, CHECKED
         MENUITEM SEPARATOR
         MENUITEM "Code Map",                 IDC_CODE_MAP
+        MENUITEM "Control Flow",             IDC_CONTROL_FLOW
     END
     POPUP "&Goto"
     BEGIN

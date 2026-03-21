@@ -108,6 +108,13 @@ extern bool g_DarkMode;
 extern bool g_CodeMapVisible;
 void    BuildCodeMapData			(																);
 void    RefreshCodeMapBar			(																);
+// Flow Arrows
+extern bool g_FlowArrowsVisible;
+extern int  g_FlowArrowPanelWidth;
+#define FLOW_ARROW_PANEL_WIDTH_DEFAULT  40
+#define FLOW_ARROW_PANEL_WIDTH_MIN      20
+#define FLOW_ARROW_PANEL_WIDTH_MAX     200
+void    BuildFlowArrowData			(																);
 void    LoadSettings				(																);
 void    SaveSettings				(																);
 void    ApplyDarkMode				( bool dark														);

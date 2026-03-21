@@ -1687,6 +1687,8 @@ void Custom_Schem(){
 
 bool g_DarkMode = false;
 bool g_CodeMapVisible = true;
+bool g_FlowArrowsVisible = true;
+int  g_FlowArrowPanelWidth = FLOW_ARROW_PANEL_WIDTH_DEFAULT;
 HBRUSH g_hDarkBrush = NULL;
 COLORREF g_DarkBkColor = RGB(30, 30, 30);
 COLORREF g_DarkTextColor = RGB(200, 200, 200);
@@ -1745,6 +1747,13 @@ void LoadSettings() {
     strcat_s(szPath, "PVDasm.ini");
     g_DarkMode = GetPrivateProfileIntA("Settings", "DarkMode", 0, szPath) != 0;
     g_CodeMapVisible = GetPrivateProfileIntA("Settings", "CodeMap", 1, szPath) != 0;
+    g_FlowArrowsVisible = GetPrivateProfileIntA("Settings", "ControlFlow", 1, szPath) != 0;
+    g_FlowArrowPanelWidth = GetPrivateProfileIntA("Settings", "ControlFlowWidth",
+        FLOW_ARROW_PANEL_WIDTH_DEFAULT, szPath);
+    if (g_FlowArrowPanelWidth < FLOW_ARROW_PANEL_WIDTH_MIN)
+        g_FlowArrowPanelWidth = FLOW_ARROW_PANEL_WIDTH_MIN;
+    if (g_FlowArrowPanelWidth > FLOW_ARROW_PANEL_WIDTH_MAX)
+        g_FlowArrowPanelWidth = FLOW_ARROW_PANEL_WIDTH_MAX;
 }
 
 void SaveSettings() {
@@ -1755,6 +1764,12 @@ void SaveSettings() {
     strcat_s(szPath, "PVDasm.ini");
     WritePrivateProfileStringA("Settings", "DarkMode", g_DarkMode ? "1" : "0", szPath);
     WritePrivateProfileStringA("Settings", "CodeMap", g_CodeMapVisible ? "1" : "0", szPath);
+    WritePrivateProfileStringA("Settings", "ControlFlow", g_FlowArrowsVisible ? "1" : "0", szPath);
+    {
+        char buf[16];
+        wsprintfA(buf, "%d", g_FlowArrowPanelWidth);
+        WritePrivateProfileStringA("Settings", "ControlFlowWidth", buf, szPath);
+    }
 }
 
 void ApplyDarkMode(bool dark) {

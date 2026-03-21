@@ -42,6 +42,7 @@
 
 #include "MappedFile.h"
 #include "VBPCode.h"
+#include <algorithm>
 // ================================================================
 // =====================  EXTERNAL VARIABLES  =====================
 // ================================================================
@@ -193,6 +194,33 @@ static int GetDisasmTopY(HWND hWnd)
 }
 
 // ================================================================
+// ======================  FLOW ARROWS  ===========================
+// ================================================================
+#define FLOW_ARROW_MAX_DEPTH    8
+#define FLOW_ARROW_LANE_WIDTH   4
+#define FLOW_ARROW_MAX_SPAN   500  // Skip arrows spanning > 500 lines
+
+struct FLOW_ARROW {
+    DWORD_PTR SourceIndex;
+    DWORD_PTR DestIndex;
+    bool      IsConditional;
+    bool      IsForwardJump;
+    int       NestingLane;
+};
+static std::vector<FLOW_ARROW> g_FlowArrows;
+static bool g_FlowArrowsClassRegistered = false;
+static bool g_FlowArrowSplitterDragging = false;
+static int  g_FlowArrowDragStartX = 0;
+static int  g_FlowArrowDragStartWidth = 0;
+#define FLOW_ARROW_SPLITTER_HIT  4  // pixels from right edge to detect drag
+
+// Forward declarations
+LRESULT CALLBACK FlowArrowWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+void BuildFlowArrowData();
+static void AssignArrowLanes();
+void StretchLastColumn(HWND hListView);
+
+// ================================================================
 // =================  TAB SWITCHING  ==============================
 // ================================================================
 
@@ -217,9 +245,16 @@ static void SwitchTab(HWND hWnd, int tabIndex)
         // Disassembly tab
         if (hDisasm) ShowWindow(hDisasm, SW_SHOW);
         if (hCFGChild) ShowWindow(hCFGChild, SW_HIDE);
+        // Show flow arrows panel if enabled
+        HWND hArrows = GetDlgItem(hWnd, IDC_FLOW_ARROWS);
+        if (hArrows && g_FlowArrowsVisible && DisassemblerReady)
+            ShowWindow(hArrows, SW_SHOW);
     } else {
         // Graph tab
         if (hDisasm) ShowWindow(hDisasm, SW_HIDE);
+        // Hide flow arrows panel on graph tab
+        HWND hArrows = GetDlgItem(hWnd, IDC_FLOW_ARROWS);
+        if (hArrows) ShowWindow(hArrows, SW_HIDE);
         // Sync CFG child position to disasm rect
         if (hCFGChild && hDisasm) {
             RECT disasmRect;
@@ -978,6 +1013,359 @@ void RepositionDisasmForCodeMap(HWND hWnd, BOOL show)
     InitializeResizeControls(hWnd);
 }
 
+// ================================================================
+// ==============  FLOW ARROWS — BUILD & PAINT  ===================
+// ================================================================
+
+static void AssignArrowLanes()
+{
+    // Sort arrows by span length (shortest first = innermost lane)
+    std::sort(g_FlowArrows.begin(), g_FlowArrows.end(),
+        [](const FLOW_ARROW& a, const FLOW_ARROW& b) {
+            DWORD_PTR spanA = (a.SourceIndex > a.DestIndex) ?
+                (a.SourceIndex - a.DestIndex) : (a.DestIndex - a.SourceIndex);
+            DWORD_PTR spanB = (b.SourceIndex > b.DestIndex) ?
+                (b.SourceIndex - b.DestIndex) : (b.DestIndex - b.SourceIndex);
+            return spanA < spanB;
+        });
+
+    for (size_t i = 0; i < g_FlowArrows.size(); i++) {
+        DWORD_PTR lo = min(g_FlowArrows[i].SourceIndex, g_FlowArrows[i].DestIndex);
+        DWORD_PTR hi = max(g_FlowArrows[i].SourceIndex, g_FlowArrows[i].DestIndex);
+
+        // For each candidate lane, check if any already-assigned arrow overlaps
+        int lane = 0;
+        for (; lane < FLOW_ARROW_MAX_DEPTH; lane++) {
+            bool conflict = false;
+            for (size_t j = 0; j < i; j++) {
+                if (g_FlowArrows[j].NestingLane != lane) continue;
+                DWORD_PTR lo2 = min(g_FlowArrows[j].SourceIndex, g_FlowArrows[j].DestIndex);
+                DWORD_PTR hi2 = max(g_FlowArrows[j].SourceIndex, g_FlowArrows[j].DestIndex);
+                if (lo <= hi2 && hi >= lo2) { conflict = true; break; }
+            }
+            if (!conflict) break;
+        }
+        g_FlowArrows[i].NestingLane = (lane < FLOW_ARROW_MAX_DEPTH) ? lane : -1;
+    }
+}
+
+void BuildFlowArrowData()
+{
+    g_FlowArrows.clear();
+    if (DisasmDataLines.empty() || DisasmCodeFlow.empty()) return;
+
+    for (size_t i = 0; i < DisasmCodeFlow.size(); i++) {
+        CODE_BRANCH& cb = DisasmCodeFlow[i];
+
+        // Only visualize jumps, not calls or rets
+        if (cb.BranchFlow.Call || cb.BranchFlow.Ret) continue;
+        if (!cb.BranchFlow.Jump) continue;
+
+        DWORD_PTR srcIndex = cb.Current_Index;
+        DWORD_PTR destAddr = cb.Branch_Destination;
+        DWORD_PTR destIndex = FindIndexByAddress(destAddr);
+        if (destIndex == (DWORD_PTR)-1) continue;
+        if (srcIndex >= DisasmDataLines.size()) continue;
+
+        // Skip huge spans
+        DWORD_PTR span = (srcIndex > destIndex) ? (srcIndex - destIndex) : (destIndex - srcIndex);
+        if (span > FLOW_ARROW_MAX_SPAN) continue;
+
+        // Determine if conditional by examining the mnemonic
+        const char* mnemonic = DisasmDataLines[srcIndex].GetMnemonic();
+        bool isCond = IsConditionalJump(mnemonic);
+
+        FLOW_ARROW fa;
+        fa.SourceIndex = srcIndex;
+        fa.DestIndex = destIndex;
+        fa.IsConditional = isCond;
+        fa.IsForwardJump = (destIndex > srcIndex);
+        fa.NestingLane = 0;
+        g_FlowArrows.push_back(fa);
+    }
+
+    AssignArrowLanes();
+}
+
+LRESULT CALLBACK FlowArrowWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    switch (uMsg) {
+        case WM_ERASEBKGND:
+            return 1;
+
+        // Show left-right resize cursor when hovering over the right edge (splitter zone)
+        case WM_SETCURSOR: {
+            POINT pt;
+            GetCursorPos(&pt);
+            ScreenToClient(hWnd, &pt);
+            RECT rc;
+            GetClientRect(hWnd, &rc);
+            if (pt.x >= rc.right - FLOW_ARROW_SPLITTER_HIT) {
+                SetCursor(LoadCursor(NULL, IDC_SIZEWE));
+                return TRUE;
+            }
+            break;
+        }
+
+        case WM_LBUTTONDOWN: {
+            POINT pt = { (short)LOWORD(lParam), (short)HIWORD(lParam) };
+            RECT rc;
+            GetClientRect(hWnd, &rc);
+            if (pt.x >= rc.right - FLOW_ARROW_SPLITTER_HIT) {
+                g_FlowArrowSplitterDragging = true;
+                // Store start position in screen coords for reliable delta
+                POINT ptScreen = pt;
+                ClientToScreen(hWnd, &ptScreen);
+                g_FlowArrowDragStartX = ptScreen.x;
+                g_FlowArrowDragStartWidth = g_FlowArrowPanelWidth;
+                SetCapture(hWnd);
+                return 0;
+            }
+            break;
+        }
+
+        case WM_MOUSEMOVE: {
+            if (g_FlowArrowSplitterDragging) {
+                POINT ptScreen = { (short)LOWORD(lParam), (short)HIWORD(lParam) };
+                ClientToScreen(hWnd, &ptScreen);
+                int deltaX = ptScreen.x - g_FlowArrowDragStartX;
+                // Dragging right = making panel wider, dragging left = narrower
+                // (panel is on the left, its right edge is the drag handle)
+                int newWidth = g_FlowArrowDragStartWidth + deltaX;
+                if (newWidth < FLOW_ARROW_PANEL_WIDTH_MIN) newWidth = FLOW_ARROW_PANEL_WIDTH_MIN;
+                if (newWidth > FLOW_ARROW_PANEL_WIDTH_MAX) newWidth = FLOW_ARROW_PANEL_WIDTH_MAX;
+
+                if (newWidth != g_FlowArrowPanelWidth) {
+                    int widthDelta = newWidth - g_FlowArrowPanelWidth;
+                    g_FlowArrowPanelWidth = newWidth;
+
+                    // Resize: grow panel right edge, shrink ListView left edge
+                    HWND hDisasm = GetDlgItem(Main_hWnd, IDC_DISASM);
+                    if (hDisasm) {
+                        RECT dr;
+                        GetWindowRect(hDisasm, &dr);
+                        MapWindowPoints(HWND_DESKTOP, Main_hWnd, (LPPOINT)&dr, 2);
+                        // Shrink ListView from the left by widthDelta
+                        MoveWindow(hDisasm, dr.left + widthDelta, dr.top,
+                            (dr.right - dr.left) - widthDelta,
+                            dr.bottom - dr.top, TRUE);
+                        // Resize arrow panel to new width (same left edge)
+                        RECT pr;
+                        GetWindowRect(hWnd, &pr);
+                        MapWindowPoints(HWND_DESKTOP, Main_hWnd, (LPPOINT)&pr, 2);
+                        MoveWindow(hWnd, pr.left, pr.top,
+                            g_FlowArrowPanelWidth, pr.bottom - pr.top, TRUE);
+
+                        StretchLastColumn(hDisasm);
+                        InvalidateRect(hWnd, NULL, FALSE);
+                        UpdateWindow(hWnd);
+                    }
+                }
+                return 0;
+            }
+            break;
+        }
+
+        case WM_LBUTTONUP: {
+            if (g_FlowArrowSplitterDragging) {
+                g_FlowArrowSplitterDragging = false;
+                ReleaseCapture();
+                SaveSettings();
+                return 0;
+            }
+            break;
+        }
+
+        case WM_PAINT: {
+            PAINTSTRUCT ps;
+            HDC hdc = BeginPaint(hWnd, &ps);
+
+            RECT rcClient;
+            GetClientRect(hWnd, &rcClient);
+            int panelW = rcClient.right - rcClient.left;
+            int panelH = rcClient.bottom - rcClient.top;
+
+            // Double-buffer
+            HDC hdcMem = CreateCompatibleDC(hdc);
+            HBITMAP hBmp = CreateCompatibleBitmap(hdc, panelW, panelH);
+            HBITMAP hOldBmp = (HBITMAP)SelectObject(hdcMem, hBmp);
+
+            // Fill background matching ListView bg
+            COLORREF bgColor = g_DarkMode ? g_DarkBkColor : RGB(255, 251, 240);
+            HBRUSH hBgBrush = CreateSolidBrush(bgColor);
+            FillRect(hdcMem, &rcClient, hBgBrush);
+            DeleteObject(hBgBrush);
+
+            // Draw a thin separator line on the right edge (drag handle)
+            COLORREF sepColor = g_DarkMode ? RGB(60, 60, 60) : RGB(180, 180, 180);
+            HPEN hSepPen = CreatePen(PS_SOLID, 1, sepColor);
+            HPEN hOldPen = (HPEN)SelectObject(hdcMem, hSepPen);
+            MoveToEx(hdcMem, panelW - 1, 0, NULL);
+            LineTo(hdcMem, panelW - 1, panelH);
+            SelectObject(hdcMem, hOldPen);
+            DeleteObject(hSepPen);
+
+            // Scale lane spacing proportionally to panel width
+            // At default 40px: 4px/lane.  At 120px: 12px/lane.
+            int laneWidth = max(3, (panelW - 8) / max(FLOW_ARROW_MAX_DEPTH, 1));
+            // Scale arrow line thickness: 1px at default, up to 2px when wide
+            int penWidth = (panelW >= 80) ? 2 : 1;
+            // Scale arrowhead size
+            int headLen = (panelW >= 80) ? 6 : 4;
+            int headSpread = (panelW >= 80) ? 4 : 3;
+
+            // Get visible range from ListView
+            HWND hDisasm = GetDlgItem(Main_hWnd, IDC_DISASM);
+            if (hDisasm && !g_FlowArrows.empty()) {
+                int topIndex = (int)SendMessage(hDisasm, LVM_GETTOPINDEX, 0, 0);
+                int perPage = (int)SendMessage(hDisasm, LVM_GETCOUNTPERPAGE, 0, 0);
+                int bottomIndex = topIndex + perPage;
+                int totalItems = (int)SendMessage(hDisasm, LVM_GETITEMCOUNT, 0, 0);
+                if (bottomIndex > totalItems) bottomIndex = totalItems;
+
+                // Get item height from the first visible item
+                RECT rcItem;
+                ListView_GetItemRect(hDisasm, topIndex, &rcItem, LVIR_BOUNDS);
+                MapWindowPoints(hDisasm, Main_hWnd, (LPPOINT)&rcItem, 2);
+                RECT rcPanel;
+                GetWindowRect(hWnd, &rcPanel);
+                MapWindowPoints(HWND_DESKTOP, Main_hWnd, (LPPOINT)&rcPanel, 2);
+                int lvTopInParent = rcItem.top;
+                int panelTopInParent = rcPanel.top;
+                int yOffset = lvTopInParent - panelTopInParent;
+
+                int itemHeight = rcItem.bottom - rcItem.top;
+                if (itemHeight <= 0) itemHeight = 16;
+
+                // Arrow color palette — cycle distinct colors across lanes
+                // so adjacent arrows are visually distinguishable (IDA-style)
+                static const COLORREF laneColors[] = {
+                    RGB(0, 100, 200),    // blue
+                    RGB(180, 0, 0),      // red
+                    RGB(0, 140, 60),     // green
+                    RGB(160, 80, 0),     // brown/orange
+                    RGB(120, 0, 160),    // purple
+                    RGB(0, 140, 140),    // teal
+                    RGB(160, 120, 0),    // dark yellow
+                    RGB(100, 100, 100),  // gray
+                };
+                static const COLORREF laneColorsDk[] = {
+                    RGB(80, 160, 255),   // light blue
+                    RGB(230, 90, 90),    // light red
+                    RGB(80, 200, 100),   // light green
+                    RGB(220, 140, 50),   // orange
+                    RGB(180, 100, 220),  // light purple
+                    RGB(60, 200, 200),   // light teal
+                    RGB(210, 180, 50),   // yellow
+                    RGB(160, 160, 160),  // light gray
+                };
+                // Line styles — cycle per lane for extra distinction
+                static const int laneStyles[] = {
+                    PS_SOLID, PS_DASH, PS_DOT, PS_DASHDOT,
+                    PS_SOLID, PS_DASH, PS_DOT, PS_DASHDOT,
+                };
+                int numLaneStyles = sizeof(laneStyles) / sizeof(laneStyles[0]);
+
+                for (size_t i = 0; i < g_FlowArrows.size(); i++) {
+                    FLOW_ARROW& fa = g_FlowArrows[i];
+                    if (fa.NestingLane < 0) continue; // no lane assigned
+
+                    DWORD_PTR lo = min(fa.SourceIndex, fa.DestIndex);
+                    DWORD_PTR hi = max(fa.SourceIndex, fa.DestIndex);
+
+                    // Skip if arrow is entirely outside visible range
+                    if ((int)hi < topIndex || (int)lo > bottomIndex) continue;
+
+                    // Calculate Y positions
+                    int srcY, destY;
+                    bool srcVisible = ((int)fa.SourceIndex >= topIndex && (int)fa.SourceIndex < bottomIndex);
+                    bool destVisible = ((int)fa.DestIndex >= topIndex && (int)fa.DestIndex < bottomIndex);
+
+                    if (srcVisible) {
+                        srcY = yOffset + ((int)fa.SourceIndex - topIndex) * itemHeight + itemHeight / 2;
+                    } else {
+                        srcY = ((int)fa.SourceIndex < topIndex) ? 0 : panelH;
+                    }
+
+                    if (destVisible) {
+                        destY = yOffset + ((int)fa.DestIndex - topIndex) * itemHeight + itemHeight / 2;
+                    } else {
+                        destY = ((int)fa.DestIndex < topIndex) ? 0 : panelH;
+                    }
+
+                    // Lane X: lane 0 = rightmost (closest to ListView), scaled by panel width
+                    int laneX = panelW - 6 - fa.NestingLane * laneWidth;
+                    if (laneX < 2) laneX = 2;
+                    int stubRight = panelW - 3;
+
+                    // Pick color and line style based on lane (IDA-style differentiation)
+                    int laneIdx = fa.NestingLane % numLaneStyles;
+                    COLORREF arrowColor = g_DarkMode ?
+                        laneColorsDk[laneIdx] : laneColors[laneIdx];
+                    int penStyle = laneStyles[laneIdx];
+
+                    // For thick pens (width>1), GDI ignores dash styles;
+                    // use ExtCreatePen with PS_GEOMETRIC for dashed thick lines
+                    HPEN hArrowPen;
+                    if (penWidth > 1 && penStyle != PS_SOLID) {
+                        LOGBRUSH lb = {0};
+                        lb.lbStyle = BS_SOLID;
+                        lb.lbColor = arrowColor;
+                        hArrowPen = ExtCreatePen(
+                            PS_GEOMETRIC | penStyle | PS_ENDCAP_FLAT,
+                            penWidth, &lb, 0, NULL);
+                    } else {
+                        hArrowPen = CreatePen(penStyle, penWidth, arrowColor);
+                    }
+                    HPEN hOldP = (HPEN)SelectObject(hdcMem, hArrowPen);
+
+                    // Draw: horizontal stub at source -> vertical line -> horizontal stub at dest
+                    // Source stub
+                    MoveToEx(hdcMem, stubRight, srcY, NULL);
+                    LineTo(hdcMem, laneX, srcY);
+                    // Vertical line
+                    MoveToEx(hdcMem, laneX, srcY, NULL);
+                    LineTo(hdcMem, laneX, destY);
+                    // Dest stub
+                    MoveToEx(hdcMem, laneX, destY, NULL);
+                    LineTo(hdcMem, stubRight + 1, destY);
+
+                    SelectObject(hdcMem, hOldP);
+                    DeleteObject(hArrowPen);
+
+                    // Filled triangle arrowhead at destination — crisp connection
+                    if (destVisible) {
+                        int tipX = stubRight + headLen;
+                        POINT tri[3] = {
+                            { tipX, destY },                       // tip (rightmost)
+                            { tipX - headLen, destY - headSpread },// upper base
+                            { tipX - headLen, destY + headSpread } // lower base
+                        };
+                        HBRUSH hHeadBrush = CreateSolidBrush(arrowColor);
+                        HPEN hHeadPen = CreatePen(PS_SOLID, 1, arrowColor);
+                        HBRUSH hOldBr = (HBRUSH)SelectObject(hdcMem, hHeadBrush);
+                        HPEN hOldH = (HPEN)SelectObject(hdcMem, hHeadPen);
+                        Polygon(hdcMem, tri, 3);
+                        SelectObject(hdcMem, hOldH);
+                        SelectObject(hdcMem, hOldBr);
+                        DeleteObject(hHeadPen);
+                        DeleteObject(hHeadBrush);
+                    }
+                }
+            }
+
+            BitBlt(hdc, 0, 0, panelW, panelH, hdcMem, 0, 0, SRCCOPY);
+            SelectObject(hdcMem, hOldBmp);
+            DeleteObject(hBmp);
+            DeleteDC(hdcMem);
+
+            EndPaint(hWnd, &ps);
+            return 0;
+        }
+    }
+    return DefWindowProc(hWnd, uMsg, wParam, lParam);
+}
+
 // Stretch last column of ListView to fill remaining width (fixes white areas in dark mode)
 void StretchLastColumn(HWND hListView)
 {
@@ -1429,6 +1817,21 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					InvalidateRect(hBar, NULL, FALSE);
 				}
 			}
+			// Sync flow arrows panel position to match ListView
+			{
+				HWND hArrowPanel = GetDlgItem(hWnd, IDC_FLOW_ARROWS);
+				if (hArrowPanel && IsWindowVisible(hArrowPanel)) {
+					HWND hDisasm2 = GetDlgItem(hWnd, IDC_DISASM);
+					if (hDisasm2) {
+						RECT dr;
+						GetWindowRect(hDisasm2, &dr);
+						MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&dr, 2);
+						MoveWindow(hArrowPanel, dr.left - g_FlowArrowPanelWidth, dr.top,
+							g_FlowArrowPanelWidth, dr.bottom - dr.top, TRUE);
+						InvalidateRect(hArrowPanel, NULL, FALSE);
+					}
+				}
+			}
 			// Stretch last column to fill width (fixes white areas in dark mode)
 			StretchLastColumn(GetDlgItem(hWnd, IDC_DISASM));
 			StretchLastColumn(GetDlgItem(hWnd, IDC_LIST));
@@ -1461,6 +1864,19 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				SetCursor(LoadCursor(NULL, IDC_SIZENS));
 				return TRUE;
 			}
+			// Flow arrow panel right-edge drag handle
+			HWND hArrowPanel = GetDlgItem(hWnd, IDC_FLOW_ARROWS);
+			if (hArrowPanel && IsWindowVisible(hArrowPanel)) {
+				RECT arrowRect;
+				GetWindowRect(hArrowPanel, &arrowRect);
+				MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&arrowRect, 2);
+				RECT hitRect = { arrowRect.right - FLOW_ARROW_SPLITTER_HIT,
+					arrowRect.top, arrowRect.right + FLOW_ARROW_SPLITTER_HIT, arrowRect.bottom };
+				if (PtInRect(&hitRect, pt)) {
+					SetCursor(LoadCursor(NULL, IDC_SIZEWE));
+					return TRUE;
+				}
+			}
 		}
 		break;
 
@@ -1489,7 +1905,10 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					if (newDisasmHeight >= minHeight && newListHeight >= minHeight) {
 						// Use deferred window positioning for smoother updates
 						HWND hCFGChild = GetDlgItem(hWnd, IDC_CFG_CHILD);
-						HDWP hdwp = BeginDeferWindowPos(hCFGChild ? 4 : 3);
+						HWND hArrowPanel = GetDlgItem(hWnd, IDC_FLOW_ARROWS);
+						bool hasArrows = (hArrowPanel && IsWindowVisible(hArrowPanel));
+						int nWindows = 3 + (hCFGChild ? 1 : 0) + (hasArrows ? 1 : 0);
+						HDWP hdwp = BeginDeferWindowPos(nWindows);
 						if (hdwp) {
 							// Resize disassembly view
 							hdwp = DeferWindowPos(hdwp, hDisasm, NULL, 0, 0,
@@ -1516,6 +1935,16 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 								hdwp = DeferWindowPos(hdwp, hCFGChild, NULL,
 									disasmRect.left, disasmRect.top,
 									disasmRect.right - disasmRect.left,
+									newDisasmHeight,
+									SWP_NOZORDER);
+							}
+
+							// Keep flow arrows panel in sync with disasm
+							if (hasArrows) {
+								hdwp = DeferWindowPos(hdwp, hArrowPanel, NULL,
+									disasmRect.left - g_FlowArrowPanelWidth,
+									disasmRect.top,
+									g_FlowArrowPanelWidth,
 									newDisasmHeight,
 									SWP_NOZORDER);
 							}
@@ -1632,6 +2061,7 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             EnableMenuItem(GetMenu(hWnd),IDC_VIEW_DISASSEMBLY,MF_GRAYED);
             EnableMenuItem(GetMenu(hWnd),IDC_VIEW_GRAPH,MF_GRAYED);
             EnableMenuItem(GetMenu(hWnd),IDC_CODE_MAP,MF_GRAYED);
+            EnableMenuItem(GetMenu(hWnd),IDC_CONTROL_FLOW,MF_GRAYED);
 
 			// Create the ToolBar.
 			hWndTB=CreateToolBar(hWnd,hInst);
@@ -1713,9 +2143,39 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 SetWindowLongPtr(hCFGChild, GWL_USERDATA, ANCHOR_RIGHT | ANCHOR_BOTTOM);
             }
 
+            // Register and create the Flow Arrows panel (left of disasm ListView, hidden initially)
+            if (!g_FlowArrowsClassRegistered) {
+                WNDCLASSA wc = {0};
+                wc.lpfnWndProc = FlowArrowWndProc;
+                wc.hInstance = hInst;
+                wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+                wc.lpszClassName = "PVDasmFlowArrows";
+                RegisterClassA(&wc);
+                g_FlowArrowsClassRegistered = true;
+            }
+            {
+                HWND hDisasm = GetDlgItem(hWnd, IDC_DISASM);
+                RECT dr;
+                GetWindowRect(hDisasm, &dr);
+                MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&dr, 2);
+
+                // Create arrow panel at left edge of disasm (initially hidden until disassembly completes)
+                HWND hArrowPanel = CreateWindowExA(0, "PVDasmFlowArrows", NULL,
+                    WS_CHILD | WS_CLIPSIBLINGS,  // Hidden initially
+                    dr.left - g_FlowArrowPanelWidth, dr.top,
+                    g_FlowArrowPanelWidth, dr.bottom - dr.top,
+                    hWnd, (HMENU)(UINT_PTR)IDC_FLOW_ARROWS, hInst, NULL);
+                SetWindowLongPtr(hArrowPanel, GWL_USERDATA, ANCHOR_BOTTOM);
+            }
+
             // Check the menu item if Code Map is enabled (bar stays hidden until disassembly completes)
             if (g_CodeMapVisible) {
                 CheckMenuItem(GetMenu(hWnd), IDC_CODE_MAP, MF_CHECKED);
+            }
+
+            // Check the menu item if Control Flow is enabled
+            if (g_FlowArrowsVisible) {
+                CheckMenuItem(GetMenu(hWnd), IDC_CONTROL_FLOW, MF_CHECKED);
             }
 
             // Subclass the disassembly window
@@ -2337,6 +2797,45 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                         BuildCodeMapData();
                         InvalidateRect(hBar, NULL, TRUE);
                     }
+                }
+                break;
+
+                // Toggle Control Flow arrows panel
+                case IDC_CONTROL_FLOW:{
+                    HWND hArrowPanel = GetDlgItem(hWnd, IDC_FLOW_ARROWS);
+                    HWND hDisasm = GetDlgItem(hWnd, IDC_DISASM);
+                    if (!hArrowPanel || !hDisasm) break;
+
+                    g_FlowArrowsVisible = !g_FlowArrowsVisible;
+                    CheckMenuItem(GetMenu(hWnd), IDC_CONTROL_FLOW,
+                        g_FlowArrowsVisible ? MF_CHECKED : MF_UNCHECKED);
+
+                    RECT dr;
+                    GetWindowRect(hDisasm, &dr);
+                    MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&dr, 2);
+
+                    if (g_FlowArrowsVisible) {
+                        // Shrink ListView from the left to make room for arrow panel
+                        MoveWindow(hDisasm, dr.left + g_FlowArrowPanelWidth, dr.top,
+                            (dr.right - dr.left) - g_FlowArrowPanelWidth,
+                            dr.bottom - dr.top, TRUE);
+                        // Position and show arrow panel
+                        MoveWindow(hArrowPanel, dr.left, dr.top,
+                            g_FlowArrowPanelWidth, dr.bottom - dr.top, TRUE);
+                        ShowWindow(hArrowPanel, SW_SHOW);
+                        if (DisassemblerReady && g_FlowArrows.empty()) {
+                            BuildFlowArrowData();
+                        }
+                        InvalidateRect(hArrowPanel, NULL, FALSE);
+                    } else {
+                        // Hide arrow panel and expand ListView back
+                        ShowWindow(hArrowPanel, SW_HIDE);
+                        MoveWindow(hDisasm, dr.left - g_FlowArrowPanelWidth, dr.top,
+                            (dr.right - dr.left) + g_FlowArrowPanelWidth,
+                            dr.bottom - dr.top, TRUE);
+                    }
+                    StretchLastColumn(hDisasm);
+                    SaveSettings();
                 }
                 break;
 
@@ -5989,14 +6488,20 @@ LRESULT CALLBACK ListViewSubClass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
         break;
     }
 
-    // Update Code Map position indicator on scroll/navigation events
-    if (g_CodeMapVisible && (uMsg == WM_VSCROLL || uMsg == WM_MOUSEWHEEL || uMsg == WM_KEYDOWN || uMsg == WM_KEYUP || uMsg == WM_LBUTTONUP)) {
-        HWND hBar = GetDlgItem(Main_hWnd, IDC_CODE_MAP_BAR);
-        if (hBar) {
-            // Let the listview process the scroll first, then repaint the code map immediately
+    // Update Code Map and Flow Arrows on scroll/navigation events
+    if (uMsg == WM_VSCROLL || uMsg == WM_MOUSEWHEEL || uMsg == WM_KEYDOWN || uMsg == WM_KEYUP || uMsg == WM_LBUTTONUP) {
+        HWND hBar = g_CodeMapVisible ? GetDlgItem(Main_hWnd, IDC_CODE_MAP_BAR) : NULL;
+        HWND hArrowPanel = g_FlowArrowsVisible ? GetDlgItem(Main_hWnd, IDC_FLOW_ARROWS) : NULL;
+        if (hBar || (hArrowPanel && IsWindowVisible(hArrowPanel))) {
             LRESULT result = CallWindowProc(LVOldWndProc, hWnd, uMsg, wParam, lParam);
-            InvalidateRect(hBar, NULL, FALSE);
-            UpdateWindow(hBar);
+            if (hBar) {
+                InvalidateRect(hBar, NULL, FALSE);
+                UpdateWindow(hBar);
+            }
+            if (hArrowPanel && IsWindowVisible(hArrowPanel)) {
+                InvalidateRect(hArrowPanel, NULL, FALSE);
+                UpdateWindow(hArrowPanel);
+            }
             return result;
         }
     }
@@ -6223,6 +6728,7 @@ void CloseLoadedFile(HWND hWnd)
         EnableMenuItem(hWinMenu, IDC_VIEW_DISASSEMBLY,	MF_GRAYED);
         EnableMenuItem(hWinMenu, IDC_VIEW_GRAPH,		MF_GRAYED);
         EnableMenuItem(hWinMenu, IDC_CODE_MAP,			MF_GRAYED);
+        EnableMenuItem(hWinMenu, IDC_CONTROL_FLOW,		MF_GRAYED);
 
         // Reset tab visibility to defaults
         g_bDisasmTabVisible = true;
@@ -6244,6 +6750,23 @@ void CloseLoadedFile(HWND hWnd)
             }
             g_CodeMapTypes.clear();
             if (g_CodeMapCacheBmp) { DeleteObject(g_CodeMapCacheBmp); g_CodeMapCacheBmp = NULL; }
+        }
+
+        // Hide Flow Arrows panel when file is closed
+        {
+            HWND hArrowPanel = GetDlgItem(hWnd, IDC_FLOW_ARROWS);
+            HWND hDisasm = GetDlgItem(hWnd, IDC_DISASM);
+            if (hArrowPanel && IsWindowVisible(hArrowPanel) && hDisasm) {
+                ShowWindow(hArrowPanel, SW_HIDE);
+                // Expand ListView back
+                RECT dr;
+                GetWindowRect(hDisasm, &dr);
+                MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&dr, 2);
+                MoveWindow(hDisasm, dr.left - g_FlowArrowPanelWidth, dr.top,
+                    (dr.right - dr.left) + g_FlowArrowPanelWidth,
+                    dr.bottom - dr.top, TRUE);
+            }
+            g_FlowArrows.clear();
         }
 
         // Hide window When file is closed
