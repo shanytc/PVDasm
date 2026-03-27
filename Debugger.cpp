@@ -30,6 +30,7 @@ extern bool                 g_FlowArrowsVisible;
 
 // Functions from FileMap.cpp / Disasm.cpp
 extern void CloseLoadedFile(HWND hWnd);
+extern bool FilesInMemory;
 extern IMAGE_NT_HEADERS64*  NTheader64;
 extern HANDLE               hFile, hFileMap;
 extern char*                OrignalData;
@@ -1571,6 +1572,7 @@ BOOL DbgDisassembleAtEIP()
 
         if (!DisassemblerReady) {
             DisassemblerReady = TRUE;
+            FilesInMemory = true;  // So CloseLoadedFile cleans up properly
             ShowWindow(hListView, SW_SHOW);
 
             // Enable toolbar buttons
