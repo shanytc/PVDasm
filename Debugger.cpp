@@ -28,10 +28,8 @@ extern HWND                 hWndTB;
 extern bool                 g_CodeMapVisible;
 extern bool                 g_FlowArrowsVisible;
 
-// Functions from FileMap.cpp / Disasm.cpp used for loading and disassembly
-extern int  OpenFileByPath(HWND hWnd);
-extern void IntializeDisasm(bool PeLoaded, bool PeLoaded64, bool NeLoaded, HWND myhWnd, char* File, char* FileName);
-extern BOOL CALLBACK DisasmDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam);
+// Functions from FileMap.cpp / Disasm.cpp
+extern void CloseLoadedFile(HWND hWnd);
 extern IMAGE_NT_HEADERS64*  NTheader64;
 extern HANDLE               hFile, hFileMap;
 extern char*                OrignalData;
@@ -735,11 +733,18 @@ DWORD WINAPI DebugEventLoop(LPVOID lpParam)
                     s_nInitialBreakpoints--;
 
                     if (g_DbgProcess.bAttached) {
-                        // For attach: pause on the first initial breakpoint
-                        // so the user can inspect the running process
-                        s_nInitialBreakpoints = 0;  // Don't wait for more
+                        // For attach: pause and read the main thread's context
+                        // (the attach BP thread is temporary and will exit)
+                        s_nInitialBreakpoints = 0;
+                        s_dwPausedThreadId = g_DbgProcess.dwMainThreadId;
 
-                        DbgPauseAtEvent(debugEvent.dwThreadId, exAddr, WM_DBG_BREAKPOINT_HIT);
+                        // Read main thread's actual EIP
+                        g_DbgState = DBG_STATE_PAUSED;
+                        memcpy(&g_DbgPrevRegisters, &g_DbgRegisters, sizeof(DEBUG_REGISTERS));
+                        DbgReadRegisters();
+
+                        PostMessage(s_hMainWnd, WM_DBG_BREAKPOINT_HIT,
+                                    (WPARAM)g_DbgProcess.dwMainThreadId, (LPARAM)g_dwCurrentEIP);
 
                         ResetEvent(g_hContinueEvent);
                         WaitForSingleObject(g_hContinueEvent, INFINITE);
@@ -1025,12 +1030,20 @@ DEBUG_BREAKPOINT* DbgFindBreakpoint(DWORD_PTR dwAddress)
 
 BOOL DbgStepInto()
 {
-    if (g_DbgState != DBG_STATE_PAUSED)
+    if (g_DbgState != DBG_STATE_PAUSED) {
+        char msg[64];
+        wsprintf(msg, "StepInto: not paused (state=%d)", g_DbgState);
+        OutDebug(s_hMainWnd, msg);
         return FALSE;
+    }
 
-    HANDLE hThread = DbgGetThreadHandle(s_dwPausedThreadId);
-    if (!hThread)
+    // Always use the main thread for stepping
+    // (the attach breakpoint thread is temporary and exits immediately)
+    HANDLE hThread = g_DbgProcess.hMainThread;
+    if (!hThread) {
+        OutDebug(s_hMainWnd, "StepInto: no main thread handle");
         return FALSE;
+    }
 
     // Set Trap Flag (TF) for single step
     // Use native CONTEXT directly to avoid truncating 64-bit registers
@@ -1344,15 +1357,21 @@ BOOL DbgDisassembleAtEIP()
 
     // If the file is already disassembled, navigate to EIP in the existing view
     if (DisasmDataLines.size() > 0) {
-        // Map runtime EIP back to static disassembly address (subtract ASLR delta)
-        DWORD_PTR staticAddr = g_dwCurrentEIP - g_dwRebaseDelta;
-        char addrStr[16];
-        wsprintf(addrStr, "%08X", (DWORD)staticAddr);
+        // Try both raw EIP and rebased address (static disassembly uses preferred base,
+        // live decode uses runtime addresses)
+        char addrStr[20], addrStr2[20];
+        if (g_dwCurrentEIP > 0xFFFFFFFF) {
+            wsprintf(addrStr, "%08X%08X", (DWORD)(g_dwCurrentEIP >> 32), (DWORD)g_dwCurrentEIP);
+            DWORD_PTR sa = g_dwCurrentEIP - g_dwRebaseDelta;
+            wsprintf(addrStr2, "%08X%08X", (DWORD)(sa >> 32), (DWORD)sa);
+        } else {
+            wsprintf(addrStr, "%08X", (DWORD)g_dwCurrentEIP);
+            wsprintf(addrStr2, "%08X", (DWORD)(g_dwCurrentEIP - g_dwRebaseDelta));
+        }
 
-        // Search through DisasmDataLines directly (safer than ListView search)
         for (DWORD_PTR i = 0; i < DisasmDataLines.size(); i++) {
             char* itemAddr = DisasmDataLines[i].GetAddress();
-            if (itemAddr && lstrcmp(itemAddr, addrStr) == 0) {
+            if (itemAddr && (lstrcmp(itemAddr, addrStr) == 0 || lstrcmp(itemAddr, addrStr2) == 0)) {
                 SelectItem(hListView, i);
                 InvalidateRect(hListView, NULL, FALSE);
                 return TRUE;

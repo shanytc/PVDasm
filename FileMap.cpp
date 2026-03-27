@@ -3461,6 +3461,52 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         SetDlgItemText(hWnd, IDC_MESSAGE1, "Debugger: Process exited");
         g_bDebuggerActive = false;
         g_DbgState = DBG_STATE_IDLE;
+        // Clean up disassembly view (same as closing a file)
+        if (FilesInMemory) {
+            CloseLoadedFile(hWnd);
+        } else {
+            // Debugger-only session (no file was loaded) - clean up manually
+            DisassemblerReady = FALSE;
+
+            HWND hDisasm = GetDlgItem(hWnd, IDC_DISASM);
+            SendMessage(hDisasm, LVM_SETITEMCOUNT, 0, 0);
+            ShowWindow(hDisasm, SW_HIDE);
+
+            DisasmDataLines.clear();
+            DisasmCodeFlow.clear();
+            XrefData.clear();
+
+            // Hide code map bar
+            HWND hBar = GetDlgItem(hWnd, IDC_CODE_MAP_BAR);
+            if (hBar && IsWindowVisible(hBar)) {
+                ShowWindow(hBar, SW_HIDE);
+                RepositionDisasmForCodeMap(hWnd, FALSE);
+            }
+
+            // Hide flow arrows panel
+            HWND hArrowPanel = GetDlgItem(hWnd, IDC_FLOW_ARROWS);
+            if (hArrowPanel) {
+                bool wasVisible = IsWindowVisible(hArrowPanel) != 0;
+                ShowWindow(hArrowPanel, SW_HIDE);
+                if (wasVisible && hDisasm) {
+                    RECT dr;
+                    GetWindowRect(hDisasm, &dr);
+                    MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&dr, 2);
+                    MoveWindow(hDisasm, dr.left - g_FlowArrowPanelWidth, dr.top,
+                        (dr.right - dr.left) + g_FlowArrowPanelWidth,
+                        dr.bottom - dr.top, TRUE);
+                }
+            }
+
+            // Clear CFG and rebuild tabs
+            ClearEmbeddedCFG();
+            SwitchTab(hWnd, 0);
+
+            // Disable menus and toolbar
+            DbgInitMenuState(hWnd);
+
+            SetWindowText(hWnd, PVDASM);
+        }
         DbgUpdateMenuState(hWnd);
         return 0;
     }
