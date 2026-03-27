@@ -46,6 +46,9 @@
 #include <psapi.h>
 #include "Resize\AnchorResizing.h"
 #include <vector>
+#include "Debugger.h"
+
+extern HWND Main_hWnd;
 
 using std::vector;
 
@@ -110,6 +113,8 @@ BOOL CALLBACK ProcessDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lPar
 		//============================================//
 		case WM_CLOSE:
 		{
+			// Stop auto-refresh timer
+			KillTimer(hWnd, 1);
 			// Free bitmap handler
 			DeleteObject(hMenuBitmap);
 			// free loaded DLL
@@ -219,6 +224,12 @@ BOOL CALLBACK ProcessDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lPar
 			LvCol.cx=0x48; // width of header
 			LvCol.pszText="Priority";	// Next coloum
 			SendMessage(ProcessWindow,LVM_INSERTCOLUMN,2,(LPARAM)&LvCol); // ...
+			LvCol.cx=0x38; // width of header
+			LvCol.pszText="Elevated";	// Next coloum
+			SendMessage(ProcessWindow,LVM_INSERTCOLUMN,3,(LPARAM)&LvCol);
+			LvCol.cx=0x28; // width of header
+			LvCol.pszText="Arch";	// Next coloum
+			SendMessage(ProcessWindow,LVM_INSERTCOLUMN,4,(LPARAM)&LvCol);
 			// delete all items at process listview
 			SendMessage(ProcessWindow,LVM_DELETEALLITEMS,0,0); // delete all info
 
@@ -279,11 +290,33 @@ BOOL CALLBACK ProcessDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lPar
 					Win9x=true; // Win9x is set
 
 			// Show Process Information
-			MainProcess(hWnd,ProcessWindow); 
-			return true; // Always True	
+			MainProcess(hWnd,ProcessWindow);
+
+			// Auto-refresh every 10 seconds
+			SetTimer(hWnd, 1, 10000, NULL);
+
+			// Anchor the refresh button
+			SetWindowLongPtr(GetDlgItem(hWnd, IDC_PROCESS_REFRESH), GWL_USERDATA, ANCHOR_NOT_TOP | ANCHOR_BOTTOM);
+
+			return true; // Always True
 		}
 		break;
 		
+		case WM_TIMER:
+		{
+			if (wParam == 1) {
+				// Auto-refresh process list
+				char searchText[256] = "";
+				GetWindowText(hSearchEdit, searchText, sizeof(searchText));
+				ProcessIndex = 0;
+				SendMessage(ProcessWindow, LVM_DELETEALLITEMS, 0, 0);
+				MainProcess(hWnd, ProcessWindow);
+				if (searchText[0] != '\0')
+					FilterProcesses(searchText);
+			}
+		}
+		break;
+
 		case WM_NOTIFY:
 		{
 			switch(LOWORD(wParam))
@@ -383,6 +416,18 @@ BOOL CALLBACK ProcessDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lPar
 		{
 			switch(LOWORD(wParam)) // what we press on?
 			{
+				case IDC_PROCESS_REFRESH:
+				{
+					char searchText[256] = "";
+					GetWindowText(hSearchEdit, searchText, sizeof(searchText));
+					ProcessIndex = 0;
+					SendMessage(ProcessWindow, LVM_DELETEALLITEMS, 0, 0);
+					MainProcess(hWnd, ProcessWindow);
+					if (searchText[0] != '\0')
+						FilterProcesses(searchText);
+				}
+				break;
+
 				case IDC_PROCESS_SEARCH:
 				{
 					// Handle search text change
@@ -525,6 +570,17 @@ BOOL CALLBACK ProcessDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lPar
 					GetWindowText(hSearchEdit, searchText, sizeof(searchText));
 					if(searchText[0] != '\0')
 						FilterProcesses(searchText);
+				}
+				break;
+
+				case ID_ATTACH_PROCESS:
+				{
+					if(!processflag) break;
+					DWORD PID = GetProcessPID(SelectedRow);
+					if (PID != 0) {
+						EndDialog(hWnd, 0);
+						DbgAttachToProcess(Main_hWnd, PID);
+					}
 				}
 				break;
 
@@ -1279,7 +1335,38 @@ static int ProcListMake(struct processes str,HWND hWnd,HWND ProcessList)
 	LvItem.iSubItem=2;
 	LvItem.pszText=str.priority;
 	SendMessage(ProcessList,LVM_SETITEM,0,(LPARAM)&LvItem);
-	
+
+	// Elevated and Arch columns
+	{
+		char* elevStr = (char*)"?";
+		char* archStr = (char*)"?";
+		HANDLE hProc = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, str.pid);
+		if (hProc) {
+			HANDLE hToken = NULL;
+			if (OpenProcessToken(hProc, TOKEN_QUERY, &hToken)) {
+				TOKEN_ELEVATION elev = {0};
+				DWORD size = sizeof(elev);
+				if (GetTokenInformation(hToken, TokenElevation, &elev, sizeof(elev), &size)) {
+					elevStr = elev.TokenIsElevated ? (char*)"Yes" : (char*)"No";
+				}
+				CloseHandle(hToken);
+			}
+			BOOL isWow64 = FALSE;
+			if (IsWow64Process(hProc, &isWow64)) {
+				archStr = isWow64 ? (char*)"32" : (char*)"64";
+			}
+			CloseHandle(hProc);
+		} else {
+			elevStr = (char*)"Yes";
+		}
+		LvItem.iSubItem=3;
+		LvItem.pszText=elevStr;
+		SendMessage(ProcessList,LVM_SETITEM,0,(LPARAM)&LvItem);
+		LvItem.iSubItem=4;
+		LvItem.pszText=archStr;
+		SendMessage(ProcessList,LVM_SETITEM,0,(LPARAM)&LvItem);
+	}
+
 	// Next Item to draw in
 	ProcessIndex++;
 	return true;

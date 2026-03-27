@@ -33,6 +33,7 @@ typedef struct DebugProcessInfo {
     char                szCmdLine[MAX_PATH];
     char                szWorkDir[MAX_PATH];
     bool                bAttached;      // true = attached, false = created
+    bool                bIsWow64;       // true = 32-bit process on 64-bit OS
 } DEBUG_PROCESS_INFO;
 
 typedef struct DebugThreadInfo {

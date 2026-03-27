@@ -3306,7 +3306,8 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 break;
 
                 case IDM_DBG_ATTACH:{
-                    DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DBG_ATTACH), hWnd, (DLGPROC)DbgAttachDlgProc);
+                    // Reuse the existing Process Task Viewer (has Attach in right-click menu)
+                    DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_PROCESS), hWnd, (DLGPROC)ProcessDlgProc);
                     DbgUpdateMenuState(hWnd);
                 }
                 break;
@@ -3435,7 +3436,10 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         DbgUpdateMenuState(hWnd);
         {
             char dbgMsg[64];
-            wsprintf(dbgMsg, "Debugger paused at %08X", (DWORD)g_dwCurrentEIP);
+            if (g_dwCurrentEIP > 0xFFFFFFFF)
+                wsprintf(dbgMsg, "Debugger paused at %08X%08X", (DWORD)(g_dwCurrentEIP >> 32), (DWORD)g_dwCurrentEIP);
+            else
+                wsprintf(dbgMsg, "Debugger paused at %08X", (DWORD)g_dwCurrentEIP);
             SetDlgItemText(hWnd, IDC_MESSAGE1, dbgMsg);
             OutDebug(hWnd, dbgMsg);
         }

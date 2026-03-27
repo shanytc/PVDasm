@@ -529,6 +529,8 @@
 #define IDC_DBG_CMD_LINE                1369
 #define IDC_DBG_WORK_DIR                1370
 #define IDC_DBG_BROWSE                  1371
+#define ID_ATTACH_PROCESS               1372
+#define IDC_PROCESS_REFRESH             1373
 
 // Next default values for new objects
 //
@@ -536,7 +538,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        251
 #define _APS_NEXT_COMMAND_VALUE         40141
-#define _APS_NEXT_CONTROL_VALUE         1372
+#define _APS_NEXT_CONTROL_VALUE         1374
 #define _APS_NEXT_SYMED_VALUE           121
 #endif
 #endif
