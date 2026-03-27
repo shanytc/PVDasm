@@ -473,13 +473,70 @@
 #define IDM_COPY_ADDRESS                40124
 #define IDC_CONTROL_FLOW                40125
 
+// ================================================================
+// Debugger resource IDs
+// ================================================================
+
+// Dialog IDs
+#define IDD_REGISTERS                   248
+#define IDD_DBG_PROCESS_OPTIONS         249
+#define IDD_DBG_ATTACH                  250
+
+// Debugger menu command IDs
+#define IDM_DBG_START                   40126
+#define IDM_DBG_ATTACH                  40127
+#define IDM_DBG_OPTIONS                 40128
+#define IDM_DBG_PAUSE                   40129
+#define IDM_DBG_TERMINATE               40130
+#define IDM_DBG_DETACH                  40131
+#define IDM_DBG_REFRESH_MEM             40132
+#define IDM_DBG_SNAPSHOT                40133
+#define IDM_DBG_STEP_INTO               40134
+#define IDM_DBG_STEP_OVER               40135
+#define IDM_DBG_RUN_UNTIL_RET           40136
+#define IDM_DBG_RUN_TO_CURSOR           40137
+#define IDM_DBG_VIEW_REGISTERS          40138
+#define IDM_DBG_EDIT_REGISTERS          40139
+#define IDM_DBG_TOGGLE_BREAKPOINT       40140
+
+// Register dialog control IDs
+#define IDC_REG_EAX                     1347
+#define IDC_REG_EBX                     1348
+#define IDC_REG_ECX                     1349
+#define IDC_REG_EDX                     1350
+#define IDC_REG_ESI                     1351
+#define IDC_REG_EDI                     1352
+#define IDC_REG_EBP                     1353
+#define IDC_REG_ESP                     1354
+#define IDC_REG_EIP                     1355
+#define IDC_REG_EFLAGS                  1356
+#define IDC_REG_CS                      1357
+#define IDC_REG_DS                      1358
+#define IDC_REG_ES                      1359
+#define IDC_REG_FS                      1360
+#define IDC_REG_GS                      1361
+#define IDC_REG_SS                      1362
+#define IDC_REG_FLAGS_TEXT              1363
+#define IDC_REG_APPLY                   1364
+#define IDC_REG_REFRESH                 1365
+
+// Attach dialog control IDs
+#define IDC_DBG_PROCESS_LIST            1366
+#define IDC_DBG_FILTER                  1367
+
+// Process options dialog control IDs
+#define IDC_DBG_EXE_PATH                1368
+#define IDC_DBG_CMD_LINE                1369
+#define IDC_DBG_WORK_DIR                1370
+#define IDC_DBG_BROWSE                  1371
+
 // Next default values for new objects
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        248
-#define _APS_NEXT_COMMAND_VALUE         40126
-#define _APS_NEXT_CONTROL_VALUE         1347
+#define _APS_NEXT_RESOURCE_VALUE        251
+#define _APS_NEXT_COMMAND_VALUE         40141
+#define _APS_NEXT_CONTROL_VALUE         1372
 #define _APS_NEXT_SYMED_VALUE           121
 #endif
 #endif

@@ -2095,6 +2095,9 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             EnableMenuItem(GetMenu(hWnd),IDC_CODE_MAP,MF_GRAYED);
             EnableMenuItem(GetMenu(hWnd),IDC_CONTROL_FLOW,MF_GRAYED);
 
+            // Initialize debugger menu state
+            DbgInitMenuState(hWnd);
+
 			// Create the ToolBar.
 			hWndTB=CreateToolBar(hWnd,hInst);
 
@@ -2356,13 +2359,18 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 // Set the information to the list view
                 if((DWORD)((LPNMHDR)lParam)->code==(DWORD)LVN_GETDISPINFO){
                     try{
-						if(DisasmDataLines.size()){
+						if(DisasmDataLines.size() && nmdisp->item.iItem >= 0 && nmdisp->item.iItem < (int)DisasmDataLines.size()){
 							// Load Data From Memory and display in ListView
-							strcpy_s(Buffer,StringLen(DisasmDataLines[nmdisp->item.iItem].GetAddress())+1 ,DisasmDataLines[nmdisp->item.iItem].GetAddress());
-							strcpy_s(Buffer1,StringLen(DisasmDataLines[nmdisp->item.iItem].GetCode())+1,DisasmDataLines[nmdisp->item.iItem].GetCode());
-							strcpy_s(Buffer2,StringLen(DisasmDataLines[nmdisp->item.iItem].GetMnemonic())+1,DisasmDataLines[nmdisp->item.iItem].GetMnemonic());
-							strcpy_s(Buffer3,StringLen(DisasmDataLines[nmdisp->item.iItem].GetComments())+1,DisasmDataLines[nmdisp->item.iItem].GetComments());
-							strcpy_s(Buffer4,StringLen(DisasmDataLines[nmdisp->item.iItem].GetReference())+1,DisasmDataLines[nmdisp->item.iItem].GetReference());
+							char* pAddr = DisasmDataLines[nmdisp->item.iItem].GetAddress();
+							char* pCode = DisasmDataLines[nmdisp->item.iItem].GetCode();
+							char* pMnem = DisasmDataLines[nmdisp->item.iItem].GetMnemonic();
+							char* pComm = DisasmDataLines[nmdisp->item.iItem].GetComments();
+							char* pRef  = DisasmDataLines[nmdisp->item.iItem].GetReference();
+							lstrcpyn(Buffer,  pAddr ? pAddr : "", 128);
+							lstrcpyn(Buffer1, pCode ? pCode : "", 128);
+							lstrcpyn(Buffer2, pMnem ? pMnem : "", 128);
+							lstrcpyn(Buffer3, pComm ? pComm : "", 128);
+							lstrcpyn(Buffer4, pRef  ? pRef  : "", 256);
 							nmdisp->item.pszText=Buffer; // item 0
 	                        
 							if( nmdisp->item.mask & LVIF_TEXT){
@@ -3269,9 +3277,136 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				case IDC_PVSCRIPT_ENGINE:
 				case ID_SCRIPT:{
 					DialogBox(GetModuleHandle(NULL),MAKEINTRESOURCE(IDD_SCRIPT_EDITOR), hWnd, (DLGPROC)ScriptEditorDlgProc);
-					
+
 				}
 				break;
+
+                // ========== DEBUGGER COMMANDS ==========
+
+                case IDM_DBG_START:{
+                    if (g_DbgState == DBG_STATE_IDLE) {
+                        // If no exe path configured, use the loaded file or open options dialog
+                        if (g_DbgProcess.szExePath[0] == '\0') {
+                            if (szFileName[0] != '\0') {
+                                lstrcpyn(g_DbgProcess.szExePath, szFileName, MAX_PATH);
+                            }
+                            // Show options dialog to configure path
+                            if (DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DBG_PROCESS_OPTIONS), hWnd, (DLGPROC)DbgOptionsDlgProc) != IDOK) {
+                                break;
+                            }
+                        }
+                        if (g_DbgProcess.szExePath[0] != '\0') {
+                            DbgStartProcess(hWnd, g_DbgProcess.szExePath, g_DbgProcess.szCmdLine, g_DbgProcess.szWorkDir);
+                        }
+                    } else if (g_DbgState == DBG_STATE_PAUSED) {
+                        DbgResumeProcess();
+                    }
+                    DbgUpdateMenuState(hWnd);
+                }
+                break;
+
+                case IDM_DBG_ATTACH:{
+                    DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DBG_ATTACH), hWnd, (DLGPROC)DbgAttachDlgProc);
+                    DbgUpdateMenuState(hWnd);
+                }
+                break;
+
+                case IDM_DBG_OPTIONS:{
+                    DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DBG_PROCESS_OPTIONS), hWnd, (DLGPROC)DbgOptionsDlgProc);
+                }
+                break;
+
+                case IDM_DBG_PAUSE:{
+                    if (g_DbgState == DBG_STATE_RUNNING) {
+                        DbgPauseProcess();
+                    }
+                }
+                break;
+
+                case IDM_DBG_TERMINATE:{
+                    if (g_bDebuggerActive) {
+                        DbgTerminateProcess();
+                    }
+                    DbgUpdateMenuState(hWnd);
+                }
+                break;
+
+                case IDM_DBG_DETACH:{
+                    if (g_bDebuggerActive) {
+                        DbgDetachFromProcess();
+                    }
+                    DbgUpdateMenuState(hWnd);
+                }
+                break;
+
+                case IDM_DBG_REFRESH_MEM:{
+                    if (g_DbgState == DBG_STATE_PAUSED) {
+                        DbgRefreshMemory();
+                    }
+                }
+                break;
+
+                case IDM_DBG_SNAPSHOT:{
+                    if (g_bDebuggerActive) {
+                        DbgTakeMemorySnapshot((DWORD_PTR)g_DbgProcess.lpBaseOfImage, 0x10000);
+                        OutDebug(hWnd, "Memory snapshot taken.");
+                    }
+                }
+                break;
+
+                case IDM_DBG_STEP_INTO:{
+                    if (g_DbgState == DBG_STATE_PAUSED) {
+                        DbgStepInto();
+                    }
+                }
+                break;
+
+                case IDM_DBG_STEP_OVER:{
+                    if (g_DbgState == DBG_STATE_PAUSED) {
+                        DbgStepOver();
+                    }
+                }
+                break;
+
+                case IDM_DBG_RUN_UNTIL_RET:{
+                    if (g_DbgState == DBG_STATE_PAUSED) {
+                        DbgRunUntilReturn();
+                    }
+                }
+                break;
+
+                case IDM_DBG_RUN_TO_CURSOR:{
+                    if (g_DbgState == DBG_STATE_PAUSED) {
+                        DWORD_PTR sel = SendMessage(GetDlgItem(hWnd, IDC_DISASM), LVM_GETNEXTITEM, (WPARAM)-1, LVNI_SELECTED);
+                        if (sel != (DWORD_PTR)-1 && sel < DisasmDataLines.size()) {
+                            DWORD_PTR addr = StringToDword(DisasmDataLines[sel].GetAddress());
+                            DbgRunToCursor(addr + g_dwRebaseDelta);
+                        }
+                    }
+                }
+                break;
+
+                case IDM_DBG_TOGGLE_BREAKPOINT:{
+                    if (g_bDebuggerActive) {
+                        DWORD_PTR sel = SendMessage(GetDlgItem(hWnd, IDC_DISASM), LVM_GETNEXTITEM, (WPARAM)-1, LVNI_SELECTED);
+                        if (sel != (DWORD_PTR)-1 && sel < DisasmDataLines.size()) {
+                            DWORD_PTR addr = StringToDword(DisasmDataLines[sel].GetAddress());
+                            DbgToggleBreakpoint(addr + g_dwRebaseDelta);
+                            InvalidateRect(GetDlgItem(hWnd, IDC_DISASM), NULL, FALSE);
+                        }
+                    }
+                }
+                break;
+
+                case IDM_DBG_VIEW_REGISTERS:{
+                    if (!g_hRegisterDlg) {
+                        g_hRegisterDlg = CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_REGISTERS), hWnd, (DLGPROC)DbgRegisterDlgProc);
+                        ShowWindow(g_hRegisterDlg, SW_SHOW);
+                    } else {
+                        SetForegroundWindow(g_hRegisterDlg);
+                    }
+                }
+                break;
 			}
 			break;
 	
@@ -3288,6 +3423,85 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		SetFocus(GetDlgItem(hWnd, IDC_DISASM));
 		return 0;
 	}
+
+    // ========== DEBUGGER EVENT MESSAGES ==========
+
+    case WM_DBG_BREAKPOINT_HIT:
+    case WM_DBG_STEP_COMPLETE: {
+        g_dwCurrentEIP = (DWORD_PTR)lParam;
+        DbgReadRegisters();
+        DbgDisassembleAtEIP();
+        DbgUpdateRegisterDialog();
+        DbgUpdateMenuState(hWnd);
+        {
+            char dbgMsg[64];
+            wsprintf(dbgMsg, "Debugger paused at %08X", (DWORD)g_dwCurrentEIP);
+            SetDlgItemText(hWnd, IDC_MESSAGE1, dbgMsg);
+            OutDebug(hWnd, dbgMsg);
+        }
+        return 0;
+    }
+
+    case WM_DBG_EXCEPTION: {
+        char dbgMsg[128];
+        wsprintf(dbgMsg, "Exception %08X at %08X", (DWORD)wParam, (DWORD)lParam);
+        OutDebug(hWnd, dbgMsg);
+        DbgUpdateMenuState(hWnd);
+        return 0;
+    }
+
+    case WM_DBG_PROCESS_EXIT: {
+        char dbgMsg[64];
+        wsprintf(dbgMsg, "Process terminated. Exit code: %d", (int)wParam);
+        OutDebug(hWnd, dbgMsg);
+        SetDlgItemText(hWnd, IDC_MESSAGE1, "Debugger: Process exited");
+        g_bDebuggerActive = false;
+        g_DbgState = DBG_STATE_IDLE;
+        DbgUpdateMenuState(hWnd);
+        return 0;
+    }
+
+    case WM_DBG_DLL_LOAD: {
+        char* dllName = (char*)lParam;
+        char dbgMsg[MAX_PATH + 32];
+        wsprintf(dbgMsg, "Module loaded: %s", dllName ? dllName : "(unknown)");
+        OutDebug(hWnd, dbgMsg);
+        if (dllName) free(dllName);
+        return 0;
+    }
+
+    case WM_DBG_DLL_UNLOAD: {
+        OutDebug(hWnd, "Module unloaded");
+        return 0;
+    }
+
+    case WM_DBG_THREAD_CREATE: {
+        char dbgMsg[64];
+        wsprintf(dbgMsg, "Thread created: %d", (DWORD)wParam);
+        OutDebug(hWnd, dbgMsg);
+        return 0;
+    }
+
+    case WM_DBG_THREAD_EXIT: {
+        char dbgMsg[64];
+        wsprintf(dbgMsg, "Thread exited: %d", (DWORD)wParam);
+        OutDebug(hWnd, dbgMsg);
+        return 0;
+    }
+
+    case WM_DBG_OUTPUT_STRING: {
+        char* str = (char*)lParam;
+        if (str) {
+            OutDebug(hWnd, str);
+            free(str);
+        }
+        return 0;
+    }
+
+    case WM_DBG_STATE_CHANGED: {
+        DbgUpdateMenuState(hWnd);
+        return 0;
+    }
 
 	case WM_DROPFILES: {
 		HDROP hDrop = (HDROP)wParam;
@@ -5792,6 +6006,18 @@ LRESULT ProcessCustomDraw (LPARAM lParam)
                 lplvcd->clrText = RGB(255, 255, 255);  // White text for selected
                 lplvcd->clrTextBk = RGB(60, 60, 60);   // Dark gray background for selected
             }
+
+            // Debugger: highlight current EIP line
+            if (g_bDebuggerActive && g_dwCurrentEIP != 0 &&
+                lplvcd->nmcd.dwItemSpec < DisasmDataLines.size()) {
+                DWORD_PTR itemAddr = StringToDword(DisasmDataLines[lplvcd->nmcd.dwItemSpec].GetAddress());
+                // Compare static disassembly address against EIP mapped back from runtime
+                if (itemAddr == (g_dwCurrentEIP - g_dwRebaseDelta)) {
+                    lplvcd->clrTextBk = g_DarkMode ? RGB(80, 80, 0) : RGB(255, 255, 0);
+                    lplvcd->clrText = g_DarkMode ? RGB(255, 255, 255) : RGB(0, 0, 0);
+                }
+            }
+
             return CDRF_NOTIFYSUBITEMDRAW;
         }
         break;
@@ -5808,7 +6034,18 @@ LRESULT ProcessCustomDraw (LPARAM lParam)
 					else{
                        lplvcd->clrTextBk=(COLORREF)RGB(255,255,225);
 					}
-					
+
+                    // Debugger: color breakpoint addresses red
+                    if (g_bDebuggerActive && lplvcd->nmcd.dwItemSpec < DisasmDataLines.size()) {
+                        DWORD_PTR itemAddr = StringToDword(DisasmDataLines[lplvcd->nmcd.dwItemSpec].GetAddress());
+                        EnterCriticalSection(&g_csBreakpoints);
+                        if (DbgFindBreakpoint(itemAddr + g_dwRebaseDelta)) {
+                            lplvcd->clrText = RGB(255, 0, 0);
+                            lplvcd->clrTextBk = g_DarkMode ? RGB(60, 0, 0) : RGB(255, 220, 220);
+                        }
+                        LeaveCriticalSection(&g_csBreakpoints);
+                    }
+
                     return CDRF_NEWFONT;
                 }
                 break;

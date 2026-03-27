@@ -924,6 +924,28 @@ BEGIN
         MENUITEM "Code Patcher\tAlt+E",         IDM_PATCHER
         MENUITEM "Add Comment\tCtrl+M",         IDC_DISASM_ADD_COMMENT
     END
+    POPUP "&Debugger"
+    BEGIN
+        MENUITEM "Start Process\tF9",            IDM_DBG_START
+        MENUITEM "Attach to Process...",          IDM_DBG_ATTACH
+        MENUITEM "Process Options...",            IDM_DBG_OPTIONS
+        MENUITEM SEPARATOR
+        MENUITEM "Pause Process",                 IDM_DBG_PAUSE
+        MENUITEM "Terminate Process\tCtrl+F2",    IDM_DBG_TERMINATE
+        MENUITEM "Detach from Process",           IDM_DBG_DETACH
+        MENUITEM SEPARATOR
+        MENUITEM "Refresh Memory",                IDM_DBG_REFRESH_MEM
+        MENUITEM "Take Memory Snapshot",          IDM_DBG_SNAPSHOT
+        MENUITEM SEPARATOR
+        MENUITEM "Step Into\tF7",                 IDM_DBG_STEP_INTO
+        MENUITEM "Step Over\tF8",                 IDM_DBG_STEP_OVER
+        MENUITEM "Run Until Return\tCtrl+F7",     IDM_DBG_RUN_UNTIL_RET
+        MENUITEM "Run to Cursor\tF4",             IDM_DBG_RUN_TO_CURSOR
+        MENUITEM SEPARATOR
+        MENUITEM "Toggle Breakpoint\tF2",         IDM_DBG_TOGGLE_BREAKPOINT
+        MENUITEM SEPARATOR
+        MENUITEM "View Registers",                IDM_DBG_VIEW_REGISTERS
+    END
     POPUP "&Views"
     BEGIN
         MENUITEM "Disassembly",              IDC_VIEW_DISASSEMBLY, CHECKED
@@ -1180,6 +1202,81 @@ IDB_RC_DEFINE_FUNC      BITMAP                  "rc_define_func.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// Debugger Dialogs
+//
+
+IDD_REGISTERS DIALOGEX 0, 0, 200, 280
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "CPU Registers"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "EAX:", -1, 4, 6, 22, 8
+    EDITTEXT        IDC_REG_EAX, 30, 4, 60, 12, ES_UPPERCASE | ES_AUTOHSCROLL
+    LTEXT           "EBX:", -1, 4, 20, 22, 8
+    EDITTEXT        IDC_REG_EBX, 30, 18, 60, 12, ES_UPPERCASE | ES_AUTOHSCROLL
+    LTEXT           "ECX:", -1, 4, 34, 22, 8
+    EDITTEXT        IDC_REG_ECX, 30, 32, 60, 12, ES_UPPERCASE | ES_AUTOHSCROLL
+    LTEXT           "EDX:", -1, 4, 48, 22, 8
+    EDITTEXT        IDC_REG_EDX, 30, 46, 60, 12, ES_UPPERCASE | ES_AUTOHSCROLL
+    LTEXT           "ESI:", -1, 4, 62, 22, 8
+    EDITTEXT        IDC_REG_ESI, 30, 60, 60, 12, ES_UPPERCASE | ES_AUTOHSCROLL
+    LTEXT           "EDI:", -1, 4, 76, 22, 8
+    EDITTEXT        IDC_REG_EDI, 30, 74, 60, 12, ES_UPPERCASE | ES_AUTOHSCROLL
+    LTEXT           "EBP:", -1, 4, 90, 22, 8
+    EDITTEXT        IDC_REG_EBP, 30, 88, 60, 12, ES_UPPERCASE | ES_AUTOHSCROLL
+    LTEXT           "ESP:", -1, 4, 104, 22, 8
+    EDITTEXT        IDC_REG_ESP, 30, 102, 60, 12, ES_UPPERCASE | ES_AUTOHSCROLL
+    LTEXT           "EIP:", -1, 4, 118, 22, 8
+    EDITTEXT        IDC_REG_EIP, 30, 116, 60, 12, ES_UPPERCASE | ES_AUTOHSCROLL
+    LTEXT           "EFLAGS:", -1, 4, 138, 30, 8
+    EDITTEXT        IDC_REG_EFLAGS, 38, 136, 52, 12, ES_UPPERCASE | ES_AUTOHSCROLL
+    LTEXT           "", IDC_REG_FLAGS_TEXT, 4, 152, 192, 12
+    GROUPBOX        "Segment Registers", -1, 2, 168, 196, 44
+    LTEXT           "CS:", -1, 8, 182, 14, 8
+    EDITTEXT        IDC_REG_CS, 24, 180, 32, 12, ES_UPPERCASE | ES_AUTOHSCROLL
+    LTEXT           "DS:", -1, 64, 182, 14, 8
+    EDITTEXT        IDC_REG_DS, 80, 180, 32, 12, ES_UPPERCASE | ES_AUTOHSCROLL
+    LTEXT           "ES:", -1, 120, 182, 14, 8
+    EDITTEXT        IDC_REG_ES, 136, 180, 32, 12, ES_UPPERCASE | ES_AUTOHSCROLL
+    LTEXT           "FS:", -1, 8, 196, 14, 8
+    EDITTEXT        IDC_REG_FS, 24, 194, 32, 12, ES_UPPERCASE | ES_AUTOHSCROLL
+    LTEXT           "GS:", -1, 64, 196, 14, 8
+    EDITTEXT        IDC_REG_GS, 80, 194, 32, 12, ES_UPPERCASE | ES_AUTOHSCROLL
+    LTEXT           "SS:", -1, 120, 196, 14, 8
+    EDITTEXT        IDC_REG_SS, 136, 194, 32, 12, ES_UPPERCASE | ES_AUTOHSCROLL
+    PUSHBUTTON      "Apply", IDC_REG_APPLY, 100, 260, 45, 14
+    PUSHBUTTON      "Refresh", IDC_REG_REFRESH, 150, 260, 45, 14
+END
+
+IDD_DBG_ATTACH DIALOGEX 0, 0, 320, 240
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Attach to Process"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    CONTROL         "", IDC_DBG_PROCESS_LIST, "SysListView32", LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP, 4, 4, 312, 210
+    DEFPUSHBUTTON   "Attach", IDOK, 208, 220, 50, 14
+    PUSHBUTTON      "Cancel", IDCANCEL, 264, 220, 50, 14
+END
+
+IDD_DBG_PROCESS_OPTIONS DIALOGEX 0, 0, 300, 130
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Process Options"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "Executable:", -1, 8, 10, 42, 8
+    EDITTEXT        IDC_DBG_EXE_PATH, 54, 8, 188, 14, ES_AUTOHSCROLL
+    PUSHBUTTON      "...", IDC_DBG_BROWSE, 248, 8, 20, 14
+    LTEXT           "Arguments:", -1, 8, 30, 42, 8
+    EDITTEXT        IDC_DBG_CMD_LINE, 54, 28, 214, 14, ES_AUTOHSCROLL
+    LTEXT           "Work Dir:", -1, 8, 50, 42, 8
+    EDITTEXT        IDC_DBG_WORK_DIR, 54, 48, 214, 14, ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK", IDOK, 192, 108, 50, 14
+    PUSHBUTTON      "Cancel", IDCANCEL, 248, 108, 50, 14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // Accelerator
 //
 
@@ -1228,6 +1325,13 @@ BEGIN
     "W",            IDC_PRODUCE_MASM,       VIRTKEY, CONTROL, NOINVERT
     "X",            IDC_EXIT,               VIRTKEY, CONTROL, NOINVERT
     "X",            IDC_CLOSEFILE,          VIRTKEY, ALT, NOINVERT
+    VK_F9,          IDM_DBG_START,          VIRTKEY, NOINVERT
+    VK_F2,          IDM_DBG_TERMINATE,      VIRTKEY, CONTROL, NOINVERT
+    VK_F7,          IDM_DBG_STEP_INTO,      VIRTKEY, NOINVERT
+    VK_F8,          IDM_DBG_STEP_OVER,      VIRTKEY, NOINVERT
+    VK_F7,          IDM_DBG_RUN_UNTIL_RET,  VIRTKEY, CONTROL, NOINVERT
+    VK_F4,          IDM_DBG_RUN_TO_CURSOR,  VIRTKEY, NOINVERT
+    VK_F2,          IDM_DBG_TOGGLE_BREAKPOINT, VIRTKEY, NOINVERT
 END
 
 
