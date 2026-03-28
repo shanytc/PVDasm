@@ -3285,12 +3285,10 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
                 case IDM_DBG_START:{
                     if (g_DbgState == DBG_STATE_IDLE) {
-                        // If no exe path configured, use the loaded file or open options dialog
                         if (g_DbgProcess.szExePath[0] == '\0') {
                             if (szFileName[0] != '\0') {
                                 lstrcpyn(g_DbgProcess.szExePath, szFileName, MAX_PATH);
                             }
-                            // Show options dialog to configure path
                             if (DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DBG_PROCESS_OPTIONS), hWnd, (DLGPROC)DbgOptionsDlgProc) != IDOK) {
                                 break;
                             }
@@ -3298,7 +3296,13 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                         if (g_DbgProcess.szExePath[0] != '\0') {
                             DbgStartProcess(hWnd, g_DbgProcess.szExePath, g_DbgProcess.szCmdLine, g_DbgProcess.szWorkDir);
                         }
-                    } else if (g_DbgState == DBG_STATE_PAUSED) {
+                    }
+                    DbgUpdateMenuState(hWnd);
+                }
+                break;
+
+                case IDM_DBG_RESUME:{
+                    if (g_DbgState == DBG_STATE_PAUSED) {
                         DbgResumeProcess();
                     }
                     DbgUpdateMenuState(hWnd);

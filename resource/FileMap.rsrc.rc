@@ -928,6 +928,7 @@ BEGIN
     POPUP "&Debugger"
     BEGIN
         MENUITEM "Start Process\tF9",            IDM_DBG_START
+        MENUITEM "Resume\tF5",                    IDM_DBG_RESUME
         MENUITEM "Attach to Process...",          IDM_DBG_ATTACH
         MENUITEM "Process Options...",            IDM_DBG_OPTIONS
         MENUITEM SEPARATOR
@@ -1340,6 +1341,7 @@ BEGIN
     "X",            IDC_EXIT,               VIRTKEY, CONTROL, NOINVERT
     "X",            IDC_CLOSEFILE,          VIRTKEY, ALT, NOINVERT
     VK_F9,          IDM_DBG_START,          VIRTKEY, NOINVERT
+    VK_F5,          IDM_DBG_RESUME,         VIRTKEY, NOINVERT
     VK_F2,          IDM_DBG_TERMINATE,      VIRTKEY, CONTROL, NOINVERT
     VK_F7,          IDM_DBG_STEP_INTO,      VIRTKEY, NOINVERT
     VK_F8,          IDM_DBG_STEP_OVER,      VIRTKEY, NOINVERT

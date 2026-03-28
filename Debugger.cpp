@@ -90,6 +90,7 @@ static int      s_nInitialBreakpoints = 2;      // WOW64 fires 2 system breakpoi
 static DWORD_PTR s_dwReEnableBPAddr = 0;        // Address of breakpoint to re-enable after single step
 static DWORD    s_dwContinueStatus = DBG_CONTINUE;
 static DWORD    s_dwPausedThreadId = 0;         // Thread ID of the thread that caused the pause
+static bool     s_bDetachRequested = false;     // Signal debug thread to detach
 static char     s_szTempExePath[MAX_PATH] = {0}; // Temp copy of EXE for debugging
 // Cached thread display info (populated once at pause time)
 struct THREAD_CACHE_ENTRY {
@@ -276,15 +277,17 @@ BOOL DbgDetachFromProcess()
     g_DbgBreakpoints.clear();
     LeaveCriticalSection(&g_csBreakpoints);
 
-    // If paused, resume before detaching
+    // Signal the debug thread to detach (it must call DebugActiveProcessStop
+    // on the same thread that called DebugActiveProcess/CreateProcess)
+    s_bDetachRequested = true;
+
+    // If paused, resume the debug loop so it can process the detach
     if (g_DbgState == DBG_STATE_PAUSED) {
         s_dwContinueStatus = DBG_CONTINUE;
         g_DbgState = DBG_STATE_RUNNING;
         SetEvent(g_hContinueEvent);
     }
 
-    DebugActiveProcessStop(g_DbgProcess.dwProcessId);
-    DbgCleanup();
     return TRUE;
 }
 
@@ -335,6 +338,7 @@ void DbgCleanup()
     g_dwRebaseDelta = 0;
     s_dwReEnableBPAddr = 0;
     s_dwPausedThreadId = 0;
+    s_bDetachRequested = false;
     s_threadCache.clear();
 
     // Reset tab width and window title
@@ -561,6 +565,9 @@ static void DbgPauseAtEvent(DWORD dwThreadId, DWORD_PTR dwAddress, UINT uMsg)
 DWORD WINAPI DebugEventLoop(LPVOID lpParam)
 {
     DEBUG_EVENT debugEvent;
+
+    // Don't kill the process when we detach
+    DebugSetProcessKillOnExit(FALSE);
 
     // Both CreateProcess and DebugActiveProcess must happen on the SAME thread
     // as WaitForDebugEvent. Windows delivers debug events only to the thread
@@ -984,6 +991,15 @@ DWORD WINAPI DebugEventLoop(LPVOID lpParam)
         } // switch dwDebugEventCode
 
         ContinueDebugEvent(debugEvent.dwProcessId, debugEvent.dwThreadId, s_dwContinueStatus);
+
+        // Check if detach was requested
+        if (s_bDetachRequested) {
+            s_bDetachRequested = false;
+            DebugActiveProcessStop(g_DbgProcess.dwProcessId);
+            PostMessage(s_hMainWnd, WM_DBG_PROCESS_EXIT, 0, 0);
+            DbgCleanup();
+            return 0;
+        }
     }
 
     return 0;
@@ -1756,6 +1772,7 @@ void DbgInitMenuState(HWND hWnd)
     EnableMenuItem(hMenu, IDM_DBG_TOGGLE_BREAKPOINT, MF_GRAYED);
     EnableMenuItem(hMenu, IDM_DBG_VIEW_REGISTERS, MF_GRAYED);
     EnableMenuItem(hMenu, IDM_DBG_VIEW_THREADS, MF_GRAYED);
+    EnableMenuItem(hMenu, IDM_DBG_RESUME, MF_GRAYED);
 }
 
 void DbgUpdateMenuState(HWND hWnd)
@@ -1779,6 +1796,7 @@ void DbgUpdateMenuState(HWND hWnd)
         EnableMenuItem(hMenu, IDM_DBG_TOGGLE_BREAKPOINT, MF_GRAYED);
         EnableMenuItem(hMenu, IDM_DBG_VIEW_REGISTERS, MF_GRAYED);
         EnableMenuItem(hMenu, IDM_DBG_VIEW_THREADS, MF_GRAYED);
+        EnableMenuItem(hMenu, IDM_DBG_RESUME, MF_GRAYED);
         break;
 
     case DBG_STATE_RUNNING:
@@ -1800,6 +1818,7 @@ void DbgUpdateMenuState(HWND hWnd)
         EnableMenuItem(hMenu, IDM_DBG_TOGGLE_BREAKPOINT, MF_GRAYED);
         EnableMenuItem(hMenu, IDM_DBG_VIEW_REGISTERS, MF_GRAYED);
         EnableMenuItem(hMenu, IDM_DBG_VIEW_THREADS, MF_ENABLED);
+        EnableMenuItem(hMenu, IDM_DBG_RESUME, MF_GRAYED);
         break;
 
     case DBG_STATE_PAUSED:
@@ -1819,6 +1838,7 @@ void DbgUpdateMenuState(HWND hWnd)
         EnableMenuItem(hMenu, IDM_DBG_TOGGLE_BREAKPOINT, MF_ENABLED);
         EnableMenuItem(hMenu, IDM_DBG_VIEW_REGISTERS, MF_ENABLED);
         EnableMenuItem(hMenu, IDM_DBG_VIEW_THREADS, MF_ENABLED);
+        EnableMenuItem(hMenu, IDM_DBG_RESUME, MF_ENABLED);
         break;
     }
 }
