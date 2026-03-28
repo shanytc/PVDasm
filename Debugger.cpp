@@ -53,6 +53,7 @@ DEBUG_REGISTERS                     g_DbgPrevRegisters = {0};
 HANDLE                              g_hDebugThread = NULL;
 DWORD                               g_dwDebugThreadId = 0;
 HWND                                g_hRegisterDlg = NULL;
+HWND                                g_hThreadsDlg = NULL;
 DWORD_PTR                           g_dwCurrentEIP = 0;
 bool                                g_bDebuggerActive = false;
 HANDLE                              g_hContinueEvent = NULL;
@@ -90,6 +91,14 @@ static DWORD_PTR s_dwReEnableBPAddr = 0;        // Address of breakpoint to re-e
 static DWORD    s_dwContinueStatus = DBG_CONTINUE;
 static DWORD    s_dwPausedThreadId = 0;         // Thread ID of the thread that caused the pause
 static char     s_szTempExePath[MAX_PATH] = {0}; // Temp copy of EXE for debugging
+// Cached thread display info (populated once at pause time)
+struct THREAD_CACHE_ENTRY {
+    DWORD       dwThreadId;
+    DWORD_PTR   dwEip;
+    char        szName[64];
+    char        szModule[64];
+};
+static std::vector<THREAD_CACHE_ENTRY> s_threadCache;
 
 // Parameters passed from UI thread to debug thread
 static char     s_szStartCmdLine[MAX_PATH * 2] = {0};
@@ -467,6 +476,53 @@ static void DbgReadModuleName(HANDLE hProcess, HANDLE hFile, LPVOID lpBaseOfDll,
 }
 
 // Pause the debugger: update state, read registers, notify UI
+// Add one thread to cache
+static void DbgCacheAddThread(DWORD tid, HANDLE hThread, const char* name)
+{
+    THREAD_CACHE_ENTRY entry;
+    memset(&entry, 0, sizeof(entry));
+    entry.dwThreadId = tid;
+    lstrcpyn(entry.szName, name, 64);
+
+    if (hThread) {
+        WOW64_CONTEXT ctx = {0};
+        if (DbgGet32Context(hThread, &ctx))
+            entry.dwEip = ctx.Eip;
+
+        const char* mod = DbgFindModuleForAddress(entry.dwEip);
+        if (mod) lstrcpyn(entry.szModule, mod, 64);
+    }
+
+    s_threadCache.push_back(entry);
+}
+
+// Build complete thread cache (called once when pausing)
+static void DbgCacheThreadEIPs()
+{
+    s_threadCache.clear();
+
+    // Main thread
+    if (g_DbgProcess.dwMainThreadId != 0) {
+        char name[64];
+        char* exeName = g_DbgProcess.szExePath;
+        char* slash = strrchr(exeName, '\\');
+        if (!slash) slash = strrchr(exeName, '/');
+        if (slash) exeName = slash + 1;
+        if (strncmp(exeName, "\\\\?\\", 4) == 0) exeName += 4;
+        lstrcpyn(name, exeName[0] ? exeName : "Main", 64);
+        DbgCacheAddThread(g_DbgProcess.dwMainThreadId, g_DbgProcess.hMainThread, name);
+    }
+
+    // Other threads
+    for (size_t i = 0; i < g_DbgThreads.size(); i++) {
+        if (g_DbgThreads[i].dwThreadId == g_DbgProcess.dwMainThreadId)
+            continue;
+        char name[32];
+        wsprintf(name, "%08X", (DWORD)(DWORD_PTR)g_DbgThreads[i].lpStartAddress);
+        DbgCacheAddThread(g_DbgThreads[i].dwThreadId, g_DbgThreads[i].hThread, name);
+    }
+}
+
 static void DbgPauseAtEvent(DWORD dwThreadId, DWORD_PTR dwAddress, UINT uMsg)
 {
     g_DbgState = DBG_STATE_PAUSED;
@@ -476,6 +532,9 @@ static void DbgPauseAtEvent(DWORD dwThreadId, DWORD_PTR dwAddress, UINT uMsg)
     // Save previous registers for change detection
     memcpy(&g_DbgPrevRegisters, &g_DbgRegisters, sizeof(DEBUG_REGISTERS));
     DbgReadRegisters();
+
+    // Cache all thread EIPs once (dialog reads from cache)
+    DbgCacheThreadEIPs();
 
     PostMessage(s_hMainWnd, uMsg, (WPARAM)dwThreadId, (LPARAM)dwAddress);
 }
@@ -743,6 +802,7 @@ DWORD WINAPI DebugEventLoop(LPVOID lpParam)
                         g_DbgState = DBG_STATE_PAUSED;
                         memcpy(&g_DbgPrevRegisters, &g_DbgRegisters, sizeof(DEBUG_REGISTERS));
                         DbgReadRegisters();
+                        DbgCacheThreadEIPs();
 
                         PostMessage(s_hMainWnd, WM_DBG_BREAKPOINT_HIT,
                                     (WPARAM)g_DbgProcess.dwMainThreadId, (LPARAM)g_dwCurrentEIP);
@@ -1687,6 +1747,7 @@ void DbgInitMenuState(HWND hWnd)
     EnableMenuItem(hMenu, IDM_DBG_RUN_TO_CURSOR, MF_GRAYED);
     EnableMenuItem(hMenu, IDM_DBG_TOGGLE_BREAKPOINT, MF_GRAYED);
     EnableMenuItem(hMenu, IDM_DBG_VIEW_REGISTERS, MF_GRAYED);
+    EnableMenuItem(hMenu, IDM_DBG_VIEW_THREADS, MF_GRAYED);
 }
 
 void DbgUpdateMenuState(HWND hWnd)
@@ -1709,6 +1770,7 @@ void DbgUpdateMenuState(HWND hWnd)
         EnableMenuItem(hMenu, IDM_DBG_RUN_TO_CURSOR, MF_GRAYED);
         EnableMenuItem(hMenu, IDM_DBG_TOGGLE_BREAKPOINT, MF_GRAYED);
         EnableMenuItem(hMenu, IDM_DBG_VIEW_REGISTERS, MF_GRAYED);
+        EnableMenuItem(hMenu, IDM_DBG_VIEW_THREADS, MF_GRAYED);
         break;
 
     case DBG_STATE_RUNNING:
@@ -1729,6 +1791,7 @@ void DbgUpdateMenuState(HWND hWnd)
         EnableMenuItem(hMenu, IDM_DBG_RUN_TO_CURSOR, MF_GRAYED);
         EnableMenuItem(hMenu, IDM_DBG_TOGGLE_BREAKPOINT, MF_GRAYED);
         EnableMenuItem(hMenu, IDM_DBG_VIEW_REGISTERS, MF_GRAYED);
+        EnableMenuItem(hMenu, IDM_DBG_VIEW_THREADS, MF_ENABLED);
         break;
 
     case DBG_STATE_PAUSED:
@@ -1747,6 +1810,7 @@ void DbgUpdateMenuState(HWND hWnd)
         EnableMenuItem(hMenu, IDM_DBG_RUN_TO_CURSOR, MF_ENABLED);
         EnableMenuItem(hMenu, IDM_DBG_TOGGLE_BREAKPOINT, MF_ENABLED);
         EnableMenuItem(hMenu, IDM_DBG_VIEW_REGISTERS, MF_ENABLED);
+        EnableMenuItem(hMenu, IDM_DBG_VIEW_THREADS, MF_ENABLED);
         break;
     }
 }
@@ -2065,6 +2129,170 @@ BOOL CALLBACK DbgOptionsDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM l
             return (INT_PTR)g_hDarkBrush;
         }
         break;
+    }
+    return FALSE;
+}
+
+// ================================================================
+// =================  THREADS DIALOG  =============================
+// ================================================================
+
+// Find which module an address belongs to
+const char* DbgFindModuleForAddress(DWORD_PTR addr)
+{
+    for (size_t i = 0; i < g_DbgModules.size(); i++) {
+        DWORD_PTR base = (DWORD_PTR)g_DbgModules[i].lpBaseOfDll;
+        if (addr >= base && addr < base + 0x1000000) {
+            char* name = g_DbgModules[i].szModuleName;
+            char* slash = strrchr(name, '\\');
+            if (!slash) slash = strrchr(name, '/');
+            if (slash) return slash + 1;
+            return name;
+        }
+    }
+    return NULL;
+}
+
+// Display cached thread info - no context reads, instant
+void DbgUpdateThreadsDialog()
+{
+    // g_hThreadsDlg may not be set yet during WM_INITDIALOG,
+    // so also accept if called with a valid window directly
+    HWND hDlg = g_hThreadsDlg;
+    if (!hDlg || !IsWindow(hDlg))
+        return;
+
+    HWND hList = GetDlgItem(hDlg, IDC_DBG_THREAD_LIST);
+    if (!hList) return;
+
+    SendMessage(hList, WM_SETREDRAW, FALSE, 0);
+    ListView_DeleteAllItems(hList);
+
+    for (int i = 0; i < (int)s_threadCache.size(); i++) {
+        THREAD_CACHE_ENTRY& e = s_threadCache[i];
+        char tidDec[16], tidHex[16], state[16], eipStr[20];
+        wsprintf(tidDec, "%d", e.dwThreadId);
+        wsprintf(tidHex, "%X", e.dwThreadId);
+        lstrcpy(state, g_DbgState == DBG_STATE_PAUSED ? "Suspended" : "Running");
+        wsprintf(eipStr, "%08X", (DWORD)e.dwEip);
+
+        LVITEM lvi = {0};
+        lvi.mask = LVIF_TEXT;
+        lvi.iItem = i;
+        lvi.pszText = tidDec;
+        ListView_InsertItem(hList, &lvi);
+        ListView_SetItemText(hList, i, 1, tidHex);
+        ListView_SetItemText(hList, i, 2, state);
+        ListView_SetItemText(hList, i, 3, e.szName);
+        ListView_SetItemText(hList, i, 4, eipStr);
+        ListView_SetItemText(hList, i, 5, e.szModule);
+    }
+
+    SendMessage(hList, WM_SETREDRAW, TRUE, 0);
+    InvalidateRect(hList, NULL, TRUE);
+
+    if (g_DarkMode) {
+        ListView_SetBkColor(hList, g_DarkBkColor);
+        ListView_SetTextBkColor(hList, g_DarkBkColor);
+        ListView_SetTextColor(hList, g_DarkTextColor);
+    }
+}
+
+void DbgSwitchToThread(DWORD dwThreadId)
+{
+    if (!g_bDebuggerActive || g_DbgState != DBG_STATE_PAUSED)
+        return;
+
+    s_dwPausedThreadId = dwThreadId;
+    memcpy(&g_DbgPrevRegisters, &g_DbgRegisters, sizeof(DEBUG_REGISTERS));
+    DbgReadRegisters();
+    DbgUpdateRegisterDialog();
+    DbgDisassembleAtEIP();
+
+    if (s_hMainWnd) {
+        char msg[64];
+        wsprintf(msg, "Switched to thread %d (EIP: %08X)", dwThreadId, (DWORD)g_dwCurrentEIP);
+        OutDebug(s_hMainWnd, msg);
+        SetDlgItemText(s_hMainWnd, IDC_MESSAGE1, msg);
+    }
+}
+
+BOOL CALLBACK DbgThreadsDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
+{
+    switch (Message) {
+    case WM_INITDIALOG: {
+        // Set early so DbgUpdateThreadsDialog can find us
+        g_hThreadsDlg = hWnd;
+
+        HWND hList = GetDlgItem(hWnd, IDC_DBG_THREAD_LIST);
+        if (!hList) break;
+
+        SendMessage(hList, LVM_SETEXTENDEDLISTVIEWSTYLE, 0,
+                    LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER);
+
+        LVCOLUMN lvc;
+        lvc.mask = LVCF_TEXT | LVCF_WIDTH;
+
+        lvc.pszText = (LPSTR)"Decimal";
+        lvc.cx = 55;
+        ListView_InsertColumn(hList, 0, &lvc);
+
+        lvc.pszText = (LPSTR)"Hex";
+        lvc.cx = 45;
+        ListView_InsertColumn(hList, 1, &lvc);
+
+        lvc.pszText = (LPSTR)"State";
+        lvc.cx = 60;
+        ListView_InsertColumn(hList, 2, &lvc);
+
+        lvc.pszText = (LPSTR)"Name";
+        lvc.cx = 70;
+        ListView_InsertColumn(hList, 3, &lvc);
+
+        lvc.pszText = (LPSTR)"EIP";
+        lvc.cx = 70;
+        ListView_InsertColumn(hList, 4, &lvc);
+
+        lvc.pszText = (LPSTR)"Module";
+        lvc.cx = 80;
+        ListView_InsertColumn(hList, 5, &lvc);
+
+        DbgUpdateThreadsDialog();
+        return TRUE;
+    }
+
+    case WM_NOTIFY: {
+        NMHDR* pnm = (NMHDR*)lParam;
+        if (pnm->idFrom == IDC_DBG_THREAD_LIST && pnm->code == NM_DBLCLK) {
+            HWND hList = GetDlgItem(hWnd, IDC_DBG_THREAD_LIST);
+            int sel = ListView_GetNextItem(hList, -1, LVNI_SELECTED);
+            if (sel != -1) {
+                char tidStr[16];
+                ListView_GetItemText(hList, sel, 0, tidStr, 16);
+                DWORD tid = (DWORD)atoi(tidStr);
+                if (tid != 0) {
+                    DbgSwitchToThread(tid);
+                    DbgUpdateThreadsDialog();
+                }
+            }
+        }
+        break;
+    }
+
+    case WM_CTLCOLORDLG:
+    case WM_CTLCOLORSTATIC:
+        if (g_DarkMode) {
+            HDC hdc = (HDC)wParam;
+            SetTextColor(hdc, g_DarkTextColor);
+            SetBkColor(hdc, g_DarkBkColor);
+            return (INT_PTR)g_hDarkBrush;
+        }
+        break;
+
+    case WM_CLOSE:
+        DestroyWindow(hWnd);
+        g_hThreadsDlg = NULL;
+        return TRUE;
     }
     return FALSE;
 }

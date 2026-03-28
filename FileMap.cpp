@@ -3408,6 +3408,16 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     }
                 }
                 break;
+
+                case IDM_DBG_VIEW_THREADS:{
+                    if (!g_hThreadsDlg) {
+                        g_hThreadsDlg = CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DBG_THREADS), hWnd, (DLGPROC)DbgThreadsDlgProc);
+                        ShowWindow(g_hThreadsDlg, SW_SHOW);
+                    } else {
+                        SetForegroundWindow(g_hThreadsDlg);
+                    }
+                }
+                break;
 			}
 			break;
 	
@@ -3433,11 +3443,13 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         DbgReadRegisters();
         DbgDisassembleAtEIP();
         DbgUpdateRegisterDialog();
+        DbgUpdateThreadsDialog();
         DbgUpdateMenuState(hWnd);
         {
-            char dbgMsg[64];
-            if (g_dwCurrentEIP > 0xFFFFFFFF)
-                wsprintf(dbgMsg, "Debugger paused at %08X%08X", (DWORD)(g_dwCurrentEIP >> 32), (DWORD)g_dwCurrentEIP);
+            const char* modName = DbgFindModuleForAddress(g_dwCurrentEIP);
+            char dbgMsg[128];
+            if (modName)
+                wsprintf(dbgMsg, "Debugger paused at %08X (%s)", (DWORD)g_dwCurrentEIP, modName);
             else
                 wsprintf(dbgMsg, "Debugger paused at %08X", (DWORD)g_dwCurrentEIP);
             SetDlgItemText(hWnd, IDC_MESSAGE1, dbgMsg);

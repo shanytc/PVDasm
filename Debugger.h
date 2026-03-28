@@ -162,9 +162,19 @@ BOOL DbgDisassembleAtEIP();
 void DbgUpdateMenuState(HWND hWnd);
 void DbgInitMenuState(HWND hWnd);
 
+// Module lookup
+const char* DbgFindModuleForAddress(DWORD_PTR addr);
+
+// Threads
+void DbgUpdateThreadsDialog();
+void DbgSwitchToThread(DWORD dwThreadId);
+
 // Dialog Procedures
 BOOL CALLBACK DbgRegisterDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam);
 BOOL CALLBACK DbgAttachDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam);
 BOOL CALLBACK DbgOptionsDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK DbgThreadsDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam);
+
+extern HWND g_hThreadsDlg;
 
 #endif // __DEBUGGER_H__

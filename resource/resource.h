@@ -532,13 +532,18 @@
 #define ID_ATTACH_PROCESS               1372
 #define IDC_PROCESS_REFRESH             1373
 
+// Threads dialog
+#define IDD_DBG_THREADS                 251
+#define IDC_DBG_THREAD_LIST             1374
+#define IDM_DBG_VIEW_THREADS            40141
+
 // Next default values for new objects
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        251
-#define _APS_NEXT_COMMAND_VALUE         40141
-#define _APS_NEXT_CONTROL_VALUE         1374
+#define _APS_NEXT_RESOURCE_VALUE        252
+#define _APS_NEXT_COMMAND_VALUE         40142
+#define _APS_NEXT_CONTROL_VALUE         1375
 #define _APS_NEXT_SYMED_VALUE           121
 #endif
 #endif
