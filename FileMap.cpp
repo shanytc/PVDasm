@@ -3444,6 +3444,7 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         DbgDisassembleAtEIP();
         DbgUpdateRegisterDialog();
         DbgUpdateThreadsDialog();
+        DbgUpdateDisasmTabName();
         DbgUpdateMenuState(hWnd);
         {
             const char* modName = DbgFindModuleForAddress(g_dwCurrentEIP);
@@ -6025,13 +6026,13 @@ LRESULT ProcessCustomDraw (LPARAM lParam)
                 lplvcd->clrTextBk = RGB(60, 60, 60);   // Dark gray background for selected
             }
 
-            // Debugger: highlight current EIP line
+            // Debugger: highlight current EIP line in red
             if (g_bDebuggerActive && g_dwCurrentEIP != 0 &&
                 lplvcd->nmcd.dwItemSpec < DisasmDataLines.size()) {
                 DWORD_PTR itemAddr = StringToDword(DisasmDataLines[lplvcd->nmcd.dwItemSpec].GetAddress());
-                // Compare static disassembly address against EIP mapped back from runtime
-                if (itemAddr == (g_dwCurrentEIP - g_dwRebaseDelta)) {
-                    lplvcd->clrTextBk = g_DarkMode ? RGB(80, 80, 0) : RGB(255, 255, 0);
+                // Compare against both raw EIP and rebased address
+                if (itemAddr == g_dwCurrentEIP || itemAddr == (g_dwCurrentEIP - g_dwRebaseDelta)) {
+                    lplvcd->clrTextBk = g_DarkMode ? RGB(120, 0, 0) : RGB(255, 200, 200);
                     lplvcd->clrText = g_DarkMode ? RGB(255, 255, 255) : RGB(0, 0, 0);
                 }
             }

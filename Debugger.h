@@ -167,6 +167,7 @@ const char* DbgFindModuleForAddress(DWORD_PTR addr);
 
 // Threads
 void DbgUpdateThreadsDialog();
+void DbgUpdateDisasmTabName();
 void DbgSwitchToThread(DWORD dwThreadId);
 
 // Dialog Procedures

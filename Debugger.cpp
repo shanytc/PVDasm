@@ -335,6 +335,21 @@ void DbgCleanup()
     g_dwRebaseDelta = 0;
     s_dwReEnableBPAddr = 0;
     s_dwPausedThreadId = 0;
+    s_threadCache.clear();
+
+    // Reset tab width and window title
+    if (s_hMainWnd) {
+        HWND hTab = GetDlgItem(s_hMainWnd, IDC_TAB_MAIN);
+        if (hTab) {
+            SendMessage(hTab, TCM_SETITEMSIZE, 0, MAKELPARAM(100, 20));
+            TCITEM tie = {0};
+            tie.mask = TCIF_TEXT;
+            tie.pszText = (LPSTR)"Disassembly";
+            TabCtrl_SetItem(hTab, 0, &tie);
+            InvalidateRect(hTab, NULL, TRUE);
+        }
+        SetWindowText(s_hMainWnd, PVDASM);
+    }
 
     if (g_DbgProcess.hProcess) {
         CloseHandle(g_DbgProcess.hProcess);
@@ -635,6 +650,14 @@ DWORD WINAPI DebugEventLoop(LPVOID lpParam)
 
         s_dwContinueStatus = DBG_CONTINUE;
 
+        // Log all events when stepping
+        if (g_DbgState == DBG_STATE_STEPPING_INTO || g_DbgState == DBG_STATE_STEPPING_OVER) {
+            char evtMsg[128];
+            wsprintf(evtMsg, "DBG_EVENT: code=%d tid=%d state=%d",
+                     debugEvent.dwDebugEventCode, debugEvent.dwThreadId, g_DbgState);
+            OutDebug(s_hMainWnd, evtMsg);
+        }
+
         switch (debugEvent.dwDebugEventCode) {
 
         case CREATE_PROCESS_DEBUG_EVENT: {
@@ -710,7 +733,9 @@ DWORD WINAPI DebugEventLoop(LPVOID lpParam)
                     break;
                 }
             }
-            PostMessage(s_hMainWnd, WM_DBG_THREAD_EXIT, (WPARAM)debugEvent.dwThreadId, 0);
+            // Don't spam thread exit messages during stepping
+            if (g_DbgState != DBG_STATE_STEPPING_INTO && g_DbgState != DBG_STATE_STEPPING_OVER)
+                PostMessage(s_hMainWnd, WM_DBG_THREAD_EXIT, (WPARAM)debugEvent.dwThreadId, 0);
             break;
         }
 
@@ -1091,44 +1116,27 @@ DEBUG_BREAKPOINT* DbgFindBreakpoint(DWORD_PTR dwAddress)
 
 BOOL DbgStepInto()
 {
-    if (g_DbgState != DBG_STATE_PAUSED) {
-        char msg[64];
-        wsprintf(msg, "StepInto: not paused (state=%d)", g_DbgState);
-        OutDebug(s_hMainWnd, msg);
+    if (g_DbgState != DBG_STATE_PAUSED)
         return FALSE;
-    }
 
-    // Always use the main thread for stepping
-    // (the attach breakpoint thread is temporary and exits immediately)
-    HANDLE hThread = g_DbgProcess.hMainThread;
-    if (!hThread) {
-        OutDebug(s_hMainWnd, "StepInto: no main thread handle");
+    // Read current instruction to get its size
+    BYTE instrBuf[16];
+    SIZE_T bytesRead;
+    if (!ReadProcessMemory(g_DbgProcess.hProcess, (LPVOID)g_dwCurrentEIP, instrBuf, sizeof(instrBuf), &bytesRead))
         return FALSE;
-    }
 
-    // Set Trap Flag (TF) for single step
-    // Use native CONTEXT directly to avoid truncating 64-bit registers
-#ifdef _M_X64
-    if (g_DbgProcess.bIsWow64) {
-        WOW64_CONTEXT ctx = {0};
-        ctx.ContextFlags = WOW64_CONTEXT_CONTROL;
-        if (!Wow64GetThreadContext(hThread, &ctx)) return FALSE;
-        ctx.EFlags |= 0x100;
-        Wow64SetThreadContext(hThread, &ctx);
-    } else {
-        CONTEXT ctx64 = {0};
-        ctx64.ContextFlags = CONTEXT_CONTROL;
-        if (!GetThreadContext(hThread, &ctx64)) return FALSE;
-        ctx64.EFlags |= 0x100;
-        SetThreadContext(hThread, &ctx64);
-    }
-#else
-    CONTEXT ctx = {0};
-    ctx.ContextFlags = CONTEXT_CONTROL;
-    if (!GetThreadContext(hThread, &ctx)) return FALSE;
-    ctx.EFlags |= 0x100;
-    SetThreadContext(hThread, &ctx);
-#endif
+    DISASSEMBLY disasm;
+    memset(&disasm, 0, sizeof(disasm));
+    DWORD_PTR index = 0;
+    FlushDecoded(&disasm);
+    Decode(&disasm, (char*)instrBuf, &index);
+
+    DWORD_PTR instrSize = disasm.OpcodeSize + disasm.PrefixSize;
+    if (instrSize == 0) instrSize = 1;
+
+    // Set one-shot breakpoint at the next instruction
+    DWORD_PTR nextAddr = g_dwCurrentEIP + instrSize;
+    DbgSetBreakpoint(nextAddr, true);
 
     g_DbgState = DBG_STATE_STEPPING_INTO;
     s_dwContinueStatus = DBG_CONTINUE;
@@ -1823,12 +1831,9 @@ BOOL CALLBACK DbgRegisterDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM 
 {
     switch (Message) {
     case WM_INITDIALOG: {
+        // Set early so DbgUpdateRegisterDialog can find us
+        g_hRegisterDlg = hWnd;
         DbgUpdateRegisterDialog();
-
-        // Apply dark mode
-        if (g_DarkMode) {
-            // Dark mode will be applied via WM_CTLCOLOR* messages in the parent
-        }
         return TRUE;
     }
 
@@ -2198,6 +2203,54 @@ void DbgUpdateThreadsDialog()
     }
 }
 
+void DbgUpdateDisasmTabName()
+{
+    if (!s_hMainWnd || !g_bDebuggerActive) return;
+
+    const char* modName = DbgFindModuleForAddress(g_dwCurrentEIP);
+
+    // Update Disassembly tab text with module name
+    HWND hTab = GetDlgItem(s_hMainWnd, IDC_TAB_MAIN);
+    if (!hTab) return;
+
+    char tabText[128];
+    if (modName)
+        wsprintf(tabText, "Disassembly (%s)", modName);
+    else
+        lstrcpy(tabText, "Disassembly");
+
+    // Calculate required tab width based on text
+    HDC hdc = GetDC(hTab);
+    HFONT hFont = (HFONT)SendMessage(hTab, WM_GETFONT, 0, 0);
+    HFONT hOldFont = (HFONT)SelectObject(hdc, hFont);
+    SIZE textSize;
+    GetTextExtentPoint32(hdc, tabText, lstrlen(tabText), &textSize);
+    SelectObject(hdc, hOldFont);
+    ReleaseDC(hTab, hdc);
+
+    // Add padding for close button and margins
+    int tabWidth = textSize.cx + 30;
+    if (tabWidth < 100) tabWidth = 100;
+
+    // Resize tabs: set first tab wider, keep Graph at 100
+    SendMessage(hTab, TCM_SETITEMSIZE, 0, MAKELPARAM(tabWidth, 20));
+
+    TCITEM tie = {0};
+    tie.mask = TCIF_TEXT;
+    tie.pszText = tabText;
+    TabCtrl_SetItem(hTab, 0, &tie);
+
+    InvalidateRect(hTab, NULL, TRUE);
+
+    // Also update window title
+    char title[256];
+    if (modName)
+        wsprintf(title, "%s - [Debugging: %s]", PVDASM, modName);
+    else
+        wsprintf(title, "%s - [Debugging]", PVDASM);
+    SetWindowText(s_hMainWnd, title);
+}
+
 void DbgSwitchToThread(DWORD dwThreadId)
 {
     if (!g_bDebuggerActive || g_DbgState != DBG_STATE_PAUSED)
@@ -2208,6 +2261,9 @@ void DbgSwitchToThread(DWORD dwThreadId)
     DbgReadRegisters();
     DbgUpdateRegisterDialog();
     DbgDisassembleAtEIP();
+
+    // Update Disassembly tab name with module
+    DbgUpdateDisasmTabName();
 
     if (s_hMainWnd) {
         char msg[64];
