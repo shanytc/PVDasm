@@ -3161,21 +3161,40 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 }
                 break;
 
-                // Copy selected history item to clipboard
+                // Copy selected history items to clipboard
                 case IDM_HISTORY_COPY:{
                     HWND hHistList = GetDlgItem(hWnd, IDC_LIST);
-                    int iSel = (int)SendMessage(hHistList, LVM_GETNEXTITEM, (WPARAM)-1, LVNI_SELECTED);
-                    if(iSel != -1){
-                        char szBuf[1024] = {0};
-                        LV_ITEM lvi;
-                        ZeroMemory(&lvi, sizeof(lvi));
-                        lvi.iItem = iSel;
-                        lvi.iSubItem = 0;
-                        lvi.mask = LVIF_TEXT;
-                        lvi.pszText = szBuf;
-                        lvi.cchTextMax = sizeof(szBuf);
-                        SendMessage(hHistList, LVM_GETITEMTEXT, (WPARAM)iSel, (LPARAM)&lvi);
-                        CopyToClipboard(szBuf, hWnd);
+                    int iSel = -1;
+                    int totalLen = 0;
+
+                    // First pass: calculate total length
+                    while ((iSel = ListView_GetNextItem(hHistList, iSel, LVNI_SELECTED)) != -1) {
+                        char text[1024];
+                        ListView_GetItemText(hHistList, iSel, 0, text, 1024);
+                        totalLen += lstrlen(text) + 2;
+                    }
+
+                    if (totalLen > 0) {
+                        HGLOBAL hMem = GlobalAlloc(GMEM_DDESHARE, totalLen + 1);
+                        char* pMem = (char*)GlobalLock(hMem);
+                        pMem[0] = '\0';
+
+                        iSel = -1;
+                        while ((iSel = ListView_GetNextItem(hHistList, iSel, LVNI_SELECTED)) != -1) {
+                            char text[1024];
+                            ListView_GetItemText(hHistList, iSel, 0, text, 1024);
+                            lstrcat(pMem, text);
+                            lstrcat(pMem, "\r\n");
+                        }
+                        GlobalUnlock(hMem);
+
+                        if (OpenClipboard(hWnd)) {
+                            EmptyClipboard();
+                            SetClipboardData(CF_TEXT, hMem);
+                            CloseClipboard();
+                        } else {
+                            GlobalFree(hMem);
+                        }
                     }
                 }
                 break;
@@ -3216,6 +3235,16 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                             CloseHandle(hFile);
                         }
                     }
+                }
+                break;
+
+                case IDM_HISTORY_SELECTALL:{
+                    ListView_SetItemState(GetDlgItem(hWnd, IDC_LIST), -1, LVIS_SELECTED, LVIS_SELECTED);
+                }
+                break;
+
+                case IDM_HISTORY_CLEAR:{
+                    SendMessage(GetDlgItem(hWnd, IDC_LIST), LVM_DELETEALLITEMS, 0, 0);
                 }
                 break;
 
@@ -6975,6 +7004,66 @@ LRESULT CALLBACK ListViewSubClass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 LRESULT CALLBACK MessageListSubClass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch(uMsg) {
+        case WM_RBUTTONUP: {
+            // Right-click context menu: Copy selected items
+            HMENU hMenu = CreatePopupMenu();
+            AppendMenu(hMenu, MF_STRING, 1, "Copy to Clipboard");
+            AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
+            AppendMenu(hMenu, MF_STRING, 2, "Select All");
+            AppendMenu(hMenu, MF_STRING, 3, "Clear");
+
+            POINT pt;
+            GetCursorPos(&pt);
+            int cmd = TrackPopupMenu(hMenu, TPM_RETURNCMD | TPM_LEFTALIGN, pt.x, pt.y, 0, hWnd, NULL);
+            DestroyMenu(hMenu);
+
+            if (cmd == 1) {
+                // Copy selected items to clipboard
+                int sel = -1;
+                int totalLen = 0;
+
+                // First pass: calculate total length
+                while ((sel = ListView_GetNextItem(hWnd, sel, LVNI_SELECTED)) != -1) {
+                    char text[512];
+                    ListView_GetItemText(hWnd, sel, 0, text, 512);
+                    totalLen += lstrlen(text) + 2; // +2 for \r\n
+                }
+
+                if (totalLen > 0) {
+                    HGLOBAL hMem = GlobalAlloc(GMEM_DDESHARE, totalLen + 1);
+                    char* pMem = (char*)GlobalLock(hMem);
+                    pMem[0] = '\0';
+
+                    sel = -1;
+                    while ((sel = ListView_GetNextItem(hWnd, sel, LVNI_SELECTED)) != -1) {
+                        char text[512];
+                        ListView_GetItemText(hWnd, sel, 0, text, 512);
+                        lstrcat(pMem, text);
+                        lstrcat(pMem, "\r\n");
+                    }
+                    GlobalUnlock(hMem);
+
+                    if (OpenClipboard(hWnd)) {
+                        EmptyClipboard();
+                        SetClipboardData(CF_TEXT, hMem);
+                        CloseClipboard();
+                    } else {
+                        GlobalFree(hMem);
+                    }
+                }
+            }
+            else if (cmd == 2) {
+                // Select All
+                ListView_SetItemState(hWnd, -1, LVIS_SELECTED, LVIS_SELECTED);
+            }
+            else if (cmd == 3) {
+                // Clear
+                ListView_DeleteAllItems(hWnd);
+            }
+
+            return 0;
+        }
+
         case WM_NOTIFY: {
             LPNMHDR pnmh = (LPNMHDR)lParam;
             if (pnmh->code == NM_CUSTOMDRAW && g_DarkMode) {

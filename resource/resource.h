@@ -440,6 +440,8 @@
 #define IDR_HISTORY                     245
 #define IDM_HISTORY_COPY                40110
 #define IDM_HISTORY_SAVEAS              40111
+#define IDM_HISTORY_SELECTALL           40144
+#define IDM_HISTORY_CLEAR               40145
 
 #define IDD_CFG_VIEWER                  246
 #define IDC_VIEW_CFG                    40112
@@ -550,7 +552,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        253
-#define _APS_NEXT_COMMAND_VALUE         40144
+#define _APS_NEXT_COMMAND_VALUE         40146
 #define _APS_NEXT_CONTROL_VALUE         1378
 #define _APS_NEXT_SYMED_VALUE           121
 #endif

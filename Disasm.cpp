@@ -4535,7 +4535,7 @@ void LoadApiSignature()
 		GetModuleFileName(NULL,cFilePath,MAX_PATH-1);
 		ExtractFilePath(cFilePath);
 		lstrcat(cFilePath,"sig");
-		wsprintf(DebugMsg,"Signature path: %s",cFilePath);
+		wsprintf(DebugMsg,"Looking for signature path in: %s",cFilePath);
 		OutDebug(mainhWnd,DebugMsg);
 	}
 
