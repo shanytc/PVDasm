@@ -322,6 +322,20 @@ BOOL DbgResumeProcess()
     if (g_DbgState != DBG_STATE_PAUSED)
         return FALSE;
 
+    // Re-enable any permanent breakpoint that was temporarily disabled
+    if (s_dwReEnableBPAddr != 0) {
+        EnterCriticalSection(&g_csBreakpoints);
+        DEBUG_BREAKPOINT* bp = DbgFindBreakpoint(s_dwReEnableBPAddr);
+        if (bp && bp->bEnabled) {
+            BYTE int3 = 0xCC;
+            SIZE_T written;
+            WriteProcessMemory(g_DbgProcess.hProcess, (LPVOID)bp->dwAddress, &int3, 1, &written);
+            FlushInstructionCache(g_DbgProcess.hProcess, (LPVOID)bp->dwAddress, 1);
+        }
+        LeaveCriticalSection(&g_csBreakpoints);
+        s_dwReEnableBPAddr = 0;
+    }
+
     s_dwContinueStatus = DBG_CONTINUE;
     g_DbgState = DBG_STATE_RUNNING;
     g_dwCurrentEIP = 0;
@@ -675,6 +689,7 @@ DWORD WINAPI DebugEventLoop(LPVOID lpParam)
             g_DbgProcess.dwEntryPoint = (DWORD_PTR)cpdi->lpStartAddress;
 
             // Compute ASLR rebase delta: actual load address vs PE preferred ImageBase
+            // Only meaningful when a file was loaded and disassembled (static addresses)
             {
                 DWORD_PTR preferredBase = 0;
                 if (LoadedPe64 && NTheader64)
@@ -682,7 +697,10 @@ DWORD WINAPI DebugEventLoop(LPVOID lpParam)
                 else if (LoadedPe && NTheader)
                     preferredBase = (DWORD_PTR)NTheader->OptionalHeader.ImageBase;
 
-                g_dwRebaseDelta = (DWORD_PTR)cpdi->lpBaseOfImage - preferredBase;
+                if (preferredBase != 0)
+                    g_dwRebaseDelta = (DWORD_PTR)cpdi->lpBaseOfImage - preferredBase;
+                else
+                    g_dwRebaseDelta = 0;  // No file loaded, addresses are already runtime
             }
 
             // Always use the thread handle from the debug event
@@ -912,8 +930,21 @@ DWORD WINAPI DebugEventLoop(LPVOID lpParam)
                                 break;
                             }
                         }
+
+                        // Re-enable any permanent breakpoint that was temporarily disabled
+                        // (since we use one-shot BPs for stepping, not TF/single-step)
+                        if (s_dwReEnableBPAddr != 0) {
+                            DEBUG_BREAKPOINT* rebp = DbgFindBreakpoint(s_dwReEnableBPAddr);
+                            if (rebp && rebp->bEnabled) {
+                                BYTE int3 = 0xCC;
+                                SIZE_T w;
+                                WriteProcessMemory(g_DbgProcess.hProcess, (LPVOID)rebp->dwAddress, &int3, 1, &w);
+                                FlushInstructionCache(g_DbgProcess.hProcess, (LPVOID)rebp->dwAddress, 1);
+                            }
+                            s_dwReEnableBPAddr = 0;
+                        }
                     } else {
-                        // Remember to re-enable after single step
+                        // Permanent breakpoint - remember to re-enable after stepping past it
                         s_dwReEnableBPAddr = bpAddr;
                     }
                     LeaveCriticalSection(&g_csBreakpoints);
@@ -1154,6 +1185,21 @@ BOOL DbgStepInto()
     DWORD_PTR targetAddr = 0;
     bool isConditionalJump = false;
 
+    // Handle RET instructions - read return address from [ESP]
+    if (disasm.CodeFlow.Ret) {
+        DWORD retAddr32 = 0;
+        SIZE_T br;
+        if (ReadProcessMemory(g_DbgProcess.hProcess, (LPVOID)(DWORD_PTR)g_DbgRegisters.Esp, &retAddr32, sizeof(DWORD), &br)) {
+            DbgSetBreakpoint((DWORD_PTR)retAddr32, true);
+
+            g_DbgState = DBG_STATE_STEPPING_INTO;
+            s_dwContinueStatus = DBG_CONTINUE;
+            SetEvent(g_hContinueEvent);
+            return TRUE;
+        }
+        // If ReadProcessMemory fails, fall through to normal next-instruction step
+    }
+
     if (disasm.CodeFlow.Call || disasm.CodeFlow.Jump) {
         BYTE op = instrBuf[disasm.PrefixSize];
 
@@ -1169,12 +1215,42 @@ BOOL DbgStepInto()
         }
         else if (op == 0xFF) {
             BYTE modrm = instrBuf[disasm.PrefixSize + 1];
-            if ((modrm & 0xC7) == 0x05 || (modrm & 0xC7) == 0x15) {
-                DWORD indirectAddr = *(DWORD*)(instrBuf + disasm.PrefixSize + 2);
-                DWORD callTarget = 0;
-                ReadProcessMemory(g_DbgProcess.hProcess, (LPVOID)(DWORD_PTR)indirectAddr, &callTarget, sizeof(callTarget), &bytesRead);
-                if (callTarget != 0)
-                    targetAddr = callTarget;
+            BYTE reg = (modrm >> 3) & 7;  // reg field: 2=CALL, 4=JMP
+
+            if (reg == 2 || reg == 4) {
+                BYTE mod = (modrm >> 6) & 3;
+                BYTE rm = modrm & 7;
+
+                if (mod == 0 && rm == 5) {
+                    // FF 15/25 disp32 = CALL/JMP [disp32] (indirect via memory)
+                    DWORD indirectAddr = *(DWORD*)(instrBuf + disasm.PrefixSize + 2);
+                    DWORD callTarget = 0;
+                    ReadProcessMemory(g_DbgProcess.hProcess, (LPVOID)(DWORD_PTR)indirectAddr, &callTarget, sizeof(callTarget), &bytesRead);
+                    if (callTarget != 0)
+                        targetAddr = callTarget;
+                }
+                else if (mod == 3) {
+                    // FF D0-D7 / FF E0-E7 = CALL/JMP reg (indirect via register)
+                    DWORD regVal = 0;
+                    switch (rm) {
+                        case 0: regVal = g_DbgRegisters.Eax; break;
+                        case 1: regVal = g_DbgRegisters.Ecx; break;
+                        case 2: regVal = g_DbgRegisters.Edx; break;
+                        case 3: regVal = g_DbgRegisters.Ebx; break;
+                        case 4: regVal = g_DbgRegisters.Esp; break;
+                        case 5: regVal = g_DbgRegisters.Ebp; break;
+                        case 6: regVal = g_DbgRegisters.Esi; break;
+                        case 7: regVal = g_DbgRegisters.Edi; break;
+                    }
+                    if (regVal != 0)
+                        targetAddr = regVal;
+                }
+
+                // Force the flow flags so the target is used
+                if (targetAddr != 0) {
+                    if (reg == 2) disasm.CodeFlow.Call = TRUE;
+                    else disasm.CodeFlow.Jump = TRUE;
+                }
             }
         }
         else if ((op & 0xF0) == 0x70) {
