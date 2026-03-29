@@ -538,13 +538,20 @@
 #define IDM_DBG_RESUME                  40142
 #define IDM_DBG_VIEW_THREADS            40141
 
+// Breakpoints dialog
+#define IDD_DBG_BREAKPOINTS             252
+#define IDC_DBG_BP_LIST                 1375
+#define IDC_DBG_BP_REMOVE               1376
+#define IDC_DBG_BP_CLEAR_ALL            1377
+#define IDM_DBG_VIEW_BREAKPOINTS        40143
+
 // Next default values for new objects
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        252
-#define _APS_NEXT_COMMAND_VALUE         40143
-#define _APS_NEXT_CONTROL_VALUE         1375
+#define _APS_NEXT_RESOURCE_VALUE        253
+#define _APS_NEXT_COMMAND_VALUE         40144
+#define _APS_NEXT_CONTROL_VALUE         1378
 #define _APS_NEXT_SYMED_VALUE           121
 #endif
 #endif

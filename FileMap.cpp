@@ -3397,7 +3397,10 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                         if (sel != (DWORD_PTR)-1 && sel < DisasmDataLines.size()) {
                             DWORD_PTR addr = StringToDword(DisasmDataLines[sel].GetAddress());
                             DbgToggleBreakpoint(addr + g_dwRebaseDelta);
-                            InvalidateRect(GetDlgItem(hWnd, IDC_DISASM), NULL, FALSE);
+                            DbgUpdateBreakpointsDialog();
+                            // Force full repaint to update breakpoint colors
+                            InvalidateRect(GetDlgItem(hWnd, IDC_DISASM), NULL, TRUE);
+                            UpdateWindow(GetDlgItem(hWnd, IDC_DISASM));
                         }
                     }
                 }
@@ -3419,6 +3422,17 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                         ShowWindow(g_hThreadsDlg, SW_SHOW);
                     } else {
                         SetForegroundWindow(g_hThreadsDlg);
+                    }
+                }
+                break;
+
+                case IDM_DBG_VIEW_BREAKPOINTS:{
+                    if (!g_hBreakpointsDlg) {
+                        g_hBreakpointsDlg = CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DBG_BREAKPOINTS), hWnd, (DLGPROC)DbgBreakpointsDlgProc);
+                        ShowWindow(g_hBreakpointsDlg, SW_SHOW);
+                    } else {
+                        DbgUpdateBreakpointsDialog();
+                        SetForegroundWindow(g_hBreakpointsDlg);
                     }
                 }
                 break;
@@ -3445,7 +3459,10 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_DBG_STEP_COMPLETE: {
         g_dwCurrentEIP = (DWORD_PTR)lParam;
         DbgReadRegisters();
+        // Switch to disassembly tab and navigate to EIP
+        SwitchTab(hWnd, 0);
         DbgDisassembleAtEIP();
+        SetFocus(GetDlgItem(hWnd, IDC_DISASM));
         DbgUpdateRegisterDialog();
         DbgUpdateThreadsDialog();
         DbgUpdateDisasmTabName();
@@ -6030,15 +6047,31 @@ LRESULT ProcessCustomDraw (LPARAM lParam)
                 lplvcd->clrTextBk = RGB(60, 60, 60);   // Dark gray background for selected
             }
 
-            // Debugger: highlight current EIP line in red
-            if (g_bDebuggerActive && g_dwCurrentEIP != 0 &&
-                lplvcd->nmcd.dwItemSpec < DisasmDataLines.size()) {
+            if (g_bDebuggerActive && lplvcd->nmcd.dwItemSpec < DisasmDataLines.size()) {
                 DWORD_PTR itemAddr = StringToDword(DisasmDataLines[lplvcd->nmcd.dwItemSpec].GetAddress());
-                // Compare against both raw EIP and rebased address
-                if (itemAddr == g_dwCurrentEIP || itemAddr == (g_dwCurrentEIP - g_dwRebaseDelta)) {
+
+                // Debugger: highlight current EIP line
+                if (g_dwCurrentEIP != 0 &&
+                    (itemAddr == g_dwCurrentEIP || itemAddr == (g_dwCurrentEIP - g_dwRebaseDelta))) {
                     lplvcd->clrTextBk = g_DarkMode ? RGB(120, 0, 0) : RGB(255, 200, 200);
                     lplvcd->clrText = g_DarkMode ? RGB(255, 255, 255) : RGB(0, 0, 0);
                 }
+
+                // Debugger: highlight breakpoint lines in red (overrides selection blue)
+                // Check all possible address mappings (runtime, static, with/without delta)
+                EnterCriticalSection(&g_csBreakpoints);
+                if (DbgFindBreakpoint(itemAddr) ||
+                    (g_dwRebaseDelta != 0 && DbgFindBreakpoint(itemAddr + g_dwRebaseDelta))) {
+                    lplvcd->clrTextBk = g_DarkMode ? RGB(140, 0, 0) : RGB(255, 180, 180);
+                    lplvcd->clrText = g_DarkMode ? RGB(255, 255, 255) : RGB(0, 0, 0);
+
+                    // If this is also the EIP line, use a brighter red
+                    if (g_dwCurrentEIP != 0 &&
+                        (itemAddr == g_dwCurrentEIP || itemAddr == (g_dwCurrentEIP - g_dwRebaseDelta))) {
+                        lplvcd->clrTextBk = g_DarkMode ? RGB(180, 0, 0) : RGB(255, 100, 100);
+                    }
+                }
+                LeaveCriticalSection(&g_csBreakpoints);
             }
 
             return CDRF_NOTIFYSUBITEMDRAW;
@@ -6047,7 +6080,26 @@ LRESULT ProcessCustomDraw (LPARAM lParam)
         
         // Paint the List View's Items
         case CDDS_SUBITEM | CDDS_ITEMPREPAINT:{ //Before a subitem is drawn
-            switch(lplvcd->iSubItem){   
+            // Debugger: if this line is a breakpoint or EIP, keep the colors from CDDS_ITEMPREPAINT
+            if (g_bDebuggerActive && lplvcd->nmcd.dwItemSpec < DisasmDataLines.size()) {
+                DWORD_PTR itemAddr = StringToDword(DisasmDataLines[lplvcd->nmcd.dwItemSpec].GetAddress());
+                bool isBP = false, isEIP = false;
+
+                EnterCriticalSection(&g_csBreakpoints);
+                isBP = (DbgFindBreakpoint(itemAddr) != NULL) ||
+                       (g_dwRebaseDelta != 0 && DbgFindBreakpoint(itemAddr + g_dwRebaseDelta) != NULL);
+                LeaveCriticalSection(&g_csBreakpoints);
+
+                isEIP = (g_dwCurrentEIP != 0 &&
+                         (itemAddr == g_dwCurrentEIP || itemAddr == (g_dwCurrentEIP - g_dwRebaseDelta)));
+
+                if (isBP || isEIP) {
+                    // Don't override - keep the red colors set in CDDS_ITEMPREPAINT
+                    return CDRF_NEWFONT;
+                }
+            }
+
+            switch(lplvcd->iSubItem){
 				// Color the Address Field
                 case 0:{
                     lplvcd->clrText   = DisasmColors.GetAddressTextColor();
@@ -6058,16 +6110,6 @@ LRESULT ProcessCustomDraw (LPARAM lParam)
                        lplvcd->clrTextBk=(COLORREF)RGB(255,255,225);
 					}
 
-                    // Debugger: color breakpoint addresses red
-                    if (g_bDebuggerActive && lplvcd->nmcd.dwItemSpec < DisasmDataLines.size()) {
-                        DWORD_PTR itemAddr = StringToDword(DisasmDataLines[lplvcd->nmcd.dwItemSpec].GetAddress());
-                        EnterCriticalSection(&g_csBreakpoints);
-                        if (DbgFindBreakpoint(itemAddr + g_dwRebaseDelta)) {
-                            lplvcd->clrText = RGB(255, 0, 0);
-                            lplvcd->clrTextBk = g_DarkMode ? RGB(60, 0, 0) : RGB(255, 220, 220);
-                        }
-                        LeaveCriticalSection(&g_csBreakpoints);
-                    }
 
                     return CDRF_NEWFONT;
                 }

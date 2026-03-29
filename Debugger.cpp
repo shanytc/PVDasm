@@ -54,6 +54,7 @@ HANDLE                              g_hDebugThread = NULL;
 DWORD                               g_dwDebugThreadId = 0;
 HWND                                g_hRegisterDlg = NULL;
 HWND                                g_hThreadsDlg = NULL;
+HWND                                g_hBreakpointsDlg = NULL;
 DWORD_PTR                           g_dwCurrentEIP = 0;
 bool                                g_bDebuggerActive = false;
 HANDLE                              g_hContinueEvent = NULL;
@@ -1135,7 +1136,7 @@ BOOL DbgStepInto()
     if (g_DbgState != DBG_STATE_PAUSED)
         return FALSE;
 
-    // Read current instruction to get its size
+    // Read current instruction
     BYTE instrBuf[16];
     SIZE_T bytesRead;
     if (!ReadProcessMemory(g_DbgProcess.hProcess, (LPVOID)g_dwCurrentEIP, instrBuf, sizeof(instrBuf), &bytesRead))
@@ -1150,9 +1151,108 @@ BOOL DbgStepInto()
     DWORD_PTR instrSize = disasm.OpcodeSize + disasm.PrefixSize;
     if (instrSize == 0) instrSize = 1;
 
-    // Set one-shot breakpoint at the next instruction
-    DWORD_PTR nextAddr = g_dwCurrentEIP + instrSize;
-    DbgSetBreakpoint(nextAddr, true);
+    DWORD_PTR targetAddr = 0;
+    bool isConditionalJump = false;
+
+    if (disasm.CodeFlow.Call || disasm.CodeFlow.Jump) {
+        BYTE op = instrBuf[disasm.PrefixSize];
+
+        if (op == 0xE8 || op == 0xE9) {
+            // Near CALL rel32 / JMP rel32
+            INT32 rel = *(INT32*)(instrBuf + disasm.PrefixSize + 1);
+            targetAddr = g_dwCurrentEIP + instrSize + (DWORD_PTR)(INT_PTR)rel;
+        }
+        else if (op == 0xEB) {
+            // Short JMP rel8
+            INT8 rel = (INT8)instrBuf[disasm.PrefixSize + 1];
+            targetAddr = g_dwCurrentEIP + instrSize + (DWORD_PTR)(INT_PTR)rel;
+        }
+        else if (op == 0xFF) {
+            BYTE modrm = instrBuf[disasm.PrefixSize + 1];
+            if ((modrm & 0xC7) == 0x05 || (modrm & 0xC7) == 0x15) {
+                DWORD indirectAddr = *(DWORD*)(instrBuf + disasm.PrefixSize + 2);
+                DWORD callTarget = 0;
+                ReadProcessMemory(g_DbgProcess.hProcess, (LPVOID)(DWORD_PTR)indirectAddr, &callTarget, sizeof(callTarget), &bytesRead);
+                if (callTarget != 0)
+                    targetAddr = callTarget;
+            }
+        }
+        else if ((op & 0xF0) == 0x70) {
+            // Short conditional jump rel8 (0x70-0x7F)
+            INT8 rel = (INT8)instrBuf[disasm.PrefixSize + 1];
+            targetAddr = g_dwCurrentEIP + instrSize + (DWORD_PTR)(INT_PTR)rel;
+            isConditionalJump = true;
+        }
+        else if (op == 0xE3) {
+            // JECXZ/JCXZ rel8
+            INT8 rel = (INT8)instrBuf[disasm.PrefixSize + 1];
+            targetAddr = g_dwCurrentEIP + instrSize + (DWORD_PTR)(INT_PTR)rel;
+            isConditionalJump = true;
+        }
+        else if (op == 0x0F) {
+            BYTE op2 = instrBuf[disasm.PrefixSize + 1];
+            if ((op2 & 0xF0) == 0x80) {
+                // Near conditional jump rel32 (0x0F 0x80-0x8F)
+                INT32 rel = *(INT32*)(instrBuf + disasm.PrefixSize + 2);
+                targetAddr = g_dwCurrentEIP + instrSize + (DWORD_PTR)(INT_PTR)rel;
+                isConditionalJump = true;
+            }
+        }
+    }
+
+    if (isConditionalJump && targetAddr != 0) {
+        // Evaluate the condition using EFLAGS to determine which way the branch goes
+        DWORD eflags = g_DbgRegisters.EFlags;
+        bool CF = (eflags >> 0) & 1;
+        bool PF = (eflags >> 2) & 1;
+        bool ZF = (eflags >> 6) & 1;
+        bool SF = (eflags >> 7) & 1;
+        bool OF = (eflags >> 11) & 1;
+
+        // Get the condition code (low nibble of opcode)
+        BYTE cc;
+        BYTE op = instrBuf[disasm.PrefixSize];
+        if (op == 0x0F)
+            cc = instrBuf[disasm.PrefixSize + 1] & 0x0F;
+        else if (op == 0xE3)
+            cc = 0xFF; // Special: JECXZ
+        else
+            cc = op & 0x0F;
+
+        bool taken = false;
+        switch (cc) {
+            case 0x0: taken = OF; break;                    // JO
+            case 0x1: taken = !OF; break;                   // JNO
+            case 0x2: taken = CF; break;                    // JB/JC/JNAE
+            case 0x3: taken = !CF; break;                   // JNB/JNC/JAE
+            case 0x4: taken = ZF; break;                    // JZ/JE
+            case 0x5: taken = !ZF; break;                   // JNZ/JNE
+            case 0x6: taken = CF || ZF; break;              // JBE/JNA
+            case 0x7: taken = !CF && !ZF; break;            // JA/JNBE
+            case 0x8: taken = SF; break;                    // JS
+            case 0x9: taken = !SF; break;                   // JNS
+            case 0xA: taken = PF; break;                    // JP/JPE
+            case 0xB: taken = !PF; break;                   // JNP/JPO
+            case 0xC: taken = SF != OF; break;              // JL/JNGE
+            case 0xD: taken = SF == OF; break;              // JGE/JNL
+            case 0xE: taken = ZF || (SF != OF); break;      // JLE/JNG
+            case 0xF: taken = !ZF && (SF == OF); break;     // JG/JNLE
+            case 0xFF: taken = (g_DbgRegisters.Ecx == 0); break; // JECXZ
+        }
+
+        if (taken) {
+            DbgSetBreakpoint(targetAddr, true);
+        } else {
+            DbgSetBreakpoint(g_dwCurrentEIP + instrSize, true);
+        }
+    }
+    else if (targetAddr != 0 && (disasm.CodeFlow.Call || disasm.CodeFlow.Jump)) {
+        // Unconditional CALL/JMP - follow the target
+        DbgSetBreakpoint(targetAddr, true);
+    } else {
+        // Normal instruction - break at next instruction
+        DbgSetBreakpoint(g_dwCurrentEIP + instrSize, true);
+    }
 
     g_DbgState = DBG_STATE_STEPPING_INTO;
     s_dwContinueStatus = DBG_CONTINUE;
@@ -1772,6 +1872,7 @@ void DbgInitMenuState(HWND hWnd)
     EnableMenuItem(hMenu, IDM_DBG_TOGGLE_BREAKPOINT, MF_GRAYED);
     EnableMenuItem(hMenu, IDM_DBG_VIEW_REGISTERS, MF_GRAYED);
     EnableMenuItem(hMenu, IDM_DBG_VIEW_THREADS, MF_GRAYED);
+    EnableMenuItem(hMenu, IDM_DBG_VIEW_BREAKPOINTS, MF_GRAYED);
     EnableMenuItem(hMenu, IDM_DBG_RESUME, MF_GRAYED);
 }
 
@@ -1796,6 +1897,7 @@ void DbgUpdateMenuState(HWND hWnd)
         EnableMenuItem(hMenu, IDM_DBG_TOGGLE_BREAKPOINT, MF_GRAYED);
         EnableMenuItem(hMenu, IDM_DBG_VIEW_REGISTERS, MF_GRAYED);
         EnableMenuItem(hMenu, IDM_DBG_VIEW_THREADS, MF_GRAYED);
+        EnableMenuItem(hMenu, IDM_DBG_VIEW_BREAKPOINTS, MF_GRAYED);
         EnableMenuItem(hMenu, IDM_DBG_RESUME, MF_GRAYED);
         break;
 
@@ -1818,6 +1920,7 @@ void DbgUpdateMenuState(HWND hWnd)
         EnableMenuItem(hMenu, IDM_DBG_TOGGLE_BREAKPOINT, MF_GRAYED);
         EnableMenuItem(hMenu, IDM_DBG_VIEW_REGISTERS, MF_GRAYED);
         EnableMenuItem(hMenu, IDM_DBG_VIEW_THREADS, MF_ENABLED);
+        EnableMenuItem(hMenu, IDM_DBG_VIEW_BREAKPOINTS, MF_ENABLED);
         EnableMenuItem(hMenu, IDM_DBG_RESUME, MF_GRAYED);
         break;
 
@@ -1838,6 +1941,7 @@ void DbgUpdateMenuState(HWND hWnd)
         EnableMenuItem(hMenu, IDM_DBG_TOGGLE_BREAKPOINT, MF_ENABLED);
         EnableMenuItem(hMenu, IDM_DBG_VIEW_REGISTERS, MF_ENABLED);
         EnableMenuItem(hMenu, IDM_DBG_VIEW_THREADS, MF_ENABLED);
+        EnableMenuItem(hMenu, IDM_DBG_VIEW_BREAKPOINTS, MF_ENABLED);
         EnableMenuItem(hMenu, IDM_DBG_RESUME, MF_ENABLED);
         break;
     }
@@ -2368,6 +2472,182 @@ BOOL CALLBACK DbgThreadsDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM l
     case WM_CLOSE:
         DestroyWindow(hWnd);
         g_hThreadsDlg = NULL;
+        return TRUE;
+    }
+    return FALSE;
+}
+
+// ================================================================
+// ===============  BREAKPOINTS DIALOG  ===========================
+// ================================================================
+
+void DbgUpdateBreakpointsDialog()
+{
+    if (!g_hBreakpointsDlg || !IsWindow(g_hBreakpointsDlg))
+        return;
+
+    HWND hList = GetDlgItem(g_hBreakpointsDlg, IDC_DBG_BP_LIST);
+    if (!hList) return;
+
+    SendMessage(hList, WM_SETREDRAW, FALSE, 0);
+    ListView_DeleteAllItems(hList);
+
+    EnterCriticalSection(&g_csBreakpoints);
+    for (int i = 0; i < (int)g_DbgBreakpoints.size(); i++) {
+        char addrStr[20], hitsStr[16], stateStr[16], moduleStr[64];
+        wsprintf(addrStr, "%08X", (DWORD)g_DbgBreakpoints[i].dwAddress);
+        wsprintf(hitsStr, "%d", g_DbgBreakpoints[i].nHitCount);
+        lstrcpy(stateStr, g_DbgBreakpoints[i].bEnabled ? "Enabled" : "Disabled");
+
+        const char* mod = DbgFindModuleForAddress(g_DbgBreakpoints[i].dwAddress);
+        lstrcpyn(moduleStr, mod ? mod : "", 64);
+
+        LVITEM lvi = {0};
+        lvi.mask = LVIF_TEXT;
+        lvi.iItem = i;
+        lvi.pszText = addrStr;
+        ListView_InsertItem(hList, &lvi);
+        ListView_SetItemText(hList, i, 1, stateStr);
+        ListView_SetItemText(hList, i, 2, hitsStr);
+        ListView_SetItemText(hList, i, 3, moduleStr);
+    }
+    LeaveCriticalSection(&g_csBreakpoints);
+
+    SendMessage(hList, WM_SETREDRAW, TRUE, 0);
+    InvalidateRect(hList, NULL, TRUE);
+
+    if (g_DarkMode) {
+        ListView_SetBkColor(hList, g_DarkBkColor);
+        ListView_SetTextBkColor(hList, g_DarkBkColor);
+        ListView_SetTextColor(hList, g_DarkTextColor);
+    }
+}
+
+BOOL CALLBACK DbgBreakpointsDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
+{
+    switch (Message) {
+    case WM_INITDIALOG: {
+        g_hBreakpointsDlg = hWnd;
+
+        HWND hList = GetDlgItem(hWnd, IDC_DBG_BP_LIST);
+        if (!hList) break;
+
+        SendMessage(hList, LVM_SETEXTENDEDLISTVIEWSTYLE, 0,
+                    LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER);
+
+        LVCOLUMN lvc;
+        lvc.mask = LVCF_TEXT | LVCF_WIDTH;
+
+        lvc.pszText = (LPSTR)"Address";
+        lvc.cx = 75;
+        ListView_InsertColumn(hList, 0, &lvc);
+
+        lvc.pszText = (LPSTR)"State";
+        lvc.cx = 55;
+        ListView_InsertColumn(hList, 1, &lvc);
+
+        lvc.pszText = (LPSTR)"Hits";
+        lvc.cx = 40;
+        ListView_InsertColumn(hList, 2, &lvc);
+
+        lvc.pszText = (LPSTR)"Module";
+        lvc.cx = 80;
+        ListView_InsertColumn(hList, 3, &lvc);
+
+        DbgUpdateBreakpointsDialog();
+        return TRUE;
+    }
+
+    case WM_COMMAND:
+        switch (LOWORD(wParam)) {
+        case IDC_DBG_BP_REMOVE: {
+            HWND hList = GetDlgItem(hWnd, IDC_DBG_BP_LIST);
+            int sel = ListView_GetNextItem(hList, -1, LVNI_SELECTED);
+            if (sel != -1) {
+                char addrStr[20];
+                ListView_GetItemText(hList, sel, 0, addrStr, 20);
+                DWORD_PTR addr = (DWORD_PTR)StringToDword(addrStr);
+                DbgRemoveBreakpoint(addr);
+                DbgUpdateBreakpointsDialog();
+                // Repaint disassembly to remove red highlight
+                if (s_hMainWnd)
+                    InvalidateRect(GetDlgItem(s_hMainWnd, IDC_DISASM), NULL, TRUE);
+            }
+            return TRUE;
+        }
+
+        case IDC_DBG_BP_CLEAR_ALL: {
+            EnterCriticalSection(&g_csBreakpoints);
+            // Restore all original bytes
+            for (size_t i = 0; i < g_DbgBreakpoints.size(); i++) {
+                if (g_DbgBreakpoints[i].bEnabled) {
+                    SIZE_T written;
+                    WriteProcessMemory(g_DbgProcess.hProcess,
+                        (LPVOID)g_DbgBreakpoints[i].dwAddress,
+                        &g_DbgBreakpoints[i].bOriginalByte, 1, &written);
+                    FlushInstructionCache(g_DbgProcess.hProcess,
+                        (LPVOID)g_DbgBreakpoints[i].dwAddress, 1);
+                }
+            }
+            g_DbgBreakpoints.clear();
+            LeaveCriticalSection(&g_csBreakpoints);
+
+            DbgUpdateBreakpointsDialog();
+            if (s_hMainWnd)
+                InvalidateRect(GetDlgItem(s_hMainWnd, IDC_DISASM), NULL, TRUE);
+            return TRUE;
+        }
+        }
+        break;
+
+    case WM_NOTIFY: {
+        NMHDR* pnm = (NMHDR*)lParam;
+        if (pnm->idFrom == IDC_DBG_BP_LIST && pnm->code == NM_DBLCLK) {
+            // Double-click: jump to breakpoint in disassembly
+            HWND hList = GetDlgItem(hWnd, IDC_DBG_BP_LIST);
+            int sel = ListView_GetNextItem(hList, -1, LVNI_SELECTED);
+            if (sel != -1 && s_hMainWnd) {
+                char addrStr[20];
+                ListView_GetItemText(hList, sel, 0, addrStr, 20);
+
+                // Search in disassembly and navigate
+                HWND hDisasm = GetDlgItem(s_hMainWnd, IDC_DISASM);
+                if (hDisasm) {
+                    // Search with both raw address and minus delta
+                    DWORD_PTR bpAddr = (DWORD_PTR)StringToDword(addrStr);
+                    char searchStr[20], searchStr2[20];
+                    wsprintf(searchStr, "%08X", (DWORD)bpAddr);
+                    wsprintf(searchStr2, "%08X", (DWORD)(bpAddr - g_dwRebaseDelta));
+
+                    for (DWORD_PTR i = 0; i < DisasmDataLines.size(); i++) {
+                        char* itemAddr = DisasmDataLines[i].GetAddress();
+                        if (itemAddr && (lstrcmp(itemAddr, searchStr) == 0 ||
+                                         lstrcmp(itemAddr, searchStr2) == 0)) {
+                            SendMessage(s_hMainWnd, WM_USER + 300, 0, 0);
+                            SelectItem(hDisasm, i);
+                            SetFocus(hDisasm);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        break;
+    }
+
+    case WM_CTLCOLORDLG:
+    case WM_CTLCOLORSTATIC:
+        if (g_DarkMode) {
+            HDC hdc = (HDC)wParam;
+            SetTextColor(hdc, g_DarkTextColor);
+            SetBkColor(hdc, g_DarkBkColor);
+            return (INT_PTR)g_hDarkBrush;
+        }
+        break;
+
+    case WM_CLOSE:
+        DestroyWindow(hWnd);
+        g_hBreakpointsDlg = NULL;
         return TRUE;
     }
     return FALSE;

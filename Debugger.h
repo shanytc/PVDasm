@@ -170,12 +170,17 @@ void DbgUpdateThreadsDialog();
 void DbgUpdateDisasmTabName();
 void DbgSwitchToThread(DWORD dwThreadId);
 
+// Breakpoints
+void DbgUpdateBreakpointsDialog();
+
 // Dialog Procedures
 BOOL CALLBACK DbgRegisterDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam);
 BOOL CALLBACK DbgAttachDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam);
 BOOL CALLBACK DbgOptionsDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam);
 BOOL CALLBACK DbgThreadsDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK DbgBreakpointsDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam);
 
 extern HWND g_hThreadsDlg;
+extern HWND g_hBreakpointsDlg;
 
 #endif // __DEBUGGER_H__
