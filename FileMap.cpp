@@ -144,6 +144,11 @@ char				TempAddress[20];			// used when we want to display the address in the to
 LRESULT ProcessHeaderCustomDraw(LPARAM lParam);
 LRESULT CALLBACK MessageListSubClass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
+// Forward declarations for function rename
+extern char s_szRenameBuf[50];
+BOOL CALLBACK RenameFunctionDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam);
+void RenameFunctionAtIndex(DWORD_PTR bannerIndex, const char* newName);
+
 // ================================================================
 // ======================  CODE MAP BAR  ==========================
 // ================================================================
@@ -2526,18 +2531,46 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                         }
                         break;
 
-                        // Preview Jump/Call destination (double-click shows preview window)
+                        // Preview Jump/Call destination OR rename function
                         case 2:{
                             if(DisassemblerReady==TRUE){
-								GetBranchDestination(GetDlgItem(hWnd,IDC_DISASM));
-                                if(DCodeFlow==TRUE){
-                                    // Show preview window for the branch destination
-                                    if(LoadedPe64)
-                                        wsprintf(TempAddress, "%08X%08X", (DWORD)((DWORD_PTR)iSelectItem>>32), (DWORD)iSelectItem);
-                                    else
-                                        wsprintf(TempAddress, "%08X", iSelectItem);
-                                    if(SearchItemText(hDisasm, TempAddress) != -1){
-                                        DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_TOOLTIP), hWnd, (DLGPROC)ToolTipDialog);
+                                // Check if this is a function banner line
+                                DWORD_PTR clickedItem = SendMessage(hDisasm, LVM_GETNEXTITEM, (WPARAM)-1, LVNI_FOCUSED);
+                                bool isFuncBanner = false;
+                                if (clickedItem != (DWORD_PTR)-1 && clickedItem < DisasmDataLines.size()) {
+                                    char* mnem = DisasmDataLines[clickedItem].GetMnemonic();
+                                    if (mnem && strncmp(mnem, "; ======", 8) == 0) {
+                                        isFuncBanner = true;
+                                        // Extract current name from "; ====== NAME ======"
+                                        char* nameStart = mnem + 9; // skip "; ====== "
+                                        char* nameEnd = strstr(nameStart, " ======");
+                                        if (!nameEnd) nameEnd = strstr(nameStart, " Proc");
+                                        s_szRenameBuf[0] = 0;
+                                        if (nameEnd) {
+                                            int nameLen = (int)(nameEnd - nameStart);
+                                            if (nameLen > 49) nameLen = 49;
+                                            lstrcpyn(s_szRenameBuf, nameStart, nameLen + 1);
+                                        }
+                                        // Show rename dialog
+                                        if (DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_RENAME_FUNCTION),
+                                                      hWnd, (DLGPROC)RenameFunctionDlgProc) == IDOK) {
+                                            if (s_szRenameBuf[0])
+                                                RenameFunctionAtIndex(clickedItem, s_szRenameBuf);
+                                        }
+                                    }
+                                }
+
+                                // If not a function banner, do the normal branch preview
+                                if (!isFuncBanner) {
+                                    GetBranchDestination(GetDlgItem(hWnd,IDC_DISASM));
+                                    if(DCodeFlow==TRUE){
+                                        if(LoadedPe64)
+                                            wsprintf(TempAddress, "%08X%08X", (DWORD)((DWORD_PTR)iSelectItem>>32), (DWORD)iSelectItem);
+                                        else
+                                            wsprintf(TempAddress, "%08X", iSelectItem);
+                                        if(SearchItemText(hDisasm, TempAddress) != -1){
+                                            DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_TOOLTIP), hWnd, (DLGPROC)ToolTipDialog);
+                                        }
                                     }
                                 }
                             }
@@ -4361,6 +4394,105 @@ BOOL CALLBACK GotoAddrressDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM
 //======================================================================================
 //===========================  SetCommentDlgProc =======================================
 //======================================================================================
+// ================================================================
+// ==================  FUNCTION RENAME  ===========================
+// ================================================================
+
+char s_szRenameBuf[50] = {0};  // Shared buffer for rename dialog
+
+BOOL CALLBACK RenameFunctionDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
+{
+    switch (Message) {
+    case WM_INITDIALOG:
+        SendDlgItemMessage(hWnd, IDC_RENAME_INPUT, EM_SETLIMITTEXT, 49, 0);
+        SetDlgItemText(hWnd, IDC_RENAME_INPUT, s_szRenameBuf);
+        SetFocus(GetDlgItem(hWnd, IDC_RENAME_INPUT));
+        // Select all text
+        SendDlgItemMessage(hWnd, IDC_RENAME_INPUT, EM_SETSEL, 0, -1);
+        return FALSE;
+
+    case WM_COMMAND:
+        switch (LOWORD(wParam)) {
+        case IDOK:
+            GetDlgItemText(hWnd, IDC_RENAME_INPUT, s_szRenameBuf, 50);
+            EndDialog(hWnd, IDOK);
+            return TRUE;
+        case IDCANCEL:
+            EndDialog(hWnd, IDCANCEL);
+            return TRUE;
+        }
+        break;
+    }
+    return FALSE;
+}
+
+// Rename a function given its disassembly line index (the banner line)
+void RenameFunctionAtIndex(DWORD_PTR bannerIndex, const char* newName)
+{
+    if (bannerIndex >= DisasmDataLines.size() || !newName || !newName[0])
+        return;
+
+    // The banner line is at bannerIndex, the first instruction is at bannerIndex+1
+    // Get the address of the first instruction to match against fFunctionInfo
+    DWORD_PTR funcAddr = 0;
+    if (bannerIndex + 1 < DisasmDataLines.size()) {
+        char* addrStr = DisasmDataLines[bannerIndex + 1].GetAddress();
+        if (addrStr) funcAddr = StringToDword(addrStr);
+    }
+
+    // Find and update the matching fFunctionInfo entry
+    if (funcAddr != 0) {
+        for (size_t i = 0; i < fFunctionInfo.size(); i++) {
+            if ((DWORD)fFunctionInfo[i].FunctionStart == funcAddr) {
+                lstrcpyn(fFunctionInfo[i].FunctionName, newName, 50);
+                break;
+            }
+        }
+    }
+
+    // Update the banner line
+    char banner[128];
+    wsprintf(banner, "; ====== %s ======", newName);
+    DisasmDataLines[bannerIndex].SetMnemonic(banner);
+
+    // Update all CALL/JMP instructions that reference this function address
+    if (funcAddr != 0) {
+        char addrHex[16];
+        wsprintf(addrHex, "%08X", (DWORD)funcAddr);
+        // Also handle 64-bit format
+        char addrHex64[20] = {0};
+        if (LoadedPe64)
+            wsprintf(addrHex64, "%08X%08X", (DWORD)(funcAddr >> 32), (DWORD)funcAddr);
+
+        for (DWORD_PTR i = 0; i < DisasmDataLines.size(); i++) {
+            char* mnem = DisasmDataLines[i].GetMnemonic();
+            if (!mnem) continue;
+
+            // Check for "call XXXXXXXX" or "jmp XXXXXXXX"
+            bool isCall = (_strnicmp(mnem, "call ", 5) == 0);
+            bool isJmp = (_strnicmp(mnem, "jmp ", 4) == 0);
+            if (!isCall && !isJmp) continue;
+
+            char* operand = mnem + (isCall ? 5 : 4);
+            // Skip whitespace
+            while (*operand == ' ') operand++;
+
+            if (lstrcmp(operand, addrHex) == 0 ||
+                (addrHex64[0] && lstrcmp(operand, addrHex64) == 0)) {
+                // Replace with "call funcName" or "jmp funcName"
+                char newMnem[256];
+                wsprintf(newMnem, "%s %s", isCall ? "call" : "jmp", newName);
+                DisasmDataLines[i].SetMnemonic(newMnem);
+            }
+        }
+    }
+
+    // Refresh disassembly view
+    HWND hDisasm = GetDlgItem(Main_hWnd, IDC_DISASM);
+    if (hDisasm)
+        RedrawWindow(hDisasm, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
+}
+
 BOOL CALLBACK SetCommentDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
 {
     switch(Message)

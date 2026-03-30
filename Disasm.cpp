@@ -44,6 +44,7 @@ Disassembler
 
 #include "Disasm.h"
 #include "functions.h"
+#include "resource\resource.h"
 #include "assert.h"
 #include "CDisasmData.h"
 #include "Chip8.h"
@@ -953,6 +954,40 @@ BOOL CALLBACK FunctionsEPSegmentsDlgProc(HWND hWnd, UINT Message, WPARAM wParam,
 
 					SetFocus(hList);
 					SelectItem(hList,iSelected);
+				}
+				break;
+
+				case IDC_RENAME_FDATA:{
+					HWND hList = GetDlgItem(hWnd,IDC_FDATA_LIST);
+					HWND hDasm = GetDlgItem(mainhWnd,IDC_DISASM);
+					DWORD_PTR iSel = SendMessage(hList,LVM_GETNEXTITEM,-1,LVNI_FOCUSED);
+					if(iSel == -1 || iSel >= (DWORD_PTR)fFunctionInfo.size()){
+						MessageBox(hWnd,"Please select a function.","Notice",MB_OK);
+						break;
+					}
+
+					// Show rename dialog
+					extern char s_szRenameBuf[50];
+					extern BOOL CALLBACK RenameFunctionDlgProc(HWND,UINT,WPARAM,LPARAM);
+					extern void RenameFunctionAtIndex(DWORD_PTR, const char*);
+					lstrcpyn(s_szRenameBuf, fFunctionInfo[iSel].FunctionName, 50);
+					if(DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_RENAME_FUNCTION),
+								 hWnd, (DLGPROC)RenameFunctionDlgProc) == IDOK && s_szRenameBuf[0]) {
+						// Update fFunctionInfo
+						lstrcpyn(fFunctionInfo[iSel].FunctionName, s_szRenameBuf, 50);
+						// Update ListView
+						ListView_SetItemText(hList, (int)iSel, 2, s_szRenameBuf);
+						// Update disassembly banner
+						char addrStr[16];
+						wsprintf(addrStr, "%08X", (DWORD)fFunctionInfo[iSel].FunctionStart);
+						DWORD_PTR dIdx = SearchItemText(hDasm, addrStr);
+						if(dIdx != (DWORD_PTR)-1 && dIdx > 0) {
+							char banner[128];
+							wsprintf(banner, "; ====== %s ======", s_szRenameBuf);
+							DisasmDataLines[dIdx-1].SetMnemonic(banner);
+							RedrawWindow(hDasm, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
+						}
+					}
 				}
 				break;
 
@@ -4148,6 +4183,32 @@ void WINAPI Disassembler(/*LPVOID lpParam*/) // Thread Worker for Decoding Instr
                     wsprintf(MessageText,"%08X : Invalid Function Pointer: [ %08X ]",Disasm.Address,Address);
                     OutDebug(mainhWnd,MessageText);
                     SelectLastItem(GetDlgItem(mainhWnd,IDC_LIST)); // Selects the Last Item
+                }
+            }
+
+            // Resolve CALL/JMP to user-defined function names
+            // (only if not already resolved as an API import)
+            if ((Disasm.CodeFlow.Call==TRUE || Disasm.CodeFlow.Jump==TRUE) && Address != 0) {
+                // Check if the target address matches a known function
+                for (size_t fi = 0; fi < fFunctionInfo.size(); fi++) {
+                    if ((DWORD_PTR)Address == fFunctionInfo[fi].FunctionStart) {
+                        char* funcName = fFunctionInfo[fi].FunctionName;
+                        if (funcName[0] != '\0') {
+                            // Check if assembly still shows raw address (not already resolved)
+                            char addrCheck[16];
+                            wsprintf(addrCheck, "%08X", (DWORD)Address);
+                            if (strstr(Disasm.Assembly, addrCheck)) {
+                                char temp[256];
+                                if (Disasm.CodeFlow.Call) {
+                                    wsprintf(temp, disop.UpperCased_Disasm ? "CALL %s" : "call %s", funcName);
+                                } else {
+                                    wsprintf(temp, disop.UpperCased_Disasm ? "JMP %s" : "jmp %s", funcName);
+                                }
+                                strcpy_s(Disasm.Assembly, sizeof(Disasm.Assembly), temp);
+                            }
+                        }
+                        break;
+                    }
                 }
             }
 

@@ -558,13 +558,18 @@
 #define IDC_DBG_BP_CLEAR_ALL            1377
 #define IDM_DBG_VIEW_BREAKPOINTS        40143
 
+// Function rename dialog
+#define IDD_RENAME_FUNCTION             253
+#define IDC_RENAME_INPUT                1387
+#define IDC_RENAME_FDATA                1388
+
 // Next default values for new objects
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        253
+#define _APS_NEXT_RESOURCE_VALUE        254
 #define _APS_NEXT_COMMAND_VALUE         40146
-#define _APS_NEXT_CONTROL_VALUE         1387
+#define _APS_NEXT_CONTROL_VALUE         1389
 #define _APS_NEXT_SYMED_VALUE           121
 #endif
 #endif
