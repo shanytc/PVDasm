@@ -56,6 +56,8 @@
 // STL
 #include <vector>
 #include <map>
+#include <shlwapi.h>
+#pragma comment(lib, "shlwapi.lib")
 
 using namespace std; // Use Microsoft STL Templates
 
@@ -2360,30 +2362,45 @@ DWORD_PTR SearchText(DWORD_PTR dwPos,char* cpText,HWND hListView,bool bMatchCase
     bool  found=false;
 
     if(dwPos==-1)	{ dwIndex=0;			} else { dwIndex=dwPos; }
-    if(!bMatchCase)	{ CharUpper(cpText);	}
-  
+
 	// Number of Items in the window
-    iItems=SendMessage(hListView,LVM_GETITEMCOUNT,0,0); 
-    
+    iItems=SendMessage(hListView,LVM_GETITEMCOUNT,0,0);
+
 	// No Items, Can't search
     if(iItems==0) return -1;
 
 	// Scan and Find accourding to the Fucntion's parameters.
     for(;dwIndex<iItems;dwIndex++){
         if(WholeWord==FALSE){
-			// Search string in string
-            if(strstr(DisasmDataLines[dwIndex].GetAddress(),cpText)!=NULL)	{found=TRUE; break;}
-            if(strstr(DisasmDataLines[dwIndex].GetCode(),cpText)!=NULL)		{found=TRUE; break;}
-            if(strstr(DisasmDataLines[dwIndex].GetMnemonic(),cpText)!=NULL)	{found=TRUE; break;}
-            if(strstr(DisasmDataLines[dwIndex].GetComments(),cpText)!=NULL)	{found=TRUE; break;}
+			// Search substring in each field
+            if(bMatchCase){
+                if(strstr(DisasmDataLines[dwIndex].GetAddress(),cpText)!=NULL)	{found=TRUE; break;}
+                if(strstr(DisasmDataLines[dwIndex].GetCode(),cpText)!=NULL)		{found=TRUE; break;}
+                if(strstr(DisasmDataLines[dwIndex].GetMnemonic(),cpText)!=NULL)	{found=TRUE; break;}
+                if(strstr(DisasmDataLines[dwIndex].GetComments(),cpText)!=NULL)	{found=TRUE; break;}
+            }
+            else{
+                if(StrStrI(DisasmDataLines[dwIndex].GetAddress(),cpText)!=NULL)	{found=TRUE; break;}
+                if(StrStrI(DisasmDataLines[dwIndex].GetCode(),cpText)!=NULL)	{found=TRUE; break;}
+                if(StrStrI(DisasmDataLines[dwIndex].GetMnemonic(),cpText)!=NULL)	{found=TRUE; break;}
+                if(StrStrI(DisasmDataLines[dwIndex].GetComments(),cpText)!=NULL)	{found=TRUE; break;}
+            }
         }
         else{
             if(WholeWord==TRUE){
-				// Compare strings
-                if(lstrcmp(DisasmDataLines[dwIndex].GetAddress(),cpText)==0)	{found=TRUE; break;}
-                if(lstrcmp(DisasmDataLines[dwIndex].GetCode(),cpText)==0)		{found=TRUE; break;}
-                if(lstrcmp(DisasmDataLines[dwIndex].GetMnemonic(),cpText)==0)	{found=TRUE; break;}
-                if(lstrcmp(DisasmDataLines[dwIndex].GetComments(),cpText)==0)	{found=TRUE; break;}
+				// Compare whole strings
+                if(bMatchCase){
+                    if(lstrcmp(DisasmDataLines[dwIndex].GetAddress(),cpText)==0)		{found=TRUE; break;}
+                    if(lstrcmp(DisasmDataLines[dwIndex].GetCode(),cpText)==0)		{found=TRUE; break;}
+                    if(lstrcmp(DisasmDataLines[dwIndex].GetMnemonic(),cpText)==0)	{found=TRUE; break;}
+                    if(lstrcmp(DisasmDataLines[dwIndex].GetComments(),cpText)==0)	{found=TRUE; break;}
+                }
+                else{
+                    if(lstrcmpi(DisasmDataLines[dwIndex].GetAddress(),cpText)==0)	{found=TRUE; break;}
+                    if(lstrcmpi(DisasmDataLines[dwIndex].GetCode(),cpText)==0)		{found=TRUE; break;}
+                    if(lstrcmpi(DisasmDataLines[dwIndex].GetMnemonic(),cpText)==0)	{found=TRUE; break;}
+                    if(lstrcmpi(DisasmDataLines[dwIndex].GetComments(),cpText)==0)	{found=TRUE; break;}
+                }
             }
         }
     }
