@@ -60,6 +60,7 @@ static HPEN     g_ArrowPens[5] = {};      // Width-1 pens for arrowhead outlines
 static HBRUSH   g_ArrowBrushes[5] = {};   // Solid brushes for arrowhead fill
 static COLORREF g_EdgeColors[5] = {};     // Color values for text labels
 static bool     g_OverviewEnabled = TRUE; // Overview minimap enabled by default
+static bool     g_CommentsAligned = false; // Comment alignment toggle
 bool            g_CFGGraphValid = false; // True when embedded CFG child has a valid graph
 
 // ================================================================
@@ -433,24 +434,32 @@ void CalculateBlockDimensions(HDC hDC, CFG_GRAPH* graph)
         int numLines = 0;
 
         for (DWORD_PTR idx = block.StartIndex; idx <= block.EndIndex && idx < DisasmDataLines.size(); idx++) {
-            char line[512];
+            char* addr = DisasmDataLines[idx].GetAddress();
+            char* mnemonic = DisasmDataLines[idx].GetMnemonic();
             char* comment = DisasmDataLines[idx].GetComments();
+
+            // Measure address + gap + mnemonic base width
+            SIZE addrSize, mnemonicSize;
+            GetTextExtentPoint32(hDC, addr, lstrlen(addr), &addrSize);
+            GetTextExtentPoint32(hDC, mnemonic, lstrlen(mnemonic), &mnemonicSize);
+            int lineWidth = addrSize.cx + 8 + mnemonicSize.cx; // 8 = addr-mnemonic gap
+
             if (comment && comment[0] != '\0') {
-                wsprintf(line, "%s  %s  %s",
-                         DisasmDataLines[idx].GetAddress(),
-                         DisasmDataLines[idx].GetMnemonic(),
-                         comment);
-            } else {
-                wsprintf(line, "%s  %s",
-                         DisasmDataLines[idx].GetAddress(),
-                         DisasmDataLines[idx].GetMnemonic());
+                SIZE commentSize;
+                char commentBuf[256];
+                wsprintf(commentBuf, "  %s", comment);
+                GetTextExtentPoint32(hDC, commentBuf, lstrlen(commentBuf), &commentSize);
+
+                if (block.AlignedCommentCol > 0) {
+                    // With alignment: comment starts at aligned column
+                    lineWidth = addrSize.cx + 8 + block.AlignedCommentCol + commentSize.cx;
+                } else {
+                    lineWidth += commentSize.cx;
+                }
             }
 
-            SIZE textSize;
-            GetTextExtentPoint32(hDC, line, lstrlen(line), &textSize);
-
-            if (textSize.cx + 2 * CFG_BLOCK_PADDING > maxWidth) {
-                maxWidth = textSize.cx + 2 * CFG_BLOCK_PADDING;
+            if (lineWidth + 2 * CFG_BLOCK_PADDING > maxWidth) {
+                maxWidth = lineWidth + 2 * CFG_BLOCK_PADDING;
             }
             numLines++;
         }
@@ -1980,10 +1989,16 @@ void RenderBlocks(HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState, RECT* vi
             // Draw comment if present
             char* comment = DisasmDataLines[idx].GetComments();
             if (comment && comment[0] != '\0') {
-                // Measure mnemonic width to position comment after it
-                SIZE asmSize;
-                GetTextExtentPoint32(hDC, asmText, lstrlen(asmText), &asmSize);
-                int commentX = block.X + CFG_BLOCK_PADDING + addrColWidth + asmSize.cx;
+                int commentX;
+                if (block.AlignedCommentCol > 0) {
+                    // Use aligned column: all comments start at the same X position
+                    commentX = block.X + CFG_BLOCK_PADDING + addrColWidth + block.AlignedCommentCol;
+                } else {
+                    // Natural position: right after the mnemonic
+                    SIZE asmSize;
+                    GetTextExtentPoint32(hDC, asmText, lstrlen(asmText), &asmSize);
+                    commentX = block.X + CFG_BLOCK_PADDING + addrColWidth + asmSize.cx;
+                }
 
                 char commentBuf[256];
                 wsprintf(commentBuf, "  %s", comment);
@@ -2693,6 +2708,9 @@ static LRESULT HandleCFG_ContextMenu(HWND hWnd, LPARAM lParam)
     AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
     AppendMenu(hMenu, MF_STRING, IDM_CFG_SAVE_IMAGE, "Save as Image...");
     AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
+    AppendMenu(hMenu, g_CommentsAligned ? MF_STRING | MF_CHECKED : MF_STRING,
+               IDM_CFG_ALIGN_COMMENTS, "Align Comments");
+    AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
     AppendMenu(hMenu, g_OverviewEnabled ? MF_STRING | MF_CHECKED : MF_STRING,
                IDM_CFG_TOGGLE_OVERVIEW, "Show Overview");
 
@@ -2747,6 +2765,50 @@ static LRESULT HandleCFG_Command(HWND hWnd, WPARAM wParam)
             if (exitIdx != (size_t)-1) {
                 PanToBlock(hWnd, &g_CurrentGraph, &g_ViewState, exitIdx);
             }
+            break;
+        }
+
+        case IDM_CFG_ALIGN_COMMENTS: {
+            g_CommentsAligned = !g_CommentsAligned;
+
+            HDC hDC = GetDC(hWnd);
+            HFONT hOldFont = NULL;
+            if (g_hCFGFont)
+                hOldFont = (HFONT)SelectObject(hDC, g_hCFGFont);
+
+            if (g_CommentsAligned) {
+                // Compute aligned comment column for each block
+                for (size_t i = 0; i < g_CurrentGraph.Blocks.size(); i++) {
+                    CFG_BASIC_BLOCK& block = g_CurrentGraph.Blocks[i];
+                    int maxMnemonicWidth = 0;
+
+                    for (DWORD_PTR idx = block.StartIndex; idx <= block.EndIndex && idx < DisasmDataLines.size(); idx++) {
+                        char* comment = DisasmDataLines[idx].GetComments();
+                        if (comment && comment[0] != '\0') {
+                            char* asmText = DisasmDataLines[idx].GetMnemonic();
+                            SIZE asmSize;
+                            GetTextExtentPoint32(hDC, asmText, lstrlen(asmText), &asmSize);
+                            if (asmSize.cx > maxMnemonicWidth)
+                                maxMnemonicWidth = asmSize.cx;
+                        }
+                    }
+
+                    if (maxMnemonicWidth > 0)
+                        block.AlignedCommentCol = maxMnemonicWidth;
+                }
+            } else {
+                // Clear alignment for all blocks
+                for (size_t i = 0; i < g_CurrentGraph.Blocks.size(); i++)
+                    g_CurrentGraph.Blocks[i].AlignedCommentCol = 0;
+            }
+
+            CalculateBlockDimensions(hDC, &g_CurrentGraph);
+            g_CurrentGraph.EdgeRoutesDirty = true;
+
+            if (hOldFont)
+                SelectObject(hDC, hOldFont);
+            ReleaseDC(hWnd, hDC);
+            InvalidateRect(hWnd, NULL, FALSE);
             break;
         }
 
@@ -3620,6 +3682,43 @@ void LoadCFGForCurrentFunction_Embedded()
         HWND hChild = GetDlgItem(Main_hWnd, IDC_CFG_CHILD);
         if (hChild) InvalidateRect(hChild, NULL, FALSE);
     }
+}
+
+void RefreshCFGLabels()
+{
+    if (!g_CFGGraphValid) return;
+
+    // Update FunctionLabel for all blocks from fFunctionInfo
+    for (size_t i = 0; i < g_CurrentGraph.Blocks.size(); i++) {
+        CFG_BASIC_BLOCK& block = g_CurrentGraph.Blocks[i];
+        for (size_t fi = 0; fi < fFunctionInfo.size(); fi++) {
+            if (fFunctionInfo[fi].FunctionStart == block.StartAddress) {
+                if (fFunctionInfo[fi].FunctionName[0] != '\0')
+                    strncpy(block.FunctionLabel, fFunctionInfo[fi].FunctionName, 63);
+                else if (LoadedPe64)
+                    wsprintf(block.FunctionLabel, "Proc_%08X%08X", (DWORD)(block.StartAddress>>32), (DWORD)block.StartAddress);
+                else
+                    wsprintf(block.FunctionLabel, "Proc_%08X", (DWORD)block.StartAddress);
+                block.FunctionLabel[63] = '\0';
+                break;
+            }
+        }
+    }
+
+    // Also update graph-level function name
+    for (size_t fi = 0; fi < fFunctionInfo.size(); fi++) {
+        if (fFunctionInfo[fi].FunctionStart == g_CurrentGraph.FunctionStart) {
+            if (fFunctionInfo[fi].FunctionName[0] != '\0') {
+                strncpy(g_CurrentGraph.FunctionName, fFunctionInfo[fi].FunctionName, 63);
+                g_CurrentGraph.FunctionName[63] = '\0';
+            }
+            break;
+        }
+    }
+
+    // Invalidate graph child to repaint with updated labels
+    HWND hChild = GetDlgItem(Main_hWnd, IDC_CFG_CHILD);
+    if (hChild) InvalidateRect(hChild, NULL, FALSE);
 }
 
 void ClearEmbeddedCFG()

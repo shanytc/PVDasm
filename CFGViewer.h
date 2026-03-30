@@ -66,6 +66,9 @@ typedef struct CFGBasicBlock {
     // Cached rendering data
     COLORREF    CachedBgColor;     // Pre-computed background color
 
+    // Comment alignment (0 = not aligned, >0 = pixel width for mnemonic column)
+    int         AlignedCommentCol;
+
 } CFG_BASIC_BLOCK;
 
 // Represents an edge between two basic blocks
@@ -203,6 +206,7 @@ HWND GetCFGViewerWindow();  // Returns handle for message loop integration
 extern bool g_CFGGraphValid;
 void RegisterCFGChildClass(HINSTANCE hInst);
 void LoadCFGForCurrentFunction_Embedded();
+void RefreshCFGLabels();
 void ClearEmbeddedCFG();
 LRESULT CALLBACK CFGChildWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 

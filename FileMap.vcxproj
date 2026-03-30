@@ -295,6 +295,7 @@
     <ClCompile Include="loadpic\loadpic.cpp" />
     <ClCompile Include="Patcher.cpp" />
     <ClCompile Include="PE_Editor.cpp" />
+    <ClCompile Include="Debugger.cpp" />
     <ClCompile Include="Process.cpp" />
     <ClCompile Include="Project.cpp" />
     <ClCompile Include="PVScript\pvscript.cpp" />
@@ -317,6 +318,7 @@
     <ClInclude Include="Patcher.h" />
     <ClInclude Include="PE_Editor.h" />
     <ClInclude Include="PE_Sections.h" />
+    <ClInclude Include="Debugger.h" />
     <ClInclude Include="Process.h" />
     <ClInclude Include="Project.h" />
     <ClInclude Include="PVScript\pvscript.h" />

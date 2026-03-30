@@ -117,6 +117,9 @@
     <ClCompile Include="FileMap.cpp">
       <Filter>Source Files\Main.c</Filter>
     </ClCompile>
+    <ClCompile Include="Debugger.cpp">
+      <Filter>Source Files\Main.c</Filter>
+    </ClCompile>
     <ClCompile Include="Process.cpp">
       <Filter>Source Files\Processes.c</Filter>
     </ClCompile>
@@ -180,6 +183,9 @@
       <Filter>Header Files\Pe_Editor.h</Filter>
     </ClInclude>
     <ClInclude Include="MappedFile.h">
+      <Filter>Header Files\Main.h</Filter>
+    </ClInclude>
+    <ClInclude Include="Debugger.h">
       <Filter>Header Files\Main.h</Filter>
     </ClInclude>
     <ClInclude Include="Process.h">

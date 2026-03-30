@@ -44,6 +44,7 @@ Disassembler
 
 #include "Disasm.h"
 #include "functions.h"
+#include "resource\resource.h"
 #include "assert.h"
 #include "CDisasmData.h"
 #include "Chip8.h"
@@ -953,6 +954,39 @@ BOOL CALLBACK FunctionsEPSegmentsDlgProc(HWND hWnd, UINT Message, WPARAM wParam,
 
 					SetFocus(hList);
 					SelectItem(hList,iSelected);
+				}
+				break;
+
+				case IDC_RENAME_FDATA:{
+					HWND hList = GetDlgItem(hWnd,IDC_FDATA_LIST);
+					HWND hDasm = GetDlgItem(mainhWnd,IDC_DISASM);
+					DWORD_PTR iSel = SendMessage(hList,LVM_GETNEXTITEM,-1,LVNI_FOCUSED);
+					if(iSel == -1 || iSel >= (DWORD_PTR)fFunctionInfo.size()){
+						MessageBox(hWnd,"Please select a function.","Notice",MB_OK);
+						break;
+					}
+
+					// Show rename dialog
+					extern char s_szRenameBuf[50];
+					extern BOOL CALLBACK RenameFunctionDlgProc(HWND,UINT,WPARAM,LPARAM);
+					extern void RenameFunctionAtIndex(DWORD_PTR, const char*);
+					lstrcpyn(s_szRenameBuf, fFunctionInfo[iSel].FunctionName, 50);
+					if(DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_RENAME_FUNCTION),
+								 hWnd, (DLGPROC)RenameFunctionDlgProc) == IDOK && s_szRenameBuf[0]) {
+						// Update ListView
+						ListView_SetItemText(hList, (int)iSel, 2, s_szRenameBuf);
+						// Find banner in disassembly and do full rename
+						// (updates fFunctionInfo, banner, CALL/JMP mnemonics, and graph)
+						char addrStr[16];
+						wsprintf(addrStr, "%08X", (DWORD)fFunctionInfo[iSel].FunctionStart);
+						DWORD_PTR dIdx = SearchItemText(hDasm, addrStr);
+						if(dIdx != (DWORD_PTR)-1 && dIdx > 0) {
+							RenameFunctionAtIndex(dIdx-1, s_szRenameBuf);
+						} else {
+							// Fallback: update fFunctionInfo directly if banner not in disasm
+							lstrcpyn(fFunctionInfo[iSel].FunctionName, s_szRenameBuf, 50);
+						}
+					}
 				}
 				break;
 
@@ -3905,10 +3939,56 @@ void WINAPI Disassembler(/*LPVOID lpParam*/) // Thread Worker for Decoding Instr
 			// Check if current address is a known CALL target (from FirstPass)
 			if(!fInfoBanner && Disasm.Address != OEP && CallTargets.count(Disasm.Address)){
 				disop.ShowAddr=FALSE;
-				if(disop.CPU == x86_64)
-					wsprintf(Disasm.Assembly,"; ====== Proc_%08X%08X ======",(DWORD)(Disasm.Address>>32),(DWORD)Disasm.Address);
-				else
-					wsprintf(Disasm.Assembly,"; ====== Proc_%08X ======",Disasm.Address);
+
+				// Check if this CALL target is an import thunk (FF 25 JMP [IAT])
+				// If so, use the resolved import name instead of Proc_XXXXXXXX
+				char importName[MAX_PATH] = "";
+				bool isImportThunk = false;
+
+				DWORD_PTR savedAddress = Address;
+				BOOL savedCallApi = CallApi;
+				BOOL savedJumpApi = JumpApi;
+				BOOL savedCallAddrApi = CallAddrApi;
+
+				Address = Disasm.Address;
+				CallApi = TRUE;
+				JumpApi = FALSE;
+				CallAddrApi = FALSE;
+
+				if(GetAPIName(importName) == TRUE && importName[0] != '\0'){
+					isImportThunk = true;
+				}
+
+				Address = savedAddress;
+				CallApi = savedCallApi;
+				JumpApi = savedJumpApi;
+				CallAddrApi = savedCallAddrApi;
+
+				if(isImportThunk){
+					// Extract function name after 'DLL!' prefix
+					char *funcPart = strchr(importName, '!');
+					if(funcPart)
+						funcPart++;
+					else
+						funcPart = importName;
+					wsprintf(Disasm.Assembly,"; ====== %s ======", funcPart);
+
+					// Store in fFunctionInfo so graph and other consumers can find the name
+					FUNCTION_INFORMATION fFunc;
+					ZeroMemory(&fFunc, sizeof(FUNCTION_INFORMATION));
+					fFunc.FunctionStart = (DWORD_PTR)Disasm.Address;
+					fFunc.FunctionEnd = 0;
+					strncpy(fFunc.FunctionName, funcPart, sizeof(fFunc.FunctionName) - 1);
+					fFunc.FunctionName[sizeof(fFunc.FunctionName) - 1] = '\0';
+					AddNewFunction(fFunc);
+				}
+				else{
+					if(disop.CPU == x86_64)
+						wsprintf(Disasm.Assembly,"; ====== Proc_%08X%08X ======",(DWORD)(Disasm.Address>>32),(DWORD)Disasm.Address);
+					else
+						wsprintf(Disasm.Assembly,"; ====== Proc_%08X ======",Disasm.Address);
+				}
+
 				SaveDecoded(Disasm,disop,ListIndex);
 				FlushDecoded(&Disasm);
 				disop.ShowAddr=TRUE;
@@ -4148,6 +4228,32 @@ void WINAPI Disassembler(/*LPVOID lpParam*/) // Thread Worker for Decoding Instr
                     wsprintf(MessageText,"%08X : Invalid Function Pointer: [ %08X ]",Disasm.Address,Address);
                     OutDebug(mainhWnd,MessageText);
                     SelectLastItem(GetDlgItem(mainhWnd,IDC_LIST)); // Selects the Last Item
+                }
+            }
+
+            // Resolve CALL/JMP to user-defined function names
+            // (only if not already resolved as an API import)
+            if ((Disasm.CodeFlow.Call==TRUE || Disasm.CodeFlow.Jump==TRUE) && Address != 0) {
+                // Check if the target address matches a known function
+                for (size_t fi = 0; fi < fFunctionInfo.size(); fi++) {
+                    if ((DWORD_PTR)Address == fFunctionInfo[fi].FunctionStart) {
+                        char* funcName = fFunctionInfo[fi].FunctionName;
+                        if (funcName[0] != '\0') {
+                            // Check if assembly still shows raw address (not already resolved)
+                            char addrCheck[16];
+                            wsprintf(addrCheck, "%08X", (DWORD)Address);
+                            if (strstr(Disasm.Assembly, addrCheck)) {
+                                char temp[256];
+                                if (Disasm.CodeFlow.Call) {
+                                    wsprintf(temp, disop.UpperCased_Disasm ? "CALL %s" : "call %s", funcName);
+                                } else {
+                                    wsprintf(temp, disop.UpperCased_Disasm ? "JMP %s" : "jmp %s", funcName);
+                                }
+                                strcpy_s(Disasm.Assembly, sizeof(Disasm.Assembly), temp);
+                            }
+                        }
+                        break;
+                    }
                 }
             }
 
@@ -4535,7 +4641,7 @@ void LoadApiSignature()
 		GetModuleFileName(NULL,cFilePath,MAX_PATH-1);
 		ExtractFilePath(cFilePath);
 		lstrcat(cFilePath,"sig");
-		wsprintf(DebugMsg,"Signature path: %s",cFilePath);
+		wsprintf(DebugMsg,"Looking for signature path in: %s",cFilePath);
 		OutDebug(mainhWnd,DebugMsg);
 	}
 

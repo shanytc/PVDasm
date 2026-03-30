@@ -144,6 +144,11 @@ char				TempAddress[20];			// used when we want to display the address in the to
 LRESULT ProcessHeaderCustomDraw(LPARAM lParam);
 LRESULT CALLBACK MessageListSubClass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
+// Forward declarations for function rename
+extern char s_szRenameBuf[50];
+BOOL CALLBACK RenameFunctionDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam);
+void RenameFunctionAtIndex(DWORD_PTR bannerIndex, const char* newName);
+
 // ================================================================
 // ======================  CODE MAP BAR  ==========================
 // ================================================================
@@ -1236,25 +1241,29 @@ LRESULT CALLBACK FlowArrowWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 
             // Get visible range from ListView
             HWND hDisasm = GetDlgItem(Main_hWnd, IDC_DISASM);
-            if (hDisasm && !g_FlowArrows.empty()) {
-                int topIndex = (int)SendMessage(hDisasm, LVM_GETTOPINDEX, 0, 0);
+            int topIndex = 0, bottomIndex = 0, itemHeight = 16, yOffset = 0;
+            bool hasVisibleRange = false;
+
+            if (hDisasm && (int)SendMessage(hDisasm, LVM_GETITEMCOUNT, 0, 0) > 0) {
+                topIndex = (int)SendMessage(hDisasm, LVM_GETTOPINDEX, 0, 0);
                 int perPage = (int)SendMessage(hDisasm, LVM_GETCOUNTPERPAGE, 0, 0);
-                int bottomIndex = topIndex + perPage;
+                bottomIndex = topIndex + perPage;
                 int totalItems = (int)SendMessage(hDisasm, LVM_GETITEMCOUNT, 0, 0);
                 if (bottomIndex > totalItems) bottomIndex = totalItems;
 
-                // Get item height from the first visible item
                 RECT rcItem;
                 ListView_GetItemRect(hDisasm, topIndex, &rcItem, LVIR_BOUNDS);
                 MapWindowPoints(hDisasm, Main_hWnd, (LPPOINT)&rcItem, 2);
                 RECT rcPanel;
                 GetWindowRect(hWnd, &rcPanel);
                 MapWindowPoints(HWND_DESKTOP, Main_hWnd, (LPPOINT)&rcPanel, 2);
-                int lvTopInParent = rcItem.top;
-                int panelTopInParent = rcPanel.top;
-                int yOffset = lvTopInParent - panelTopInParent;
+                itemHeight = rcItem.bottom - rcItem.top;
+                if (itemHeight < 1) itemHeight = 16;
+                yOffset = rcItem.top - rcPanel.top;
+                hasVisibleRange = true;
+            }
 
-                int itemHeight = rcItem.bottom - rcItem.top;
+            if (hasVisibleRange && !g_FlowArrows.empty()) {
                 if (itemHeight <= 0) itemHeight = 16;
 
                 // Arrow color palette — cycle distinct colors across lanes
@@ -1372,6 +1381,53 @@ LRESULT CALLBACK FlowArrowWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                         DeleteObject(hHeadPen);
                         DeleteObject(hHeadBrush);
                     }
+                }
+            }
+
+            // Draw EIP indicator arrow when debugging
+            if (hasVisibleRange && g_bDebuggerActive && g_dwCurrentEIP != 0) {
+                extern DWORD_PTR FindIndexByAddress(DWORD_PTR address);
+                DWORD_PTR eipIndex = FindIndexByAddress(g_dwCurrentEIP);
+                if (eipIndex == (DWORD_PTR)-1 && g_dwRebaseDelta != 0)
+                    eipIndex = FindIndexByAddress(g_dwCurrentEIP - g_dwRebaseDelta);
+
+                if (eipIndex != (DWORD_PTR)-1 &&
+                    (int)eipIndex >= topIndex && (int)eipIndex < bottomIndex) {
+                    int eipY = yOffset + ((int)eipIndex - topIndex) * itemHeight + itemHeight / 2;
+
+                    COLORREF eipColor = g_DarkMode ? RGB(0, 200, 255) : RGB(0, 140, 200);
+                    HBRUSH hEipBrush = CreateSolidBrush(eipColor);
+                    HPEN hEipPen = CreatePen(PS_SOLID, 2, eipColor);
+                    HBRUSH hOldBr2 = (HBRUSH)SelectObject(hdcMem, hEipBrush);
+                    HPEN hOldP2 = (HPEN)SelectObject(hdcMem, hEipPen);
+
+                    // Horizontal line from left to right
+                    MoveToEx(hdcMem, 2, eipY, NULL);
+                    LineTo(hdcMem, panelW - 8, eipY);
+
+                    // Filled arrowhead at right
+                    int ah = itemHeight / 3;
+                    if (ah < 3) ah = 3;
+                    POINT tri[3] = {
+                        { panelW - 4, eipY },
+                        { panelW - 4 - ah * 2, eipY - ah },
+                        { panelW - 4 - ah * 2, eipY + ah }
+                    };
+                    Polygon(hdcMem, tri, 3);
+
+                    // "EIP" label
+                    SetTextColor(hdcMem, eipColor);
+                    SetBkMode(hdcMem, TRANSPARENT);
+                    HFONT hSmallFont = CreateFont(11, 0, 0, 0, FW_BOLD, 0, 0, 0, 0, 0, 0, 0, 0, "Arial");
+                    HFONT hOldFont = (HFONT)SelectObject(hdcMem, hSmallFont);
+                    TextOut(hdcMem, 3, eipY - 11, "EIP", 3);
+                    SelectObject(hdcMem, hOldFont);
+                    DeleteObject(hSmallFont);
+
+                    SelectObject(hdcMem, hOldP2);
+                    SelectObject(hdcMem, hOldBr2);
+                    DeleteObject(hEipPen);
+                    DeleteObject(hEipBrush);
                 }
             }
 
@@ -2095,6 +2151,9 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             EnableMenuItem(GetMenu(hWnd),IDC_CODE_MAP,MF_GRAYED);
             EnableMenuItem(GetMenu(hWnd),IDC_CONTROL_FLOW,MF_GRAYED);
 
+            // Initialize debugger menu state
+            DbgInitMenuState(hWnd);
+
 			// Create the ToolBar.
 			hWndTB=CreateToolBar(hWnd,hInst);
 
@@ -2356,13 +2415,39 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 // Set the information to the list view
                 if((DWORD)((LPNMHDR)lParam)->code==(DWORD)LVN_GETDISPINFO){
                     try{
-						if(DisasmDataLines.size()){
+						if(DisasmDataLines.size() && nmdisp->item.iItem >= 0 && nmdisp->item.iItem < (int)DisasmDataLines.size()){
 							// Load Data From Memory and display in ListView
-							strcpy_s(Buffer,StringLen(DisasmDataLines[nmdisp->item.iItem].GetAddress())+1 ,DisasmDataLines[nmdisp->item.iItem].GetAddress());
-							strcpy_s(Buffer1,StringLen(DisasmDataLines[nmdisp->item.iItem].GetCode())+1,DisasmDataLines[nmdisp->item.iItem].GetCode());
-							strcpy_s(Buffer2,StringLen(DisasmDataLines[nmdisp->item.iItem].GetMnemonic())+1,DisasmDataLines[nmdisp->item.iItem].GetMnemonic());
-							strcpy_s(Buffer3,StringLen(DisasmDataLines[nmdisp->item.iItem].GetComments())+1,DisasmDataLines[nmdisp->item.iItem].GetComments());
-							strcpy_s(Buffer4,StringLen(DisasmDataLines[nmdisp->item.iItem].GetReference())+1,DisasmDataLines[nmdisp->item.iItem].GetReference());
+							char* pAddr = DisasmDataLines[nmdisp->item.iItem].GetAddress();
+							char* pCode = DisasmDataLines[nmdisp->item.iItem].GetCode();
+							char* pMnem = DisasmDataLines[nmdisp->item.iItem].GetMnemonic();
+							char* pComm = DisasmDataLines[nmdisp->item.iItem].GetComments();
+							char* pRef  = DisasmDataLines[nmdisp->item.iItem].GetReference();
+							lstrcpyn(Buffer,  pAddr ? pAddr : "", 128);
+							lstrcpyn(Buffer1, pCode ? pCode : "", 128);
+							lstrcpyn(Buffer2, pMnem ? pMnem : "", 128);
+							lstrcpyn(Buffer3, pComm ? pComm : "", 128);
+							// Debugger: resolve memory values for the current EIP line
+							if (g_bDebuggerActive && g_DbgState == DBG_STATE_PAUSED && pMnem && pAddr) {
+								DWORD_PTR itemAddr = StringToDword(pAddr);
+								// Check if this is the EIP line (or rebased EIP)
+								if (itemAddr == g_dwCurrentEIP ||
+									(g_dwRebaseDelta != 0 && itemAddr == (g_dwCurrentEIP - g_dwRebaseDelta))) {
+									extern void DbgResolveMemoryCommentPublic(const char*, char*, size_t);
+									char memVal[128] = {0};
+									DbgResolveMemoryCommentPublic(pMnem, memVal, sizeof(memVal));
+									if (memVal[0]) {
+										if (Buffer3[0]) {
+											// Append to existing comment
+											char combined[256];
+											wsprintf(combined, "%s  [%s]", Buffer3, memVal);
+											lstrcpyn(Buffer3, combined, 128);
+										} else {
+											lstrcpyn(Buffer3, memVal, 128);
+										}
+									}
+								}
+							}
+							lstrcpyn(Buffer4, pRef  ? pRef  : "", 256);
 							nmdisp->item.pszText=Buffer; // item 0
 	                        
 							if( nmdisp->item.mask & LVIF_TEXT){
@@ -2446,18 +2531,46 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                         }
                         break;
 
-                        // Preview Jump/Call destination (double-click shows preview window)
+                        // Preview Jump/Call destination OR rename function
                         case 2:{
                             if(DisassemblerReady==TRUE){
-								GetBranchDestination(GetDlgItem(hWnd,IDC_DISASM));
-                                if(DCodeFlow==TRUE){
-                                    // Show preview window for the branch destination
-                                    if(LoadedPe64)
-                                        wsprintf(TempAddress, "%08X%08X", (DWORD)((DWORD_PTR)iSelectItem>>32), (DWORD)iSelectItem);
-                                    else
-                                        wsprintf(TempAddress, "%08X", iSelectItem);
-                                    if(SearchItemText(hDisasm, TempAddress) != -1){
-                                        DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_TOOLTIP), hWnd, (DLGPROC)ToolTipDialog);
+                                // Check if this is a function banner line
+                                DWORD_PTR clickedItem = SendMessage(hDisasm, LVM_GETNEXTITEM, (WPARAM)-1, LVNI_FOCUSED);
+                                bool isFuncBanner = false;
+                                if (clickedItem != (DWORD_PTR)-1 && clickedItem < DisasmDataLines.size()) {
+                                    char* mnem = DisasmDataLines[clickedItem].GetMnemonic();
+                                    if (mnem && strncmp(mnem, "; ======", 8) == 0) {
+                                        isFuncBanner = true;
+                                        // Extract current name from "; ====== NAME ======"
+                                        char* nameStart = mnem + 9; // skip "; ====== "
+                                        char* nameEnd = strstr(nameStart, " ======");
+                                        if (!nameEnd) nameEnd = strstr(nameStart, " Proc");
+                                        s_szRenameBuf[0] = 0;
+                                        if (nameEnd) {
+                                            int nameLen = (int)(nameEnd - nameStart);
+                                            if (nameLen > 49) nameLen = 49;
+                                            lstrcpyn(s_szRenameBuf, nameStart, nameLen + 1);
+                                        }
+                                        // Show rename dialog
+                                        if (DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_RENAME_FUNCTION),
+                                                      hWnd, (DLGPROC)RenameFunctionDlgProc) == IDOK) {
+                                            if (s_szRenameBuf[0])
+                                                RenameFunctionAtIndex(clickedItem, s_szRenameBuf);
+                                        }
+                                    }
+                                }
+
+                                // If not a function banner, do the normal branch preview
+                                if (!isFuncBanner) {
+                                    GetBranchDestination(GetDlgItem(hWnd,IDC_DISASM));
+                                    if(DCodeFlow==TRUE){
+                                        if(LoadedPe64)
+                                            wsprintf(TempAddress, "%08X%08X", (DWORD)((DWORD_PTR)iSelectItem>>32), (DWORD)iSelectItem);
+                                        else
+                                            wsprintf(TempAddress, "%08X", iSelectItem);
+                                        if(SearchItemText(hDisasm, TempAddress) != -1){
+                                            DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_TOOLTIP), hWnd, (DLGPROC)ToolTipDialog);
+                                        }
                                     }
                                 }
                             }
@@ -3153,21 +3266,40 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 }
                 break;
 
-                // Copy selected history item to clipboard
+                // Copy selected history items to clipboard
                 case IDM_HISTORY_COPY:{
                     HWND hHistList = GetDlgItem(hWnd, IDC_LIST);
-                    int iSel = (int)SendMessage(hHistList, LVM_GETNEXTITEM, (WPARAM)-1, LVNI_SELECTED);
-                    if(iSel != -1){
-                        char szBuf[1024] = {0};
-                        LV_ITEM lvi;
-                        ZeroMemory(&lvi, sizeof(lvi));
-                        lvi.iItem = iSel;
-                        lvi.iSubItem = 0;
-                        lvi.mask = LVIF_TEXT;
-                        lvi.pszText = szBuf;
-                        lvi.cchTextMax = sizeof(szBuf);
-                        SendMessage(hHistList, LVM_GETITEMTEXT, (WPARAM)iSel, (LPARAM)&lvi);
-                        CopyToClipboard(szBuf, hWnd);
+                    int iSel = -1;
+                    int totalLen = 0;
+
+                    // First pass: calculate total length
+                    while ((iSel = ListView_GetNextItem(hHistList, iSel, LVNI_SELECTED)) != -1) {
+                        char text[1024];
+                        ListView_GetItemText(hHistList, iSel, 0, text, 1024);
+                        totalLen += lstrlen(text) + 2;
+                    }
+
+                    if (totalLen > 0) {
+                        HGLOBAL hMem = GlobalAlloc(GMEM_DDESHARE, totalLen + 1);
+                        char* pMem = (char*)GlobalLock(hMem);
+                        pMem[0] = '\0';
+
+                        iSel = -1;
+                        while ((iSel = ListView_GetNextItem(hHistList, iSel, LVNI_SELECTED)) != -1) {
+                            char text[1024];
+                            ListView_GetItemText(hHistList, iSel, 0, text, 1024);
+                            lstrcat(pMem, text);
+                            lstrcat(pMem, "\r\n");
+                        }
+                        GlobalUnlock(hMem);
+
+                        if (OpenClipboard(hWnd)) {
+                            EmptyClipboard();
+                            SetClipboardData(CF_TEXT, hMem);
+                            CloseClipboard();
+                        } else {
+                            GlobalFree(hMem);
+                        }
                     }
                 }
                 break;
@@ -3208,6 +3340,16 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                             CloseHandle(hFile);
                         }
                     }
+                }
+                break;
+
+                case IDM_HISTORY_SELECTALL:{
+                    ListView_SetItemState(GetDlgItem(hWnd, IDC_LIST), -1, LVIS_SELECTED, LVIS_SELECTED);
+                }
+                break;
+
+                case IDM_HISTORY_CLEAR:{
+                    SendMessage(GetDlgItem(hWnd, IDC_LIST), LVM_DELETEALLITEMS, 0, 0);
                 }
                 break;
 
@@ -3269,9 +3411,164 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				case IDC_PVSCRIPT_ENGINE:
 				case ID_SCRIPT:{
 					DialogBox(GetModuleHandle(NULL),MAKEINTRESOURCE(IDD_SCRIPT_EDITOR), hWnd, (DLGPROC)ScriptEditorDlgProc);
-					
+
 				}
 				break;
+
+                // ========== DEBUGGER COMMANDS ==========
+
+                case IDM_DBG_START:{
+                    if (g_DbgState == DBG_STATE_IDLE) {
+                        // Always show options dialog (pre-fill with loaded file if available)
+                        if (szFileName[0] != '\0' && g_DbgProcess.szExePath[0] == '\0') {
+                            lstrcpyn(g_DbgProcess.szExePath, szFileName, MAX_PATH);
+                        }
+                        if (DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DBG_PROCESS_OPTIONS), hWnd, (DLGPROC)DbgOptionsDlgProc) != IDOK) {
+                            break;
+                        }
+                        if (g_DbgProcess.szExePath[0] != '\0') {
+                            DbgStartProcess(hWnd, g_DbgProcess.szExePath, g_DbgProcess.szCmdLine, g_DbgProcess.szWorkDir);
+                        }
+                    }
+                    DbgUpdateMenuState(hWnd);
+                }
+                break;
+
+                case IDM_DBG_RESUME:{
+                    if (g_DbgState == DBG_STATE_PAUSED) {
+                        DbgResumeProcess();
+                    }
+                    DbgUpdateMenuState(hWnd);
+                }
+                break;
+
+                case IDM_DBG_ATTACH:{
+                    // Reuse the existing Process Task Viewer (has Attach in right-click menu)
+                    DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_PROCESS), hWnd, (DLGPROC)ProcessDlgProc);
+                    DbgUpdateMenuState(hWnd);
+                }
+                break;
+
+                case IDM_DBG_OPTIONS:{
+                    DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DBG_PROCESS_OPTIONS), hWnd, (DLGPROC)DbgOptionsDlgProc);
+                }
+                break;
+
+                case IDM_DBG_PAUSE:{
+                    if (g_DbgState == DBG_STATE_RUNNING) {
+                        DbgPauseProcess();
+                    }
+                }
+                break;
+
+                case IDM_DBG_TERMINATE:{
+                    if (g_bDebuggerActive) {
+                        DbgTerminateProcess();
+                    }
+                    DbgUpdateMenuState(hWnd);
+                }
+                break;
+
+                case IDM_DBG_DETACH:{
+                    if (g_bDebuggerActive) {
+                        DbgDetachFromProcess();
+                    }
+                    DbgUpdateMenuState(hWnd);
+                }
+                break;
+
+                case IDM_DBG_REFRESH_MEM:{
+                    if (g_DbgState == DBG_STATE_PAUSED) {
+                        DbgRefreshMemory();
+                    }
+                }
+                break;
+
+                case IDM_DBG_SNAPSHOT:{
+                    if (g_bDebuggerActive) {
+                        DbgTakeMemorySnapshot((DWORD_PTR)g_DbgProcess.lpBaseOfImage, 0x10000);
+                        OutDebug(hWnd, "Memory snapshot taken.");
+                    }
+                }
+                break;
+
+                case IDM_DBG_STEP_INTO:{
+                    if (g_DbgState == DBG_STATE_PAUSED) {
+                        DbgStepInto();
+                    }
+                }
+                break;
+
+                case IDM_DBG_STEP_OVER:{
+                    if (g_DbgState == DBG_STATE_PAUSED) {
+                        DbgStepOver();
+                    }
+                }
+                break;
+
+                case IDM_DBG_RUN_UNTIL_RET:{
+                    if (g_DbgState == DBG_STATE_PAUSED) {
+                        DbgRunUntilReturn();
+                    }
+                }
+                break;
+
+                case IDM_DBG_RUN_TO_CURSOR:{
+                    if (g_DbgState == DBG_STATE_PAUSED) {
+                        DWORD_PTR sel = SendMessage(GetDlgItem(hWnd, IDC_DISASM), LVM_GETNEXTITEM, (WPARAM)-1, LVNI_SELECTED);
+                        if (sel != (DWORD_PTR)-1 && sel < DisasmDataLines.size()) {
+                            DWORD_PTR addr = StringToDword(DisasmDataLines[sel].GetAddress());
+                            DbgRunToCursor(addr + g_dwRebaseDelta);
+                        }
+                    }
+                }
+                break;
+
+                case IDM_DBG_TOGGLE_BREAKPOINT:{
+                    if (g_bDebuggerActive) {
+                        DWORD_PTR sel = SendMessage(GetDlgItem(hWnd, IDC_DISASM), LVM_GETNEXTITEM, (WPARAM)-1, LVNI_SELECTED);
+                        if (sel != (DWORD_PTR)-1 && sel < DisasmDataLines.size()) {
+                            DWORD_PTR addr = StringToDword(DisasmDataLines[sel].GetAddress());
+                            DbgToggleBreakpoint(addr + g_dwRebaseDelta);
+                            DbgUpdateBreakpointsDialog();
+                            // Force full repaint to update breakpoint colors
+                            InvalidateRect(GetDlgItem(hWnd, IDC_DISASM), NULL, TRUE);
+                            UpdateWindow(GetDlgItem(hWnd, IDC_DISASM));
+                        }
+                    }
+                }
+                break;
+
+                case IDM_DBG_VIEW_REGISTERS:{
+                    if (!g_hRegisterDlg) {
+                        g_hRegisterDlg = CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_REGISTERS), hWnd, (DLGPROC)DbgRegisterDlgProc);
+                        ShowWindow(g_hRegisterDlg, SW_SHOW);
+                    } else {
+                        SetForegroundWindow(g_hRegisterDlg);
+                    }
+                }
+                break;
+
+                case IDM_DBG_VIEW_THREADS:{
+                    if (!g_hThreadsDlg) {
+                        g_hThreadsDlg = CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DBG_THREADS), hWnd, (DLGPROC)DbgThreadsDlgProc);
+                        ShowWindow(g_hThreadsDlg, SW_SHOW);
+                    } else {
+                        SetForegroundWindow(g_hThreadsDlg);
+                    }
+                }
+                break;
+
+                case IDM_DBG_VIEW_BREAKPOINTS:{
+                    if (!g_hBreakpointsDlg) {
+                        g_hBreakpointsDlg = CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DBG_BREAKPOINTS), hWnd, (DLGPROC)DbgBreakpointsDlgProc);
+                        ShowWindow(g_hBreakpointsDlg, SW_SHOW);
+                    } else {
+                        DbgUpdateBreakpointsDialog();
+                        SetForegroundWindow(g_hBreakpointsDlg);
+                    }
+                }
+                break;
 			}
 			break;
 	
@@ -3288,6 +3585,111 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		SetFocus(GetDlgItem(hWnd, IDC_DISASM));
 		return 0;
 	}
+
+    // ========== DEBUGGER EVENT MESSAGES ==========
+
+    case WM_DBG_BREAKPOINT_HIT:
+    case WM_DBG_STEP_COMPLETE: {
+        g_dwCurrentEIP = (DWORD_PTR)lParam;
+        DbgReadRegisters();
+        // Switch to disassembly tab and navigate to EIP
+        SwitchTab(hWnd, 0);
+        DbgDisassembleAtEIP();
+        SetFocus(GetDlgItem(hWnd, IDC_DISASM));
+        // Auto-open registers dialog on first break
+        if (!g_hRegisterDlg) {
+            g_hRegisterDlg = CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_REGISTERS), hWnd, (DLGPROC)DbgRegisterDlgProc);
+            ShowWindow(g_hRegisterDlg, SW_SHOW);
+        }
+        DbgUpdateRegisterDialog();
+        DbgUpdateThreadsDialog();
+        DbgUpdateDisasmTabName();
+        // Repaint flow arrows panel to update EIP indicator
+        {
+            HWND hArrows = GetDlgItem(hWnd, IDC_FLOW_ARROWS);
+            if (hArrows && IsWindowVisible(hArrows))
+                InvalidateRect(hArrows, NULL, FALSE);
+        }
+        DbgUpdateMenuState(hWnd);
+        {
+            const char* modName = DbgFindModuleForAddress(g_dwCurrentEIP);
+            char dbgMsg[128];
+            if (modName)
+                wsprintf(dbgMsg, "Debugger paused at %08X (%s)", (DWORD)g_dwCurrentEIP, modName);
+            else
+                wsprintf(dbgMsg, "Debugger paused at %08X", (DWORD)g_dwCurrentEIP);
+            SetDlgItemText(hWnd, IDC_MESSAGE1, dbgMsg);
+            OutDebug(hWnd, dbgMsg);
+        }
+        return 0;
+    }
+
+    case WM_DBG_EXCEPTION: {
+        char dbgMsg[128];
+        wsprintf(dbgMsg, "Exception %08X at %08X", (DWORD)wParam, (DWORD)lParam);
+        OutDebug(hWnd, dbgMsg);
+        DbgUpdateMenuState(hWnd);
+        return 0;
+    }
+
+    case WM_DBG_PROCESS_EXIT: {
+        char dbgMsg[64];
+        wsprintf(dbgMsg, "Process terminated. Exit code: %d", (int)wParam);
+        OutDebug(hWnd, dbgMsg);
+        SetDlgItemText(hWnd, IDC_MESSAGE1, "Debugger: Process exited");
+        g_bDebuggerActive = false;
+        g_DbgState = DBG_STATE_IDLE;
+        // Close debugger dialogs
+        if (g_hRegisterDlg) { DestroyWindow(g_hRegisterDlg); g_hRegisterDlg = NULL; }
+        if (g_hThreadsDlg) { DestroyWindow(g_hThreadsDlg); g_hThreadsDlg = NULL; }
+        if (g_hBreakpointsDlg) { DestroyWindow(g_hBreakpointsDlg); g_hBreakpointsDlg = NULL; }
+        // Clean up disassembly view (same as File > Close)
+        CloseLoadedFile(hWnd);
+        DbgUpdateMenuState(hWnd);
+        return 0;
+    }
+
+    case WM_DBG_DLL_LOAD: {
+        char* dllName = (char*)lParam;
+        char dbgMsg[MAX_PATH + 32];
+        wsprintf(dbgMsg, "Module loaded: %s", dllName ? dllName : "(unknown)");
+        OutDebug(hWnd, dbgMsg);
+        if (dllName) free(dllName);
+        return 0;
+    }
+
+    case WM_DBG_DLL_UNLOAD: {
+        OutDebug(hWnd, "Module unloaded");
+        return 0;
+    }
+
+    case WM_DBG_THREAD_CREATE: {
+        char dbgMsg[64];
+        wsprintf(dbgMsg, "Thread created: %d", (DWORD)wParam);
+        OutDebug(hWnd, dbgMsg);
+        return 0;
+    }
+
+    case WM_DBG_THREAD_EXIT: {
+        char dbgMsg[64];
+        wsprintf(dbgMsg, "Thread exited: %d", (DWORD)wParam);
+        OutDebug(hWnd, dbgMsg);
+        return 0;
+    }
+
+    case WM_DBG_OUTPUT_STRING: {
+        char* str = (char*)lParam;
+        if (str) {
+            OutDebug(hWnd, str);
+            free(str);
+        }
+        return 0;
+    }
+
+    case WM_DBG_STATE_CHANGED: {
+        DbgUpdateMenuState(hWnd);
+        return 0;
+    }
 
 	case WM_DROPFILES: {
 		HDROP hDrop = (HDROP)wParam;
@@ -3992,6 +4394,124 @@ BOOL CALLBACK GotoAddrressDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM
 //======================================================================================
 //===========================  SetCommentDlgProc =======================================
 //======================================================================================
+// ================================================================
+// ==================  FUNCTION RENAME  ===========================
+// ================================================================
+
+char s_szRenameBuf[50] = {0};  // Shared buffer for rename dialog
+
+BOOL CALLBACK RenameFunctionDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
+{
+    switch (Message) {
+    case WM_INITDIALOG:
+        SendDlgItemMessage(hWnd, IDC_RENAME_INPUT, EM_SETLIMITTEXT, 49, 0);
+        SetDlgItemText(hWnd, IDC_RENAME_INPUT, s_szRenameBuf);
+        SetFocus(GetDlgItem(hWnd, IDC_RENAME_INPUT));
+        // Select all text
+        SendDlgItemMessage(hWnd, IDC_RENAME_INPUT, EM_SETSEL, 0, -1);
+        return FALSE;
+
+    case WM_COMMAND:
+        switch (LOWORD(wParam)) {
+        case IDOK:
+            GetDlgItemText(hWnd, IDC_RENAME_INPUT, s_szRenameBuf, 50);
+            EndDialog(hWnd, IDOK);
+            return TRUE;
+        case IDCANCEL:
+            EndDialog(hWnd, IDCANCEL);
+            return TRUE;
+        }
+        break;
+    }
+    return FALSE;
+}
+
+// Rename a function given its disassembly line index (the banner line)
+void RenameFunctionAtIndex(DWORD_PTR bannerIndex, const char* newName)
+{
+    if (bannerIndex >= DisasmDataLines.size() || !newName || !newName[0])
+        return;
+
+    // The banner line is at bannerIndex, the first instruction is at bannerIndex+1
+    // Get the address of the first instruction to match against fFunctionInfo
+    DWORD_PTR funcAddr = 0;
+    if (bannerIndex + 1 < DisasmDataLines.size()) {
+        char* addrStr = DisasmDataLines[bannerIndex + 1].GetAddress();
+        if (addrStr) funcAddr = StringToDword(addrStr);
+    }
+
+    // Find and update the matching fFunctionInfo entry
+    bool foundEntry = false;
+    if (funcAddr != 0) {
+        for (size_t i = 0; i < fFunctionInfo.size(); i++) {
+            if ((DWORD)fFunctionInfo[i].FunctionStart == funcAddr) {
+                lstrcpyn(fFunctionInfo[i].FunctionName, newName, 50);
+                foundEntry = true;
+                break;
+            }
+        }
+        // If no fFunctionInfo entry exists (function from CallTargets), create one
+        if (!foundEntry) {
+            FUNCTION_INFORMATION fFunc;
+            memset(&fFunc, 0, sizeof(fFunc));
+            fFunc.FunctionStart = funcAddr;
+            fFunc.FunctionEnd = 0;
+            lstrcpyn(fFunc.FunctionName, newName, 50);
+            fFunctionInfo.insert(fFunctionInfo.end(), fFunc);
+        }
+    }
+
+    // Update the banner line
+    char banner[128];
+    wsprintf(banner, "; ====== %s ======", newName);
+    DisasmDataLines[bannerIndex].SetMnemonic(banner);
+
+    // Update all CALL/JMP instructions that reference this function address
+    if (funcAddr != 0) {
+        char addrHex[16];
+        wsprintf(addrHex, "%08X", (DWORD)funcAddr);
+        // Also handle 64-bit format
+        char addrHex64[20] = {0};
+        if (LoadedPe64)
+            wsprintf(addrHex64, "%08X%08X", (DWORD)(funcAddr >> 32), (DWORD)funcAddr);
+
+        for (DWORD_PTR i = 0; i < DisasmDataLines.size(); i++) {
+            char* mnem = DisasmDataLines[i].GetMnemonic();
+            if (!mnem) continue;
+
+            // Check for "call XXXXXXXX" or "jmp XXXXXXXX"
+            bool isCall = (_strnicmp(mnem, "call ", 5) == 0);
+            bool isJmp = (_strnicmp(mnem, "jmp ", 4) == 0);
+            if (!isCall && !isJmp) continue;
+
+            char* operand = mnem + (isCall ? 5 : 4);
+            // Skip whitespace
+            while (*operand == ' ') operand++;
+
+            if (lstrcmp(operand, addrHex) == 0 ||
+                (addrHex64[0] && lstrcmp(operand, addrHex64) == 0)) {
+                // Replace with "call funcName" or "jmp funcName"
+                char newMnem[256];
+                const char* prefix;
+                if (isCall)
+                    prefix = disop.UpperCased_Disasm ? "CALL" : "call";
+                else
+                    prefix = disop.UpperCased_Disasm ? "JMP" : "jmp";
+                wsprintf(newMnem, "%s %s", prefix, newName);
+                DisasmDataLines[i].SetMnemonic(newMnem);
+            }
+        }
+    }
+
+    // Refresh disassembly view
+    HWND hDisasm = GetDlgItem(Main_hWnd, IDC_DISASM);
+    if (hDisasm)
+        RedrawWindow(hDisasm, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
+
+    // Refresh embedded CFG graph labels (updates FunctionLabel in existing blocks)
+    RefreshCFGLabels();
+}
+
 BOOL CALLBACK SetCommentDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
 {
     switch(Message)
@@ -5787,18 +6307,81 @@ LRESULT ProcessCustomDraw (LPARAM lParam)
 		break;
 
         case CDDS_ITEMPREPAINT:{ //Before an item is drawn
+            bool isSelected = (lplvcd->nmcd.uItemState & CDIS_SELECTED) != 0;
+
             // In dark mode, handle selection colors to avoid default blue highlight
-            if (g_DarkMode && (lplvcd->nmcd.uItemState & CDIS_SELECTED)) {
-                lplvcd->clrText = RGB(255, 255, 255);  // White text for selected
-                lplvcd->clrTextBk = RGB(60, 60, 60);   // Dark gray background for selected
+            if (g_DarkMode && isSelected) {
+                lplvcd->clrText = RGB(255, 255, 255);
+                lplvcd->clrTextBk = RGB(60, 60, 60);
             }
+
+            if (g_bDebuggerActive && lplvcd->nmcd.dwItemSpec < DisasmDataLines.size()) {
+                char* pAddr = DisasmDataLines[lplvcd->nmcd.dwItemSpec].GetAddress();
+                if (pAddr) {
+                    DWORD_PTR itemAddr = StringToDword(pAddr);
+
+                    bool isEIP = g_dwCurrentEIP != 0 &&
+                        (itemAddr == g_dwCurrentEIP || itemAddr == (g_dwCurrentEIP - g_dwRebaseDelta));
+
+                    bool isBP = false;
+                    for (size_t bpi = 0; bpi < g_DbgBreakpoints.size(); bpi++) {
+                        DWORD_PTR ba = g_DbgBreakpoints[bpi].dwAddress;
+                        if (ba == itemAddr || ba == (itemAddr + g_dwRebaseDelta) ||
+                            (g_dwRebaseDelta != 0 && ba == (itemAddr - g_dwRebaseDelta))) {
+                            isBP = true;
+                            break;
+                        }
+                    }
+
+                    if (isEIP) {
+                        // EIP (with or without breakpoint): dark red
+                        lplvcd->clrTextBk = g_DarkMode ? RGB(180, 0, 0) : RGB(200, 50, 50);
+                        lplvcd->clrText = RGB(255, 255, 255);
+                        lplvcd->nmcd.uItemState &= ~CDIS_SELECTED;
+                    } else if (isBP) {
+                        // Breakpoint, EIP elsewhere: light red
+                        lplvcd->clrTextBk = g_DarkMode ? RGB(100, 0, 0) : RGB(255, 180, 180);
+                        lplvcd->clrText = g_DarkMode ? RGB(255, 255, 255) : RGB(0, 0, 0);
+                        lplvcd->nmcd.uItemState &= ~CDIS_SELECTED;
+                    }
+                    // else: normal line, don't touch colors (blue selection works normally)
+                }
+            }
+
             return CDRF_NOTIFYSUBITEMDRAW;
         }
         break;
         
         // Paint the List View's Items
         case CDDS_SUBITEM | CDDS_ITEMPREPAINT:{ //Before a subitem is drawn
-            switch(lplvcd->iSubItem){   
+            // Debugger: if this line is EIP or breakpoint, keep red colors from CDDS_ITEMPREPAINT
+            if (g_bDebuggerActive && lplvcd->nmcd.dwItemSpec < DisasmDataLines.size()) {
+                char* pAddr2 = DisasmDataLines[lplvcd->nmcd.dwItemSpec].GetAddress();
+                bool skipTheme = false;
+                if (pAddr2) {
+                    DWORD_PTR itemAddr = StringToDword(pAddr2);
+
+                    bool isEIP = (g_dwCurrentEIP != 0 &&
+                             (itemAddr == g_dwCurrentEIP || itemAddr == (g_dwCurrentEIP - g_dwRebaseDelta)));
+
+                    bool isBP = false;
+                    for (size_t bpi = 0; bpi < g_DbgBreakpoints.size(); bpi++) {
+                        DWORD_PTR ba = g_DbgBreakpoints[bpi].dwAddress;
+                        if (ba == itemAddr || ba == (itemAddr + g_dwRebaseDelta) ||
+                            (g_dwRebaseDelta != 0 && ba == (itemAddr - g_dwRebaseDelta))) {
+                            isBP = true;
+                            break;
+                        }
+                    }
+                    skipTheme = (isEIP || isBP);
+                }
+
+                if (skipTheme) {
+                    return CDRF_NEWFONT;
+                }
+            }
+
+            switch(lplvcd->iSubItem){
 				// Color the Address Field
                 case 0:{
                     lplvcd->clrText   = DisasmColors.GetAddressTextColor();
@@ -5808,7 +6391,8 @@ LRESULT ProcessCustomDraw (LPARAM lParam)
 					else{
                        lplvcd->clrTextBk=(COLORREF)RGB(255,255,225);
 					}
-					
+
+
                     return CDRF_NEWFONT;
                 }
                 break;
@@ -6673,6 +7257,66 @@ LRESULT CALLBACK ListViewSubClass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 LRESULT CALLBACK MessageListSubClass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch(uMsg) {
+        case WM_RBUTTONUP: {
+            // Right-click context menu: Copy selected items
+            HMENU hMenu = CreatePopupMenu();
+            AppendMenu(hMenu, MF_STRING, 1, "Copy to Clipboard");
+            AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
+            AppendMenu(hMenu, MF_STRING, 2, "Select All");
+            AppendMenu(hMenu, MF_STRING, 3, "Clear");
+
+            POINT pt;
+            GetCursorPos(&pt);
+            int cmd = TrackPopupMenu(hMenu, TPM_RETURNCMD | TPM_LEFTALIGN, pt.x, pt.y, 0, hWnd, NULL);
+            DestroyMenu(hMenu);
+
+            if (cmd == 1) {
+                // Copy selected items to clipboard
+                int sel = -1;
+                int totalLen = 0;
+
+                // First pass: calculate total length
+                while ((sel = ListView_GetNextItem(hWnd, sel, LVNI_SELECTED)) != -1) {
+                    char text[512];
+                    ListView_GetItemText(hWnd, sel, 0, text, 512);
+                    totalLen += lstrlen(text) + 2; // +2 for \r\n
+                }
+
+                if (totalLen > 0) {
+                    HGLOBAL hMem = GlobalAlloc(GMEM_DDESHARE, totalLen + 1);
+                    char* pMem = (char*)GlobalLock(hMem);
+                    pMem[0] = '\0';
+
+                    sel = -1;
+                    while ((sel = ListView_GetNextItem(hWnd, sel, LVNI_SELECTED)) != -1) {
+                        char text[512];
+                        ListView_GetItemText(hWnd, sel, 0, text, 512);
+                        lstrcat(pMem, text);
+                        lstrcat(pMem, "\r\n");
+                    }
+                    GlobalUnlock(hMem);
+
+                    if (OpenClipboard(hWnd)) {
+                        EmptyClipboard();
+                        SetClipboardData(CF_TEXT, hMem);
+                        CloseClipboard();
+                    } else {
+                        GlobalFree(hMem);
+                    }
+                }
+            }
+            else if (cmd == 2) {
+                // Select All
+                ListView_SetItemState(hWnd, -1, LVIS_SELECTED, LVIS_SELECTED);
+            }
+            else if (cmd == 3) {
+                // Clear
+                ListView_DeleteAllItems(hWnd);
+            }
+
+            return 0;
+        }
+
         case WM_NOTIFY: {
             LPNMHDR pnmh = (LPNMHDR)lParam;
             if (pnmh->code == NM_CUSTOMDRAW && g_DarkMode) {

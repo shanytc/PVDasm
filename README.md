@@ -54,6 +54,8 @@ ProView is an educational project aimed at building a custom disassembler and de
 | **Control Flow Arrows** | IDA-style flow arrows panel showing jump connections with color/dash-coded lanes, draggable splitter to resize, and scaled rendering. Toggle via Views menu. |
 | **Drag-and-Drop** | Drop files onto the main window to open and disassemble them. |
 | **Color Schemes** | SoftICE, IDA, OllyDbg, W32Asm, and custom themes. |
+| **Debugger** | Integrated Win32 debugger with step over, step into, breakpoints, register view, threads dialog, memory preview, and attach to process. Supports WOW64/x64 targets. |
+| **Function Rename** | Rename functions by double-clicking the procedure banner or via the Rename button. Resolved names propagate to CALL/JMP references and graph labels. Import thunks are auto-named from the IAT. |
 | **Save/Load Projects** | Persist analysis state including functions, data, and comments. |
 | **Map File Support** | Import/export MAP files (IDA-compatible.) |
 | **x86-64 Disassembly** | Full AMD64 long mode support for PE+ (64-bit) executables. |
@@ -68,6 +70,12 @@ ProView is an educational project aimed at building a custom disassembler and de
 ## Changelog
 
 ### 2026
+
+#### March 30, 2026
+- Added **Integrated Win32 Debugger** with step over, step into, resume, detach, breakpoints management, register view, threads dialog, EIP highlighting, memory preview in comments, and LOOP instruction stepping. Supports WOW64/x64 targets and attach to running processes.
+- Added **Function Rename** — double-click a procedure banner or use the Rename button to rename functions. Renamed names propagate to all CALL/JMP references and graph block labels.
+- Added **Import thunk auto-naming** — `Proc_XXXXXXXX` banners for import thunks (JMP [IAT]) are automatically resolved to their API names (e.g., `SendMessageA`), visible in both the disassembly and graph views.
+- Added **Align Comments** toggle in graph context menu — aligns all `;` comments within each block to a uniform column for cleaner readability.
 
 #### March 21, 2026
 - Added **Drag-and-Drop file support** — drop an EXE/DLL onto the main window to open it for disassembly with a confirmation prompt

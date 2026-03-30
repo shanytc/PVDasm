@@ -2467,7 +2467,7 @@ void CopyDisasmToClipboard()
 
 			clipbuffer = GlobalAlloc(GMEM_DDESHARE, StringLen(Buffer)+1);
 			NewBuff = (char*)GlobalLock(clipbuffer);
-			strcpy_s(NewBuff, StringLen(LPCSTR(Buffer))+1,LPCSTR(Buffer));
+			lstrcpy(NewBuff, Buffer);
 			GlobalUnlock(clipbuffer);
 			SetClipboardData(CF_TEXT,clipbuffer);
 
@@ -2479,12 +2479,7 @@ void CopyDisasmToClipboard()
 
 			// Close the Clipboard
 			CloseClipboard();
-
-			if(clipbuffer){
-				GlobalFree(clipbuffer);
-				clipbuffer=NULL;
-				NewBuff=NULL;
-			}
+			// Do NOT GlobalFree(clipbuffer) - the clipboard owns it after SetClipboardData
 
 			if(Buffer){
 				delete Buffer;
@@ -2582,41 +2577,50 @@ char* CopyFromDisasm()
             break; // exit loop when we finished processing the lines
 		}
 
-		iSize = StringLen(DisasmDataLines[iSelect].GetAddress());
+		char* pAddr = DisasmDataLines[iSelect].GetAddress();
+		char* pCode = DisasmDataLines[iSelect].GetCode();
+		char* pMnem = DisasmDataLines[iSelect].GetMnemonic();
+		char* pComm = DisasmDataLines[iSelect].GetComments();
+		if (!pAddr) pAddr = (char*)"";
+		if (!pCode) pCode = (char*)"";
+		if (!pMnem) pMnem = (char*)"";
+		if (!pComm) pComm = (char*)"";
+
+		iSize = StringLen(pAddr);
 		Address = new char[iSize+1+(TAB_SIZE)];
 		ZeroMemory(Address,iSize+1+(TAB_SIZE));
-		wsprintf(Address,"%s\t",DisasmDataLines[iSelect].GetAddress());
+		wsprintf(Address,"%s\t",pAddr);
 
-		iSize = StringLen(DisasmDataLines[iSelect].GetCode());
+		iSize = StringLen(pCode);
 		switch(iSize){
 			case 1: case 2: case 12: Padding=2; break;
 			case 4: case 11:		 Padding=3; break;
 			case 6:					 Padding=1; break;
 			default:				 Padding=4; break;
 		}
-		
+
 		Opcode = new char[iSize+1+Padding];
 		ZeroMemory(Opcode,iSize+1+Padding);
 
 		switch(iSize){
-			case 1:	wsprintf(Opcode,"%s\t\t",	DisasmDataLines[iSelect].GetCode()); break;
-			case 2:	wsprintf(Opcode,"%s\t\t",	DisasmDataLines[iSelect].GetCode()); break;
-			case 4:	wsprintf(Opcode,"%s\t  ",	DisasmDataLines[iSelect].GetCode()); break;
-			case 6:	wsprintf(Opcode,"%s\t",		DisasmDataLines[iSelect].GetCode()); break;
-			case 11:wsprintf(Opcode,"%s   ",	DisasmDataLines[iSelect].GetCode()); break;
-			case 12:wsprintf(Opcode,"%s  ",		DisasmDataLines[iSelect].GetCode()); break;
-			default:wsprintf(Opcode,"%s    ",	DisasmDataLines[iSelect].GetCode()); break;
+			case 1:	wsprintf(Opcode,"%s\t\t",	pCode); break;
+			case 2:	wsprintf(Opcode,"%s\t\t",	pCode); break;
+			case 4:	wsprintf(Opcode,"%s\t  ",	pCode); break;
+			case 6:	wsprintf(Opcode,"%s\t",		pCode); break;
+			case 11:wsprintf(Opcode,"%s   ",	pCode); break;
+			case 12:wsprintf(Opcode,"%s  ",		pCode); break;
+			default:wsprintf(Opcode,"%s    ",	pCode); break;
         }
-		
-		iSize = StringLen(DisasmDataLines[iSelect].GetMnemonic());
+
+		iSize = StringLen(pMnem);
 		Assembly = new char[iSize+1+(TAB_SIZE)];
 		ZeroMemory(Assembly,iSize+1+(TAB_SIZE));
-		wsprintf(Assembly,"%s\t",DisasmDataLines[iSelect].GetMnemonic());
-		
-		iSize = StringLen(DisasmDataLines[iSelect].GetComments());
+		wsprintf(Assembly,"%s\t",pMnem);
+
+		iSize = StringLen(pComm);
 		Comment = new char[iSize+1+(TAB_SIZE)];
 		ZeroMemory(Comment,iSize+1+(TAB_SIZE));
-		wsprintf(Comment,"%s\t",DisasmDataLines[iSelect].GetComments());
+		wsprintf(Comment,"%s\t",pComm);
 
 		iSize = StringLen(Address) + StringLen(Opcode) + StringLen(Assembly) + StringLen(Comment);
 		TempBuffer = new char[iSize+(TAB_SIZE*2)+1];
@@ -2636,7 +2640,7 @@ char* CopyFromDisasm()
 
 		CopyBuff = new char[TotalSize+1];
 		ZeroMemory(CopyBuff,TotalSize+1);
-		strcpy_s(CopyBuff,StringLen(Buffer)+1,Buffer);
+		lstrcpyn(CopyBuff, Buffer, TotalSize+1);
 		if(Buffer){
 			delete Buffer;
 			Buffer=NULL;
@@ -2645,7 +2649,7 @@ char* CopyFromDisasm()
 		TotalSize+=StringLen(TempBuffer)+1;
 		Buffer = new char[TotalSize];
 		ZeroMemory(Buffer,TotalSize);
-		strcpy_s(Buffer,StringLen(CopyBuff)+1,CopyBuff);
+		lstrcpyn(Buffer, CopyBuff, TotalSize);
 		lstrcat(Buffer,TempBuffer);
 
 		if(CopyBuff){

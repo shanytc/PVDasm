@@ -64,6 +64,7 @@
 #include "Wizard.h"
 #include "PVScript/pvscript.h"
 #include "CFGViewer.h"
+#include "Debugger.h"
 
 // STL Includes
 #include <vector>
@@ -94,7 +95,7 @@ typedef MapTree::iterator					TreeMapItr;
 // =========================  DEFINES  ============================
 // ================================================================
 
-#define PVDASM_VERSION "2.0.2"
+#define PVDASM_VERSION "2.0.3"
 
 #ifdef _M_X64
 #define PVDASM "PVDasm v" PVDASM_VERSION " Disassembler (64Bit)"
