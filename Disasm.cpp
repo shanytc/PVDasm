@@ -3939,10 +3939,56 @@ void WINAPI Disassembler(/*LPVOID lpParam*/) // Thread Worker for Decoding Instr
 			// Check if current address is a known CALL target (from FirstPass)
 			if(!fInfoBanner && Disasm.Address != OEP && CallTargets.count(Disasm.Address)){
 				disop.ShowAddr=FALSE;
-				if(disop.CPU == x86_64)
-					wsprintf(Disasm.Assembly,"; ====== Proc_%08X%08X ======",(DWORD)(Disasm.Address>>32),(DWORD)Disasm.Address);
-				else
-					wsprintf(Disasm.Assembly,"; ====== Proc_%08X ======",Disasm.Address);
+
+				// Check if this CALL target is an import thunk (FF 25 JMP [IAT])
+				// If so, use the resolved import name instead of Proc_XXXXXXXX
+				char importName[MAX_PATH] = "";
+				bool isImportThunk = false;
+
+				DWORD_PTR savedAddress = Address;
+				BOOL savedCallApi = CallApi;
+				BOOL savedJumpApi = JumpApi;
+				BOOL savedCallAddrApi = CallAddrApi;
+
+				Address = Disasm.Address;
+				CallApi = TRUE;
+				JumpApi = FALSE;
+				CallAddrApi = FALSE;
+
+				if(GetAPIName(importName) == TRUE && importName[0] != '\0'){
+					isImportThunk = true;
+				}
+
+				Address = savedAddress;
+				CallApi = savedCallApi;
+				JumpApi = savedJumpApi;
+				CallAddrApi = savedCallAddrApi;
+
+				if(isImportThunk){
+					// Extract function name after 'DLL!' prefix
+					char *funcPart = strchr(importName, '!');
+					if(funcPart)
+						funcPart++;
+					else
+						funcPart = importName;
+					wsprintf(Disasm.Assembly,"; ====== %s ======", funcPart);
+
+					// Store in fFunctionInfo so graph and other consumers can find the name
+					FUNCTION_INFORMATION fFunc;
+					ZeroMemory(&fFunc, sizeof(FUNCTION_INFORMATION));
+					fFunc.FunctionStart = (DWORD_PTR)Disasm.Address;
+					fFunc.FunctionEnd = 0;
+					strncpy(fFunc.FunctionName, funcPart, sizeof(fFunc.FunctionName) - 1);
+					fFunc.FunctionName[sizeof(fFunc.FunctionName) - 1] = '\0';
+					AddNewFunction(fFunc);
+				}
+				else{
+					if(disop.CPU == x86_64)
+						wsprintf(Disasm.Assembly,"; ====== Proc_%08X%08X ======",(DWORD)(Disasm.Address>>32),(DWORD)Disasm.Address);
+					else
+						wsprintf(Disasm.Assembly,"; ====== Proc_%08X ======",Disasm.Address);
+				}
+
 				SaveDecoded(Disasm,disop,ListIndex);
 				FlushDecoded(&Disasm);
 				disop.ShowAddr=TRUE;
