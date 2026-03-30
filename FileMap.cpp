@@ -4492,7 +4492,12 @@ void RenameFunctionAtIndex(DWORD_PTR bannerIndex, const char* newName)
                 (addrHex64[0] && lstrcmp(operand, addrHex64) == 0)) {
                 // Replace with "call funcName" or "jmp funcName"
                 char newMnem[256];
-                wsprintf(newMnem, "%s %s", isCall ? "call" : "jmp", newName);
+                const char* prefix;
+                if (isCall)
+                    prefix = disop.UpperCased_Disasm ? "CALL" : "call";
+                else
+                    prefix = disop.UpperCased_Disasm ? "JMP" : "jmp";
+                wsprintf(newMnem, "%s %s", prefix, newName);
                 DisasmDataLines[i].SetMnemonic(newMnem);
             }
         }
