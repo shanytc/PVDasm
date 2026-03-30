@@ -121,8 +121,24 @@ void SaveProject()
     lstrcat(Path,"Projects\\");
     if(SetCurrentDirectory(Path)==NULL)
 	{
-		MessageBox(Main_hWnd,"Can't Find Projects Directory!\nSaving to default Dir: c:\\","Notice",MB_OK);
-		SetCurrentDirectory("c:\\");
+		// Let user choose where to save
+		char SelectedPath[MAX_PATH] = "";
+		BROWSEINFO bi = {0};
+		bi.hwndOwner = Main_hWnd;
+		bi.lpszTitle = "Projects Directory not found.\nSelect a folder to save the project:";
+		bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_NEWDIALOGSTYLE;
+		LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
+		if(pidl != NULL)
+		{
+			SHGetPathFromIDList(pidl, SelectedPath);
+			CoTaskMemFree(pidl);
+			SetCurrentDirectory(SelectedPath);
+		}
+		else
+		{
+			// User cancelled - abort save
+			return;
+		}
 	}
 
     // Create the Project File

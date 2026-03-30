@@ -44,6 +44,7 @@
 #include "CDisasmData.h"
 #include "Disasm.h"
 #include <assert.h>
+#include <shlobj.h>
 // STL
 #include <vector>
 #include <map>
