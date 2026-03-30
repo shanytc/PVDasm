@@ -2421,11 +2421,26 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 							lstrcpyn(Buffer1, pCode ? pCode : "", 128);
 							lstrcpyn(Buffer2, pMnem ? pMnem : "", 128);
 							lstrcpyn(Buffer3, pComm ? pComm : "", 128);
-							// Debugger: dynamically resolve memory values in comments
-							if (g_bDebuggerActive && g_DbgState == DBG_STATE_PAUSED &&
-								(Buffer3[0] == '\0') && pMnem) {
-								extern void DbgResolveMemoryCommentPublic(const char*, char*, size_t);
-								DbgResolveMemoryCommentPublic(pMnem, Buffer3, 128);
+							// Debugger: resolve memory values for the current EIP line
+							if (g_bDebuggerActive && g_DbgState == DBG_STATE_PAUSED && pMnem && pAddr) {
+								DWORD_PTR itemAddr = StringToDword(pAddr);
+								// Check if this is the EIP line (or rebased EIP)
+								if (itemAddr == g_dwCurrentEIP ||
+									(g_dwRebaseDelta != 0 && itemAddr == (g_dwCurrentEIP - g_dwRebaseDelta))) {
+									extern void DbgResolveMemoryCommentPublic(const char*, char*, size_t);
+									char memVal[128] = {0};
+									DbgResolveMemoryCommentPublic(pMnem, memVal, sizeof(memVal));
+									if (memVal[0]) {
+										if (Buffer3[0]) {
+											// Append to existing comment
+											char combined[256];
+											wsprintf(combined, "%s  [%s]", Buffer3, memVal);
+											lstrcpyn(Buffer3, combined, 128);
+										} else {
+											lstrcpyn(Buffer3, memVal, 128);
+										}
+									}
+								}
 							}
 							lstrcpyn(Buffer4, pRef  ? pRef  : "", 256);
 							nmdisp->item.pszText=Buffer; // item 0
@@ -6137,37 +6152,45 @@ LRESULT ProcessCustomDraw (LPARAM lParam)
 		break;
 
         case CDDS_ITEMPREPAINT:{ //Before an item is drawn
+            bool isSelected = (lplvcd->nmcd.uItemState & CDIS_SELECTED) != 0;
+
             // In dark mode, handle selection colors to avoid default blue highlight
-            if (g_DarkMode && (lplvcd->nmcd.uItemState & CDIS_SELECTED)) {
-                lplvcd->clrText = RGB(255, 255, 255);  // White text for selected
-                lplvcd->clrTextBk = RGB(60, 60, 60);   // Dark gray background for selected
+            if (g_DarkMode && isSelected) {
+                lplvcd->clrText = RGB(255, 255, 255);
+                lplvcd->clrTextBk = RGB(60, 60, 60);
             }
 
             if (g_bDebuggerActive && lplvcd->nmcd.dwItemSpec < DisasmDataLines.size()) {
-                DWORD_PTR itemAddr = StringToDword(DisasmDataLines[lplvcd->nmcd.dwItemSpec].GetAddress());
+                char* pAddr = DisasmDataLines[lplvcd->nmcd.dwItemSpec].GetAddress();
+                if (pAddr) {
+                    DWORD_PTR itemAddr = StringToDword(pAddr);
 
-                // Debugger: highlight current EIP line
-                if (g_dwCurrentEIP != 0 &&
-                    (itemAddr == g_dwCurrentEIP || itemAddr == (g_dwCurrentEIP - g_dwRebaseDelta))) {
-                    lplvcd->clrTextBk = g_DarkMode ? RGB(120, 0, 0) : RGB(255, 200, 200);
-                    lplvcd->clrText = g_DarkMode ? RGB(255, 255, 255) : RGB(0, 0, 0);
-                }
+                    bool isEIP = g_dwCurrentEIP != 0 &&
+                        (itemAddr == g_dwCurrentEIP || itemAddr == (g_dwCurrentEIP - g_dwRebaseDelta));
 
-                // Debugger: highlight breakpoint lines in red (overrides selection blue)
-                // Check all possible address mappings (runtime, static, with/without delta)
-                EnterCriticalSection(&g_csBreakpoints);
-                if (DbgFindBreakpoint(itemAddr) ||
-                    (g_dwRebaseDelta != 0 && DbgFindBreakpoint(itemAddr + g_dwRebaseDelta))) {
-                    lplvcd->clrTextBk = g_DarkMode ? RGB(140, 0, 0) : RGB(255, 180, 180);
-                    lplvcd->clrText = g_DarkMode ? RGB(255, 255, 255) : RGB(0, 0, 0);
-
-                    // If this is also the EIP line, use a brighter red
-                    if (g_dwCurrentEIP != 0 &&
-                        (itemAddr == g_dwCurrentEIP || itemAddr == (g_dwCurrentEIP - g_dwRebaseDelta))) {
-                        lplvcd->clrTextBk = g_DarkMode ? RGB(180, 0, 0) : RGB(255, 100, 100);
+                    bool isBP = false;
+                    for (size_t bpi = 0; bpi < g_DbgBreakpoints.size(); bpi++) {
+                        DWORD_PTR ba = g_DbgBreakpoints[bpi].dwAddress;
+                        if (ba == itemAddr || ba == (itemAddr + g_dwRebaseDelta) ||
+                            (g_dwRebaseDelta != 0 && ba == (itemAddr - g_dwRebaseDelta))) {
+                            isBP = true;
+                            break;
+                        }
                     }
+
+                    if (isEIP) {
+                        // EIP (with or without breakpoint): dark red
+                        lplvcd->clrTextBk = g_DarkMode ? RGB(180, 0, 0) : RGB(200, 50, 50);
+                        lplvcd->clrText = RGB(255, 255, 255);
+                        lplvcd->nmcd.uItemState &= ~CDIS_SELECTED;
+                    } else if (isBP) {
+                        // Breakpoint, EIP elsewhere: light red
+                        lplvcd->clrTextBk = g_DarkMode ? RGB(100, 0, 0) : RGB(255, 180, 180);
+                        lplvcd->clrText = g_DarkMode ? RGB(255, 255, 255) : RGB(0, 0, 0);
+                        lplvcd->nmcd.uItemState &= ~CDIS_SELECTED;
+                    }
+                    // else: normal line, don't touch colors (blue selection works normally)
                 }
-                LeaveCriticalSection(&g_csBreakpoints);
             }
 
             return CDRF_NOTIFYSUBITEMDRAW;
@@ -6176,21 +6199,29 @@ LRESULT ProcessCustomDraw (LPARAM lParam)
         
         // Paint the List View's Items
         case CDDS_SUBITEM | CDDS_ITEMPREPAINT:{ //Before a subitem is drawn
-            // Debugger: if this line is a breakpoint or EIP, keep the colors from CDDS_ITEMPREPAINT
+            // Debugger: if this line is EIP or breakpoint, keep red colors from CDDS_ITEMPREPAINT
             if (g_bDebuggerActive && lplvcd->nmcd.dwItemSpec < DisasmDataLines.size()) {
-                DWORD_PTR itemAddr = StringToDword(DisasmDataLines[lplvcd->nmcd.dwItemSpec].GetAddress());
-                bool isBP = false, isEIP = false;
+                char* pAddr2 = DisasmDataLines[lplvcd->nmcd.dwItemSpec].GetAddress();
+                bool skipTheme = false;
+                if (pAddr2) {
+                    DWORD_PTR itemAddr = StringToDword(pAddr2);
 
-                EnterCriticalSection(&g_csBreakpoints);
-                isBP = (DbgFindBreakpoint(itemAddr) != NULL) ||
-                       (g_dwRebaseDelta != 0 && DbgFindBreakpoint(itemAddr + g_dwRebaseDelta) != NULL);
-                LeaveCriticalSection(&g_csBreakpoints);
+                    bool isEIP = (g_dwCurrentEIP != 0 &&
+                             (itemAddr == g_dwCurrentEIP || itemAddr == (g_dwCurrentEIP - g_dwRebaseDelta)));
 
-                isEIP = (g_dwCurrentEIP != 0 &&
-                         (itemAddr == g_dwCurrentEIP || itemAddr == (g_dwCurrentEIP - g_dwRebaseDelta)));
+                    bool isBP = false;
+                    for (size_t bpi = 0; bpi < g_DbgBreakpoints.size(); bpi++) {
+                        DWORD_PTR ba = g_DbgBreakpoints[bpi].dwAddress;
+                        if (ba == itemAddr || ba == (itemAddr + g_dwRebaseDelta) ||
+                            (g_dwRebaseDelta != 0 && ba == (itemAddr - g_dwRebaseDelta))) {
+                            isBP = true;
+                            break;
+                        }
+                    }
+                    skipTheme = (isEIP || isBP);
+                }
 
-                if (isBP || isEIP) {
-                    // Don't override - keep the red colors set in CDDS_ITEMPREPAINT
+                if (skipTheme) {
                     return CDRF_NEWFONT;
                 }
             }
