@@ -3622,6 +3622,43 @@ void LoadCFGForCurrentFunction_Embedded()
     }
 }
 
+void RefreshCFGLabels()
+{
+    if (!g_CFGGraphValid) return;
+
+    // Update FunctionLabel for all blocks from fFunctionInfo
+    for (size_t i = 0; i < g_CurrentGraph.Blocks.size(); i++) {
+        CFG_BASIC_BLOCK& block = g_CurrentGraph.Blocks[i];
+        for (size_t fi = 0; fi < fFunctionInfo.size(); fi++) {
+            if (fFunctionInfo[fi].FunctionStart == block.StartAddress) {
+                if (fFunctionInfo[fi].FunctionName[0] != '\0')
+                    strncpy(block.FunctionLabel, fFunctionInfo[fi].FunctionName, 63);
+                else if (LoadedPe64)
+                    wsprintf(block.FunctionLabel, "Proc_%08X%08X", (DWORD)(block.StartAddress>>32), (DWORD)block.StartAddress);
+                else
+                    wsprintf(block.FunctionLabel, "Proc_%08X", (DWORD)block.StartAddress);
+                block.FunctionLabel[63] = '\0';
+                break;
+            }
+        }
+    }
+
+    // Also update graph-level function name
+    for (size_t fi = 0; fi < fFunctionInfo.size(); fi++) {
+        if (fFunctionInfo[fi].FunctionStart == g_CurrentGraph.FunctionStart) {
+            if (fFunctionInfo[fi].FunctionName[0] != '\0') {
+                strncpy(g_CurrentGraph.FunctionName, fFunctionInfo[fi].FunctionName, 63);
+                g_CurrentGraph.FunctionName[63] = '\0';
+            }
+            break;
+        }
+    }
+
+    // Invalidate graph child to repaint with updated labels
+    HWND hChild = GetDlgItem(Main_hWnd, IDC_CFG_CHILD);
+    if (hChild) InvalidateRect(hChild, NULL, FALSE);
+}
+
 void ClearEmbeddedCFG()
 {
     FreeCFGGraph(&g_CurrentGraph);

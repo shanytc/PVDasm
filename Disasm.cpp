@@ -973,19 +973,18 @@ BOOL CALLBACK FunctionsEPSegmentsDlgProc(HWND hWnd, UINT Message, WPARAM wParam,
 					lstrcpyn(s_szRenameBuf, fFunctionInfo[iSel].FunctionName, 50);
 					if(DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_RENAME_FUNCTION),
 								 hWnd, (DLGPROC)RenameFunctionDlgProc) == IDOK && s_szRenameBuf[0]) {
-						// Update fFunctionInfo
-						lstrcpyn(fFunctionInfo[iSel].FunctionName, s_szRenameBuf, 50);
 						// Update ListView
 						ListView_SetItemText(hList, (int)iSel, 2, s_szRenameBuf);
-						// Update disassembly banner
+						// Find banner in disassembly and do full rename
+						// (updates fFunctionInfo, banner, CALL/JMP mnemonics, and graph)
 						char addrStr[16];
 						wsprintf(addrStr, "%08X", (DWORD)fFunctionInfo[iSel].FunctionStart);
 						DWORD_PTR dIdx = SearchItemText(hDasm, addrStr);
 						if(dIdx != (DWORD_PTR)-1 && dIdx > 0) {
-							char banner[128];
-							wsprintf(banner, "; ====== %s ======", s_szRenameBuf);
-							DisasmDataLines[dIdx-1].SetMnemonic(banner);
-							RedrawWindow(hDasm, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
+							RenameFunctionAtIndex(dIdx-1, s_szRenameBuf);
+						} else {
+							// Fallback: update fFunctionInfo directly if banner not in disasm
+							lstrcpyn(fFunctionInfo[iSel].FunctionName, s_szRenameBuf, 50);
 						}
 					}
 				}

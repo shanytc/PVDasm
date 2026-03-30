@@ -4441,12 +4441,23 @@ void RenameFunctionAtIndex(DWORD_PTR bannerIndex, const char* newName)
     }
 
     // Find and update the matching fFunctionInfo entry
+    bool foundEntry = false;
     if (funcAddr != 0) {
         for (size_t i = 0; i < fFunctionInfo.size(); i++) {
             if ((DWORD)fFunctionInfo[i].FunctionStart == funcAddr) {
                 lstrcpyn(fFunctionInfo[i].FunctionName, newName, 50);
+                foundEntry = true;
                 break;
             }
+        }
+        // If no fFunctionInfo entry exists (function from CallTargets), create one
+        if (!foundEntry) {
+            FUNCTION_INFORMATION fFunc;
+            memset(&fFunc, 0, sizeof(fFunc));
+            fFunc.FunctionStart = funcAddr;
+            fFunc.FunctionEnd = 0;
+            lstrcpyn(fFunc.FunctionName, newName, 50);
+            fFunctionInfo.insert(fFunctionInfo.end(), fFunc);
         }
     }
 
@@ -4491,6 +4502,9 @@ void RenameFunctionAtIndex(DWORD_PTR bannerIndex, const char* newName)
     HWND hDisasm = GetDlgItem(Main_hWnd, IDC_DISASM);
     if (hDisasm)
         RedrawWindow(hDisasm, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
+
+    // Refresh embedded CFG graph labels (updates FunctionLabel in existing blocks)
+    RefreshCFGLabels();
 }
 
 BOOL CALLBACK SetCommentDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
