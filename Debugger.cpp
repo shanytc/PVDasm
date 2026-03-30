@@ -1571,19 +1571,22 @@ static void DbgAnnotateRegisterValue(DWORD regValue, char* out, size_t outSize)
         }
     }
 
-    // Check if 4 bytes at value are readable and the value itself looks like ASCII
+    // Check if the value contains printable ASCII bytes
     {
+        char bytes[4];
+        bytes[0] = (char)(regValue & 0xFF);
+        bytes[1] = (char)((regValue >> 8) & 0xFF);
+        bytes[2] = (char)((regValue >> 16) & 0xFF);
+        bytes[3] = (char)((regValue >> 24) & 0xFF);
         char ascii[5] = {0};
-        ascii[0] = (char)(regValue & 0xFF);
-        ascii[1] = (char)((regValue >> 8) & 0xFF);
-        ascii[2] = (char)((regValue >> 16) & 0xFF);
-        ascii[3] = (char)((regValue >> 24) & 0xFF);
-        bool printable = true;
+        int count = 0;
         for (int i = 0; i < 4; i++) {
-            if (ascii[i] < 0x20 || ascii[i] > 0x7E) { printable = false; break; }
+            if (bytes[i] >= 0x20 && bytes[i] <= 0x7E)
+                ascii[count++] = bytes[i];
         }
-        if (printable) {
-            wsprintf(out, "'%c%c%c%c'", ascii[0], ascii[1], ascii[2], ascii[3]);
+        ascii[count] = 0;
+        if (count >= 2) {
+            wsprintf(out, "'%s'", ascii);
             return;
         }
     }
@@ -1706,14 +1709,86 @@ static void DbgResolveMemoryComment(const char* assembly, char* outComment, size
     const char* ptrPos = strstr(assembly, "ptr ");
     if (!ptrPos) ptrPos = strstr(assembly, "Ptr ");
     if (!ptrPos) ptrPos = strstr(assembly, "PTR ");
-    if (!ptrPos) return;
+
+    if (!ptrPos) {
+        // No memory reference - check for immediate address (e.g. "PUSH 0040303FH")
+        // Only for instructions that typically reference addresses
+        if (_strnicmp(assembly, "push ", 5) != 0 &&
+            _strnicmp(assembly, "mov ", 4) != 0 &&
+            _strnicmp(assembly, "lea ", 4) != 0)
+            return;
+
+        const char* p = assembly;
+        // Skip mnemonic
+        while (*p && *p != ' ') p++;
+        while (*p == ' ') p++;
+        if (!*p) return;
+
+        // For MOV/LEA, skip to the second operand (after comma)
+        if (_strnicmp(assembly, "push ", 5) != 0) {
+            p = strchr(p, ',');
+            if (!p) return;
+            p++;
+            while (*p == ' ') p++;
+            if (!*p) return;
+        }
+
+        // Check if the operand is a pure hex immediate with 'H' suffix
+        const char* start = p;
+        bool isHex = true;
+        int hexLen = 0;
+        while (*p && *p != ',' && *p != ' ' && *p != 'H' && *p != 'h') {
+            char c = *p;
+            if (!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'))) {
+                isHex = false;
+                break;
+            }
+            hexLen++;
+            p++;
+        }
+        if (!isHex || hexLen < 5 || hexLen > 8) return;  // At least 5 hex digits for valid address
+        if (*p != 'H' && *p != 'h') return;  // Must end with H
+
+        char hexBuf[16] = {0};
+        lstrcpyn(hexBuf, start, hexLen + 1);
+        DWORD_PTR immAddr = (DWORD_PTR)strtoul(hexBuf, NULL, 16);
+        if (immAddr < 0x10000) return;  // Too low to be a valid address
+
+        // Try to read a string at this address
+        char strBuf[64] = {0};
+        SIZE_T br;
+        if (DbgReadMemory(immAddr, strBuf, 63, &br) && br > 0) {
+            strBuf[br] = 0;
+            // Check if it looks like a readable string (at least 2 printable chars)
+            int printCount = 0;
+            for (int i = 0; i < (int)br && strBuf[i]; i++) {
+                if (strBuf[i] >= 0x20 && strBuf[i] <= 0x7E) printCount++;
+                else break;
+            }
+            if (printCount >= 2) {
+                strBuf[40] = 0;  // Truncate long strings
+                wsprintf(outComment, "-> \"%s\"", strBuf);
+            } else {
+                // Not a string, show as DWORD value
+                DWORD val = 0;
+                if (DbgReadMemory(immAddr, &val, 4, &br) && br == 4) {
+                    wsprintf(outComment, "-> %08X", val);
+                }
+            }
+        }
+        return;
+    }
 
     int readSize = 4;
-    if (ptrPos > assembly + 4) {
+    if (ptrPos > assembly + 5) {
+        // Check longer prefixes first to avoid "Word" matching tail of "Dword"
+        if (_strnicmp(ptrPos - 6, "Dword ", 6) == 0) readSize = 4;
+        else if (_strnicmp(ptrPos - 6, "Qword ", 6) == 0) readSize = 8;
+        else if (_strnicmp(ptrPos - 5, "Byte ", 5) == 0) readSize = 1;
+        else if (_strnicmp(ptrPos - 5, "Word ", 5) == 0) readSize = 2;
+    } else if (ptrPos > assembly + 4) {
         if (_strnicmp(ptrPos - 5, "Byte ", 5) == 0) readSize = 1;
         else if (_strnicmp(ptrPos - 5, "Word ", 5) == 0) readSize = 2;
-        else if (_strnicmp(ptrPos - 6, "Dword ", 6) == 0) readSize = 4;
-        else if (_strnicmp(ptrPos - 6, "Qword ", 6) == 0) readSize = 8;
     }
 
     const char* bracket = strchr(ptrPos, '[');
@@ -1835,11 +1910,29 @@ static void DbgResolveMemoryComment(const char* assembly, char* outComment, size
     if (!DbgReadMemory(addr, buf, readSize, &bytesRead) || bytesRead == 0)
         return;
 
+    // Format the value
+    char valStr[32];
     switch (readSize) {
-        case 1: wsprintf(outComment, "= %02X", buf[0]); break;
-        case 2: wsprintf(outComment, "= %04X", *(WORD*)buf); break;
-        case 4: wsprintf(outComment, "= %08X", *(DWORD*)buf); break;
-        case 8: wsprintf(outComment, "= %08X%08X", *(DWORD*)(buf+4), *(DWORD*)buf); break;
+        case 1: wsprintf(valStr, "%02X", buf[0]); break;
+        case 2: wsprintf(valStr, "%04X", *(WORD*)buf); break;
+        case 4: wsprintf(valStr, "%08X", *(DWORD*)buf); break;
+        case 8: wsprintf(valStr, "%08X%08X", *(DWORD*)(buf+4), *(DWORD*)buf); break;
+        default: valStr[0] = 0; break;
+    }
+
+    // Check for printable ASCII in the value bytes
+    char asciiStr[16] = {0};
+    int asciiLen = 0;
+    for (int i = 0; i < readSize; i++) {
+        if (buf[i] >= 0x20 && buf[i] <= 0x7E)
+            asciiStr[asciiLen++] = (char)buf[i];
+    }
+    asciiStr[asciiLen] = 0;
+
+    if (asciiLen >= 2) {
+        wsprintf(outComment, "= %s '%s'", valStr, asciiStr);
+    } else {
+        wsprintf(outComment, "= %s", valStr);
     }
 }
 
@@ -2248,7 +2341,7 @@ void DbgUpdateMenuState(HWND hWnd)
 
     case DBG_STATE_PAUSED:
     case DBG_STATE_STEPPING_INTO:
-        EnableMenuItem(hMenu, IDM_DBG_START, MF_ENABLED);    // F9 = Resume
+        EnableMenuItem(hMenu, IDM_DBG_START, MF_GRAYED);
         EnableMenuItem(hMenu, IDM_DBG_ATTACH, MF_GRAYED);
         EnableMenuItem(hMenu, IDM_DBG_OPTIONS, MF_GRAYED);
         EnableMenuItem(hMenu, IDM_DBG_PAUSE, MF_GRAYED);

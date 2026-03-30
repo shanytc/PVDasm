@@ -3386,13 +3386,12 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
                 case IDM_DBG_START:{
                     if (g_DbgState == DBG_STATE_IDLE) {
-                        if (g_DbgProcess.szExePath[0] == '\0') {
-                            if (szFileName[0] != '\0') {
-                                lstrcpyn(g_DbgProcess.szExePath, szFileName, MAX_PATH);
-                            }
-                            if (DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DBG_PROCESS_OPTIONS), hWnd, (DLGPROC)DbgOptionsDlgProc) != IDOK) {
-                                break;
-                            }
+                        // Always show options dialog (pre-fill with loaded file if available)
+                        if (szFileName[0] != '\0' && g_DbgProcess.szExePath[0] == '\0') {
+                            lstrcpyn(g_DbgProcess.szExePath, szFileName, MAX_PATH);
+                        }
+                        if (DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DBG_PROCESS_OPTIONS), hWnd, (DLGPROC)DbgOptionsDlgProc) != IDOK) {
+                            break;
                         }
                         if (g_DbgProcess.szExePath[0] != '\0') {
                             DbgStartProcess(hWnd, g_DbgProcess.szExePath, g_DbgProcess.szCmdLine, g_DbgProcess.szWorkDir);
@@ -3564,6 +3563,11 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         SwitchTab(hWnd, 0);
         DbgDisassembleAtEIP();
         SetFocus(GetDlgItem(hWnd, IDC_DISASM));
+        // Auto-open registers dialog on first break
+        if (!g_hRegisterDlg) {
+            g_hRegisterDlg = CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_REGISTERS), hWnd, (DLGPROC)DbgRegisterDlgProc);
+            ShowWindow(g_hRegisterDlg, SW_SHOW);
+        }
         DbgUpdateRegisterDialog();
         DbgUpdateThreadsDialog();
         DbgUpdateDisasmTabName();
