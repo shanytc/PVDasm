@@ -1259,8 +1259,8 @@ BOOL DbgStepInto()
             targetAddr = g_dwCurrentEIP + instrSize + (DWORD_PTR)(INT_PTR)rel;
             isConditionalJump = true;
         }
-        else if (op == 0xE3) {
-            // JECXZ/JCXZ rel8
+        else if (op == 0xE3 || op == 0xE2 || op == 0xE1 || op == 0xE0) {
+            // E3=JECXZ, E2=LOOP, E1=LOOPE/LOOPZ, E0=LOOPNE/LOOPNZ
             INT8 rel = (INT8)instrBuf[disasm.PrefixSize + 1];
             targetAddr = g_dwCurrentEIP + instrSize + (DWORD_PTR)(INT_PTR)rel;
             isConditionalJump = true;
@@ -1290,8 +1290,8 @@ BOOL DbgStepInto()
         BYTE op = instrBuf[disasm.PrefixSize];
         if (op == 0x0F)
             cc = instrBuf[disasm.PrefixSize + 1] & 0x0F;
-        else if (op == 0xE3)
-            cc = 0xFF; // Special: JECXZ
+        else if (op >= 0xE0 && op <= 0xE3)
+            cc = op; // Special: E0=LOOPNE, E1=LOOPE, E2=LOOP, E3=JECXZ
         else
             cc = op & 0x0F;
 
@@ -1313,7 +1313,10 @@ BOOL DbgStepInto()
             case 0xD: taken = SF == OF; break;              // JGE/JNL
             case 0xE: taken = ZF || (SF != OF); break;      // JLE/JNG
             case 0xF: taken = !ZF && (SF == OF); break;     // JG/JNLE
-            case 0xFF: taken = (g_DbgRegisters.Ecx == 0); break; // JECXZ
+            case 0xE0: taken = ((g_DbgRegisters.Ecx - 1) != 0 && !ZF); break; // LOOPNE/LOOPNZ
+            case 0xE1: taken = ((g_DbgRegisters.Ecx - 1) != 0 && ZF); break;  // LOOPE/LOOPZ
+            case 0xE2: taken = ((g_DbgRegisters.Ecx - 1) != 0); break;        // LOOP
+            case 0xE3: taken = (g_DbgRegisters.Ecx == 0); break;              // JECXZ
         }
 
         if (taken) {
