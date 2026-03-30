@@ -1518,6 +1518,81 @@ void DbgFormatEFlags(DWORD eflags, char* buffer, size_t bufLen)
              (eflags >> 11) & 1); // OF
 }
 
+// Generate IDA-style annotation for a register value
+static void DbgAnnotateRegisterValue(DWORD regValue, char* out, size_t outSize)
+{
+    out[0] = 0;
+    if (!g_bDebuggerActive || regValue == 0) return;
+
+    extern FunctionInfo fFunctionInfo;
+
+    // Check if value points to a known function start
+    for (size_t i = 0; i < fFunctionInfo.size(); i++) {
+        if (regValue == (DWORD)fFunctionInfo[i].FunctionStart) {
+            // Read and decode first instruction
+            BYTE codeBuf[16];
+            SIZE_T br;
+            if (DbgReadMemory((DWORD_PTR)regValue, codeBuf, 16, &br) && br > 0) {
+                DISASSEMBLY dis;
+                DWORD_PTR idx = 0;
+                FlushDecoded(&dis);
+                dis.Address = regValue;
+                Decode(&dis, (char*)codeBuf, &idx);
+                wsprintf(out, "%s -> %s", fFunctionInfo[i].FunctionName, dis.Assembly);
+            } else {
+                lstrcpyn(out, fFunctionInfo[i].FunctionName, (int)outSize);
+            }
+            return;
+        }
+    }
+
+    // Check if value is inside a known function
+    for (size_t i = 0; i < fFunctionInfo.size(); i++) {
+        if (regValue > (DWORD)fFunctionInfo[i].FunctionStart &&
+            regValue <= (DWORD)fFunctionInfo[i].FunctionEnd) {
+            DWORD offset = regValue - (DWORD)fFunctionInfo[i].FunctionStart;
+            wsprintf(out, "%s+%Xh", fFunctionInfo[i].FunctionName, offset);
+            return;
+        }
+    }
+
+    // Check if value is near ESP (stack pointer)
+    if (g_DbgRegisters.Esp != 0) {
+        INT_PTR stackOff = (INT_PTR)regValue - (INT_PTR)g_DbgRegisters.Esp;
+        if (stackOff >= -0x10000 && stackOff <= 0x10000 && stackOff != 0) {
+            if (stackOff >= 0)
+                wsprintf(out, "Stack[ESP+%Xh]", (DWORD)stackOff);
+            else
+                wsprintf(out, "Stack[ESP-%Xh]", (DWORD)-stackOff);
+            return;
+        }
+    }
+
+    // Check if 4 bytes at value are readable and the value itself looks like ASCII
+    {
+        char ascii[5] = {0};
+        ascii[0] = (char)(regValue & 0xFF);
+        ascii[1] = (char)((regValue >> 8) & 0xFF);
+        ascii[2] = (char)((regValue >> 16) & 0xFF);
+        ascii[3] = (char)((regValue >> 24) & 0xFF);
+        bool printable = true;
+        for (int i = 0; i < 4; i++) {
+            if (ascii[i] < 0x20 || ascii[i] > 0x7E) { printable = false; break; }
+        }
+        if (printable) {
+            wsprintf(out, "'%c%c%c%c'", ascii[0], ascii[1], ascii[2], ascii[3]);
+            return;
+        }
+    }
+
+    // Check if value is in a known module
+    const char* mod = DbgFindModuleForAddress((DWORD_PTR)regValue);
+    if (mod) {
+        lstrcpyn(out, mod, (int)outSize);
+        return;
+    }
+}
+
 void DbgUpdateRegisterDialog()
 {
     if (!g_hRegisterDlg || !IsWindow(g_hRegisterDlg))
@@ -1525,15 +1600,27 @@ void DbgUpdateRegisterDialog()
 
     char buf[32];
 
-    wsprintf(buf, "%08X", g_DbgRegisters.Eax); SetDlgItemText(g_hRegisterDlg, IDC_REG_EAX, buf);
-    wsprintf(buf, "%08X", g_DbgRegisters.Ebx); SetDlgItemText(g_hRegisterDlg, IDC_REG_EBX, buf);
-    wsprintf(buf, "%08X", g_DbgRegisters.Ecx); SetDlgItemText(g_hRegisterDlg, IDC_REG_ECX, buf);
-    wsprintf(buf, "%08X", g_DbgRegisters.Edx); SetDlgItemText(g_hRegisterDlg, IDC_REG_EDX, buf);
-    wsprintf(buf, "%08X", g_DbgRegisters.Esi); SetDlgItemText(g_hRegisterDlg, IDC_REG_ESI, buf);
-    wsprintf(buf, "%08X", g_DbgRegisters.Edi); SetDlgItemText(g_hRegisterDlg, IDC_REG_EDI, buf);
-    wsprintf(buf, "%08X", g_DbgRegisters.Ebp); SetDlgItemText(g_hRegisterDlg, IDC_REG_EBP, buf);
-    wsprintf(buf, "%08X", g_DbgRegisters.Esp); SetDlgItemText(g_hRegisterDlg, IDC_REG_ESP, buf);
-    wsprintf(buf, "%08X", g_DbgRegisters.Eip); SetDlgItemText(g_hRegisterDlg, IDC_REG_EIP, buf);
+    // Update register values and annotations
+    struct { DWORD value; int editId; int annotId; } regs[] = {
+        { g_DbgRegisters.Eax, IDC_REG_EAX, IDC_REG_EAX_ANNOT },
+        { g_DbgRegisters.Ebx, IDC_REG_EBX, IDC_REG_EBX_ANNOT },
+        { g_DbgRegisters.Ecx, IDC_REG_ECX, IDC_REG_ECX_ANNOT },
+        { g_DbgRegisters.Edx, IDC_REG_EDX, IDC_REG_EDX_ANNOT },
+        { g_DbgRegisters.Esi, IDC_REG_ESI, IDC_REG_ESI_ANNOT },
+        { g_DbgRegisters.Edi, IDC_REG_EDI, IDC_REG_EDI_ANNOT },
+        { g_DbgRegisters.Ebp, IDC_REG_EBP, IDC_REG_EBP_ANNOT },
+        { g_DbgRegisters.Esp, IDC_REG_ESP, IDC_REG_ESP_ANNOT },
+        { g_DbgRegisters.Eip, IDC_REG_EIP, IDC_REG_EIP_ANNOT },
+    };
+
+    char annot[256];
+    for (int i = 0; i < 9; i++) {
+        wsprintf(buf, "%08X", regs[i].value);
+        SetDlgItemText(g_hRegisterDlg, regs[i].editId, buf);
+        DbgAnnotateRegisterValue(regs[i].value, annot, sizeof(annot));
+        SetDlgItemText(g_hRegisterDlg, regs[i].annotId, annot);
+    }
+
     wsprintf(buf, "%08X", g_DbgRegisters.EFlags); SetDlgItemText(g_hRegisterDlg, IDC_REG_EFLAGS, buf);
 
     wsprintf(buf, "%04X", g_DbgRegisters.SegCs); SetDlgItemText(g_hRegisterDlg, IDC_REG_CS, buf);
@@ -1606,6 +1693,158 @@ void DbgRefreshMemory()
 // ================================================================
 // =================  DISASSEMBLY SYNC  ===========================
 // ================================================================
+
+// Resolve memory references in instruction to show values in comments
+static void DbgResolveMemoryComment(const char* assembly, char* outComment, size_t outSize)
+{
+    outComment[0] = 0;
+    if (!g_bDebuggerActive || !assembly) return;
+
+    const char* ptrPos = strstr(assembly, "ptr ");
+    if (!ptrPos) ptrPos = strstr(assembly, "Ptr ");
+    if (!ptrPos) ptrPos = strstr(assembly, "PTR ");
+    if (!ptrPos) return;
+
+    int readSize = 4;
+    if (ptrPos > assembly + 4) {
+        if (_strnicmp(ptrPos - 5, "Byte ", 5) == 0) readSize = 1;
+        else if (_strnicmp(ptrPos - 5, "Word ", 5) == 0) readSize = 2;
+        else if (_strnicmp(ptrPos - 6, "Dword ", 6) == 0) readSize = 4;
+        else if (_strnicmp(ptrPos - 6, "Qword ", 6) == 0) readSize = 8;
+    }
+
+    const char* bracket = strchr(ptrPos, '[');
+    if (!bracket) return;
+    const char* bracketEnd = strchr(bracket, ']');
+    if (!bracketEnd) return;
+
+    char addrContent[64];
+    int len = (int)(bracketEnd - bracket - 1);
+    if (len <= 0 || len >= 64) return;
+    lstrcpyn(addrContent, bracket + 1, len + 1);
+
+    // Evaluate the address expression: can be pure hex, or reg+hex, reg*scale+hex, etc.
+    // Examples: "00403560h", "EAX+0040351Fh", "EBP-50h", "EBX*2+ESP-33h"
+    // Strategy: replace register names with their values, then evaluate simple +/- expressions
+
+    // Register name to value lookup
+    struct { const char* name; DWORD value; } regMap[] = {
+        {"EAX", g_DbgRegisters.Eax}, {"EBX", g_DbgRegisters.Ebx},
+        {"ECX", g_DbgRegisters.Ecx}, {"EDX", g_DbgRegisters.Edx},
+        {"ESI", g_DbgRegisters.Esi}, {"EDI", g_DbgRegisters.Edi},
+        {"EBP", g_DbgRegisters.Ebp}, {"ESP", g_DbgRegisters.Esp},
+        {"EAX", g_DbgRegisters.Eax}, // lowercase handled via _strnicmp
+    };
+
+    // Evaluate: scan tokens separated by + and -
+    DWORD_PTR addr = 0;
+    char expr[64];
+    lstrcpyn(expr, addrContent, 64);
+
+    // Replace '*' scaled index with computed value (e.g. "EBX*2" -> value)
+    // Simple approach: split on +/-, resolve each token
+    char* p = expr;
+    bool valid = true;
+    int sign = 1;
+
+    while (*p && valid) {
+        // Skip whitespace
+        while (*p == ' ') p++;
+        if (!*p) break;
+
+        // Check sign
+        if (*p == '+') { sign = 1; p++; continue; }
+        if (*p == '-') { sign = -1; p++; continue; }
+
+        // Extract token until next +, -, or end
+        char token[32] = {0};
+        int ti = 0;
+        while (*p && *p != '+' && *p != '-' && *p != ' ' && ti < 31) {
+            token[ti++] = *p++;
+        }
+        token[ti] = 0;
+        if (ti == 0) { valid = false; break; }
+
+        // Strip trailing 'h'/'H' from hex values
+        int tlen = lstrlen(token);
+        if (tlen > 0 && (token[tlen-1] == 'h' || token[tlen-1] == 'H'))
+            token[tlen-1] = '\0';
+
+        // Check if token contains '*' (scaled index like "EBX*2")
+        char* star = strchr(token, '*');
+        if (star) {
+            *star = '\0';
+            char* regPart = token;
+            char* scalePart = star + 1;
+            DWORD regVal = 0;
+            bool foundReg = false;
+            for (int r = 0; r < 8; r++) {
+                if (_stricmp(regPart, regMap[r].name) == 0) {
+                    regVal = regMap[r].value;
+                    foundReg = true;
+                    break;
+                }
+            }
+            if (foundReg) {
+                DWORD scale = (DWORD)strtoul(scalePart, NULL, 10);
+                addr += sign * (DWORD_PTR)(regVal * scale);
+            } else {
+                valid = false;
+            }
+            sign = 1;
+            continue;
+        }
+
+        // Try register name
+        bool foundReg = false;
+        for (int r = 0; r < 8; r++) {
+            if (_stricmp(token, regMap[r].name) == 0) {
+                addr += sign * (DWORD_PTR)regMap[r].value;
+                foundReg = true;
+                break;
+            }
+        }
+        if (foundReg) { sign = 1; continue; }
+
+        // Try hex number
+        bool isHex = true;
+        for (int i = 0; token[i]; i++) {
+            char c = token[i];
+            if (!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'))) {
+                isHex = false; break;
+            }
+        }
+        if (isHex && token[0]) {
+            DWORD_PTR val = (DWORD_PTR)strtoul(token, NULL, 16);
+            addr += sign * val;
+            sign = 1;
+            continue;
+        }
+
+        // Unknown token - can't resolve
+        valid = false;
+    }
+
+    if (!valid || addr == 0) return;
+
+    BYTE buf[8] = {0};
+    SIZE_T bytesRead;
+    if (!DbgReadMemory(addr, buf, readSize, &bytesRead) || bytesRead == 0)
+        return;
+
+    switch (readSize) {
+        case 1: wsprintf(outComment, "= %02X", buf[0]); break;
+        case 2: wsprintf(outComment, "= %04X", *(WORD*)buf); break;
+        case 4: wsprintf(outComment, "= %08X", *(DWORD*)buf); break;
+        case 8: wsprintf(outComment, "= %08X%08X", *(DWORD*)(buf+4), *(DWORD*)buf); break;
+    }
+}
+
+// Public wrapper for FileMap.cpp to call
+void DbgResolveMemoryCommentPublic(const char* assembly, char* outComment, size_t outSize)
+{
+    DbgResolveMemoryComment(assembly, outComment, outSize);
+}
 
 BOOL DbgDisassembleAtEIP()
 {
@@ -1811,7 +2050,11 @@ BOOL DbgDisassembleAtEIP()
             }
             data.SetCode(opcodeStr);
             data.SetMnemonic(disasm.Assembly);
-            data.SetComments((char*)"");
+            // Resolve memory references to show values in comments
+            char memComment[128] = {0};
+            if (g_DbgState == DBG_STATE_PAUSED)
+                DbgResolveMemoryComment(disasm.Assembly, memComment, sizeof(memComment));
+            data.SetComments(memComment[0] ? memComment : (char*)"");
             data.SetReference((char*)"");
 
             // Use SaveDecoded for proper analysis (function prologue, etc.)

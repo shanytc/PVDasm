@@ -1236,25 +1236,29 @@ LRESULT CALLBACK FlowArrowWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 
             // Get visible range from ListView
             HWND hDisasm = GetDlgItem(Main_hWnd, IDC_DISASM);
-            if (hDisasm && !g_FlowArrows.empty()) {
-                int topIndex = (int)SendMessage(hDisasm, LVM_GETTOPINDEX, 0, 0);
+            int topIndex = 0, bottomIndex = 0, itemHeight = 16, yOffset = 0;
+            bool hasVisibleRange = false;
+
+            if (hDisasm && (int)SendMessage(hDisasm, LVM_GETITEMCOUNT, 0, 0) > 0) {
+                topIndex = (int)SendMessage(hDisasm, LVM_GETTOPINDEX, 0, 0);
                 int perPage = (int)SendMessage(hDisasm, LVM_GETCOUNTPERPAGE, 0, 0);
-                int bottomIndex = topIndex + perPage;
+                bottomIndex = topIndex + perPage;
                 int totalItems = (int)SendMessage(hDisasm, LVM_GETITEMCOUNT, 0, 0);
                 if (bottomIndex > totalItems) bottomIndex = totalItems;
 
-                // Get item height from the first visible item
                 RECT rcItem;
                 ListView_GetItemRect(hDisasm, topIndex, &rcItem, LVIR_BOUNDS);
                 MapWindowPoints(hDisasm, Main_hWnd, (LPPOINT)&rcItem, 2);
                 RECT rcPanel;
                 GetWindowRect(hWnd, &rcPanel);
                 MapWindowPoints(HWND_DESKTOP, Main_hWnd, (LPPOINT)&rcPanel, 2);
-                int lvTopInParent = rcItem.top;
-                int panelTopInParent = rcPanel.top;
-                int yOffset = lvTopInParent - panelTopInParent;
+                itemHeight = rcItem.bottom - rcItem.top;
+                if (itemHeight < 1) itemHeight = 16;
+                yOffset = rcItem.top - rcPanel.top;
+                hasVisibleRange = true;
+            }
 
-                int itemHeight = rcItem.bottom - rcItem.top;
+            if (hasVisibleRange && !g_FlowArrows.empty()) {
                 if (itemHeight <= 0) itemHeight = 16;
 
                 // Arrow color palette — cycle distinct colors across lanes
@@ -1372,6 +1376,53 @@ LRESULT CALLBACK FlowArrowWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                         DeleteObject(hHeadPen);
                         DeleteObject(hHeadBrush);
                     }
+                }
+            }
+
+            // Draw EIP indicator arrow when debugging
+            if (hasVisibleRange && g_bDebuggerActive && g_dwCurrentEIP != 0) {
+                extern DWORD_PTR FindIndexByAddress(DWORD_PTR address);
+                DWORD_PTR eipIndex = FindIndexByAddress(g_dwCurrentEIP);
+                if (eipIndex == (DWORD_PTR)-1 && g_dwRebaseDelta != 0)
+                    eipIndex = FindIndexByAddress(g_dwCurrentEIP - g_dwRebaseDelta);
+
+                if (eipIndex != (DWORD_PTR)-1 &&
+                    (int)eipIndex >= topIndex && (int)eipIndex < bottomIndex) {
+                    int eipY = yOffset + ((int)eipIndex - topIndex) * itemHeight + itemHeight / 2;
+
+                    COLORREF eipColor = g_DarkMode ? RGB(0, 200, 255) : RGB(0, 140, 200);
+                    HBRUSH hEipBrush = CreateSolidBrush(eipColor);
+                    HPEN hEipPen = CreatePen(PS_SOLID, 2, eipColor);
+                    HBRUSH hOldBr2 = (HBRUSH)SelectObject(hdcMem, hEipBrush);
+                    HPEN hOldP2 = (HPEN)SelectObject(hdcMem, hEipPen);
+
+                    // Horizontal line from left to right
+                    MoveToEx(hdcMem, 2, eipY, NULL);
+                    LineTo(hdcMem, panelW - 8, eipY);
+
+                    // Filled arrowhead at right
+                    int ah = itemHeight / 3;
+                    if (ah < 3) ah = 3;
+                    POINT tri[3] = {
+                        { panelW - 4, eipY },
+                        { panelW - 4 - ah * 2, eipY - ah },
+                        { panelW - 4 - ah * 2, eipY + ah }
+                    };
+                    Polygon(hdcMem, tri, 3);
+
+                    // "EIP" label
+                    SetTextColor(hdcMem, eipColor);
+                    SetBkMode(hdcMem, TRANSPARENT);
+                    HFONT hSmallFont = CreateFont(11, 0, 0, 0, FW_BOLD, 0, 0, 0, 0, 0, 0, 0, 0, "Arial");
+                    HFONT hOldFont = (HFONT)SelectObject(hdcMem, hSmallFont);
+                    TextOut(hdcMem, 3, eipY - 11, "EIP", 3);
+                    SelectObject(hdcMem, hOldFont);
+                    DeleteObject(hSmallFont);
+
+                    SelectObject(hdcMem, hOldP2);
+                    SelectObject(hdcMem, hOldBr2);
+                    DeleteObject(hEipPen);
+                    DeleteObject(hEipBrush);
                 }
             }
 
@@ -2370,6 +2421,12 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 							lstrcpyn(Buffer1, pCode ? pCode : "", 128);
 							lstrcpyn(Buffer2, pMnem ? pMnem : "", 128);
 							lstrcpyn(Buffer3, pComm ? pComm : "", 128);
+							// Debugger: dynamically resolve memory values in comments
+							if (g_bDebuggerActive && g_DbgState == DBG_STATE_PAUSED &&
+								(Buffer3[0] == '\0') && pMnem) {
+								extern void DbgResolveMemoryCommentPublic(const char*, char*, size_t);
+								DbgResolveMemoryCommentPublic(pMnem, Buffer3, 128);
+							}
 							lstrcpyn(Buffer4, pRef  ? pRef  : "", 256);
 							nmdisp->item.pszText=Buffer; // item 0
 	                        
@@ -3495,6 +3552,12 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         DbgUpdateRegisterDialog();
         DbgUpdateThreadsDialog();
         DbgUpdateDisasmTabName();
+        // Repaint flow arrows panel to update EIP indicator
+        {
+            HWND hArrows = GetDlgItem(hWnd, IDC_FLOW_ARROWS);
+            if (hArrows && IsWindowVisible(hArrows))
+                InvalidateRect(hArrows, NULL, FALSE);
+        }
         DbgUpdateMenuState(hWnd);
         {
             const char* modName = DbgFindModuleForAddress(g_dwCurrentEIP);
@@ -3524,6 +3587,10 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         SetDlgItemText(hWnd, IDC_MESSAGE1, "Debugger: Process exited");
         g_bDebuggerActive = false;
         g_DbgState = DBG_STATE_IDLE;
+        // Close debugger dialogs
+        if (g_hRegisterDlg) { DestroyWindow(g_hRegisterDlg); g_hRegisterDlg = NULL; }
+        if (g_hThreadsDlg) { DestroyWindow(g_hThreadsDlg); g_hThreadsDlg = NULL; }
+        if (g_hBreakpointsDlg) { DestroyWindow(g_hBreakpointsDlg); g_hBreakpointsDlg = NULL; }
         // Clean up disassembly view (same as File > Close)
         CloseLoadedFile(hWnd);
         DbgUpdateMenuState(hWnd);

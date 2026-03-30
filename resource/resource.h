@@ -440,6 +440,17 @@
 #define IDR_HISTORY                     245
 #define IDM_HISTORY_COPY                40110
 #define IDM_HISTORY_SAVEAS              40111
+// Register annotation labels
+#define IDC_REG_EAX_ANNOT              1378
+#define IDC_REG_EBX_ANNOT              1379
+#define IDC_REG_ECX_ANNOT              1380
+#define IDC_REG_EDX_ANNOT              1381
+#define IDC_REG_ESI_ANNOT              1382
+#define IDC_REG_EDI_ANNOT              1383
+#define IDC_REG_EBP_ANNOT              1384
+#define IDC_REG_ESP_ANNOT              1385
+#define IDC_REG_EIP_ANNOT              1386
+
 #define IDM_HISTORY_SELECTALL           40144
 #define IDM_HISTORY_CLEAR               40145
 
@@ -553,7 +564,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        253
 #define _APS_NEXT_COMMAND_VALUE         40146
-#define _APS_NEXT_CONTROL_VALUE         1378
+#define _APS_NEXT_CONTROL_VALUE         1387
 #define _APS_NEXT_SYMED_VALUE           121
 #endif
 #endif

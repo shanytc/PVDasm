@@ -1214,29 +1214,38 @@ IDB_RC_DEFINE_FUNC      BITMAP                  "rc_define_func.bmp"
 // Debugger Dialogs
 //
 
-IDD_REGISTERS DIALOGEX 0, 0, 200, 280
+IDD_REGISTERS DIALOGEX 0, 0, 360, 280
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 CAPTION "CPU Registers"
 FONT 8, "MS Shell Dlg"
 BEGIN
     LTEXT           "EAX:", -1, 4, 6, 22, 8
     EDITTEXT        IDC_REG_EAX, 30, 4, 60, 12, ES_UPPERCASE | ES_AUTOHSCROLL
+    LTEXT           "", IDC_REG_EAX_ANNOT, 95, 6, 260, 8
     LTEXT           "EBX:", -1, 4, 20, 22, 8
     EDITTEXT        IDC_REG_EBX, 30, 18, 60, 12, ES_UPPERCASE | ES_AUTOHSCROLL
+    LTEXT           "", IDC_REG_EBX_ANNOT, 95, 20, 260, 8
     LTEXT           "ECX:", -1, 4, 34, 22, 8
     EDITTEXT        IDC_REG_ECX, 30, 32, 60, 12, ES_UPPERCASE | ES_AUTOHSCROLL
+    LTEXT           "", IDC_REG_ECX_ANNOT, 95, 34, 260, 8
     LTEXT           "EDX:", -1, 4, 48, 22, 8
     EDITTEXT        IDC_REG_EDX, 30, 46, 60, 12, ES_UPPERCASE | ES_AUTOHSCROLL
+    LTEXT           "", IDC_REG_EDX_ANNOT, 95, 48, 260, 8
     LTEXT           "ESI:", -1, 4, 62, 22, 8
     EDITTEXT        IDC_REG_ESI, 30, 60, 60, 12, ES_UPPERCASE | ES_AUTOHSCROLL
+    LTEXT           "", IDC_REG_ESI_ANNOT, 95, 62, 260, 8
     LTEXT           "EDI:", -1, 4, 76, 22, 8
     EDITTEXT        IDC_REG_EDI, 30, 74, 60, 12, ES_UPPERCASE | ES_AUTOHSCROLL
+    LTEXT           "", IDC_REG_EDI_ANNOT, 95, 76, 260, 8
     LTEXT           "EBP:", -1, 4, 90, 22, 8
     EDITTEXT        IDC_REG_EBP, 30, 88, 60, 12, ES_UPPERCASE | ES_AUTOHSCROLL
+    LTEXT           "", IDC_REG_EBP_ANNOT, 95, 90, 260, 8
     LTEXT           "ESP:", -1, 4, 104, 22, 8
     EDITTEXT        IDC_REG_ESP, 30, 102, 60, 12, ES_UPPERCASE | ES_AUTOHSCROLL
+    LTEXT           "", IDC_REG_ESP_ANNOT, 95, 104, 260, 8
     LTEXT           "EIP:", -1, 4, 118, 22, 8
     EDITTEXT        IDC_REG_EIP, 30, 116, 60, 12, ES_UPPERCASE | ES_AUTOHSCROLL
+    LTEXT           "", IDC_REG_EIP_ANNOT, 95, 118, 260, 8
     LTEXT           "EFLAGS:", -1, 4, 138, 30, 8
     EDITTEXT        IDC_REG_EFLAGS, 38, 136, 52, 12, ES_UPPERCASE | ES_AUTOHSCROLL
     LTEXT           "", IDC_REG_FLAGS_TEXT, 4, 152, 192, 12
