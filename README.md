@@ -62,10 +62,14 @@ ProView is an educational project aimed at building a custom disassembler and de
 | **Multi CPU Support** | Support Intel x86, x86-64, Chip8, Visual Basic architectures. |
 ---
 
-<img width="1305" height="913" alt="image" src="https://github.com/user-attachments/assets/75abe8a0-5868-4fb9-be3e-0ae130ab4cf5" />
+Disassembler:
+<img width="1305" height="913" alt="Disassembler" src="https://github.com/user-attachments/assets/75abe8a0-5868-4fb9-be3e-0ae130ab4cf5" />
 
+Graph Viewer:
+<img width="1465" height="1307" alt="Graph Viewer" src="https://github.com/user-attachments/assets/a3f805cc-8a02-4c0a-8656-4afe0261c022" />
 
-<img width="1465" height="1307" alt="image" src="https://github.com/user-attachments/assets/a3f805cc-8a02-4c0a-8656-4afe0261c022" />
+Debugger:
+<img width="1655" height="1125" alt="Debugger" src="https://github.com/user-attachments/assets/61724317-78e0-47d7-b3db-3b6d4aab9098" />
 
 ## Changelog
 
