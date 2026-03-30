@@ -485,6 +485,7 @@
 #define IDM_CFG_SHOW_DISASM             40123
 #define IDM_COPY_ADDRESS                40124
 #define IDC_CONTROL_FLOW                40125
+#define IDM_CFG_ALIGN_COMMENTS          40126
 
 // ================================================================
 // Debugger resource IDs

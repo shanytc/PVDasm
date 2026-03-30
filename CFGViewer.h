@@ -66,6 +66,9 @@ typedef struct CFGBasicBlock {
     // Cached rendering data
     COLORREF    CachedBgColor;     // Pre-computed background color
 
+    // Comment alignment (0 = not aligned, >0 = pixel width for mnemonic column)
+    int         AlignedCommentCol;
+
 } CFG_BASIC_BLOCK;
 
 // Represents an edge between two basic blocks
