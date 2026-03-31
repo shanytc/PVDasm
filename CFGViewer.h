@@ -151,7 +151,7 @@ typedef struct CFGViewState {
 #define CFG_MIN_BLOCK_WIDTH     120     // Minimum block width
 #define CFG_ARROW_SIZE          10      // Arrowhead size
 
-#define CFG_MIN_ZOOM            0.25
+#define CFG_MIN_ZOOM            0.05
 #define CFG_MAX_ZOOM            4.0
 #define CFG_ZOOM_FACTOR         1.15
 

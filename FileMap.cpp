@@ -131,7 +131,8 @@ static int			g_nActiveTab=0;				// 0 = Disassembly, 1 = Graph
 static bool         g_bDisasmTabVisible = true;
 static bool         g_bGraphTabVisible  = true;
 static WNDPROC      g_OrigTabWndProc = NULL;
-BYTE				Opcode;						// Absulote 
+static bool         g_bCFGDockVisible = false;   // True when CFG dock panel is displayed
+BYTE				Opcode;						// Absulote
 char				*OrignalData;				// Copy of pointer to memory map data
 char				*Data;						// Pointer to the maped file in memory
 char				szFileName[MAX_PATH] = "";	// File's Path
@@ -255,13 +256,19 @@ static void SwitchTab(HWND hWnd, int tabIndex)
     if (tabIndex == 0) {
         // Disassembly tab
         if (hDisasm) ShowWindow(hDisasm, SW_SHOW);
-        if (hCFGChild) ShowWindow(hCFGChild, SW_HIDE);
+        // In dock mode, CFG child stays visible alongside disasm
+        if (g_bCFGDockVisible) {
+            if (hCFGChild) ShowWindow(hCFGChild, SW_SHOW);
+        } else {
+            if (hCFGChild) ShowWindow(hCFGChild, SW_HIDE);
+        }
         // Show flow arrows panel if enabled
         HWND hArrows = GetDlgItem(hWnd, IDC_FLOW_ARROWS);
         if (hArrows && g_FlowArrowsVisible && DisassemblerReady)
             ShowWindow(hArrows, SW_SHOW);
     } else {
-        // Graph tab
+        // Graph tab — not available when dock panel is actively shown
+        if (g_bCFGDockVisible) return;
         if (hDisasm) ShowWindow(hDisasm, SW_HIDE);
         // Hide flow arrows panel on graph tab
         HWND hArrows = GetDlgItem(hWnd, IDC_FLOW_ARROWS);
@@ -385,7 +392,7 @@ static void SetTabVisible(HWND hWnd, int logicalTab, bool visible)
         g_bGraphTabVisible = visible;
 
     // Update menu checkmark
-    UINT menuID = (logicalTab == 0) ? IDC_VIEW_DISASSEMBLY : IDC_VIEW_GRAPH;
+    UINT menuID = (logicalTab == 0) ? IDC_VIEW_DISASSEMBLY : IDC_VIEW_GRAPH_TAB;
     CheckMenuItem(GetMenu(hWnd), menuID, visible ? MF_CHECKED : MF_UNCHECKED);
 
     RebuildTabs(hWnd);
@@ -399,6 +406,112 @@ void ShowDisassemblyTab()
         SetTabVisible(Main_hWnd, 0, true);
     if (g_nActiveTab != 0)
         SwitchTab(Main_hWnd, 0);
+}
+
+// ================================================================
+// CFG Dock Mode Helpers
+// ================================================================
+
+static void UpdateCFGModeMenuChecks(HWND hWnd)
+{
+    HMENU hMenu = GetMenu(hWnd);
+    CheckMenuItem(hMenu, IDC_VIEW_GRAPH_TAB,  (g_CFGViewMode == 0) ? MF_CHECKED : MF_UNCHECKED);
+    CheckMenuItem(hMenu, IDC_VIEW_GRAPH_DOCK, (g_CFGViewMode == 1) ? MF_CHECKED : MF_UNCHECKED);
+}
+
+static void ShowCFGDockPanel(HWND hWnd)
+{
+    if (g_bCFGDockVisible) return;
+
+    // If on graph tab, switch to disassembly first
+    if (g_nActiveTab == 1)
+        SwitchTab(hWnd, 0);
+
+    // Hide the Graph tab
+    g_bGraphTabVisible = false;
+    CheckMenuItem(GetMenu(hWnd), IDC_VIEW_GRAPH_TAB, MF_UNCHECKED);
+    RebuildTabs(hWnd);
+
+    // Shrink disasm listview from the right to make room for docked CFG
+    HWND hDisasm = GetDlgItem(hWnd, IDC_DISASM);
+    HWND hCFGChild = GetDlgItem(hWnd, IDC_CFG_CHILD);
+    if (!hDisasm || !hCFGChild) return;
+
+    RECT dr;
+    GetWindowRect(hDisasm, &dr);
+    MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&dr, 2);
+
+    int disasmW = (dr.right - dr.left) - g_CFGDockPanelWidth;
+    if (disasmW < 100) disasmW = 100; // minimum disasm width
+    MoveWindow(hDisasm, dr.left, dr.top, disasmW, dr.bottom - dr.top, TRUE);
+
+    // Position CFG child at the right edge of the shrunken disasm
+    MoveWindow(hCFGChild, dr.left + disasmW, dr.top,
+        g_CFGDockPanelWidth, dr.bottom - dr.top, TRUE);
+    // Remove ANCHOR_RIGHT so the anchor system doesn't expand the dock panel
+    SetWindowLongPtr(hCFGChild, GWL_USERDATA, ANCHOR_BOTTOM);
+    ShowWindow(hCFGChild, SW_SHOW);
+
+    g_bCFGDockVisible = true;
+
+    StretchLastColumn(hDisasm);
+
+    if (DisassemblerReady) {
+        void EnableCFGOverview();
+        EnableCFGOverview();
+        LoadCFGForCurrentFunction_Embedded();
+        // Re-enable overview after LoadCFG (which may reset it)
+        EnableCFGOverview();
+    }
+}
+
+static void HideCFGDockPanel(HWND hWnd)
+{
+    if (!g_bCFGDockVisible) return;
+
+    HWND hDisasm = GetDlgItem(hWnd, IDC_DISASM);
+    HWND hCFGChild = GetDlgItem(hWnd, IDC_CFG_CHILD);
+
+    // Hide the CFG child and restore anchor flags for tab mode
+    if (hCFGChild) {
+        ShowWindow(hCFGChild, SW_HIDE);
+        SetWindowLongPtr(hCFGChild, GWL_USERDATA, ANCHOR_RIGHT | ANCHOR_BOTTOM);
+    }
+
+    // Expand disasm listview back to the right
+    if (hDisasm) {
+        RECT dr;
+        GetWindowRect(hDisasm, &dr);
+        MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&dr, 2);
+        MoveWindow(hDisasm, dr.left, dr.top,
+            (dr.right - dr.left) + g_CFGDockPanelWidth,
+            dr.bottom - dr.top, TRUE);
+        StretchLastColumn(hDisasm);
+    }
+
+    g_bCFGDockVisible = false;
+
+    // Restore graph tab
+    g_bGraphTabVisible = true;
+    CheckMenuItem(GetMenu(hWnd), IDC_VIEW_GRAPH_TAB, MF_CHECKED);
+    RebuildTabs(hWnd);
+}
+
+static void SetCFGViewMode(HWND hWnd, int mode)
+{
+    if (mode == g_CFGViewMode) return;
+
+    if (mode == 1) {
+        // Switch to Dock mode
+        g_CFGViewMode = 1;
+        ShowCFGDockPanel(hWnd);
+    } else {
+        // Switch to Tab mode
+        HideCFGDockPanel(hWnd);
+        g_CFGViewMode = 0;
+    }
+    UpdateCFGModeMenuChecks(hWnd);
+    SaveSettings();
 }
 
 // Tab subclass proc: intercept mouse clicks on the close X button.
@@ -1953,8 +2066,21 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			// Stretch last column to fill width (fixes white areas in dark mode)
 			StretchLastColumn(GetDlgItem(hWnd, IDC_DISASM));
 			StretchLastColumn(GetDlgItem(hWnd, IDC_LIST));
-			// Sync CFG child window to disasm position when graph tab is active
-			if (g_nActiveTab == 1) {
+			// Sync docked CFG panel position to match ListView right edge
+			if (g_bCFGDockVisible) {
+				HWND hCFGChild = GetDlgItem(hWnd, IDC_CFG_CHILD);
+				HWND hDisasm3 = GetDlgItem(hWnd, IDC_DISASM);
+				if (hCFGChild && hDisasm3) {
+					RECT dr;
+					GetWindowRect(hDisasm3, &dr);
+					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&dr, 2);
+					MoveWindow(hCFGChild, dr.right, dr.top,
+						g_CFGDockPanelWidth, dr.bottom - dr.top, TRUE);
+					InvalidateRect(hCFGChild, NULL, FALSE);
+				}
+			}
+			// Sync CFG child window to disasm position when graph tab is active (tab mode only)
+			else if (g_nActiveTab == 1) {
 				HWND hCFGChild = GetDlgItem(hWnd, IDC_CFG_CHILD);
 				HWND hDisasm = GetDlgItem(hWnd, IDC_DISASM);
 				if (hCFGChild && hDisasm) {
@@ -1980,9 +2106,9 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			ScreenToClient(hWnd, &pt);
 			GetWindowRect(GetDlgItem(hWnd, IDC_SPLITTER), &splitterRect);
 			MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&splitterRect, 2);
-			// Expand hit area slightly for easier grabbing
-			splitterRect.top -= 2;
-			splitterRect.bottom += 2;
+			// Expand hit area for easier grabbing
+			splitterRect.top -= 4;
+			splitterRect.bottom += 4;
 			if (PtInRect(&splitterRect, pt)) {
 				SetCursor(LoadCursor(NULL, IDC_SIZENS));
 				return TRUE;
@@ -2053,19 +2179,29 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 								newListHeight,
 								SWP_NOZORDER);
 
-							// Keep CFG child in sync with disasm (expand for hidden arrows panel)
+							// Keep CFG child in sync with disasm
 							if (hCFGChild) {
-								int cfgLeft = disasmRect.left;
-								int cfgWidth = disasmRect.right - disasmRect.left;
-								if (g_FlowArrowsVisible && DisassemblerReady) {
-									cfgLeft -= g_FlowArrowPanelWidth;
-									cfgWidth += g_FlowArrowPanelWidth;
+								if (g_bCFGDockVisible) {
+									// Dock mode: keep at right edge, match height
+									hdwp = DeferWindowPos(hdwp, hCFGChild, NULL,
+										disasmRect.right, disasmRect.top,
+										g_CFGDockPanelWidth,
+										newDisasmHeight,
+										SWP_NOZORDER);
+								} else {
+									// Tab mode: expand for hidden arrows panel
+									int cfgLeft = disasmRect.left;
+									int cfgWidth = disasmRect.right - disasmRect.left;
+									if (g_FlowArrowsVisible && DisassemblerReady) {
+										cfgLeft -= g_FlowArrowPanelWidth;
+										cfgWidth += g_FlowArrowPanelWidth;
+									}
+									hdwp = DeferWindowPos(hdwp, hCFGChild, NULL,
+										cfgLeft, disasmRect.top,
+										cfgWidth,
+										newDisasmHeight,
+										SWP_NOZORDER);
 								}
-								hdwp = DeferWindowPos(hdwp, hCFGChild, NULL,
-									cfgLeft, disasmRect.top,
-									cfgWidth,
-									newDisasmHeight,
-									SWP_NOZORDER);
 							}
 
 							// Keep flow arrows panel in sync with disasm
@@ -2188,7 +2324,8 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             EnableMenuItem(GetMenu(hWnd),IDC_EXPORT_MAP_PVDASM,MF_GRAYED);
             EnableMenuItem(GetMenu(hWnd),IDC_VIEW_CFG,MF_GRAYED);
             EnableMenuItem(GetMenu(hWnd),IDC_VIEW_DISASSEMBLY,MF_GRAYED);
-            EnableMenuItem(GetMenu(hWnd),IDC_VIEW_GRAPH,MF_GRAYED);
+            EnableMenuItem(GetMenu(hWnd),IDC_VIEW_GRAPH_TAB,MF_GRAYED);
+            EnableMenuItem(GetMenu(hWnd),IDC_VIEW_GRAPH_DOCK,MF_GRAYED);
             EnableMenuItem(GetMenu(hWnd),IDC_CODE_MAP,MF_GRAYED);
             EnableMenuItem(GetMenu(hWnd),IDC_CONTROL_FLOW,MF_GRAYED);
 
@@ -2308,6 +2445,14 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             // Check the menu item if Control Flow is enabled
             if (g_FlowArrowsVisible) {
                 CheckMenuItem(GetMenu(hWnd), IDC_CONTROL_FLOW, MF_CHECKED);
+            }
+            // Initialize CFG view mode menu checks
+            UpdateCFGModeMenuChecks(hWnd);
+            // If dock mode was persisted, hide the Graph tab on startup
+            // (the dock panel itself will activate when a file is loaded)
+            if (g_CFGViewMode == 1) {
+                g_bGraphTabVisible = false;
+                RebuildTabs(hWnd);
             }
 
             // Subclass the disassembly window
@@ -2694,7 +2839,25 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                         }
                         else Show=TRUE;
                     }
-                    
+
+                    // Refresh docked CFG when navigating to a different function
+                    if (g_CFGViewMode == 1 && g_bCFGDockVisible && DisassemblerReady) {
+                        static DWORD_PTR s_lastCFGFuncStart = (DWORD_PTR)-1;
+                        DWORD_PTR funcStart = 0;
+                        for (DWORD_PTR fi = item; ; fi--) {
+                            const char* mn = DisasmDataLines[fi].GetMnemonic();
+                            if (mn && strncmp(mn, "; ======", 8) == 0) {
+                                funcStart = fi + 1;
+                                break;
+                            }
+                            if (fi == 0) break;
+                        }
+                        if (funcStart != s_lastCFGFuncStart) {
+                            s_lastCFGFuncStart = funcStart;
+                            LoadCFGForCurrentFunction_Embedded();
+                        }
+                    }
+
                     return TRUE;
                 }
 
@@ -2816,8 +2979,8 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			ptClick.y = HIWORD(lParam);
 			GetWindowRect(GetDlgItem(hWnd, IDC_SPLITTER), &splitterRect);
 			MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&splitterRect, 2);
-			splitterRect.top -= 2;
-			splitterRect.bottom += 2;
+			splitterRect.top -= 4;
+			splitterRect.bottom += 4;
 			if (PtInRect(&splitterRect, ptClick)) {
 				bSplitterDragging = true;
 				nSplitterDragY = ptClick.y;
@@ -3211,19 +3374,32 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 }
                 break;
 
-                // Toggle / show Graph tab (Views menu + Ctrl+G)
-                case IDC_VIEW_GRAPH:
+                // Tab mode: show Graph tab (Views menu + Ctrl+G)
+                case IDC_VIEW_GRAPH_TAB:
                 case IDC_VIEW_CFG:{
                     if (!DisassemblerReady) break;
+                    // Switch to tab mode if currently in dock mode
+                    if (g_CFGViewMode != 0)
+                        SetCFGViewMode(hWnd, 0);
                     if (!g_bGraphTabVisible) {
-                        // Show the graph tab, switch to it, and load CFG
                         SetTabVisible(hWnd, 1, true);
                         SwitchTab(hWnd, 1);
                         LoadCFGForCurrentFunction_Embedded();
                     } else {
-                        // Already visible, just switch to it
                         SwitchTab(hWnd, 1);
                         LoadCFGForCurrentFunction_Embedded();
+                    }
+                }
+                break;
+
+                // Dock mode: dock CFG to the right of disassembly
+                case IDC_VIEW_GRAPH_DOCK:{
+                    if (!DisassemblerReady) break;
+                    if (g_CFGViewMode == 1) {
+                        // Already in dock mode — toggle back to tab
+                        SetCFGViewMode(hWnd, 0);
+                    } else {
+                        SetCFGViewMode(hWnd, 1);
                     }
                 }
                 break;
@@ -3634,6 +3810,15 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_USER + 300: {
 		SwitchTab(hWnd, 0);
 		SetFocus(GetDlgItem(hWnd, IDC_DISASM));
+		return 0;
+	}
+
+	// Activate dock mode after disassembly completes
+	case WM_USER + 301: {
+		if (g_CFGViewMode == 1 && !g_bCFGDockVisible && DisassemblerReady) {
+			ShowCFGDockPanel(hWnd);
+			UpdateCFGModeMenuChecks(hWnd);
+		}
 		return 0;
 	}
 
@@ -7589,15 +7774,18 @@ void CloseLoadedFile(HWND hWnd)
         EnableMenuItem(hWinMenu, IDC_DISASM_ADD_COMMENT,	MF_GRAYED);
         EnableMenuItem(hWinMenu, IDC_VIEW_CFG,			MF_GRAYED);
         EnableMenuItem(hWinMenu, IDC_VIEW_DISASSEMBLY,	MF_GRAYED);
-        EnableMenuItem(hWinMenu, IDC_VIEW_GRAPH,		MF_GRAYED);
+        EnableMenuItem(hWinMenu, IDC_VIEW_GRAPH_TAB,	MF_GRAYED);
+        EnableMenuItem(hWinMenu, IDC_VIEW_GRAPH_DOCK,	MF_GRAYED);
         EnableMenuItem(hWinMenu, IDC_CODE_MAP,			MF_GRAYED);
         EnableMenuItem(hWinMenu, IDC_CONTROL_FLOW,		MF_GRAYED);
 
-        // Reset tab visibility to defaults
+        // Reset tab visibility and CFG dock state
+        if (g_bCFGDockVisible) HideCFGDockPanel(hWnd);
         g_bDisasmTabVisible = true;
-        g_bGraphTabVisible  = true;
+        // If dock mode is persisted, keep Graph tab hidden (dock will reactivate on next file load)
+        g_bGraphTabVisible = (g_CFGViewMode == 0);
         CheckMenuItem(GetMenu(hWnd), IDC_VIEW_DISASSEMBLY, MF_CHECKED);
-        CheckMenuItem(GetMenu(hWnd), IDC_VIEW_GRAPH, MF_CHECKED);
+        UpdateCFGModeMenuChecks(hWnd);
 
         // Clear embedded CFG and switch back to disassembly tab
         ClearEmbeddedCFG();

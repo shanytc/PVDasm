@@ -486,6 +486,8 @@
 #define IDM_COPY_ADDRESS                40124
 #define IDC_CONTROL_FLOW                40125
 #define IDM_CFG_ALIGN_COMMENTS          40126
+#define IDC_VIEW_GRAPH_TAB              40146
+#define IDC_VIEW_GRAPH_DOCK             40147
 
 // ================================================================
 // Debugger resource IDs
@@ -569,7 +571,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        254
-#define _APS_NEXT_COMMAND_VALUE         40146
+#define _APS_NEXT_COMMAND_VALUE         40148
 #define _APS_NEXT_CONTROL_VALUE         1389
 #define _APS_NEXT_SYMED_VALUE           121
 #endif

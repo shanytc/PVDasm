@@ -42,7 +42,8 @@ extern COLORREF             g_DarkBkColor;
 extern COLORREF             g_DarkTextColor;
 extern IMAGE_NT_HEADERS*    nt_hdr;
 extern bool                 LoadedPe64;
-void ShowDisassemblyTab();  // Defined in FileMap.cpp
+void ShowDisassemblyTab();       // Defined in FileMap.cpp
+void StretchLastColumn(HWND);    // Defined in FileMap.cpp
 
 // ================================================================
 // ====================  GLOBAL STATE  ============================
@@ -59,8 +60,10 @@ static HPEN     g_EdgePens[5] = {};       // Width-2 pens: uncond, true, false, 
 static HPEN     g_ArrowPens[5] = {};      // Width-1 pens for arrowhead outlines
 static HBRUSH   g_ArrowBrushes[5] = {};   // Solid brushes for arrowhead fill
 static COLORREF g_EdgeColors[5] = {};     // Color values for text labels
-static bool     g_OverviewEnabled = TRUE; // Overview minimap enabled by default
+static bool     g_OverviewEnabled = true; // Overview minimap enabled by default
+void EnableCFGOverview() { g_OverviewEnabled = true; g_ViewState.ShowOverview = true; }
 static bool     g_CommentsAligned = false; // Comment alignment toggle
+static bool     g_UserChangedZoom = false; // True once user manually zooms (scroll wheel / context menu)
 bool            g_CFGGraphValid = false; // True when embedded CFG child has a valid graph
 
 // ================================================================
@@ -2249,8 +2252,7 @@ void RenderCFG(HWND hWnd, HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
     TextOut(hdcMem, 10, clientRect.bottom - 20, zoomText, lstrlen(zoomText));
 
     // Draw overview minimap
-    if (viewState->ShowOverview)
-        RenderOverview(hdcMem, hWnd, graph, viewState, &clientRect);
+    RenderOverview(hdcMem, hWnd, graph, viewState, &clientRect);
 
     // Blit to screen
     BitBlt(hDC, 0, 0, clientRect.right, clientRect.bottom, hdcMem, 0, 0, SRCCOPY);
@@ -2269,14 +2271,24 @@ void RenderCFG(HWND hWnd, HDC hDC, CFG_GRAPH* graph, CFG_VIEW_STATE* viewState)
 static void GetOverviewRect(RECT* clientRect, RECT* outPanel, double* outScale, double* outOffX, double* outOffY,
                             int graphW, int graphH)
 {
+    // In dock mode, scale the overview to fit the narrower panel
+    int ovW = CFG_OVERVIEW_WIDTH;
+    int ovH = CFG_OVERVIEW_HEIGHT;
+    int clientW = clientRect->right - clientRect->left;
+    if (ovW > clientW - CFG_OVERVIEW_MARGIN * 2) {
+        ovW = clientW - CFG_OVERVIEW_MARGIN * 2;
+        if (ovW < 80) ovW = 80;
+        ovH = ovW * CFG_OVERVIEW_HEIGHT / CFG_OVERVIEW_WIDTH;
+    }
+
     outPanel->right  = clientRect->right - CFG_OVERVIEW_MARGIN;
     outPanel->bottom = clientRect->bottom - CFG_OVERVIEW_MARGIN;
-    outPanel->left   = outPanel->right - CFG_OVERVIEW_WIDTH;
-    outPanel->top    = outPanel->bottom - CFG_OVERVIEW_HEIGHT;
+    outPanel->left   = outPanel->right - ovW;
+    outPanel->top    = outPanel->bottom - ovH;
 
     // Available drawing area inside panel (with 10px inner padding)
-    int innerW = CFG_OVERVIEW_WIDTH - 20;
-    int innerH = CFG_OVERVIEW_HEIGHT - 20;
+    int innerW = ovW - 20;
+    int innerH = ovH - 20;
 
     if (graphW <= 0 || graphH <= 0) {
         *outScale = 1.0;
@@ -2501,6 +2513,7 @@ static LRESULT HandleCFG_MouseWheel(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
     double zoomFactor = (delta > 0) ? CFG_ZOOM_FACTOR : (1.0 / CFG_ZOOM_FACTOR);
     ZoomAtPoint(&g_ViewState, pt, zoomFactor);
+    g_UserChangedZoom = true;
 
     InvalidateRect(hWnd, NULL, FALSE);
     return 0;
@@ -3597,6 +3610,12 @@ void RegisterCFGChildClass(HINSTANCE hInst)
     g_CFGChildClassRegistered = true;
 }
 
+// CFG dock splitter drag state
+static bool g_CFGDockSplitterDragging = false;
+static int  g_CFGDockDragStartX = 0;
+static int  g_CFGDockDragStartWidth = 0;
+#define CFG_DOCK_SPLITTER_HIT  4
+
 LRESULT CALLBACK CFGChildWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg) {
@@ -3622,9 +3641,24 @@ LRESULT CALLBACK CFGChildWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
                 SetBkMode(hDC, TRANSPARENT);
                 SetTextColor(hDC, txColor);
                 HFONT hOld = (HFONT)SelectObject(hDC, GetStockObject(DEFAULT_GUI_FONT));
-                DrawText(hDC, "No graph loaded - use View > Control Flow Graph", -1, &rc,
+                const char* placeholder = (g_CFGViewMode == 1)
+                    ? "No graph - select a function in the disassembly"
+                    : "No graph loaded - use View > Control Function Graph";
+                DrawText(hDC, placeholder, -1, &rc,
                          DT_CENTER | DT_VCENTER | DT_SINGLELINE);
                 SelectObject(hDC, hOld);
+            }
+            // Draw vertical splitter divider on left edge in dock mode
+            if (g_CFGViewMode == 1) {
+                RECT rc;
+                GetClientRect(hWnd, &rc);
+                COLORREF divColor = g_DarkMode ? RGB(80, 80, 80) : RGB(160, 160, 160);
+                HPEN hDivPen = CreatePen(PS_SOLID, 1, divColor);
+                HPEN hOldPen = (HPEN)SelectObject(hDC, hDivPen);
+                MoveToEx(hDC, 0, rc.top, NULL);
+                LineTo(hDC, 0, rc.bottom);
+                SelectObject(hDC, hOldPen);
+                DeleteObject(hDivPen);
             }
             EndPaint(hWnd, &ps);
             return 0;
@@ -3637,16 +3671,67 @@ LRESULT CALLBACK CFGChildWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             if (g_CFGGraphValid) return HandleCFG_MouseWheel(hWnd, wParam, lParam);
             break;
 
-        case WM_LBUTTONDOWN:
+        case WM_LBUTTONDOWN: {
             SetFocus(hWnd);
+            // Check for dock splitter drag start
+            if (g_CFGViewMode == 1) {
+                POINT pt = { (short)LOWORD(lParam), (short)HIWORD(lParam) };
+                if (pt.x <= CFG_DOCK_SPLITTER_HIT) {
+                    g_CFGDockSplitterDragging = true;
+                    POINT ptScreen = pt;
+                    ClientToScreen(hWnd, &ptScreen);
+                    g_CFGDockDragStartX = ptScreen.x;
+                    g_CFGDockDragStartWidth = g_CFGDockPanelWidth;
+                    SetCapture(hWnd);
+                    return 0;
+                }
+            }
             if (g_CFGGraphValid) return HandleCFG_LButtonDown(hWnd, lParam);
             break;
+        }
 
         case WM_MOUSEMOVE:
+            if (g_CFGDockSplitterDragging) {
+                POINT ptScreen = { (short)LOWORD(lParam), (short)HIWORD(lParam) };
+                ClientToScreen(hWnd, &ptScreen);
+                int deltaX = ptScreen.x - g_CFGDockDragStartX;
+                int newWidth = g_CFGDockDragStartWidth - deltaX;
+                if (newWidth < CFG_DOCK_PANEL_WIDTH_MIN) newWidth = CFG_DOCK_PANEL_WIDTH_MIN;
+                if (newWidth > CFG_DOCK_PANEL_WIDTH_MAX) newWidth = CFG_DOCK_PANEL_WIDTH_MAX;
+                if (newWidth != g_CFGDockPanelWidth) {
+                    int widthDelta = newWidth - g_CFGDockPanelWidth;
+                    g_CFGDockPanelWidth = newWidth;
+                    HWND hDisasm = GetDlgItem(Main_hWnd, IDC_DISASM);
+                    if (hDisasm) {
+                        RECT dr;
+                        GetWindowRect(hDisasm, &dr);
+                        MapWindowPoints(HWND_DESKTOP, Main_hWnd, (LPPOINT)&dr, 2);
+                        MoveWindow(hDisasm, dr.left, dr.top,
+                            (dr.right - dr.left) - widthDelta,
+                            dr.bottom - dr.top, TRUE);
+                        GetWindowRect(hDisasm, &dr);
+                        MapWindowPoints(HWND_DESKTOP, Main_hWnd, (LPPOINT)&dr, 2);
+                        RECT pr;
+                        GetWindowRect(hWnd, &pr);
+                        MapWindowPoints(HWND_DESKTOP, Main_hWnd, (LPPOINT)&pr, 2);
+                        MoveWindow(hWnd, dr.right, pr.top,
+                            g_CFGDockPanelWidth, pr.bottom - pr.top, TRUE);
+                        StretchLastColumn(hDisasm);
+                        InvalidateRect(hWnd, NULL, FALSE);
+                    }
+                }
+                return 0;
+            }
             if (g_CFGGraphValid) return HandleCFG_MouseMove(hWnd, lParam);
             break;
 
         case WM_LBUTTONUP:
+            if (g_CFGDockSplitterDragging) {
+                g_CFGDockSplitterDragging = false;
+                ReleaseCapture();
+                SaveSettings();
+                return 0;
+            }
             if (g_CFGGraphValid) return HandleCFG_LButtonUp(hWnd);
             break;
 
@@ -3664,12 +3749,26 @@ LRESULT CALLBACK CFGChildWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
         case WM_SETCURSOR:
             if (LOWORD(lParam) == HTCLIENT) {
+                // Show resize cursor on left edge in dock mode
+                if (g_CFGViewMode == 1) {
+                    POINT pt;
+                    GetCursorPos(&pt);
+                    ScreenToClient(hWnd, &pt);
+                    if (pt.x <= CFG_DOCK_SPLITTER_HIT) {
+                        SetCursor(LoadCursor(NULL, IDC_SIZEWE));
+                        return TRUE;
+                    }
+                }
                 SetCursor(LoadCursor(NULL, g_HoverOnNavigable ? IDC_HAND : IDC_ARROW));
                 return TRUE;
             }
             break;
 
         case WM_SIZE:
+            // In dock mode, auto-fit the graph when resized (unless user manually zoomed)
+            if (g_CFGViewMode == 1 && g_CFGGraphValid && !g_UserChangedZoom) {
+                CenterGraphInView(hWnd, &g_CurrentGraph, &g_ViewState);
+            }
             InvalidateRect(hWnd, NULL, FALSE);
             return 0;
 
@@ -3711,6 +3810,7 @@ void LoadCFGForCurrentFunction_Embedded()
 
     // Free previous graph
     FreeCFGGraph(&g_CurrentGraph);
+    g_UserChangedZoom = false;
     // Clear navigation history
     for (size_t i = 0; i < g_NavHistory.size(); i++) {
         ClearCFGGraph(&g_NavHistory[i].Graph);
@@ -3723,6 +3823,8 @@ void LoadCFGForCurrentFunction_Embedded()
         ComputeEdgeRoutes(&g_CurrentGraph);
         ComputeBlockColors(&g_CurrentGraph);
         g_CFGGraphValid = true;
+        // In dock mode, always show overview; in tab mode, respect user toggle
+        g_ViewState.ShowOverview = (g_CFGViewMode == 1) ? true : g_OverviewEnabled;
 
         // Find the block containing the selected disassembly line
         int focusBlockIdx = -1;
@@ -3749,7 +3851,8 @@ void LoadCFGForCurrentFunction_Embedded()
 
         HWND hChild = GetDlgItem(Main_hWnd, IDC_CFG_CHILD);
         if (hChild) {
-            FocusOnBlock(hChild, &g_CurrentGraph, &g_ViewState, focusBlockIdx);
+            // Fit entire graph to the view (centered) for both tab and dock modes
+            CenterGraphInView(hChild, &g_CurrentGraph, &g_ViewState);
             InvalidateRect(hChild, NULL, FALSE);
         }
     } else {

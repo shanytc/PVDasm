@@ -4396,7 +4396,8 @@ void WINAPI Disassembler(/*LPVOID lpParam*/) // Thread Worker for Decoding Instr
         EnableMenuItem ( hMenu, IDC_GOTO_ADDRESS,    MF_GRAYED  );
         EnableMenuItem ( hMenu, IDC_VIEW_CFG,        MF_GRAYED  );
         EnableMenuItem ( hMenu, IDC_VIEW_DISASSEMBLY, MF_GRAYED );
-        EnableMenuItem ( hMenu, IDC_VIEW_GRAPH,      MF_GRAYED  );
+        EnableMenuItem ( hMenu, IDC_VIEW_GRAPH_TAB,  MF_GRAYED  );
+        EnableMenuItem ( hMenu, IDC_VIEW_GRAPH_DOCK, MF_GRAYED  );
         EnableMenuItem ( hMenu, IDM_FIND,            MF_ENABLED );
 
         // Disable ToolBar Buttons
@@ -4503,9 +4504,15 @@ void WINAPI Disassembler(/*LPVOID lpParam*/) // Thread Worker for Decoding Instr
     EnableMenuItem ( hMenu, IDC_PVSCRIPT_ENGINE,   MF_ENABLED );
     EnableMenuItem ( hMenu, IDC_VIEW_CFG,          MF_ENABLED );
     EnableMenuItem ( hMenu, IDC_VIEW_DISASSEMBLY, MF_ENABLED );
-    EnableMenuItem ( hMenu, IDC_VIEW_GRAPH,       MF_ENABLED );
+    EnableMenuItem ( hMenu, IDC_VIEW_GRAPH_TAB,  MF_ENABLED );
+    EnableMenuItem ( hMenu, IDC_VIEW_GRAPH_DOCK, MF_ENABLED );
     EnableMenuItem ( hMenu, IDC_CODE_MAP,         MF_ENABLED );
     EnableMenuItem ( hMenu, IDC_CONTROL_FLOW,    MF_ENABLED );
+
+    // If dock mode was persisted, activate it after disassembly
+    if (g_CFGViewMode == 1) {
+        PostMessage(mainhWnd, WM_USER + 301, 0, 0);
+    }
 
     // If Imports availble, show them
     if(FunctionCounter>0){

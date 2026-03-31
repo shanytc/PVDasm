@@ -2188,7 +2188,8 @@ BOOL DbgDisassembleAtEIP()
             EnableMenuItem(hMenu, IDC_GOTO_ADDRESS,       MF_ENABLED);
             EnableMenuItem(hMenu, IDM_FIND,               MF_ENABLED);
             EnableMenuItem(hMenu, IDC_VIEW_DISASSEMBLY,   MF_ENABLED);
-            EnableMenuItem(hMenu, IDC_VIEW_GRAPH,         MF_ENABLED);
+            EnableMenuItem(hMenu, IDC_VIEW_GRAPH_TAB,     MF_ENABLED);
+            EnableMenuItem(hMenu, IDC_VIEW_GRAPH_DOCK,    MF_ENABLED);
             EnableMenuItem(hMenu, IDC_CODE_MAP,           MF_ENABLED);
             EnableMenuItem(hMenu, IDC_CONTROL_FLOW,       MF_ENABLED);
             EnableMenuItem(hMenu, IDM_COPY_DISASM_CLIP,   MF_ENABLED);

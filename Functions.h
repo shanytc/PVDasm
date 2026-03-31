@@ -114,6 +114,11 @@ extern int  g_FlowArrowPanelWidth;
 #define FLOW_ARROW_PANEL_WIDTH_DEFAULT  130
 #define FLOW_ARROW_PANEL_WIDTH_MIN      20
 #define FLOW_ARROW_PANEL_WIDTH_MAX     200
+extern int  g_CFGViewMode;            // 0=Tab, 1=Dock
+extern int  g_CFGDockPanelWidth;
+#define CFG_DOCK_PANEL_WIDTH_DEFAULT  300
+#define CFG_DOCK_PANEL_WIDTH_MIN      150
+#define CFG_DOCK_PANEL_WIDTH_MAX      1200
 void    BuildFlowArrowData			(																);
 void    LoadSettings				(																);
 void    SaveSettings				(																);

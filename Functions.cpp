@@ -1691,6 +1691,8 @@ bool g_DarkMode = false;
 bool g_CodeMapVisible = true;
 bool g_FlowArrowsVisible = true;
 int  g_FlowArrowPanelWidth = FLOW_ARROW_PANEL_WIDTH_DEFAULT;
+int  g_CFGViewMode = 0;
+int  g_CFGDockPanelWidth = CFG_DOCK_PANEL_WIDTH_DEFAULT;
 HBRUSH g_hDarkBrush = NULL;
 COLORREF g_DarkBkColor = RGB(30, 30, 30);
 COLORREF g_DarkTextColor = RGB(200, 200, 200);
@@ -1756,6 +1758,14 @@ void LoadSettings() {
         g_FlowArrowPanelWidth = FLOW_ARROW_PANEL_WIDTH_MIN;
     if (g_FlowArrowPanelWidth > FLOW_ARROW_PANEL_WIDTH_MAX)
         g_FlowArrowPanelWidth = FLOW_ARROW_PANEL_WIDTH_MAX;
+    g_CFGViewMode = GetPrivateProfileIntA("Settings", "CFGViewMode", 0, szPath);
+    if (g_CFGViewMode < 0 || g_CFGViewMode > 1) g_CFGViewMode = 0;
+    g_CFGDockPanelWidth = GetPrivateProfileIntA("Settings", "CFGDockWidth",
+        CFG_DOCK_PANEL_WIDTH_DEFAULT, szPath);
+    if (g_CFGDockPanelWidth < CFG_DOCK_PANEL_WIDTH_MIN)
+        g_CFGDockPanelWidth = CFG_DOCK_PANEL_WIDTH_MIN;
+    if (g_CFGDockPanelWidth > CFG_DOCK_PANEL_WIDTH_MAX)
+        g_CFGDockPanelWidth = CFG_DOCK_PANEL_WIDTH_MAX;
 }
 
 void SaveSettings() {
@@ -1771,6 +1781,10 @@ void SaveSettings() {
         char buf[16];
         wsprintfA(buf, "%d", g_FlowArrowPanelWidth);
         WritePrivateProfileStringA("Settings", "ControlFlowWidth", buf, szPath);
+        wsprintfA(buf, "%d", g_CFGViewMode);
+        WritePrivateProfileStringA("Settings", "CFGViewMode", buf, szPath);
+        wsprintfA(buf, "%d", g_CFGDockPanelWidth);
+        WritePrivateProfileStringA("Settings", "CFGDockWidth", buf, szPath);
     }
 }
 
