@@ -2301,20 +2301,37 @@ BOOL GetXReferences(HWND hWnd)
 //
 void UnDockDebug(HWND DestHWND, HWND hWndSrc,HWND hWnd)
 {
-    RECT rc,rcMain;
-    int Height,Width;
-    // Undock the Debug Window
-    // Get Rectangle Information of the main gui window
-    // And the Disasm's rectangle.
-    GetWindowRect(DestHWND,&rc); // Get Rect of Window  
-    GetClientRect(hWnd,&rcMain);
-    // Calculate Width / Height
-    Height = rc.bottom - rc.top;
-    Width =  rc.right - rc.left;
-    // Put new Size and Positino
-    MoveWindow(DestHWND,rcMain.left+6,rcMain.top+36,Width,Height+90,TRUE);
+    RECT rc;
+    // Get the disasm listview position in parent coordinates
+    GetWindowRect(DestHWND,&rc);
+    MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rc, 2);
+    int Width = rc.right - rc.left;
+
+    // Find where the status bar starts so we don't overlap it
+    HWND hMsg1 = GetDlgItem(hWnd, IDC_MESSAGE1);
+    RECT rcStatus;
+    GetWindowRect(hMsg1, &rcStatus);
+    MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rcStatus, 2);
+
+    // Expand disasm listview down to the status bar top
+    int newH = rcStatus.top - rc.top;
+    MoveWindow(DestHWND, rc.left, rc.top, Width, newH, TRUE);
     // Hide the Debug Window
     ShowWindow(hWndSrc,SW_HIDE);
+    // Also hide the splitter
+    ShowWindow(GetDlgItem(hWnd, IDC_SPLITTER), SW_HIDE);
+
+    // Sync flow arrows panel and CFG child to match the new disasm height
+    HWND hArrows = GetDlgItem(hWnd, IDC_FLOW_ARROWS);
+    if (hArrows && IsWindowVisible(hArrows)) {
+        MoveWindow(hArrows, rc.left - g_FlowArrowPanelWidth, rc.top,
+            g_FlowArrowPanelWidth, newH, TRUE);
+    }
+    HWND hCFGChild = GetDlgItem(hWnd, IDC_CFG_CHILD);
+    if (hCFGChild) {
+        MoveWindow(hCFGChild, rc.left, rc.top, Width, newH, TRUE);
+    }
+
     UpdateWindow(hWnd);
     CheckMenuItem(GetMenu(hWnd),IDC_DOCK_DEBUG,MF_UNCHECKED);
     SendMessage(hWndTB, TB_CHECKBUTTON, ID_DOCK_DBG,	(LPARAM)FALSE);
@@ -2330,26 +2347,48 @@ void UnDockDebug(HWND DestHWND, HWND hWndSrc,HWND hWnd)
 //
 void DockDebug(HWND DestHWND, HWND hWndSrc,HWND hWnd)
 {
-    RECT rc,rcMain;
-    int Height,Width;
+    RECT rc;
+    // Get the disasm listview position in parent coordinates
+    GetWindowRect(DestHWND,&rc);
+    MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rc, 2);
+    int Width = rc.right - rc.left;
 
-    // Dock the Debug Window
-    // Get Rectangle Information of the main gui window
-    // And the Disasm's rectangle.
-    GetWindowRect(DestHWND,&rc); // Get Rect of Window
-    GetClientRect(hWnd,&rcMain);
-    
-    // Calculate Width / Height
-    Height = rc.bottom - rc.top;
-    Width =  rc.right - rc.left;
-    // Put new Size and Position
-    MoveWindow(DestHWND,rcMain.left+6,rcMain.top+36,Width,Height-90,TRUE);
-    // Show Debug Window
+    // Find where the status bar starts
+    HWND hMsg1 = GetDlgItem(hWnd, IDC_MESSAGE1);
+    RECT rcStatus;
+    GetWindowRect(hMsg1, &rcStatus);
+    MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rcStatus, 2);
+
+    // Reserve space for splitter (4px) + history list below the disasm
+    int availableH = rcStatus.top - rc.top;
+    int historyH = 90;  // Height for the history list
+    int splitterH = 4;
+    int disasmH = availableH - historyH - splitterH;
+
+    // Shrink disasm listview to make room for splitter + history
+    MoveWindow(DestHWND, rc.left, rc.top, Width, disasmH, TRUE);
+    // Position and show splitter
+    HWND hSplitter = GetDlgItem(hWnd, IDC_SPLITTER);
+    MoveWindow(hSplitter, rc.left, rc.top + disasmH, Width, splitterH, TRUE);
+    ShowWindow(hSplitter, SW_SHOW);
+    // Position and show history list
+    MoveWindow(hWndSrc, rc.left, rc.top + disasmH + splitterH, Width, historyH, TRUE);
     ShowWindow(hWndSrc,SW_SHOW);
+
+    // Sync flow arrows panel and CFG child to match the new disasm height
+    HWND hArrows = GetDlgItem(hWnd, IDC_FLOW_ARROWS);
+    if (hArrows && IsWindowVisible(hArrows)) {
+        MoveWindow(hArrows, rc.left - g_FlowArrowPanelWidth, rc.top,
+            g_FlowArrowPanelWidth, disasmH, TRUE);
+    }
+    HWND hCFGChild = GetDlgItem(hWnd, IDC_CFG_CHILD);
+    if (hCFGChild) {
+        MoveWindow(hCFGChild, rc.left, rc.top, Width, disasmH, TRUE);
+    }
+
     UpdateWindow(hWnd);
     CheckMenuItem(GetMenu(hWnd),IDC_DOCK_DEBUG,MF_CHECKED);
     SendMessage(hWndTB, TB_CHECKBUTTON, ID_DOCK_DBG,  (LPARAM)TRUE);
-
 }
 
 //////////////////////////////////////////////////////////////////////////

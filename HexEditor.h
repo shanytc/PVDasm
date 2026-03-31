@@ -99,19 +99,39 @@
 #define DEFLNRCOLOR		0x00800000
 
 // ================================================================
+// ========================= STRUCTURES ===========================
+// ================================================================
+
+// Used by MemoryStreamInProc to track position when streaming from in-memory data
+typedef struct {
+    const char *pData;
+    DWORD_PTR  dwSize;
+    DWORD_PTR  dwPos;
+} MEMORY_STREAM_DATA;
+
+// ================================================================
+// ========================== GLOBALS =============================
+// ================================================================
+
+extern HWND g_hHexEditorDlg;
+
+// ================================================================
 // ========================== PROTOTYPES ==========================
 // ================================================================
 
-void LoadFileToRAHexEd			( HWND hWnd						);
-void SaveFileFromRAHexEd		( HWND hWnd						);
-void SaveFileAsFromRaHexEd		( HWND hWnd						);
-void SaveFile					( HWND RadWin,char *FileName	);
-void Hide_UnHide_RadHexAddress	( HWND hWnd						);
-void Hide_UnHide_RadHexAscii	( HWND hWnd						);
-void UpperLower_caseRadHex		( HWND hWnd						);
+void  LoadFileToRAHexEd			( HWND hWnd						);
+void  LoadMemoryToRAHexEd		( HWND hWnd						);
+void  SaveFileFromRAHexEd		( HWND hWnd						);
+void  SaveFileAsFromRaHexEd		( HWND hWnd						);
+void  SaveFile					( HWND RadWin,char *FileName	);
+void  Hide_UnHide_RadHexAddress	( HWND hWnd						);
+void  Hide_UnHide_RadHexAscii	( HWND hWnd						);
+void  UpperLower_caseRadHex		( HWND hWnd						);
+HWND  GetHexEditorWindow		( void							);
 
-BOOL  CALLBACK HexEditorProc ( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam  );
-DWORD CALLBACK StreamInProc  ( DWORD_PTR dwCookie, LPBYTE lpbBuff, LONG cb, LONG FAR *pcb );
-DWORD CALLBACK StreamOutProc ( DWORD_PTR dwCookie, LPBYTE lpbBuff, LONG cb, LONG FAR *pcb );
+BOOL  CALLBACK HexEditorProc      ( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam  );
+DWORD CALLBACK StreamInProc       ( DWORD_PTR dwCookie, LPBYTE lpbBuff, LONG cb, LONG FAR *pcb );
+DWORD CALLBACK StreamOutProc      ( DWORD_PTR dwCookie, LPBYTE lpbBuff, LONG cb, LONG FAR *pcb );
+DWORD CALLBACK MemoryStreamInProc ( DWORD_PTR dwCookie, LPBYTE lpbBuff, LONG cb, LONG FAR *pcb );
 
 #endif

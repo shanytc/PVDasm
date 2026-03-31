@@ -299,9 +299,11 @@ BOOL BuildCFGFromFunction(DWORD_PTR funcStart, DWORD_PTR funcEnd, const char* fu
             block.IsExitBlock = IsReturnInstruction(lastMnemonic);
         }
 
-        // Check if this block starts a known function (fFunctionInfo or CallTargets)
+        // Check if this block starts a known function
         block.FunctionLabel[0] = '\0';
         bool foundLabel = false;
+
+        // First, check fFunctionInfo
         for (size_t fi = 0; fi < fFunctionInfo.size(); fi++) {
             if (fFunctionInfo[fi].FunctionStart == block.StartAddress) {
                 if (fFunctionInfo[fi].FunctionName[0] != '\0')
@@ -316,6 +318,24 @@ BOOL BuildCFGFromFunction(DWORD_PTR funcStart, DWORD_PTR funcEnd, const char* fu
                 break;
             }
         }
+
+        // Fallback: check for a banner line in DisasmDataLines right before this block
+        if (!foundLabel && block.StartIndex > 0) {
+            DWORD_PTR prevIdx = block.StartIndex - 1;
+            const char* prevMnem = DisasmDataLines[prevIdx].GetMnemonic();
+            if (prevMnem && strncmp(prevMnem, "; ======", 8) == 0) {
+                const char* s = prevMnem + 9; // skip "; ====== "
+                const char* e = s;
+                while (*e && strncmp(e, " ======", 7) != 0) e++;
+                size_t len = e - s;
+                if (len > 0 && len < 64) {
+                    memcpy(block.FunctionLabel, s, len);
+                    block.FunctionLabel[len] = '\0';
+                }
+                foundLabel = true;
+            }
+        }
+
         if (!foundLabel && CallTargets.count(block.StartAddress)) {
             if(LoadedPe64)
                 wsprintf(block.FunctionLabel, "Proc_%08X%08X", (DWORD)(block.StartAddress>>32), (DWORD)block.StartAddress);
@@ -3072,11 +3092,46 @@ BOOL BuildCFGByTracing(DWORD_PTR startIndex, CFG_GRAPH* outGraph)
     ClearCFGGraph(outGraph);
 
     DWORD_PTR startAddr = GetAddressAtIndex(startIndex);
-    if(LoadedPe64)
-        wsprintf(outGraph->FunctionName, "Code at %08X%08X", (DWORD)(startAddr>>32), (DWORD)startAddr);
-    else
-        wsprintf(outGraph->FunctionName, "Code at %08X", (DWORD)startAddr);
     outGraph->FunctionStart = startAddr;
+
+    // Try to resolve function name from fFunctionInfo
+    bool nameFound = false;
+    for (size_t fi = 0; fi < fFunctionInfo.size(); fi++) {
+        if (fFunctionInfo[fi].FunctionStart == startAddr) {
+            if (fFunctionInfo[fi].FunctionName[0] != '\0') {
+                strncpy(outGraph->FunctionName, fFunctionInfo[fi].FunctionName, 63);
+                outGraph->FunctionName[63] = '\0';
+            } else {
+                if (LoadedPe64)
+                    wsprintf(outGraph->FunctionName, "Proc_%08X%08X", (DWORD)(startAddr>>32), (DWORD)startAddr);
+                else
+                    wsprintf(outGraph->FunctionName, "Proc_%08X", (DWORD)startAddr);
+            }
+            nameFound = true;
+            break;
+        }
+    }
+    // Fallback: check for a banner line right before startIndex in DisasmDataLines
+    if (!nameFound && startIndex > 0) {
+        const char* prevMnem = DisasmDataLines[startIndex - 1].GetMnemonic();
+        if (prevMnem && strncmp(prevMnem, "; ======", 8) == 0) {
+            const char* s = prevMnem + 9;
+            const char* e = s;
+            while (*e && strncmp(e, " ======", 7) != 0) e++;
+            size_t len = e - s;
+            if (len > 0 && len < 64) {
+                memcpy(outGraph->FunctionName, s, len);
+                outGraph->FunctionName[len] = '\0';
+            }
+            nameFound = true;
+        }
+    }
+    if (!nameFound) {
+        if (LoadedPe64)
+            wsprintf(outGraph->FunctionName, "Code at %08X%08X", (DWORD)(startAddr>>32), (DWORD)startAddr);
+        else
+            wsprintf(outGraph->FunctionName, "Code at %08X", (DWORD)startAddr);
+    }
 
     // Set to track visited addresses and addresses to visit
     std::set<DWORD_PTR> visitedIndices;
@@ -3253,9 +3308,11 @@ BOOL BuildCFGByTracing(DWORD_PTR startIndex, CFG_GRAPH* outGraph)
              strstr(lastMnemonic, "TerminateThread") || strstr(lastMnemonic, "FatalExit") ||
              strstr(lastMnemonic, "abort")));
 
-        // Check if this block starts a known function (fFunctionInfo or CallTargets)
+        // Check if this block starts a known function
         block.FunctionLabel[0] = '\0';
         bool foundLabel = false;
+
+        // First, check fFunctionInfo
         for (size_t fi = 0; fi < fFunctionInfo.size(); fi++) {
             if (fFunctionInfo[fi].FunctionStart == block.StartAddress) {
                 if (fFunctionInfo[fi].FunctionName[0] != '\0')
@@ -3270,6 +3327,24 @@ BOOL BuildCFGByTracing(DWORD_PTR startIndex, CFG_GRAPH* outGraph)
                 break;
             }
         }
+
+        // Fallback: check for a banner line in DisasmDataLines right before this block
+        if (!foundLabel && block.StartIndex > 0) {
+            DWORD_PTR prevIdx = block.StartIndex - 1;
+            const char* prevMnem = DisasmDataLines[prevIdx].GetMnemonic();
+            if (prevMnem && strncmp(prevMnem, "; ======", 8) == 0) {
+                const char* s = prevMnem + 9; // skip "; ====== "
+                const char* e = s;
+                while (*e && strncmp(e, " ======", 7) != 0) e++;
+                size_t len = e - s;
+                if (len > 0 && len < 64) {
+                    memcpy(block.FunctionLabel, s, len);
+                    block.FunctionLabel[len] = '\0';
+                }
+                foundLabel = true;
+            }
+        }
+
         if (!foundLabel && CallTargets.count(block.StartAddress)) {
             if(LoadedPe64)
                 wsprintf(block.FunctionLabel, "Proc_%08X%08X", (DWORD)(block.StartAddress>>32), (DWORD)block.StartAddress);
@@ -3711,6 +3786,11 @@ void RefreshCFGLabels()
             if (fFunctionInfo[fi].FunctionName[0] != '\0') {
                 strncpy(g_CurrentGraph.FunctionName, fFunctionInfo[fi].FunctionName, 63);
                 g_CurrentGraph.FunctionName[63] = '\0';
+            } else {
+                if (LoadedPe64)
+                    wsprintf(g_CurrentGraph.FunctionName, "Proc_%08X%08X", (DWORD)(g_CurrentGraph.FunctionStart>>32), (DWORD)g_CurrentGraph.FunctionStart);
+                else
+                    wsprintf(g_CurrentGraph.FunctionName, "Proc_%08X", (DWORD)g_CurrentGraph.FunctionStart);
             }
             break;
         }

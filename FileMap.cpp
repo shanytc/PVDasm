@@ -54,6 +54,7 @@ extern HANDLE				hDisasmThread;   // Thread Handle (incase we want to suspend/st
 extern IMAGE_SECTION_HEADER *SectionHeader;
 extern bool					DisasmIsWorking;
 extern HMODULE				hRadHex;
+extern HWND					g_hHexEditorDlg;
 extern DllArray				hDllArray;
 extern MapTree				DataAddersses;
 extern MapTree				SEHAddresses;
@@ -1879,6 +1880,46 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				InvalidateRect(hMsg1, NULL, TRUE);
 				InvalidateRect(hMsg2, NULL, TRUE);
 				InvalidateRect(hProg, NULL, TRUE);
+
+				// Clamp bottom-anchored controls so they never overlap the status bar.
+				// The anchor system grows them to the full client bottom; trim back.
+				HWND hClampCtrls[] = {
+					GetDlgItem(hWnd, IDC_DISASM),
+					GetDlgItem(hWnd, IDC_CFG_CHILD)
+				};
+				for (int i = 0; i < 2; i++) {
+					if (hClampCtrls[i]) {
+						RECT rcCtrl;
+						GetWindowRect(hClampCtrls[i], &rcCtrl);
+						MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rcCtrl, 2);
+						if (rcCtrl.bottom > statusY) {
+							MoveWindow(hClampCtrls[i], rcCtrl.left, rcCtrl.top,
+								rcCtrl.right - rcCtrl.left, statusY - rcCtrl.top, TRUE);
+						}
+					}
+				}
+
+				// When history is docked, also clamp IDC_LIST and IDC_SPLITTER
+				HWND hHistList = GetDlgItem(hWnd, IDC_LIST);
+				if (hHistList && IsWindowVisible(hHistList)) {
+					HWND hSplitter = GetDlgItem(hWnd, IDC_SPLITTER);
+					RECT rcList;
+					GetWindowRect(hHistList, &rcList);
+					MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rcList, 2);
+					if (rcList.bottom > statusY) {
+						MoveWindow(hHistList, rcList.left, rcList.top,
+							rcList.right - rcList.left, statusY - rcList.top, TRUE);
+					}
+					if (hSplitter) {
+						RECT rcSplit;
+						GetWindowRect(hSplitter, &rcSplit);
+						MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rcSplit, 2);
+						if (rcSplit.bottom > statusY) {
+							MoveWindow(hSplitter, rcSplit.left, rcSplit.top,
+								rcSplit.right - rcSplit.left, statusY - rcSplit.top, TRUE);
+						}
+					}
+				}
 			}
 
 			// Resize Code Map bar to match window width and repaint
@@ -2291,6 +2332,11 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 // Handle modeless CFG viewer dialog messages
                 HWND hCFGViewer = GetCFGViewerWindow();
                 if (hCFGViewer && IsDialogMessage(hCFGViewer, &msg)) {
+                    continue;
+                }
+                // Handle modeless hex editor dialog messages
+                HWND hHexEd = GetHexEditorWindow();
+                if (hHexEd && IsDialogMessage(hHexEd, &msg)) {
                     continue;
                 }
                 // Translate Accelerator Keys
@@ -3198,7 +3244,7 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 }
                 break;
 
-                // Show HexEditor
+                // Show HexEditor (modeless)
                 case ID_HEX:
                 case IDM_HEX_EDIT:
                 case IDC_HEX_EDITOR:{
@@ -3206,8 +3252,13 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                        MessageBox(hWnd,"RAHexEd.dll Not Found!\nMake Sure it\'s located at AddIns Folder Next time you load PVDasm.","Error Locating DLL",MB_OK|MB_ICONEXCLAMATION);
                        return 0;
                     }
-                    
-                    DialogBox(GetModuleHandle(NULL),MAKEINTRESOURCE(IDD_HEXEDITOR), hWnd, (DLGPROC)HexEditorProc);
+
+                    if (!g_hHexEditorDlg) {
+                        g_hHexEditorDlg = CreateDialog(GetModuleHandle(NULL),MAKEINTRESOURCE(IDD_HEXEDITOR), hWnd, (DLGPROC)HexEditorProc);
+                        ShowWindow(g_hHexEditorDlg, SW_SHOW);
+                    } else {
+                        SetForegroundWindow(g_hHexEditorDlg);
+                    }
                 }
                 break;
 
@@ -3899,6 +3950,12 @@ int OpenFileByPath(HWND hWnd)
 
 	FilesInMemory=true;
 	OrignalData=Data;
+
+	// If hex editor is already open, replace its content with the newly loaded file
+	if(g_hHexEditorDlg){
+		LoadMemoryToRAHexEd(g_hHexEditorDlg);
+		EnableMenuItem(GetMenu(g_hHexEditorDlg), IDM_OPEN_FILE, MF_GRAYED);
+	}
 
 	// read the dos header
 	doshdr=(IMAGE_DOS_HEADER*)Data;
@@ -7477,6 +7534,11 @@ void ExitPVDasm(HWND hWnd)
 			CloseHandle(hDisasmThread);
 			hDisasmThread = NULL;
 		}
+		// Close hex editor if open
+		if(g_hHexEditorDlg){
+			DestroyWindow(g_hHexEditorDlg);
+			g_hHexEditorDlg = NULL;
+		}
 		// Free handlers from memory
 		CloseFiles(hWnd);
 		PostQuitMessage(0);
@@ -7571,6 +7633,19 @@ void CloseLoadedFile(HWND hWnd)
                 }
             }
             g_FlowArrows.clear();
+        }
+
+        // If hex editor is open, re-enable Open File and clear its content
+        if(g_hHexEditorDlg){
+            EnableMenuItem(GetMenu(g_hHexEditorDlg), IDM_OPEN_FILE, MF_ENABLED);
+            // Clear the hex editor content and reset title
+            HWND RadHexhWnd = GetDlgItem(g_hHexEditorDlg, IDC_RAHEXEDIT);
+            SendMessage(RadHexhWnd, EM_SETSEL, 0, -1);
+            SendMessage(RadHexhWnd, WM_CLEAR, 0, 0);
+            SendMessage(RadHexhWnd, EM_SETMODIFY, FALSE, 0);
+            SetWindowText(g_hHexEditorDlg, " HexEditor - ");
+            EnableMenuItem(GetMenu(g_hHexEditorDlg), IDM_SAVE_FILE, MF_GRAYED);
+            EnableMenuItem(GetMenu(g_hHexEditorDlg), IDM_SAVE_FILE_AS, MF_GRAYED);
         }
 
         // Hide window When file is closed

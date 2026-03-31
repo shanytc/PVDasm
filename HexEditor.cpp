@@ -42,12 +42,17 @@
 #include "Resize\AnchorResizing.h"
 
 extern HINSTANCE  hInst;
+extern bool       FilesInMemory;
+extern char       *OrignalData;
+extern DWORD_PTR  hFileSize;
+extern char       szFileName[MAX_PATH];
 
 // ================================================================
 // ====================== GLOBAL VARIABLES ========================
 // ================================================================
 
 HMODULE  hRadHex;
+HWND     g_hHexEditorDlg = NULL;
 //HACCEL   hHexAccel;
 //MSG      Msg;
 char     FileName[MAX_PATH]="";
@@ -91,27 +96,16 @@ BOOL CALLBACK HexEditorProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 	{ 	 
 		// This Window Message is the heart of the dialog //
 		//================================================//
-		case WM_INITDIALOG: 
-		{               
+		case WM_INITDIALOG:
+		{
             SetWindowLongPtr(GetDlgItem(hWnd,IDC_RAHEXEDIT), GWL_USERDATA,ANCHOR_RIGHT  | ANCHOR_BOTTOM);
-            /*
-            hHexAccel = LoadAccelerators (hInst, MAKEINTRESOURCE(IDR_ACCELERATOR2));
 
-            //////////////////////////////////////////////
-            //				Message Pump				//
-            //////////////////////////////////////////////
-                       
-            // Get the waiting Message
-            while(GetMessage(&Msg, NULL, 0, 0)){
-                // Translate Accelerator Keys
-                if (!TranslateAccelerator(hWnd, hHexAccel, &Msg)){
-                    TranslateMessage (&Msg);
-                }
-                
-                // Dispatch/Process The Waiting Message
-                DispatchMessage (&Msg);
+            // Auto-populate with in-memory file data if a file is loaded
+            if (FilesInMemory) {
+                LoadMemoryToRAHexEd(hWnd);
+                // Disable Open File — hex editor is tied to the disassembled file
+                EnableMenuItem(GetMenu(hWnd), IDM_OPEN_FILE, MF_GRAYED);
             }
-            */
 		}
 		break;
 
@@ -143,11 +137,17 @@ BOOL CALLBACK HexEditorProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 		}
 		break;
 		
-        case WM_CLOSE: // We colsing the Dialog
+        case WM_CLOSE: // We closing the Dialog
         {
-          EndDialog(hWnd,0);
+          DestroyWindow(hWnd);
         }
 	    break;
+
+        case WM_DESTROY:
+        {
+          g_hHexEditorDlg = NULL;
+        }
+        break;
 
 		case WM_COMMAND: // Controling the Buttons
 		{
@@ -462,4 +462,62 @@ void UpperLower_caseRadHex(HWND hWnd)
 
     SetWindowLongPtr(RadHWnd,GWL_STYLE,Style);
     SendMessage(RadHWnd,HEM_REPAINT,0,0);
+}
+
+DWORD CALLBACK MemoryStreamInProc(DWORD_PTR dwCookie, LPBYTE lpbBuff, LONG cb, LONG FAR *pcb)
+{
+    MEMORY_STREAM_DATA *pStream = (MEMORY_STREAM_DATA *)dwCookie;
+    DWORD_PTR remaining = pStream->dwSize - pStream->dwPos;
+    LONG toRead = (LONG)remaining;
+    if (toRead > cb)
+        toRead = cb;
+
+    if (toRead > 0) {
+        memcpy(lpbBuff, pStream->pData + pStream->dwPos, toRead);
+        pStream->dwPos += toRead;
+    }
+
+    *pcb = toRead;
+    return 0;
+}
+
+void LoadMemoryToRAHexEd(HWND hWnd)
+{
+    RAHEX_EDITSTREAM editstream;
+    CHARRANGE chrg;
+    HWND RadHexhWnd = GetDlgItem(hWnd, IDC_RAHEXEDIT);
+    HMENU Menu = GetMenu(hWnd);
+    char Temp[MAX_PATH] = "", Text[MAX_PATH + 64] = "";
+
+    ZeroMemory(&editstream, sizeof(editstream));
+    ZeroMemory(&chrg, sizeof(CHARRANGE));
+
+    MEMORY_STREAM_DATA streamData;
+    streamData.pData = OrignalData;
+    streamData.dwSize = hFileSize;
+    streamData.dwPos  = 0;
+
+    editstream.dwCookie = (DWORD_PTR)&streamData;
+    editstream.pfnCallback = (EDITSTREAMCALLBACK)MemoryStreamInProc;
+
+    SendMessage(RadHexhWnd, EM_STREAMIN, (WPARAM)SF_TEXT, (LPARAM)&editstream);
+
+    // Update window title with loaded filename
+    strcpy_s(Temp, sizeof(Temp), szFileName);
+    GetExeName(Temp);
+    wsprintf(Text, " HexEditor - [%s]", Temp);
+    SetWindowText(hWnd, Text);
+
+    SendMessage(RadHexhWnd, EM_SETMODIFY, FALSE, 0);
+    chrg.cpMin = 0;
+    chrg.cpMax = 0;
+    SendMessage(RadHexhWnd, EM_EXSETSEL, 0, (LPARAM)&chrg);
+
+    EnableMenuItem(Menu, IDM_SAVE_FILE, MF_ENABLED);
+    EnableMenuItem(Menu, IDM_SAVE_FILE_AS, MF_ENABLED);
+}
+
+HWND GetHexEditorWindow(void)
+{
+    return g_hHexEditorDlg;
 }
