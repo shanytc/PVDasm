@@ -3721,18 +3721,21 @@ LRESULT CALLBACK CFGChildWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
                         RECT dr;
                         GetWindowRect(hDisasm, &dr);
                         MapWindowPoints(HWND_DESKTOP, Main_hWnd, (LPPOINT)&dr, 2);
-                        MoveWindow(hDisasm, dr.left, dr.top,
-                            (dr.right - dr.left) - widthDelta,
-                            dr.bottom - dr.top, TRUE);
-                        GetWindowRect(hDisasm, &dr);
-                        MapWindowPoints(HWND_DESKTOP, Main_hWnd, (LPPOINT)&dr, 2);
-                        RECT pr;
-                        GetWindowRect(hWnd, &pr);
-                        MapWindowPoints(HWND_DESKTOP, Main_hWnd, (LPPOINT)&pr, 2);
-                        MoveWindow(hWnd, dr.right, pr.top,
-                            g_CFGDockPanelWidth, pr.bottom - pr.top, TRUE);
+                        int newDisasmW = (dr.right - dr.left) - widthDelta;
+
+                        // Move both windows atomically to avoid gray flicker
+                        HDWP hdwp = BeginDeferWindowPos(2);
+                        if (hdwp) {
+                            hdwp = DeferWindowPos(hdwp, hDisasm, NULL,
+                                dr.left, dr.top, newDisasmW, dr.bottom - dr.top,
+                                SWP_NOZORDER);
+                            hdwp = DeferWindowPos(hdwp, hWnd, NULL,
+                                dr.left + newDisasmW, dr.top,
+                                g_CFGDockPanelWidth, dr.bottom - dr.top,
+                                SWP_NOZORDER);
+                            EndDeferWindowPos(hdwp);
+                        }
                         StretchLastColumn(hDisasm);
-                        InvalidateRect(hWnd, NULL, FALSE);
                     }
                 }
                 return 0;
