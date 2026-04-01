@@ -441,7 +441,13 @@ static void ShowCFGDockPanel(HWND hWnd)
     GetWindowRect(hDisasm, &dr);
     MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&dr, 2);
 
-    int disasmW = (dr.right - dr.left) - g_CFGDockPanelWidth;
+    // Dock panel gets 1/3 of the total width, disasm gets 2/3
+    int totalW = dr.right - dr.left;
+    g_CFGDockPanelWidth = totalW / 3;
+    if (g_CFGDockPanelWidth < CFG_DOCK_PANEL_WIDTH_MIN)
+        g_CFGDockPanelWidth = CFG_DOCK_PANEL_WIDTH_MIN;
+
+    int disasmW = totalW - g_CFGDockPanelWidth;
     if (disasmW < 100) disasmW = 100; // minimum disasm width
     MoveWindow(hDisasm, dr.left, dr.top, disasmW, dr.bottom - dr.top, TRUE);
 
@@ -1950,7 +1956,18 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		// auto reinitialize controls
 		case WM_SHOWWINDOW:{
+			// Capture original dialog size as anchor baseline
 			InitializeResizeControls(hWnd);
+			// Now resize window — triggers WM_SIZE which uses anchor system
+			// to recalculate all child controls to fill the new size
+			{
+				int winW = 1200, winH = 800;
+				int screenW = GetSystemMetrics(SM_CXSCREEN);
+				int screenH = GetSystemMetrics(SM_CYSCREEN);
+				int x = (screenW - winW) / 2;
+				int y = (screenH - winH) / 2;
+				MoveWindow(hWnd, x, y, winW, winH, TRUE);
+			}
 		}
 		break;	
 

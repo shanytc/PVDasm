@@ -1760,12 +1760,6 @@ void LoadSettings() {
         g_FlowArrowPanelWidth = FLOW_ARROW_PANEL_WIDTH_MAX;
     g_CFGViewMode = GetPrivateProfileIntA("Settings", "CFGViewMode", 0, szPath);
     if (g_CFGViewMode < 0 || g_CFGViewMode > 1) g_CFGViewMode = 0;
-    g_CFGDockPanelWidth = GetPrivateProfileIntA("Settings", "CFGDockWidth",
-        CFG_DOCK_PANEL_WIDTH_DEFAULT, szPath);
-    if (g_CFGDockPanelWidth < CFG_DOCK_PANEL_WIDTH_MIN)
-        g_CFGDockPanelWidth = CFG_DOCK_PANEL_WIDTH_MIN;
-    if (g_CFGDockPanelWidth > CFG_DOCK_PANEL_WIDTH_MAX)
-        g_CFGDockPanelWidth = CFG_DOCK_PANEL_WIDTH_MAX;
 }
 
 void SaveSettings() {
@@ -1783,8 +1777,6 @@ void SaveSettings() {
         WritePrivateProfileStringA("Settings", "ControlFlowWidth", buf, szPath);
         wsprintfA(buf, "%d", g_CFGViewMode);
         WritePrivateProfileStringA("Settings", "CFGViewMode", buf, szPath);
-        wsprintfA(buf, "%d", g_CFGDockPanelWidth);
-        WritePrivateProfileStringA("Settings", "CFGDockWidth", buf, szPath);
     }
 }
 

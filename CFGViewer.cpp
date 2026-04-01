@@ -3729,7 +3729,6 @@ LRESULT CALLBACK CFGChildWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             if (g_CFGDockSplitterDragging) {
                 g_CFGDockSplitterDragging = false;
                 ReleaseCapture();
-                SaveSettings();
                 return 0;
             }
             if (g_CFGGraphValid) return HandleCFG_LButtonUp(hWnd);
