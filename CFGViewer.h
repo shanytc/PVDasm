@@ -206,6 +206,7 @@ HWND GetCFGViewerWindow();  // Returns handle for message loop integration
 extern bool g_CFGGraphValid;
 void RegisterCFGChildClass(HINSTANCE hInst);
 void LoadCFGForCurrentFunction_Embedded();
+void SelectCFGBlockByDisasmIndex(DWORD_PTR disasmIndex);
 void RefreshCFGLabels();
 void ClearEmbeddedCFG();
 LRESULT CALLBACK CFGChildWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);

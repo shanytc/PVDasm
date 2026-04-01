@@ -66,6 +66,21 @@ static bool     g_CommentsAligned = false; // Comment alignment toggle
 static bool     g_UserChangedZoom = false; // True once user manually zooms (scroll wheel / context menu)
 bool            g_CFGGraphValid = false; // True when embedded CFG child has a valid graph
 
+// Highlight the CFG block containing the given disasm line index
+void SelectCFGBlockByDisasmIndex(DWORD_PTR disasmIndex)
+{
+    if (!g_CFGGraphValid) return;
+    for (size_t i = 0; i < g_CurrentGraph.Blocks.size(); i++) {
+        if (disasmIndex >= g_CurrentGraph.Blocks[i].StartIndex &&
+            disasmIndex <= g_CurrentGraph.Blocks[i].EndIndex) {
+            g_ViewState.SelectedBlockID = g_CurrentGraph.Blocks[i].BlockID;
+            HWND hChild = GetDlgItem(Main_hWnd, IDC_CFG_CHILD);
+            if (hChild) InvalidateRect(hChild, NULL, FALSE);
+            return;
+        }
+    }
+}
+
 // ================================================================
 // ====================  HELPER FUNCTIONS  ========================
 // ================================================================

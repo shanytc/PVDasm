@@ -2857,6 +2857,11 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                         else Show=TRUE;
                     }
 
+                    // Highlight the CFG block containing the selected disasm line
+                    if (g_CFGGraphValid && DisassemblerReady) {
+                        SelectCFGBlockByDisasmIndex(item);
+                    }
+
                     // Refresh docked CFG when navigating to a different function
                     if (g_CFGViewMode == 1 && g_bCFGDockVisible && DisassemblerReady) {
                         static DWORD_PTR s_lastCFGFuncStart = (DWORD_PTR)-1;
